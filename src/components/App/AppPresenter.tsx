@@ -1,12 +1,14 @@
-import * as React from 'react';
+import * as React from "react";
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Redirect,
   Route,
   Switch
-} from 'react-router-dom';
-import styled from 'styled-components';
-import Navigation from '../Navigation/Navigation';
+} from "react-router-dom";
+import styled from "styled-components";
+import Board from "../../Routes/Board";
+import Home from "../../Routes/Home";
+import Navigation from "../Navigation/Navigation";
 // import { ApolloProvider } from 'react-apollo';
 
 interface IProps {
@@ -17,19 +19,14 @@ const AppBox = styled.div`
   width: 100%;
 `;
 
-const AppPresenter: React.SFC<IProps> = () => (
+const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
   <Router>
     <AppBox>
+      <Navigation isLoggedIn={isLoggedIn} />
       <Switch>
-        <Route path={''} exact={true} component={Navigation} />
-        {/* <Route path={'/ride/:rideId'} exact={true} component={Ride} />
-      <Route path={'/chat/:chatId'} exact={true} component={Chat} />
-      <Route path={'/edit-account'} exact={true} component={EditAccount} />
-      <Route path={'/settings'} exact={true} component={Settings} />
-      <Route path={'/places'} exact={true} component={Places} />
-      <Route path={'/add-place'} exact={true} component={AddPlace} />
-      <Route path={'/find-address'} exact={true} component={FindAddress} /> */}
-        <Redirect from={'*'} to={'/'} />
+        <Route path={"/board"} exact={true} component={Board} />
+        <Route path={""} exact={true} component={Home} />
+        <Redirect from={"*"} to={"/"} />
       </Switch>
     </AppBox>
   </Router>

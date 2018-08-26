@@ -53,12 +53,12 @@ const ProfileItemContainer = styled.div`
   justify-content: center;
 `;
 
-interface IYourProps {
+interface ISocialIconProps {
   size: number;
 }
 
-const SocialIcon = styled<IYourProps, any>('img')`
-  width: ${(props: IYourProps) => props.size};
+const SocialIcon = styled<ISocialIconProps, any>('img')`
+  width: ${(props: ISocialIconProps) => props.size};
   margin: 0 2px;
   border-radius: 2px;
 `;
@@ -141,7 +141,7 @@ const Navigation: React.SFC<IProps> = ({ isLoggedIn }) => {
                 </div>
               </MenuItem>
             </NavLink>
-            <NavLink to="/guide" style={{ textDecoration: 'none' }}>
+            <NavLink to="/board" style={{ textDecoration: 'none' }}>
               <MenuItem>GUIDE</MenuItem>
             </NavLink>
             <NavLink to="/wiki" style={{ textDecoration: 'none' }}>

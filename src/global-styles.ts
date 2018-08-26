@@ -3,7 +3,10 @@ import { injectGlobal } from './typed-components';
 
 // tslint:disable-next-line
 injectGlobal`
-  @import url('https://fonts.googleapis.com/css?family=Maven+Pro');
+@import url("https://www.w3schools.com/w3css/4/w3.css");
+@import url("https://use.fontawesome.com/releases/v5.0.13/css/all.css");
+@import url("https://fonts.googleapis.com/css?family=Maven+Pro|Roboto:300:400,700|Eczar|Oswald|Playfair+Display|Hanalei+Fill|Quicksand|Open+Sans|Raleway|Anton|Do+Hyeon|Kirang+Haerang|Nanum+Gothic|Nanum+Gothic+Coding|Nanum+Myeongjo|Nanum+Pen+Script|Sunflower:300");
+@import url("//cdn.jsdelivr.net/font-iropke-batang/1.2/font-iropke-batang.css");
   ${reset};
   * {
       box-sizing: border-box;
