@@ -12,22 +12,6 @@ const HtmlContainer = styled.div`
 `;
 
 interface IProps {
-  item: {
-    type: string;
-    content:
-      | "BUTTON"
-      | "DIVIDER"
-      | "HTML"
-      | "IMAGE"
-      | "TEXT"
-      | "VIDEO"
-      | "SOCIAL";
-    value?: any;
-    align?: "left" | "center" | "right";
-    textColor?: { r: string; g: string; b: string; a: string };
-    backgroundColor?: { r: string; g: string; b: string; a: string };
-    hoverColor?: { r: string; g: string; b: string; a: string };
-  };
   index: number[];
   value: Value;
   handleOnChange: any;
@@ -36,7 +20,6 @@ interface IProps {
 }
 
 const Html: React.SFC<IProps> = ({
-  item,
   value,
   handleOnChange,
   index,

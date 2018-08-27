@@ -434,11 +434,9 @@ class Container extends React.Component<IProps, IState> {
         }
         return (
           <Html
-            value={value}
             index={this.props.index}
-            active={active}
+            value={value}
             handleOnChange={this.props.handleOnChange}
-            onKeyDown={this.props.onKeyDown}
             renderNode={this.props.renderNode}
             renderMark={this.props.renderMark}
           />
