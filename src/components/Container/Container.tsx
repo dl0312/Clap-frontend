@@ -444,10 +444,8 @@ class Container extends React.Component<IProps, IState> {
       case "IMAGE":
         return (
           <Image
-            active={active}
             src={this.props.item.imageSrc}
             fullWidth={this.props.item.fullWidth}
-            contentWidth={this.props.contentWidth}
           />
         );
       case "TEXT":
@@ -683,56 +681,6 @@ export default flow(
     isDragging: monitor.isDragging()
   }))
 )(Container);
-
-const ImageContainer = styled.div`
-  border-top: 0 solid transparent;
-  border-right: 0 solid transparent;
-  border-left: 0 solid transparent;
-  border-bottom: 0 solid transparent;
-  width: ${props => (props.fullWidth ? "100%" : null)};
-  width: ${props => (props.isEmpty ? "100%" : null)};
-`;
-
-const EmptyImageContainer = styled.div`
-  width: 100%;
-  padding: 30px;
-  border: 0.5px solid rgba(0, 0, 0, 0.5);
-`;
-
-const EmptyImageIcon = styled.i`
-  font-size: 30px;
-`;
-
-const EmptyImageText = styled.div`
-  text-transform: uppercase;
-`;
-
-class Image extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  render() {
-    return (
-      <ImageContainer
-        className="content"
-        fullWidth={this.props.fullWidth}
-        isEmpty={this.props.src !== null}
-      >
-        {this.props.src ? (
-          <img style={{ width: "100%" }} src={this.props.src} alt="logo" />
-        ) : (
-          <EmptyImageContainer>
-            <EmptyImageIcon className="far fa-image" />
-            {/* <EmptyImageText>
-              upload local image or use external link
-            </EmptyImageText> */}
-          </EmptyImageContainer>
-        )}
-      </ImageContainer>
-    );
-  }
-}
 
 const VideoContainer = styled.div`
   position: relative;
