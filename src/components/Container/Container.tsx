@@ -21,6 +21,7 @@ import Button from "../ContentItems/Button";
 import Text from "../ContentItems/Text";
 import Divider from "../ContentItems/Divider";
 import Html from "../ContentItems/Html";
+import Image from "../ContentItems/Image";
 
 import {
   AlignCenterPlugin,
@@ -362,12 +363,22 @@ interface IProps {
       | "TEXT"
       | "VIDEO"
       | "SOCIAL";
+    // Button, Text
     value?: any;
+    // Button, Text
     align?: "left" | "center" | "right";
+    // Button, Text
     textAlign?: "left" | "center" | "right";
+    // Button, Text
     textColor?: { r: string; g: string; b: string; a: string };
+    // Button
     backgroundColor?: { r: string; g: string; b: string; a: string };
+    // Button
     hoverColor?: { r: string; g: string; b: string; a: string };
+    // Image
+    imageSrc?: string;
+    // Image
+    fullWidth?: boolean;
   };
   OnDrag: "content" | "columnList";
   contentWidth: number;

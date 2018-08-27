@@ -27,7 +27,7 @@ const EmptyImageIcon = styled.i`
 
 interface IProps {
   src: string;
-  fullWidth: number;
+  fullWidth: boolean;
 }
 
 const Image: React.SFC<IProps> = ({ fullWidth, src }) => {
