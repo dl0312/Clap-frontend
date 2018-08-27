@@ -18,6 +18,7 @@ import flow from "lodash/flow";
 import EditorDefaults from "../../EditorDefaults";
 
 import Button from "../ContentItems/Button";
+import Text from "../ContentItems/Text";
 
 import {
   AlignCenterPlugin,
@@ -361,6 +362,7 @@ interface IProps {
       | "SOCIAL";
     value?: any;
     align?: "left" | "center" | "right";
+    textAlign?: "left" | "center" | "right";
     textColor?: { r: string; g: string; b: string; a: string };
     backgroundColor?: { r: string; g: string; b: string; a: string };
     hoverColor?: { r: string; g: string; b: string; a: string };
@@ -784,19 +786,6 @@ class Image extends Component {
     );
   }
 }
-
-const TextContainer = styled.div`
-  color: ${props =>
-    `rgba(${props.textColor.r}, ${props.textColor.g}, ${props.textColor.b}, ${
-      props.textColor.a
-    })`};
-  text-align: ${props => props.textAlign};
-  line-height: 140%;
-  padding-top: 10px;
-  padding-right: 10px;
-  padding-left: 10px;
-  padding-bottom: 10px;
-`;
 
 const VideoContainer = styled.div`
   position: relative;
