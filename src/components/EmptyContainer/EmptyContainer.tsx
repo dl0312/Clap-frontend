@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { DropTarget, DropTargetMonitor } from "react-dnd";
+import { DropTarget, DropTargetMonitor, ConnectDropTarget } from "react-dnd";
 import ItemTypes from "../../ItemTypes";
 
 const InsertText = styled.div`
@@ -42,7 +42,7 @@ interface IProps {
   index: number[];
   masterCallback: any;
   moveCard: any;
-  handleDrop: any;
+  handleDrop: (hoverItem: any, hoverIndex: number[]) => void;
   OnDrag: any;
 }
 
@@ -50,8 +50,13 @@ interface IState {
   state: "ONDRAG" | "NOTHING" | "ISOVER";
 }
 
-class EmptyContainer extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
+interface IDnDProps {
+  connectDropTarget: ConnectDropTarget;
+  isOverCurrent: boolean;
+}
+
+class EmptyContainer extends React.Component<IProps & IDnDProps, IState> {
+  constructor(props: IProps & IDnDProps) {
     super(props);
     this.state = {
       state: this.props.OnDrag === "content" ? "ONDRAG" : "NOTHING"
@@ -59,7 +64,7 @@ class EmptyContainer extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const { connectDropTarget, isOverCurrent } = this.context;
+    const { connectDropTarget, isOverCurrent } = this.props;
     return (
       connectDropTarget &&
       connectDropTarget(

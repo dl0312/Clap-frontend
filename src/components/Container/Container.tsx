@@ -311,10 +311,13 @@ interface IProps {
   key: number;
 
   // Action to Parent Component
-  callbackfromparent: any;
+  callbackfromparent: (
+    type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
+    dataFromchild: number[]
+  ) => void;
   masterCallback: any;
   moveCard: any;
-  handleDrop: any;
+  handleDrop: (hoverItem: any, hoverIndex: number[]) => void;
   index: number[];
   handleOnChange: any;
 
@@ -363,8 +366,17 @@ interface IState {
   toolHover: boolean;
 }
 
-class Container extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
+interface IDnDProps {
+  // React-dnd props
+  isDragging?: boolean;
+  connectDragSource?: ConnectDragSource;
+  connectDragPreview: ConnectDragPreview;
+  connectDropTarget?: ConnectDropTarget;
+  isOver?: boolean;
+}
+
+class Container extends React.Component<IProps & IDnDProps, IState> {
+  constructor(props: IProps & IDnDProps) {
     super(props);
     this.state = {
       hoverPosition: null,
@@ -503,13 +515,14 @@ class Container extends React.Component<IProps, IState> {
       connectDragPreview,
       connectDropTarget,
       isOver
-    } = this.context;
+    } = this.props;
     const {
       index,
       callbackfromparent,
       hoveredIndex,
       selectedIndex
     } = this.props;
+
     const opacity = isDragging ? 0.2 : 1;
     const hover = hoveredIndex
       ? hoveredIndex.length === index.length &&
@@ -581,14 +594,14 @@ class Container extends React.Component<IProps, IState> {
                     <ButtonOption
                       onClick={() => {
                         console.log(index);
-                        callbackfromparent("delete", index, this);
+                        callbackfromparent("delete", index);
                       }}
                     >
                       <i className="fas fa-trash-alt" />
                     </ButtonOption>
                     <ButtonOption
                       onClick={() => {
-                        callbackfromparent("duplicate", index, this);
+                        callbackfromparent("duplicate", index);
                       }}
                     >
                       <i className="far fa-copy" />

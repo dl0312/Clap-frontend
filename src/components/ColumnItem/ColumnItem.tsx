@@ -25,7 +25,10 @@ interface IProps {
   contentWidth: number;
   cards: any[];
 
-  callbackfromparent: any;
+  callbackfromparent: (
+    type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
+    dataFromchild: number[]
+  ) => void;
   selectedIndex: number[];
   hoveredIndex: number[];
   index: number[];
@@ -34,7 +37,7 @@ interface IProps {
   renderMark: RenderMarkProps;
   masterCallback: any;
   moveCard: any;
-  handleDrop: any;
+  handleDrop: (hoverItem: any, hoverIndex: number[]) => void;
   OnDrag: "content" | "columnList";
 }
 
