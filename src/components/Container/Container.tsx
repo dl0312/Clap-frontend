@@ -19,6 +19,7 @@ import EditorDefaults from "../../EditorDefaults";
 
 import Button from "../ContentItems/Button";
 import Text from "../ContentItems/Text";
+import Divider from "../ContentItems/Divider";
 
 import {
   AlignCenterPlugin,
@@ -685,26 +686,6 @@ export default flow(
     isDragging: monitor.isDragging()
   }))
 )(Container);
-
-class Divider extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  render() {
-    return (
-      <div className="content" style={{ width: "100%", padding: "20px" }}>
-        <div
-          style={{
-            width: "100%",
-            borderBottom: "1px solid black"
-          }}
-        />
-      </div>
-    );
-  }
-}
 
 class Html extends Component {
   constructor(props) {
