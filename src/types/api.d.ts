@@ -2,6 +2,29 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: addPost
+// ====================================================
+
+export interface addPost_AddPost {
+  __typename: "AddPostResponse";
+  ok: boolean;
+  error: string | null;
+}
+
+export interface addPost {
+  AddPost: addPost_AddPost;
+}
+
+export interface addPostVariables {
+  title: string;
+  categoryId: number;
+  body: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: getAllPosts
 // ====================================================
 

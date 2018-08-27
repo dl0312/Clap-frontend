@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { Query } from 'react-apollo';
-import { RouteComponentProps } from 'react-router-dom';
-import { getAllPosts, getAllPostsVariables } from '../../types/api';
-import BoardPresenter from './BoardPresenter';
-import { POSTS } from './BoardQueries';
+import * as React from "react";
+import { Query } from "react-apollo";
+import { RouteComponentProps } from "react-router-dom";
+import { getAllPosts, getAllPostsVariables } from "../../types/api";
+import BoardPresenter from "./BoardPresenter";
+import { POSTS } from "./BoardQueries";
 
 interface IProps extends RouteComponentProps<any> {}
 
@@ -21,14 +21,14 @@ interface IState {
 class PostsQuery extends Query<getAllPosts, getAllPostsVariables> {}
 
 class BoardContainer extends React.Component<IProps, IState> {
-  constructor(props: any) {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       hoverImgJson: {
         cards: [],
-        color: { r: '', g: '', b: '', a: '' },
+        color: { r: "", g: "", b: "", a: "" },
         contentWidth: 600,
-        font: ''
+        font: ""
       },
       onImage: false,
       pos: { x: 0, y: 0 }

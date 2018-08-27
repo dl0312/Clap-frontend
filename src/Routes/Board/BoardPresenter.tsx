@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { Helmet } from 'react-helmet';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import * as React from "react";
+import { Helmet } from "react-helmet";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
 // import ImagePopup from '../../components/ImagePopup';
-import { getAllPosts } from '../../types/api';
+import { getAllPosts } from "../../types/api";
 
 const BoardContainer = styled.div`
   width: 100%;
@@ -11,7 +11,7 @@ const BoardContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 150px 30px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   background-color: white;
 `;
 
@@ -162,7 +162,7 @@ const BoardPresenter: React.SFC<IProps> = ({
           <Table>
             <tbody>
               <Helmet>
-                <title>Board</title>
+                <title>Board | CLAP</title>
               </Helmet>
               {posts.map((post: any, index: number) => (
                 <TableRow key={index}>
@@ -173,7 +173,7 @@ const BoardPresenter: React.SFC<IProps> = ({
                           ? `http://localhost:4000/uploads/${
                               post.category.wikiImages[0].shownImage.url
                             }`
-                          : 'https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg'
+                          : "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
                       }
                       alt={post.category.name}
                       onMouseOver={handleOnMouseOver}
@@ -186,13 +186,13 @@ const BoardPresenter: React.SFC<IProps> = ({
                       <Link
                         to={`/post/read/${post.id}`}
                         style={{
-                          textDecoration: 'none'
+                          textDecoration: "none"
                         }}
                       >
                         <FlexBox
                           style={{
-                            flexDirection: 'row',
-                            padding: '0px'
+                            flexDirection: "row",
+                            padding: "0px"
                           }}
                         >
                           {post.title}
@@ -216,7 +216,7 @@ const BoardPresenter: React.SFC<IProps> = ({
             </tbody>
           </Table>
           <PostButtonContainer>
-            <Link to={`/post/add`} style={{ textDecoration: 'none' }}>
+            <Link to={`/post/add`} style={{ textDecoration: "none" }}>
               <PostButton>New Post</PostButton>
             </Link>
           </PostButtonContainer>
