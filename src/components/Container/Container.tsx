@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Editor, RenderNodeProps, RenderMarkProps } from "slate-react";
+import { RenderNodeProps, RenderMarkProps } from "slate-react";
 import classnames from "classnames";
 import ItemTypes from "../../ItemTypes";
 import {
@@ -206,16 +206,7 @@ const cardTarget = {
     const isJustOverThisOne = monitor.isOver({ shallow: true });
     if (isJustOverThisOne) {
       const dragIndex = monitor.getItem().index;
-      // if (
-      //   monitor.getItemType() === "content" &&
-      //   monitor.getItem().index === undefined
-      // ) {
-      //   dragIndex = props.cards - 1;
-      // }
       const hoverIndex = props.index;
-      // console.log(item.isNew + ", " + monitor.getItem().index);
-
-      // console.log(dragIndex + ", " + hoverIndex);
 
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
@@ -246,27 +237,13 @@ const cardTarget = {
         component.setState({ hoverPosition: "under" });
       }
 
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-      // Dragging downwards
       if (dragIndex < hoverIndex && hoverpageY < hoverMiddleY) {
         return;
       }
 
-      // Dragging upwards
       if (dragIndex > hoverIndex && hoverpageY > hoverMiddleY) {
         return;
       }
-
-      // Time to actually perform the action
-      // props.moveCard(dragIndex, hoverIndex);
-
-      // // Note: we're mutating the monitor item here!
-      // // Generally it's better to avoid mutations,
-      // // but it's good here for the sake of performance
-      // // to avoid expensive index searches.
-      // monitor.getItem().index = hoverIndex;
     }
   },
 
@@ -303,7 +280,6 @@ const cardTarget = {
       const index = props.index;
       console.log(index);
       if (dropPosition === "over") {
-        // index[2] -= 1;
         console.log(index);
         props.handleDrop(monitor.getItem(), index);
       } else if (dropPosition === "under") {
@@ -341,16 +317,6 @@ interface IProps {
   handleDrop: any;
   index: number[];
   handleOnChange: any;
-
-  // React-dnd props
-  isDragging?: boolean;
-  connectDragSource?: ConnectDragSource;
-  connectDragPreview: ConnectDragPreview;
-  connectDropTarget?: ConnectDropTarget;
-  isOver?: boolean;
-
-  // Helping for React-dnd
-  containerHoverIndex: number | number[] | null;
 
   // For Content Render
   selectedIndex: number[] | null;
@@ -493,7 +459,7 @@ class Container extends React.Component<IProps, IState> {
       case "SOCIAL":
         return <SocialMedia />;
       default:
-        break;
+        return null;
     }
   };
 
@@ -536,11 +502,13 @@ class Container extends React.Component<IProps, IState> {
       connectDragSource,
       connectDragPreview,
       connectDropTarget,
+      isOver
+    } = this.context;
+    const {
       index,
       callbackfromparent,
       hoveredIndex,
-      selectedIndex,
-      isOver
+      selectedIndex
     } = this.props;
     const opacity = isDragging ? 0.2 : 1;
     const hover = hoveredIndex
