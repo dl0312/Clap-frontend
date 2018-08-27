@@ -11,7 +11,7 @@ import {
   DragSourceMonitor,
   DropTargetMonitor
 } from "react-dnd";
-import { Value, Block, Change } from "slate";
+import { Value, Block, Change, Schema, ObjectsAndTypes } from "slate";
 import styled from "styled-components";
 import { LAST_CHILD_TYPE_INVALID } from "slate-schema-violations";
 import flow from "lodash/flow";
@@ -20,6 +20,7 @@ import EditorDefaults from "../../EditorDefaults";
 import Button from "../ContentItems/Button";
 import Text from "../ContentItems/Text";
 import Divider from "../ContentItems/Divider";
+import Html from "../ContentItems/Html";
 
 import {
   AlignCenterPlugin,
@@ -311,9 +312,9 @@ const cardTarget = {
   }
 };
 
-const schema = {
+const schema: Schema = {
   document: {
-    last: { type: "paragraph" },
+    last: { type: "paragraph" } as ObjectsAndTypes,
     normalize: (change: Change, reason: any, { node, child }: any) => {
       switch (reason) {
         case LAST_CHILD_TYPE_INVALID: {
@@ -325,7 +326,7 @@ const schema = {
       }
     }
   }
-};
+} as Schema;
 
 interface IProps {
   key: number;
@@ -412,14 +413,13 @@ class Container extends React.Component<IProps, IState> {
             item={this.props.item}
             index={this.props.index}
             value={value}
-            active={active}
             handleOnChange={this.props.handleOnChange}
             renderNode={this.props.renderNode}
             renderMark={this.props.renderMark}
           />
         );
       case "DIVIDER":
-        return <Divider active={active} />;
+        return <Divider />;
       case "HTML":
         if (!Value.isValue(this.props.item.value)) {
           value = Value.fromJSON(this.props.item.value);
@@ -471,9 +471,8 @@ class Container extends React.Component<IProps, IState> {
             index={this.props.index}
             item={this.props.item}
             active={active}
+            plugins={plugins}
             handleOnChange={this.props.handleOnChange}
-            // onDropOrPaste={this.props.onDropOrPaste}
-            onKeyDown={this.props.onKeyDown}
             renderNode={this.props.renderNode}
             renderMark={this.props.renderMark}
           />
@@ -686,37 +685,6 @@ export default flow(
     isDragging: monitor.isDragging()
   }))
 )(Container);
-
-class Html extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  render() {
-    return (
-      <div
-        className="content"
-        style={{
-          color: "#373A3C",
-          borderTop: "0 solid transparent",
-          borderRight: "0 solid transparent",
-          borderLeft: "0 solid transparent",
-          borderBottom: "0 solid transparent"
-        }}
-      >
-        <Editor
-          value={this.props.value}
-          readOnly={false}
-          onChange={this.props.onChange}
-          onKeyDown={this.props.onKeyDown}
-          renderNode={this.props.renderNode}
-          renderMark={this.props.renderMark}
-        />
-      </div>
-    );
-  }
-}
 
 const ImageContainer = styled.div`
   border-top: 0 solid transparent;
