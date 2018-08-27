@@ -22,6 +22,8 @@ import Text from "../ContentItems/Text";
 import Divider from "../ContentItems/Divider";
 import Html from "../ContentItems/Html";
 import Image from "../ContentItems/Image";
+import Video from "../ContentItems/Video";
+import SocialMedia from "../ContentItems/SocialMedia";
 
 import {
   AlignCenterPlugin,
@@ -379,6 +381,8 @@ interface IProps {
     imageSrc?: string;
     // Image
     fullWidth?: boolean;
+    // Video
+    videoSrc?: string;
   };
   OnDrag: "content" | "columnList";
   contentWidth: number;
@@ -455,8 +459,8 @@ class Container extends React.Component<IProps, IState> {
       case "IMAGE":
         return (
           <Image
-            src={this.props.item.imageSrc}
-            fullWidth={this.props.item.fullWidth}
+            src={this.props.item.imageSrc!}
+            fullWidth={this.props.item.fullWidth!}
           />
         );
       case "TEXT":
@@ -485,15 +489,9 @@ class Container extends React.Component<IProps, IState> {
           />
         );
       case "VIDEO":
-        return (
-          <Video
-            active={active}
-            src={this.props.item.videoSrc}
-            contentWidth={this.props.item.contentWidth}
-          />
-        );
+        return <Video src={this.props.item.videoSrc!} />;
       case "SOCIAL":
-        return <Social active={active} />;
+        return <SocialMedia />;
       default:
         break;
     }
@@ -692,134 +690,3 @@ export default flow(
     isDragging: monitor.isDragging()
   }))
 )(Container);
-
-const VideoContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: ${props => (props.isEmpty ? null : "0")};
-  padding-bottom: ${props => (props.isEmpty ? null : "56.25%")};
-  border-top: 0 solid transparent;
-  border-right: 0 solid transparent;
-  border-left: 0 solid transparent;
-  border-bottom: 0 solid transparent;
-`;
-
-const EmptyVideoContainer = styled.div`
-  width: 100%;
-  padding: 30px;
-  border: 0.5px solid rgba(0, 0, 0, 0.5);
-`;
-
-const EmptyVideoIcon = styled.i`
-  font-size: 30px;
-  color: #ff0000;
-`;
-
-const EmptyVideoText = styled.div`
-  text-transform: uppercase;
-`;
-
-class Video extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  youtube_parser(url) {
-    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
-    var match = url.match(regExp);
-    return match && match[7].length == 11 ? match[7] : false;
-  }
-
-  render() {
-    let { src } = this.props;
-    if (src) {
-      src = this.youtube_parser(src);
-    }
-    console.log(src);
-    return (
-      <VideoContainer
-        className="content"
-        isEmpty={src === undefined || src === false}
-      >
-        {src ? (
-          <iframe
-            title="youtube"
-            style={{
-              position: "absolute",
-              top: "0",
-              left: "0",
-              width: "100%",
-              height: "100%"
-            }}
-            width="560"
-            height="315"
-            src={`https://www.youtube.com/embed/${src}?ecver=1`}
-            frameBorder="0"
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-          />
-        ) : (
-          <EmptyVideoContainer>
-            <EmptyVideoIcon className="fab fa-youtube" />
-            {/* <EmptyImageText>
-              upload local image or use external link
-            </EmptyImageText> */}
-          </EmptyVideoContainer>
-        )}
-      </VideoContainer>
-    );
-  }
-}
-
-class Social extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-  render() {
-    const buttonStyle = {
-      borderRadius: "100%",
-      border: "none",
-      color: "white",
-      width: "30px",
-      height: "30px",
-      fontSize: "20px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      margin: "0 2px"
-    };
-    return (
-      <div
-        className="content"
-        style={{
-          borderTop: "0 solid transparent",
-          borderRight: "0 solid transparent",
-          borderLeft: "0 solid transparent",
-          borderBottom: "0 solid transparent",
-          display: "flex"
-        }}
-      >
-        <button style={{ ...buttonStyle, backgroundColor: "#1da1f2" }}>
-          <i className="fab fa-twitter" />
-        </button>
-        <button style={{ ...buttonStyle, backgroundColor: "#3b5998" }}>
-          <i className="fab fa-facebook-f" />
-        </button>
-        <button
-          style={{
-            ...buttonStyle,
-            background:
-              "radial-gradient(circle at 33% 100%, #FED373 4%, #F15245 30%, #D92E7F 62%, #9B36B7 85%, #515ECF)"
-          }}
-        >
-          <i className="fab fa-instagram" />
-        </button>
-        <button style={{ ...buttonStyle, backgroundColor: "#ed3124" }}>
-          <i className="fab fa-youtube" />
-        </button>
-      </div>
-    );
-  }
-}
