@@ -2,6 +2,85 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: getCategoriesByKeyword
+// ====================================================
+
+export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_parent {
+  __typename: "Category";
+  id: number;
+  name: string;
+}
+
+export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_wikiImages_shownImage {
+  __typename: "ShownImage";
+  id: number;
+  url: string;
+}
+
+export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_wikiImages {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: getCategoriesByKeyword_GetCategoriesByKeyword_categories_wikiImages_shownImage | null;
+  hoverImage: string;
+  clapsCount: number;
+  postsCount: number;
+}
+
+export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories {
+  __typename: "Category";
+  id: number;
+  name: string;
+  parent: (getCategoriesByKeyword_GetCategoriesByKeyword_categories_parent | null)[] | null;
+  wikiImages: (getCategoriesByKeyword_GetCategoriesByKeyword_categories_wikiImages | null)[] | null;
+}
+
+export interface getCategoriesByKeyword_GetCategoriesByKeyword {
+  __typename: "GetCategoriesByKeywordResponse";
+  ok: boolean;
+  error: string | null;
+  categories: (getCategoriesByKeyword_GetCategoriesByKeyword_categories | null)[] | null;
+}
+
+export interface getCategoriesByKeyword {
+  GetCategoriesByKeyword: getCategoriesByKeyword_GetCategoriesByKeyword;
+}
+
+export interface getCategoriesByKeywordVariables {
+  keyword: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getCategoryById
+// ====================================================
+
+export interface getCategoryById_GetCategoryById_category {
+  __typename: "Category";
+  id: number;
+  name: string;
+}
+
+export interface getCategoryById_GetCategoryById {
+  __typename: "GetCategoryByIdResponse";
+  ok: boolean;
+  error: string | null;
+  category: getCategoryById_GetCategoryById_category | null;
+}
+
+export interface getCategoryById {
+  GetCategoryById: getCategoryById_GetCategoryById;
+}
+
+export interface getCategoryByIdVariables {
+  categoryId: number;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: addPost
 // ====================================================
 
