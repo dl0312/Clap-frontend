@@ -1,18 +1,6 @@
 import React from "react";
-import { SketchPicker, RGBColor } from "react-color";
+import { SketchPicker } from "react-color";
 import styled from "styled-components";
-
-interface IFontColorProps {
-  color: { r: string; g: string; b: string; a: string };
-}
-
-const FontColor = styled<IFontColorProps, any>("i")`
-  padding: 13px 10px;
-  color: ${props =>
-    `rgba(${props.color.r}, ${props.color.g}, ${props.color.b}, ${
-      props.color.a
-    })`};
-`;
 
 interface IColorProps {
   color: { r: string; g: string; b: string; a: string };
@@ -125,25 +113,6 @@ export default class Sketch extends React.Component<IProps, IState> {
   };
 
   public render() {
-    // if (this.props.type === "font-color") {
-    //   return (
-    //     <div>
-    //       <FontColor
-    //         className="fas fa-font"
-    //         onMouseDown={this.handleFontOnClick}
-    //       />
-    //       {this.state.displayColorPicker ? (
-    //         <Popover>
-    //           <Cover onMouseDown={this.handleClose} />
-    //           <SketchPicker
-    //             color={this.state.color}
-    //             onChange={this.handleFontChange}
-    //           />
-    //         </Popover>
-    //       ) : null}
-    //     </div>
-    //   );
-    // }
     return (
       <div>
         <Swatch onClick={this.handleOnClick}>

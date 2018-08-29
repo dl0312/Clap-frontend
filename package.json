@@ -40,6 +40,7 @@
     "apollo-link": "^1.2.2",
     "apollo-link-context": "^1.0.8",
     "apollo-link-http": "^1.5.4",
+    "apollo-link-ws": "^1.0.8",
     "apollo-upload-client": "^8.1.0",
     "autoprefixer": "7.1.6",
     "babel-jest": "^22.1.0",
@@ -79,6 +80,7 @@
     "react-router-dom": "^4.3.1",
     "react-toastify": "^4.2.0",
     "resolve": "1.6.0",
+    "slate": "^0.40.2",
     "slate-edit-blockquote": "^0.6.1",
     "slate-edit-code": "^0.15.5",
     "slate-edit-list": "^0.12.1",
@@ -90,6 +92,7 @@
     "source-map-loader": "^0.2.1",
     "style-loader": "0.19.0",
     "styled-reset": "^1.3.7",
+    "subscriptions-transport-ws": "^0.9.14",
     "sw-precache-webpack-plugin": "0.11.4",
     "ts-jest": "22.0.1",
     "ts-loader": "^2.3.7",
@@ -102,7 +105,8 @@
     "webpack": "3.8.1",
     "webpack-dev-server": "2.9.4",
     "webpack-manifest-plugin": "1.3.2",
-    "whatwg-fetch": "2.0.3"
+    "whatwg-fetch": "2.0.3",
+    "ws": "^6.0.0"
   },
   "scripts": {
     "start": "node scripts/start.js",
@@ -131,6 +135,7 @@
     "@types/slate": "^0.33.4",
     "@types/slate-react": "^0.12.3",
     "@types/webpack-env": "^1.13.6",
+    "@types/ws": "^6.0.0",
     "styled-components": "^3.4.5",
     "typescript": "^3.0.1"
   },

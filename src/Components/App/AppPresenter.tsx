@@ -6,7 +6,7 @@ import {
   Switch
 } from "react-router-dom";
 import styled from "styled-components";
-import AddPost from "../../Routes/AddPost";
+import PostAdd from "../../Routes/PostAdd";
 import Board from "../../Routes/Board";
 import Home from "../../Routes/Home";
 import Navigation from "../Navigation/Navigation";
@@ -25,7 +25,7 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
     <AppBox>
       <Navigation isLoggedIn={isLoggedIn} />
       <Switch>
-        <Route path={"/post/add"} exact={true} compnent={AddPost} />
+        <Route path={"/post/add"} exact={true} component={PostAdd} />
         <Route path={"/board"} exact={true} component={Board} />
         <Route path={""} exact={true} component={Home} />
         <Redirect from={"*"} to={"/"} />

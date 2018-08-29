@@ -550,140 +550,140 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
       hoveredIndex,
       selectedIndex
     } = this.props;
-
     const opacity = isDragging ? 0.2 : 1;
+    let hover: boolean = false;
+    let active: boolean = false;
     if (Array.isArray(hoveredIndex) && Array.isArray(selectedIndex)) {
-      const hover = hoveredIndex
+      hover = hoveredIndex
         ? hoveredIndex.length === index.length &&
           hoveredIndex.every((v, i) => v === index[i])
           ? true
           : false
         : false;
-      const active = selectedIndex
+      active = selectedIndex
         ? selectedIndex.length === index.length &&
           selectedIndex.every((v, i) => v === index[i])
           ? true
           : false
         : false;
-
-      return (
-        connectDragSource &&
-        connectDropTarget &&
-        connectDropTarget(
-          connectDragPreview(
-            <div
-              className={classnames(
-                "container",
-                hover ? "blockHover" : null,
-                active ? "blockActive" : null
-              )}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                position: "relative",
-                padding: "10px",
-                width: "100%",
-                justifyContent:
-                  this.props.item.content === "TEXT" ||
-                  this.props.item.content === "BUTTON" ||
-                  this.props.item.content === "HTML" ||
-                  this.props.item.content === "IMAGE" ||
-                  this.props.item.content === "VIDEO"
-                    ? this.props.item.align
-                      ? this.props.item.align
-                      : "center"
-                    : "center",
-                opacity,
-                transition: "border 0.5s ease, opacity 0.5s ease",
-                border: active
-                  ? "2px solid black"
-                  : hover
-                    ? "2px solid grey"
-                    : "2px solid transparent"
-              }}
-              onMouseOver={this.handleOnMouseOver}
-              onMouseDown={this.handleOnMouseDown}
-              onMouseLeave={this.handleOnMouseLeave}
-            >
-              <Builder
-                state={
-                  this.props.onDrag === "content"
-                    ? this.state.hoverPosition === "over" && isOver
-                      ? "ISOVER"
-                      : "ONDRAG"
-                    : "INVISIBLE"
-                }
-                position="over"
-              >
-                {/* BLOCK HERE */}
-              </Builder>
-              {hover || active ? (
-                <div>
-                  {this.state.toolHover ? (
-                    <Tool onMouseLeave={this.handleOnMouseLeaveTool}>
-                      <ButtonOption
-                        onClick={() => {
-                          console.log(index);
-                          callbackfromparent("delete", index);
-                        }}
-                      >
-                        <i className="fas fa-trash-alt" />
-                      </ButtonOption>
-                      <ButtonOption
-                        onClick={() => {
-                          callbackfromparent("duplicate", index);
-                        }}
-                      >
-                        <i className="far fa-copy" />
-                      </ButtonOption>
-                      {connectDragSource(
-                        <button
-                          style={{
-                            border: "none",
-                            outline: "none",
-                            backgroundColor: "#9c88ff",
-                            color: "white",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: "2rem",
-                            height: "2rem",
-                            marginBottom: "10px",
-                            cursor: "pointer",
-                            borderTopRightRadius: "100%",
-                            borderBottomRightRadius: "100%"
-                          }}
-                        >
-                          <i className="fas fa-arrows-alt" />
-                        </button>
-                      )}
-                    </Tool>
-                  ) : (
-                    <Handle onMouseOver={this.handleOnMouseOverTool}>
-                      <i className="fas fa-ellipsis-h" />
-                    </Handle>
-                  )}
-                </div>
-              ) : null}
-              {this.showInner(active)}
-              <Builder
-                display={this.props.onDrag === "content"}
-                state={
-                  this.props.onDrag === "content"
-                    ? this.state.hoverPosition === "under" && isOver
-                      ? "ISOVER"
-                      : "ONDRAG"
-                    : "INVISIBLE"
-                }
-                position="under"
-              >
-                {/* BLOCK HERE */}
-              </Builder>
-            </div>
-          )
-        )
-      );
     }
+    return (
+      connectDragSource &&
+      connectDropTarget &&
+      connectDropTarget(
+        connectDragPreview(
+          <div
+            className={classnames(
+              "container",
+              hover ? "blockHover" : null,
+              active ? "blockActive" : null
+            )}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              position: "relative",
+              padding: "10px",
+              width: "100%",
+              justifyContent:
+                this.props.item.content === "TEXT" ||
+                this.props.item.content === "BUTTON" ||
+                this.props.item.content === "HTML" ||
+                this.props.item.content === "IMAGE" ||
+                this.props.item.content === "VIDEO"
+                  ? this.props.item.align
+                    ? this.props.item.align
+                    : "center"
+                  : "center",
+              opacity,
+              transition: "border 0.5s ease, opacity 0.5s ease",
+              border: active
+                ? "2px solid black"
+                : hover
+                  ? "2px solid grey"
+                  : "2px solid transparent"
+            }}
+            onMouseOver={this.handleOnMouseOver}
+            onMouseDown={this.handleOnMouseDown}
+            onMouseLeave={this.handleOnMouseLeave}
+          >
+            <Builder
+              state={
+                this.props.onDrag === "content"
+                  ? this.state.hoverPosition === "over" && isOver
+                    ? "ISOVER"
+                    : "ONDRAG"
+                  : "INVISIBLE"
+              }
+              position="over"
+            >
+              {/* BLOCK HERE */}
+            </Builder>
+            {hover || active ? (
+              <div>
+                {this.state.toolHover ? (
+                  <Tool onMouseLeave={this.handleOnMouseLeaveTool}>
+                    <ButtonOption
+                      onClick={() => {
+                        console.log(index);
+                        callbackfromparent("delete", index);
+                      }}
+                    >
+                      <i className="fas fa-trash-alt" />
+                    </ButtonOption>
+                    <ButtonOption
+                      onClick={() => {
+                        callbackfromparent("duplicate", index);
+                      }}
+                    >
+                      <i className="far fa-copy" />
+                    </ButtonOption>
+                    {connectDragSource(
+                      <button
+                        style={{
+                          border: "none",
+                          outline: "none",
+                          backgroundColor: "#9c88ff",
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: "2rem",
+                          height: "2rem",
+                          marginBottom: "10px",
+                          cursor: "pointer",
+                          borderTopRightRadius: "100%",
+                          borderBottomRightRadius: "100%"
+                        }}
+                      >
+                        <i className="fas fa-arrows-alt" />
+                      </button>
+                    )}
+                  </Tool>
+                ) : (
+                  <Handle onMouseOver={this.handleOnMouseOverTool}>
+                    <i className="fas fa-ellipsis-h" />
+                  </Handle>
+                )}
+              </div>
+            ) : null}
+            {this.showInner(active)}
+            <Builder
+              display={this.props.onDrag === "content"}
+              state={
+                this.props.onDrag === "content"
+                  ? this.state.hoverPosition === "under" && isOver
+                    ? "ISOVER"
+                    : "ONDRAG"
+                  : "INVISIBLE"
+              }
+              position="under"
+            >
+              {/* BLOCK HERE */}
+            </Builder>
+          </div>
+        )
+      )
+    );
   }
 }
 

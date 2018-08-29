@@ -19,7 +19,7 @@ import Upload from "../Upload";
 import { POST, WIKIIMAGE } from "./EditorQueries";
 import { POSTS } from "../../sharedQueries";
 
-import { Row, Col, Tabs } from "antd";
+import { Row, Col } from "antd";
 import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
 import Blockquote from "@canner/slate-icon-blockquote";
 import Bold from "@canner/slate-icon-bold";
@@ -86,9 +86,6 @@ import update from "immutability-helper";
 import { GetPos } from "../../Uility/GetPos";
 import { MutationFn } from "react-apollo";
 import { addPost, addPostVariables } from "../../types/api";
-
-const TabPane = Tabs.TabPane;
-const DEFAULT_NODE = "paragraph";
 
 const FlexBox = styled.div`
   display: flex;
@@ -290,17 +287,18 @@ class Editor extends React.Component<IProps, IState> {
       }
     } else if (type === "select") {
       if (selectedIndex !== null) {
-        if (!Array.isArray(selectedIndex) && !Array.isArray(dataFromChild)) {
-          if (selectedIndex === dataFromChild) {
-            console.log("same index");
-          }
+        if (
+          !Array.isArray(selectedIndex) &&
+          !Array.isArray(dataFromChild) &&
+          selectedIndex === dataFromChild
+        ) {
+          console.log("same index");
         } else if (
           Array.isArray(selectedIndex) &&
-          Array.isArray(dataFromChild)
+          Array.isArray(dataFromChild) &&
+          selectedIndex.every((v, i) => v === dataFromChild[i])
         ) {
-          if (selectedIndex.every((v, i) => v === dataFromChild[i])) {
-            console.log("same index");
-          }
+          console.log("same index");
         } else {
           this.setState({
             selectedIndex: null,
@@ -832,6 +830,7 @@ class Editor extends React.Component<IProps, IState> {
     const { cards } = this.state;
     if (index) {
       if (!Array.isArray(index)) {
+        console.log(cards[index]);
         return cards[index];
       } else {
         if (index.length === 2) {
@@ -1026,6 +1025,7 @@ class Editor extends React.Component<IProps, IState> {
                         {selectors.map((Type, i) => {
                           if (
                             this.state.selectedIndex !== null &&
+                            this.state.selectedContent !== undefined &&
                             (this.state.selectedContent.content === "TEXT" ||
                               this.state.selectedContent.content === "BUTTON" ||
                               this.state.selectedContent.content === "HTML")
@@ -1058,6 +1058,7 @@ class Editor extends React.Component<IProps, IState> {
                         {icons.map((Type, i) => {
                           if (
                             this.state.selectedIndex !== null &&
+                            this.state.selectedContent !== undefined &&
                             (this.state.selectedContent.content === "TEXT" ||
                               this.state.selectedContent.content === "BUTTON" ||
                               this.state.selectedContent.content === "HTML")

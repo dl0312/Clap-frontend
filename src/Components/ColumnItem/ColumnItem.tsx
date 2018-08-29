@@ -66,10 +66,11 @@ class ColumnItem extends React.Component<IProps> {
     // 기본상태의 에디터화면 id=container, id=body
     const { contentWidth, cards } = this.props;
     const backgroundColor = cards.length === 1 ? "transparent" : "transparent";
-
+    console.log(cards);
     return (
       <Column hasBlock={cards.length !== 0} bgc={backgroundColor}>
         {cards.map((item: any, index: number) => {
+          console.log(item);
           return (
             <Container
               key={index}

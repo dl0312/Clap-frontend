@@ -7,7 +7,6 @@ injectGlobal`
 @import url("https://use.fontawesome.com/releases/v5.0.13/css/all.css");
 @import url("https://fonts.googleapis.com/css?family=Maven+Pro|Roboto:300:400,700|Eczar|Oswald|Playfair+Display|Hanalei+Fill|Quicksand|Open+Sans|Raleway|Anton|Do+Hyeon|Kirang+Haerang|Nanum+Gothic|Nanum+Gothic+Coding|Nanum+Myeongjo|Nanum+Pen+Script|Sunflower:300");
 @import url("//cdn.jsdelivr.net/font-iropke-batang/1.2/font-iropke-batang.css");
-@import url("github-markdown.css")
 ${reset};
   * {
       box-sizing: border-box;

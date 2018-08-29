@@ -5,7 +5,7 @@ import { Query } from "react-apollo";
 import ImagePopup from "../ImagePopup";
 import { CATEGORIES_KEYWORD } from "./MiniWikiQueries";
 import { GetPos } from "../../Uility/GetPos";
-import { Change, Value } from "slate";
+import { Change } from "slate";
 import {
   getCategoriesByKeyword,
   getCategoriesByKeywordVariables

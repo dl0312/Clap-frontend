@@ -240,23 +240,6 @@ const ToggleRound = styled<IToggleRoundProps, any>("span")`
   }
 `;
 
-const SearchButton = styled.button`
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-  height: 33px;
-  width: 35px;
-  transition: font-size 0.2s ease, box-shadow 0.2s ease;
-  background-color: white;
-  border: 1px solid #ced4da;
-  border-left: none;
-  &:hover {
-    font-size: 14px;
-    -webkit-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
-  }
-`;
-
 interface IProps {
   selectedIndex: number | number[] | null;
   selectedContent: any;
@@ -506,29 +489,6 @@ class BlockOptions extends React.Component<IProps, any> {
                     selectedIndex={selectedIndex}
                     selectedContent={selectedContent}
                   />
-                  {/* <FunctionColumn dir={"column"} isLast={true}>
-                    <FunctionTitleContainer>
-                      <FunctionTitle>Wiki Search</FunctionTitle>
-                    </FunctionTitleContainer>
-                    <UrlColumn>
-                      <UrlColumnInput
-                        type="text"
-                        value={selectedContent.link}
-                        onChange={e =>
-                          handleOnChange(
-                            e.target.value,
-                            selectedIndex,
-                            "BUTTON",
-                            "LINK"
-                          )
-                        }
-                        hasRightButton="true"
-                      />
-                      <SearchButton>
-                        <i className="fas fa-search" />
-                      </SearchButton>
-                    </UrlColumn>
-                  </FunctionColumn> */}
                 </FeatureColumn>
               </Option>
             </OptionRows>
@@ -740,6 +700,8 @@ class BlockOptions extends React.Component<IProps, any> {
         default:
           return null;
       }
+    } else {
+      return null;
     }
   };
 

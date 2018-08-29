@@ -2,6 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import { Value, Change, Schema, Mark } from "slate";
 import { RenderNodeProps, RenderMarkProps, Editor, Plugin } from "slate-react";
+import "github-markdown-css";
 
 interface ITextContainerProps {
   textColor: { r: string; g: string; b: string; a: string };

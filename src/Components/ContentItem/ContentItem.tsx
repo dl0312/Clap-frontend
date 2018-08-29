@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ItemTypes from "../../ItemTypes";
 import EditorDefaults from "../../EditorDefaults";
 import { DragSource, ConnectDragSource, DragSourceMonitor } from "react-dnd";
-import { Value, ValueJSON } from "slate";
+import { Value } from "slate";
 import styled from "styled-components";
 
 interface IItemProps {

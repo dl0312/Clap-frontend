@@ -61,14 +61,14 @@ const RowItemContainer = styled.div`
   display: grid;
   transition: box-shadow 0.2s ease;
   color: transparent;
+  &:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+  }
 `;
 
 const RowItemBox = styled.div`
   outline: 1px solid #c4c4c4;
   background-color: #eeeeee;
-  &:hover {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
-  }
 `;
 
 interface IProps {
@@ -90,11 +90,13 @@ class RowItem extends Component<IProps & IDnDProps> {
     return (
       connectDragSource &&
       connectDragSource(
-        <RowItemContainer style={{ opacity, gridTemplateColumns }}>
-          {array.map((element, index) => {
-            return <RowItemBox key={index} />;
-          })}
-        </RowItemContainer>
+        <div>
+          <RowItemContainer style={{ opacity, gridTemplateColumns }}>
+            {array.map((element, index) => {
+              return <RowItemBox key={index} />;
+            })}
+          </RowItemContainer>
+        </div>
       )
     );
   }
