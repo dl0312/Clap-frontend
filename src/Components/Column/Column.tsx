@@ -1,13 +1,12 @@
 import React, { Component } from "react";
 import ColumnItem from "../ColumnItem";
-import { RenderNodeProps, RenderMarkProps } from "slate-react";
+import { Mark } from "slate";
 
 interface IProps {
   columnArray: number[];
   contentWidth: number;
   columnListArray: any[];
   index: number[];
-
   callbackfromparent: (
     type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
     dataFromchild: number[]
@@ -15,11 +14,27 @@ interface IProps {
   handleDrop: (hoverItem: any, hoverIndex: number[]) => void;
   moveCard: any;
   handleOnChange: any;
-  renderNode: RenderNodeProps;
-  renderMark: RenderMarkProps;
-  selectedIndex: number[];
-  hoveredIndex: number[];
-  OnDrag: any;
+  renderNode: (
+    props: {
+      attributes: any;
+      children: any;
+      node: {
+        type: any;
+        data: any;
+      };
+      isFocused: boolean;
+    }
+  ) => JSX.Element | null;
+  renderMark: (
+    props: {
+      children: any;
+      mark: Mark;
+      attributes: any;
+    }
+  ) => JSX.Element | undefined;
+  selectedIndex: number | number[] | null;
+  hoveredIndex: number | number[] | null;
+  onDrag: any;
   masterCallback: any;
 }
 
@@ -61,7 +76,7 @@ class Column extends Component<IProps> {
             selectedIndex={this.props.selectedIndex}
             hoveredIndex={this.props.hoveredIndex}
             contentWidth={this.props.contentWidth}
-            OnDrag={this.props.OnDrag}
+            onDrag={this.props.onDrag}
             masterCallback={this.props.masterCallback}
           />
         ))}

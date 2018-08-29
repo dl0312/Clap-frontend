@@ -2,20 +2,19 @@ import * as React from "react";
 import EditorLeft from "../EditorLeft";
 import EditorRight from "../EditorRight";
 import { DragDropContext } from "react-dnd";
-import HTML5Backend, { NativeTypes } from "react-dnd-html5-backend";
+import HTML5Backend from "react-dnd-html5-backend";
 import Card from "../Card";
 import Column from "../Column";
-import { Button } from "./Components";
 import styled from "styled-components";
 import EditorDefaults from "../../EditorDefaults";
 import JsonView from "./JsonView";
 import UserView from "./UserView";
 import BlockOptions from "./BlockOptions";
 import { media } from "../../config/_mixin";
-import ImagePopup from "../../utility/ImagePopup";
-import { Value } from "slate";
+import ImagePopup from "../ImagePopup";
+import { Value, Mark } from "slate";
 import EmptyCard from "../EmptyCard";
-import Upload from "utility/Upload";
+import Upload from "../Upload";
 import { POST, WIKIIMAGE, POSTS } from "../../queries";
 import { Row, Col, Tabs } from "antd";
 import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
@@ -54,37 +53,38 @@ import "github-markdown.css";
 
 const selectors = [FontSize, LetterSpacing, LineHeight];
 const icons = [
-    AlignLeft,
-    AlignCenter,
-    AlignRight,
-    Blockquote,
-    Bold,
-    Clean,
-    Code,
-    CodeBlock,
-    // Emoji,
-    FontBgColor,
-    FontColor,
-    Hr,
-    Header1,
-    Header2,
-    Image,
-    Video,
-    Indent,
-    Outdent,
-    Italic,
-    Link,
-    OlList,
-    UlList,
-    Table,
-    StrikeThrough,
-    Underline,
-    Undo,
-    Redo
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Blockquote,
+  Bold,
+  Clean,
+  Code,
+  CodeBlock,
+  // Emoji,
+  FontBgColor,
+  FontColor,
+  Hr,
+  Header1,
+  Header2,
+  Image,
+  Video,
+  Indent,
+  Outdent,
+  Italic,
+  Link,
+  OlList,
+  UlList,
+  Table,
+  StrikeThrough,
+  Underline,
+  Undo,
+  Redo
 ];
 
 import update from "immutability-helper";
-import { RouteComponentProps } from "react-router";
+import { GetPos } from "../../Uility/GetPos";
+
 const TabPane = Tabs.TabPane;
 const DEFAULT_NODE = "paragraph";
 
@@ -95,26 +95,26 @@ const FlexBox = styled.div`
 `;
 
 interface IEditorContainerProps {
-    type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT"
+  type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
 }
 
-const EditorContainer = styled<IEditorContainerProps,any>('div')`
+const EditorContainer = styled<IEditorContainerProps, any>("div")`
   width: 100%;
   height: ${props =>
-        props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
-            ? "700px"
-            : null};
+    props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
+      ? "700px"
+      : null};
   display: flex;
   flex-direction: row;
   overflow: hidden;
   position: ${props =>
-        props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
-            ? null
-            : "absolute"};
+    props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
+      ? null
+      : "absolute"};
   top: ${props =>
-        props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
-            ? "80%"
-            : "100px"};
+    props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
+      ? "80%"
+      : "100px"};
   bottom: 0px;
   right: 0;
   left: 0;
@@ -123,18 +123,18 @@ const EditorContainer = styled<IEditorContainerProps,any>('div')`
 `;
 
 interface IEditorLeftContainerProps {
-    color: {r: string, g: string, b: string, a: string}
+  color: { r: string; g: string; b: string; a: string };
 }
 
-const EditorLeftContainer = styled<IEditorLeftContainerProps,any>('div')`
+const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   position: relative;
   width: 75%;
   overflow-y: auto;
   overflow-x: hidden;
   background-color: ${props =>
-        `rgba(${props.color.r}, ${props.color.g}, ${props.color.b}, ${
-        props.color.a
-        })`};
+    `rgba(${props.color.r}, ${props.color.g}, ${props.color.b}, ${
+      props.color.a
+    })`};
   border-right: 1px solid rgba(0, 0, 0, 0.2);
   transition: width 0.5s ease;
   ${media.tablet`width: 100%;`};
@@ -151,12 +151,11 @@ const EditorRightContainer = styled.div`
 `;
 
 interface IClapImageProps {
-    small: boolean;
-    selected: boolean;
+  small: boolean;
+  selected: boolean;
 }
 
-
-const ClapImage = styled<IClapImageProps,any>('img')`
+const ClapImage = styled<IClapImageProps, any>("img")`
   width: ${props => (props.small ? "20px" : null)};
   margin-left: ${props => (props.small ? "2px" : null)};
   margin-right: ${props => (props.small ? "2px" : null)};
@@ -167,10 +166,10 @@ const ClapImage = styled<IClapImageProps,any>('img')`
 `;
 
 interface IClapImageContainerProps {
-    small : boolean
+  small: boolean;
 }
 
-const ClapImageContainer = styled<IClapImageContainerProps,any>('span')`
+const ClapImageContainer = styled<IClapImageContainerProps, any>("span")`
   margin-left: ${props => (props.small ? "2px" : null)};
   margin-right: ${props => (props.small ? "2px" : null)};
   cursor: pointer;
@@ -180,7 +179,6 @@ const ClapImageText = styled.span`
   font-weight: bolder;
   color: ${props => props.color};
 `;
-
 
 const PostButtonContainer = styled.div`
   display: flex;
@@ -198,1119 +196,1131 @@ const PostButton = styled.div`
 `;
 
 interface IProps {
-    type?: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | null;
-    wikiImage?: any;
-    state?: any;
- }
-
-interface IState {
-    rightMenu: number|null;
-    view: "EDIT" | "USER" | "JSON";
-    color: {r: string, g: string, b: string, a: string};
-    contentWidth: number;
-    font: string | null;
-    OnDrag: "content" | "columnList"|null;
-    selectedIndex: number | number[] | null;
-    hoveredIndex: number | number[] | null;
-    selectedContent: any;
-    hoverImgJson: any;
-    onImage: boolean;
-    exShownImg: string;
-    pos:{x:number, y: number};
-    title: string;
-    category: number[];
-    cards: any[];
+  type?: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | "POST_ADD" | "POST_EDIT" | null;
+  postId: number;
+  wikiImage?: any;
+  state?: any;
+  AddPost: any;
+  EditPost: any;
+  AddWikiImage: any;
+  EditWikiImage: any;
+  categoryId: number;
 }
 
-class Editor extends React.Component<IProps,IState> {
+interface IState {
+  rightMenu: number | null;
+  view: "EDIT" | "USER" | "JSON";
+  color: { r: number; g: number; b: number; a: number };
+  contentWidth: number;
+  font: string | null;
+  onDrag: "content" | "columnList" | null;
+  selectedIndex: number | number[] | null;
+  hoveredIndex: number | number[] | null;
+  selectedContent: any;
+  hoverImgJson: any;
+  onImage: boolean;
+  exShownImg: { url: string; id: number };
+  pos: { x: number; y: number };
+  title: string;
+  category: number[];
+  cards: any[];
+}
 
-    constructor(props: IProps) {
-        super(props);
-        this.moveCard = this.moveCard.bind(this);
-        this.state = {
-            rightMenu: null,
-            view: "EDIT",
-            color: EditorDefaults.BACKGROUND_COLOR,
-            contentWidth: EditorDefaults.WIDTH,
-            font: null,
-            OnDrag: null,
+class Editor extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
+    super(props);
+    this.moveCard = this.moveCard.bind(this);
+    this.state = {
+      rightMenu: null,
+      view: "EDIT",
+      color: EditorDefaults.BACKGROUND_COLOR,
+      contentWidth: EditorDefaults.WIDTH,
+      font: null,
+      onDrag: null,
+      selectedIndex: null,
+      hoveredIndex: null,
+      selectedContent: null,
+      hoverImgJson: null,
+      onImage: false,
+      exShownImg:
+        this.props.type === "WIKIIMAGE_EDIT"
+          ? this.props.wikiImage.shownImage
+          : null,
+      pos: { x: 0, y: 0 },
+      title: "",
+      category: [],
+      cards: []
+    };
+    this.state = { ...props.state };
+  }
+
+  public addIdToState = (
+    type: "parent" | "child" | null,
+    category: { id: number }
+  ): void => {
+    const found = this.state.category.indexOf(category.id);
+    const hasUnique = this.state.category.length === 1;
+    if (!found && !hasUnique) {
+      this.setState({ category: this.state.category.concat(category.id) });
+    }
+  };
+
+  public deleteIdToState = (
+    type: "parent" | "child" | null,
+    category: { id: number }
+  ): void => {
+    const curCategory = this.state.category;
+    const index = this.state.category.findIndex(id => id === category.id);
+    curCategory.splice(index, 1);
+    this.setState({ category: curCategory });
+  };
+
+  public buttonCallback = (
+    type: "mouseover" | "mouseleave" | "select" | "delete",
+    dataFromChild: number | number[]
+  ) => {
+    const { cards, hoveredIndex, selectedIndex } = this.state;
+    if (type === "mouseover") {
+      this.setState({ hoveredIndex: dataFromChild });
+    } else if (type === "mouseleave") {
+      if (hoveredIndex === dataFromChild) {
+        this.setState({ hoveredIndex: null });
+      }
+    } else if (type === "select") {
+      if (selectedIndex !== null) {
+        if (!Array.isArray(selectedIndex) && !Array.isArray(dataFromChild)) {
+          if (selectedIndex === dataFromChild) {
+            return null;
+          }
+        } else if (
+          Array.isArray(selectedIndex) &&
+          Array.isArray(dataFromChild)
+        ) {
+          if (selectedIndex.every((v, i) => v === dataFromChild[i])) {
+            return null;
+          }
+        } else {
+          this.setState({
             selectedIndex: null,
-            hoveredIndex: null,
             selectedContent: null,
-            hoverImgJson: null,
-            onImage: false,
-            exShownImg:
-                this.props.type === "WIKIIMAGE_EDIT"
-                    ? this.props.wikiImage.shownImage
-                    : null,
-            pos: { x: 0, y: 0 },
-            title: "",
-            category: [],
-            cards: []
-        };
-        this.state = { ...props.state };
-        // this.setstate = {
-        //   rightMenu: null,
-        //   selectedIndex: null,
-        //   selectedContent: null
-        // };
-        // console.log(props.state);
-    }
-
-    public addIdToState = (type: "parent" | "child" | null
-, category) => {
-        console.log(category);
-        const found = this.state.category.includes(category.id);
-        const hasUnique = this.state.category.length === 1;
-        console.log(!found && !hasUnique);
-        if (!found && !hasUnique) {
-            this.setState({ category: this.state.category.concat(category.id) });
+            rightMenu: null
+          });
+          this.setState({
+            selectedIndex: dataFromChild,
+            selectedContent: this.showSelected(dataFromChild),
+            rightMenu: null
+          });
         }
-    };
-
-    public deleteIdToState = (type, category) => {
-        console.log(category);
-        const curCategory = this.state.category;
-        const index = this.state.category.findIndex(id => id === category.id);
-        console.log(index);
-        curCategory.splice(index, 1);
-        console.log(curCategory);
-        this.setState({ category: curCategory });
-    };
-
-    getPos = e => {
-        const pos = new Pos(e.pageX, e.pageY - 100);
-        console.log(pos);
-        this.setState({ pos });
-    };
-
-    buttonCallback = (type, dataFromChild) => {
-        const { cards, hoveredIndex, selectedIndex } = this.state;
-        if (type === "mouseover") {
-            this.setState({ hoveredIndex: dataFromChild });
-        } else if (type === "mouseleave") {
-            if (hoveredIndex === dataFromChild) {
-                this.setState({ hoveredIndex: null });
-            }
-        } else if (type === "select") {
-            if (selectedIndex !== null) {
-                if (
-                    (!Array.isArray(selectedIndex) && selectedIndex === dataFromChild) ||
-                    (Array.isArray(selectedIndex) &&
-                        (selectedIndex.length === dataFromChild.length &&
-                            selectedIndex.every((v, i) => v === dataFromChild[i])))
-                ) {
-                } else {
-                    this.setState({
-                        selectedIndex: undefined,
-                        selectedContent: undefined,
-                        rightMenu: null
-                    });
-                    this.setState({
-                        selectedIndex: dataFromChild,
-                        selectedContent: this.showSelected(dataFromChild),
-                        rightMenu: null
-                    });
-                }
-            } else {
-                this.setState({
-                    selectedIndex: undefined,
-                    selectedContent: undefined,
-                    rightMenu: null
-                });
-                this.setState({
-                    selectedIndex: dataFromChild,
-                    selectedContent: this.showSelected(dataFromChild),
-                    rightMenu: null
-                });
-            }
-        } else if (type === "delete") {
-            if (dataFromChild.length === 3) {
-                // block
-                this.setState(
-                    {
-                        selectedIndex: null,
-                        selectedContent: null
-                    },
-                    this.setState(
-                        update(this.state, {
-                            cards: {
-                                [dataFromChild[0]]: {
-                                    columnListArray: {
-                                        [dataFromChild[1]]: {
-                                            $splice: [[dataFromChild[2], 1]]
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    )
-                );
-            } else if (!Array.isArray(dataFromChild)) {
-                // frame
-                if (selectedIndex === dataFromChild) {
-                    this.setState({ selectedIndex: null, selectedContent: null });
-                }
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            $splice: [[dataFromChild, 1]]
-                        }
-                    })
-                );
-            }
-        } else if (type === "duplicate") {
-            if (!Array.isArray(dataFromChild)) {
-                let targetCard = JSON.parse(JSON.stringify(cards[dataFromChild]));
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            $splice: [[dataFromChild, 0, targetCard]]
-                        }
-                    })
-                );
-            } else {
-                let targetCard = JSON.parse(
-                    JSON.stringify(
-                        cards[dataFromChild[0]].columnListArray[dataFromChild[1]][
-                        dataFromChild[2]
-                        ]
-                    )
-                );
-                if (targetCard.content === "BUTTON" || targetCard.content === "TEXT")
-                    targetCard.value = Value.fromJSON(targetCard.value);
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            [dataFromChild[0]]: {
-                                columnListArray: {
-                                    [dataFromChild[1]]: {
-                                        $splice: [[dataFromChild[2], 0, targetCard]]
-                                    }
-                                }
-                            }
-                        }
-                    })
-                );
-                // this.setState(
-                //   update(this.state, {
-                //     cards: {
-                //       [dataFromChild[0]]: {
-                //         columnListArray: {
-                //           [dataFromChild[1]]: {
-                //             $set: { [dataFromChild[2] + 1]: targetCard }
-                //           }
-                //         }
-                //       }
-                //     }
-                //   })
-                // );
-            }
+      } else {
+        this.setState({
+          selectedIndex: null,
+          selectedContent: null,
+          rightMenu: null
+        });
+        this.setState({
+          selectedIndex: dataFromChild,
+          selectedContent: this.showSelected(dataFromChild),
+          rightMenu: null
+        });
+      }
+    } else if (type === "delete") {
+      if (!Array.isArray(dataFromChild)) {
+        // frame
+        if (selectedIndex === dataFromChild) {
+          this.setState({ selectedIndex: null, selectedContent: null });
         }
-    };
-
-    // 오른쪽 버튼 Drop Here에 놨을 때
-    handleDrop = (hoverItem, hoverIndex) => {
-        // on column
-        if (hoverIndex.length === 3) {
-            if (!!hoverItem) {
-                if (hoverIndex[2] === -1) {
-                    hoverIndex[2] = 0;
-                }
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            [hoverIndex[0]]: {
-                                columnListArray: {
-                                    [hoverIndex[1]]: {
-                                        $splice: [[hoverIndex[2], 0, hoverItem]]
-                                    }
-                                }
-                            }
-                        }
-                    })
-                );
+        this.setState(
+          update(this.state, {
+            cards: {
+              $splice: [[dataFromChild, 1]]
             }
-        } else if (hoverIndex.length === 2) {
-            if (!!hoverItem) {
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            [hoverIndex[0]]: {
-                                columnListArray: {
-                                    [hoverIndex[1]]: {
-                                        $splice: [[0, 0, hoverItem]]
-                                    }
-                                }
-                            }
-                        }
-                    })
-                );
-            }
-        } else {
-            // on frame
-            if (!!hoverItem) {
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            $splice: [[hoverIndex, 0, hoverItem]]
-                        }
-                    })
-                );
-            }
-        }
-    };
-
-    // 이동
-    // block on column -> block on column ([1,2,1] > [3,1,1])
-    // frame -> frame (5 > 7)
-    moveCard = (dragIndex, hoverIndex) => {
-        if (dragIndex.length === 3 && hoverIndex.length === 3) {
-            // block => block
-            const { cards } = this.state;
-            const dragCard =
-                cards[dragIndex[0]].columnListArray[dragIndex[1]][dragIndex[2]];
-            console.log(dragIndex);
-            console.log(hoverIndex);
-            this.setState({
-                selectedIndex: null,
-                selectedContent: null
-            });
-            if (
-                dragIndex[0] === hoverIndex[0] &&
-                dragIndex[1] === hoverIndex[1] &&
-                dragIndex[2] === hoverIndex[2]
-            ) {
-            } else {
-                if (dragIndex[2] < hoverIndex[2]) {
-                    this.setState(
-                        update(this.state, {
-                            cards: {
-                                [dragIndex[0]]: {
-                                    columnListArray: {
-                                        [dragIndex[1]]: {
-                                            $splice: [[dragIndex[2], 1]]
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    );
-                    this.setState(
-                        update(this.state, {
-                            cards: {
-                                [hoverIndex[0]]: {
-                                    columnListArray: {
-                                        [hoverIndex[1]]: {
-                                            $splice: [[hoverIndex[2] - 1, 0, dragCard]]
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    );
-                } else {
-                    this.setState(
-                        update(this.state, {
-                            cards: {
-                                [dragIndex[0]]: {
-                                    columnListArray: {
-                                        [dragIndex[1]]: {
-                                            $splice: [[dragIndex[2], 1]]
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    );
-                    this.setState(
-                        update(this.state, {
-                            cards: {
-                                [hoverIndex[0]]: {
-                                    columnListArray: {
-                                        [hoverIndex[1]]: {
-                                            $splice: [[hoverIndex[2] + 1, 0, dragCard]]
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    );
-                }
-            }
-        } else if (dragIndex.length === 3 && hoverIndex.length === 2) {
-            // block => block
-            const { cards } = this.state;
-            const dragCard =
-                cards[dragIndex[0]].columnListArray[dragIndex[1]][dragIndex[2]];
-            console.log(dragIndex);
-            console.log(hoverIndex);
-            this.setState({
-                selectedIndex: null,
-                selectedContent: null
-            });
-            if (!!dragCard) {
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            [dragIndex[0]]: {
-                                columnListArray: {
-                                    [dragIndex[1]]: {
-                                        $splice: [[dragIndex[2], 1]]
-                                    }
-                                }
-                            }
-                        }
-                    })
-                );
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            [hoverIndex[0]]: {
-                                columnListArray: {
-                                    [hoverIndex[1]]: {
-                                        $splice: [[0, 0, dragCard]]
-                                    }
-                                }
-                            }
-                        }
-                    })
-                );
-            }
-        } else if (!Array.isArray(dragIndex) && !Array.isArray(hoverIndex)) {
-            // frame => frame
-            const { cards } = this.state;
-            const dragCard = cards[dragIndex];
-            console.log(dragIndex);
-            console.log(hoverIndex);
-            this.setState({ selectedIndex: null, selectedContent: null });
-            if (dragIndex < hoverIndex) {
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]]
-                        }
-                    })
-                );
-            } else if (dragIndex > hoverIndex) {
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            $splice: [[dragIndex, 1], [hoverIndex + 1, 0, dragCard]]
-                        }
-                    })
-                );
-            }
-        }
-    };
-
-    masterCallback = (type, dataFromChild) => {
-        if (type === "BodyBackgroundColor") {
-            this.setState({ color: dataFromChild });
-        } else if (type === "Title") {
-            this.setState({ title: dataFromChild });
-        } else if (type === "width") {
-            this.setState({ contentWidth: dataFromChild });
-        } else if (type === "font") {
-            this.setState({ font: dataFromChild });
-        } else if (type === "view") {
-            this.setState({ view: dataFromChild });
-        } else if (type === "OnDrag") {
-            this.setState({ OnDrag: dataFromChild });
-        } else if (type === "rightMenu") {
-            this.setState({
-                rightMenu: dataFromChild,
-                selectedIndex: null,
-                selectedContent: null
-            });
-        } else if (type === "shownImage") {
-            this.setState({ exShownImg: dataFromChild });
-        }
-    };
-
-    OnChangeCards = (index, props, value) => {
-        if (value === "toggle") {
-            if (index.length === 2) {
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            [index[0]]: {
-                                [props]: { $set: !this.state.cards[index[0]][props] }
-                            }
-                        }
-                    })
-                );
-            } else if (index.length === 3) {
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            [index[0]]: {
-                                columnListArray: {
-                                    [index[1]]: {
-                                        [index[2]]: {
-                                            [props]: {
-                                                $set: !this.state.cards[index[0]].columnListArray[
-                                                    index[1]
-                                                ][index[2]][props]
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    })
-                );
-            }
-        } else {
-            if (index.length === 2) {
-                this.setState(
-                    update(this.state, {
-                        cards: { [index[0]]: { [props]: { $set: value } } }
-                    })
-                );
-            } else if (index.length === 3) {
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            [index[0]]: {
-                                columnListArray: {
-                                    [index[1]]: {
-                                        [index[2]]: {
-                                            [props]: { $set: value }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    })
-                );
-            }
-        }
-    };
-
-    handleOnChange = (value, index, content, type) => {
-        if (type === "TEXT_CHANGE") {
-            if (index.length === 2) {
-                this.setState(
-                    update(this.state, {
-                        cards: { [index[0]]: { value: { $set: value.value } } }
-                    })
-                );
-            } else if (index.length === 3) {
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            [index[0]]: {
-                                columnListArray: {
-                                    [index[1]]: {
-                                        [index[2]]: {
-                                            value: { $set: value.value }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    })
-                );
-                // let cards = this.state.cards.slice();
-                // cards[index[0]].columnListArray[index[1]][index[2]].value = value;
-                // this.setState({ cards });
-            }
-        } else if (content === "IMAGE") {
-            if (type === "URL") {
-                if (index.length === 2) {
-                    this.setState(
-                        update(this.state, {
-                            cards: { [index[0]]: { imageSrc: { $set: value } } }
-                        })
-                    );
-                } else if (index.length === 3) {
-                    this.setState(
-                        update(this.state, {
-                            cards: {
-                                [index[0]]: {
-                                    columnListArray: {
-                                        [index[1]]: {
-                                            [index[2]]: {
-                                                imageSrc: { $set: value }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    );
-                }
-            } else if (type === "ALT") {
-                if (index.length === 2) {
-                    this.setState(
-                        update(this.state, {
-                            cards: { [index[0]]: { alt: { $set: value } } }
-                        })
-                    );
-                } else if (index.length === 3) {
-                    this.setState(
-                        update(this.state, {
-                            cards: {
-                                [index[0]]: {
-                                    columnListArray: {
-                                        [index[1]]: {
-                                            [index[2]]: {
-                                                alt: { $set: value }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    );
-                }
-            }
-        } else if (type === "LINK") {
-            if (index.length === 2) {
-                this.setState(
-                    update(this.state, {
-                        cards: { [index[0]]: { link: { $set: value } } }
-                    })
-                );
-            } else if (index.length === 3) {
-                this.setState(
-                    update(this.state, {
-                        cards: {
-                            [index[0]]: {
-                                columnListArray: {
-                                    [index[1]]: {
-                                        [index[2]]: {
-                                            link: { $set: value }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    })
-                );
-            }
-        } else if (content === "VIDEO") {
-            if (type === "URL") {
-                if (index.length === 2) {
-                    this.setState(
-                        update(this.state, {
-                            cards: { [index[0]]: { videoSrc: { $set: value } } }
-                        })
-                    );
-                } else if (index.length === 3) {
-                    this.setState(
-                        update(this.state, {
-                            cards: {
-                                [index[0]]: {
-                                    columnListArray: {
-                                        [index[1]]: {
-                                            [index[2]]: {
-                                                videoSrc: { $set: value }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                    );
-                }
-            }
-        }
-    };
-
-    showSelected = index => {
-        const { cards } = this.state;
-        if (!Array.isArray(index)) {
-            return cards[index];
-        } else {
-            if (index.length === 2) {
-                return cards[index[0]];
-            } else if (index.length === 3) {
-                return cards[index[0]].columnListArray[index[1]][index[2]];
-            }
-        }
-    };
-
-    render() {
-        const { type } = this.props;
-        const {
-            cards,
-            selectedIndex,
-            hoveredIndex,
-            contentWidth,
-            view,
-            pos,
-            hoverImgJson,
-            onImage
-        } = this.state;
-        // console.log(this.state);
-        return (
-            <Fragment>
-                {this.props.type === "POST_ADD" ? (
-                    <PostButtonContainer>
-                        <PostButton
-                            onClick={e => {
-                                e.preventDefault();
-                                const filteredState = this.state;
-                                filteredState.rightMenu = null;
-                                filteredState.selectedContent = null;
-                                filteredState.selectedIndex = null;
-                                filteredState.onDrag = null;
-                                filteredState.hoverImgJson = null;
-                                filteredState.pos = { x: 0, y: 0 };
-                                filteredState.onImage = false;
-                                filteredState.view = "EDIT";
-                                this.props.AddPost({
-                                    refetchQueries: [
-                                        {
-                                            query: POSTS
-                                        }
-                                    ],
-                                    variables: {
-                                        title: this.state.title,
-                                        categoryId: this.state.category[0],
-                                        body: JSON.stringify(filteredState)
-                                    }
-                                });
-                            }}
-                        >
-                            SEND
-            </PostButton>
-                    </PostButtonContainer>
-                ) : this.props.type === "POST_EDIT" ? (
-                    <PostButtonContainer>
-                        <PostButton
-                            onClick={e => {
-                                e.preventDefault();
-                                const filteredState = this.state;
-                                filteredState.rightMenu = null;
-                                filteredState.selectedContent = null;
-                                filteredState.selectedIndex = null;
-                                filteredState.onDrag = null;
-                                filteredState.hoverImgJson = null;
-                                filteredState.pos = { x: 0, y: 0 };
-                                filteredState.onImage = false;
-                                filteredState.view = "EDIT";
-                                filteredState.hoveredIndex = null;
-                                this.props.EditPost({
-                                    refetchQueries: [
-                                        {
-                                            query: POST,
-                                            variables: {
-                                                postId: this.props.postId
-                                            }
-                                        }
-                                    ],
-                                    variables: {
-                                        postId: this.props.postId,
-                                        title: this.state.title,
-                                        categoryId: this.state.category[0],
-                                        body: JSON.stringify(filteredState)
-                                    }
-                                });
-                            }}
-                        >
-                            SEND
-            </PostButton>
-                    </PostButtonContainer>
-                ) : this.props.type === "WIKIIMAGE_ADD" ? (
-                    <React.Fragment>
-                        <Upload
-                            exShownImg={this.state.exShownImg}
-                            masterCallback={this.masterCallback}
-                        />
-                        <ImagePopup
-                            pos={pos}
-                            follow={false}
-                            json={JSON.stringify(this.state)}
-                            onImage={true}
-                        />
-                        <PostButton
-                            onClick={e => {
-                                e.preventDefault();
-                                const filteredState = this.state;
-                                filteredState.rightMenu = null;
-                                filteredState.selectedContent = null;
-                                filteredState.selectedIndex = null;
-                                filteredState.onDrag = null;
-                                filteredState.hoverImgJson = null;
-                                filteredState.pos = { x: 0, y: 0 };
-                                filteredState.onImage = false;
-                                filteredState.view = "EDIT";
-                                console.log(this.state.exShownImg);
-                                this.props.AddWikiImage({
-                                    variables: {
-                                        categoryId: this.props.categoryId,
-                                        name: this.state.title,
-                                        shownImageId: this.state.exShownImg.id,
-                                        hoverImage: JSON.stringify(filteredState)
-                                    }
-                                });
-                            }}
-                        >
-                            SEND
-            </PostButton>
-                    </React.Fragment>
-                ) : this.props.type === "WIKIIMAGE_EDIT" ? (
-                    <React.Fragment>
-                        <Upload
-                            exShownImg={this.state.exShownImg}
-                            masterCallback={this.masterCallback}
-                        />
-                        <ImagePopup
-                            pos={pos}
-                            follow={false}
-                            json={JSON.stringify(this.state)}
-                            onImage={true}
-                        />
-                        <PostButton
-                            onClick={e => {
-                                e.preventDefault();
-                                const filteredState = this.state;
-                                filteredState.rightMenu = null;
-                                filteredState.selectedContent = null;
-                                filteredState.selectedIndex = null;
-                                filteredState.onDrag = null;
-                                filteredState.hoverImgJson = null;
-                                filteredState.pos = { x: 0, y: 0 };
-                                filteredState.onImage = false;
-                                filteredState.view = "EDIT";
-                                this.props.EditWikiImage({
-                                    refetchQueries: [
-                                        {
-                                            query: WIKIIMAGE,
-                                            variables: {
-                                                wikiImageId: this.props.wikiImage.id
-                                            }
-                                        }
-                                    ],
-                                    variables: {
-                                        wikiImageId: this.props.wikiImage.id,
-                                        categoryId: this.props.categoryId,
-                                        name: this.state.title,
-                                        shownImageId: this.state.exShownImg.id,
-                                        hoverImage: JSON.stringify(filteredState)
-                                    }
-                                });
-                            }}
-                        >
-                            SEND
-            </PostButton>
-                    </React.Fragment>
-                ) : null}
-                <EditorContainer type={type}>
-                    <EditorLeftContainer view={view} color={this.state.color}>
-                        {view === "EDIT" ? (
-                            <React.Fragment>
-                                <Row>
-                                    <Col style={{ minHeight: "100vh" }}>
-                                        <div className="toolbar">
-                                            <FlexBox>
-                                                {selectors.map((Type, i) => {
-                                                    if (
-                                                        this.state.selectedIndex !== null &&
-                                                        (this.state.selectedContent.content === "TEXT" ||
-                                                            this.state.selectedContent.content === "BUTTON" ||
-                                                            this.state.selectedContent.content === "HTML")
-                                                    ) {
-                                                        const { value } = this.showSelected(
-                                                            this.state.selectedIndex
-                                                        );
-                                                        console.log(
-                                                            this.showSelected(this.state.selectedIndex)
-                                                        );
-                                                        console.log(value);
-                                                        const onChange = value => {
-                                                            this.handleOnChange(
-                                                                value,
-                                                                this.state.selectedIndex,
-                                                                "TEXT",
-                                                                "TEXT_CHANGE"
-                                                            );
-                                                        };
-                                                        return (
-                                                            <Type
-                                                                change={value.change()}
-                                                                onChange={onChange}
-                                                                key={i}
-                                                                className="toolbar-select"
-                                                            />
-                                                        );
-                                                    } else {
-                                                        return null;
-                                                    }
-                                                })}
-                                            </FlexBox>
-                                            <FlexBox>
-                                                {icons.map((Type, i) => {
-                                                    if (
-                                                        this.state.selectedIndex !== null &&
-                                                        (this.state.selectedContent.content === "TEXT" ||
-                                                            this.state.selectedContent.content === "BUTTON" ||
-                                                            this.state.selectedContent.content === "HTML")
-                                                    ) {
-                                                        const { value } = this.showSelected(
-                                                            this.state.selectedIndex
-                                                        );
-                                                        console.log(
-                                                            this.showSelected(this.state.selectedIndex)
-                                                        );
-                                                        console.log(value);
-                                                        const onChange = value => {
-                                                            this.handleOnChange(
-                                                                value,
-                                                                this.state.selectedIndex,
-                                                                "TEXT",
-                                                                "TEXT_CHANGE"
-                                                            );
-                                                        };
-                                                        return (
-                                                            <Type
-                                                                change={value.change()}
-                                                                onChange={onChange}
-                                                                key={i}
-                                                                className="toolbar-item"
-                                                                activeClassName="toolbar-item-active"
-                                                                disableClassName="toolbar-item-disable"
-                                                                activeStrokeClassName="ql-stroke-active"
-                                                                activeFillClassName="ql-fill-active"
-                                                                activeThinClassName="ql-thin-active"
-                                                                activeEvenClassName="ql-even-active"
-                                                            />
-                                                        );
-                                                    } else {
-                                                        return null;
-                                                    }
-                                                })}
-                                            </FlexBox>
-                                        </div>
-                                <EditorLeft
-                                    color={this.state.color}
-                                    contentWidth={this.state.contentWidth}
-                                    font={this.state.font}
-                                    view="EDIT"
-                                >
-                                    {cards.map((item, index) => {
-                                        if (item.type === "columnList") {
-                                            return (
-                                                <Card
-                                                    inColumn={false}
-                                                    cards={this.state.cards.length}
-                                                    key={index}
-                                                    index={index}
-                                                    moveCard={this.moveCard}
-                                                    handleDrop={this.handleDrop}
-                                                    OnDrag={this.state.OnDrag}
-                                                    callbackfromparent={this.buttonCallback}
-                                                    selectedIndex={selectedIndex}
-                                                    hoveredIndex={hoveredIndex}
-                                                    masterCallback={this.masterCallback}
-                                                >
-                                                    <Column
-                                                        columnArray={item.content}
-                                                        columnListArray={item.columnListArray}
-                                                        index={[index, 0, 0]}
-                                                        callbackfromparent={this.buttonCallback}
-                                                        handleDrop={this.handleDrop}
-                                                        moveCard={this.moveCard}
-                                                        handleOnChange={this.handleOnChange.bind(this)}
-                                                        renderNode={this.renderNode}
-                                                        renderMark={this.renderMark}
-                                                        selectedIndex={selectedIndex}
-                                                        hoveredIndex={hoveredIndex}
-                                                        contentWidth={contentWidth}
-                                                        OnDrag={this.state.OnDrag}
-                                                        masterCallback={this.masterCallback}
-                                                        onDropOrPaste={this.onDropOrPaste}
-                                                    />
-                                                </Card>
-                                            );
-                                        } else {
-                                            return null;
-                                        }
-                                    })}
-                                    {cards.length !== 0 ? null : (
-                                        <EmptyCard
-                                            index={0}
-                                            masterCallback={this.masterCallback}
-                                            moveCard={this.moveCard}
-                                            handleDrop={this.handleDrop}
-                                            OnDrag={this.state.OnDrag}
-                                        />
-                                    )}
-                                </EditorLeft>
-                            </React.Fragment>
-                        ) : view === "USER" ? (
-                            <UserView
-                                renderNode={this.renderNode}
-                                renderMark={this.renderMark}
-                                json={this.state}
-                            />
-                        ) : view === "JSON" ? (
-                            <JsonView json={this.state} />
-                        ) : null}
-                    </EditorLeftContainer>
-                    <EditorRightContainer>
-                        <EditorRight
-                            rightMenu={this.state.rightMenu}
-                            cards={this.state.cards}
-                            view={this.state.view}
-                            title={this.state.title}
-                            selectedIndex={selectedIndex}
-                            selectedContent={this.showSelected(selectedIndex)}
-                            masterCallback={this.masterCallback}
-                            handleOnChange={this.handleOnChange}
-                            showSelected={this.showSelected}
-                            OnChangeCards={this.OnChangeCards}
-                            category={this.state.category}
-                            addIdToState={this.addIdToState}
-                            deleteIdToState={this.deleteIdToState}
-                        />
-                        <BlockOptions
-                            type={this.props.type}
-                            handleOnChange={this.handleOnChange}
-                            selectedIndex={selectedIndex}
-                            selectedContent={this.showSelected(selectedIndex)}
-                            showSelected={this.showSelected}
-                            OnChangeCards={this.OnChangeCards}
-                            masterCallback={this.masterCallback}
-                        />
-                    </EditorRightContainer>
-                </EditorContainer>
-                <ImagePopup
-                    pos={pos}
-                    json={hoverImgJson ? hoverImgJson : null}
-                    onImage={onImage}
-                />
-            </Fragment>
+          })
         );
-    }
-
-    /**
-     * Render a Slate node.
-     *
-     * @param {Object} props
-     * @return {Element}
-     */
-
-    public renderNode = props => {
-        const { attributes, children, node, isFocused } = props;
-
-        switch (node.type) {
-            case "block-quote":
-                return <blockquote {...attributes}>{children}</blockquote>;
-            case "bulleted-list":
-                return <ul {...attributes}>{children}</ul>;
-            case "list-item":
-                return <li {...attributes}>{children}</li>;
-            case "numbered-list":
-                return <ol {...attributes}>{children}</ol>;
-            case "clap-image":
-                {
-                    const represent_src = node.data.get("represent");
-                    const hover_src = node.data.get("hover");
-                    const name = node.data.get("name");
-                    const type = node.data.get("type");
-                    switch (type) {
-                        case "TEXT":
-                            return (
-                                <ClapImageContainer
-                                    onMouseOver={() =>
-                                        this.setState({
-                                            hoverImgJson: hover_src,
-                                            onImage: true
-                                        })
-                                    }
-                                    onMouseMove={this.getPos}
-                                    onMouseOut={() => {
-                                        this.setState({ onImage: false });
-                                    }}
-                                    small={true}
-                                >
-                                    <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
-                                        {name}
-                                    </ClapImageText>
-                                </ClapImageContainer>
-                            );
-                        case "MINI_IMG":
-                            return (
-                                <ClapImageContainer
-                                    onMouseOver={() =>
-                                        this.setState({
-                                            hoverImgJson: hover_src,
-                                            onImage: true
-                                        })
-                                    }
-                                    onMouseMove={this.getPos}
-                                    onMouseOut={() => {
-                                        this.setState({ onImage: false });
-                                    }}
-                                    small={true}
-                                >
-                                    <ClapImage
-                                        small={true}
-                                        src={`http://localhost:4000/uploads/${represent_src}`}
-                                        alt={"hover"}
-                                        selected={isFocused}
-                                        {...attributes}
-                                    />
-                                    <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
-                                        {name}
-                                    </ClapImageText>
-                                </ClapImageContainer>
-                            );
-                        case "NORMAL_IMG":
-                            return (
-                                <ClapImage
-                                    src={`http://localhost:4000/uploads/${represent_src}`}
-                                    alt={"hover"}
-                                    selected={isFocused}
-                                    onMouseOver={() =>
-                                        this.setState({
-                                            hoverImgJson: hover_src,
-                                            onImage: true
-                                        })
-                                    }
-                                    onMouseMove={this.getPos}
-                                    onMouseOut={() => {
-                                        this.setState({ onImage: false });
-                                    }}
-                                    {...attributes}
-                                />
-                            );
-                        default:
-                            break;
+      } else if (dataFromChild.length === 3) {
+        // block
+        this.setState(
+          {
+            selectedIndex: null,
+            selectedContent: null
+          },
+          (): void =>
+            this.setState(
+              update(this.state, {
+                cards: {
+                  [dataFromChild[0]]: {
+                    columnListArray: {
+                      [dataFromChild[1]]: {
+                        $splice: [[dataFromChild[2], 1]]
+                      }
                     }
+                  }
                 }
-                break;
-            default:
-                break;
+              })
+            )
+        );
+      }
+    } else if (type === "duplicate") {
+      if (!Array.isArray(dataFromChild)) {
+        const targetCard = JSON.parse(JSON.stringify(cards[dataFromChild]));
+        this.setState(
+          update(this.state, {
+            cards: {
+              $splice: [[dataFromChild, 0, targetCard]]
+            }
+          })
+        );
+      } else {
+        const targetCard = JSON.parse(
+          JSON.stringify(
+            cards[dataFromChild[0]].columnListArray[dataFromChild[1]][
+              dataFromChild[2]
+            ]
+          )
+        );
+        if (targetCard.content === "BUTTON" || targetCard.content === "TEXT") {
+          targetCard.value = Value.fromJSON(targetCard.value);
         }
-    };
+        this.setState(
+          update(this.state, {
+            cards: {
+              [dataFromChild[0]]: {
+                columnListArray: {
+                  [dataFromChild[1]]: {
+                    $splice: [[dataFromChild[2], 0, targetCard]]
+                  }
+                }
+              }
+            }
+          })
+        );
+      }
+    }
+  };
 
-    /**
-     * Render a Slate mark.
-     *
-     * @param {Object} props
-     * @return {Element}
-     */
-
-    public renderMark = props => {
-        const { children, mark, attributes } = props;
-        switch (mark.type) {
-            case "bold":
-                return <strong {...attributes}>{children}</strong>;
-            case "code":
-                return <code {...attributes}>{children}</code>;
-            case "italic":
-                return <em {...attributes}>{children}</em>;
-            case "underlined":
-                return <u {...attributes}>{children}</u>;
-            default:
-                return;
+  // 오른쪽 버튼 Drop Here에 놨을 때
+  public handleDrop = (hoverItem: any, hoverIndex: number | number[]) => {
+    // on column
+    if (!Array.isArray(hoverIndex)) {
+      // on frame
+      if (!!hoverItem) {
+        this.setState(
+          update(this.state, {
+            cards: {
+              $splice: [[hoverIndex, 0, hoverItem]]
+            }
+          })
+        );
+      }
+    } else if (hoverIndex.length === 3) {
+      if (!!hoverItem) {
+        if (hoverIndex[2] === -1) {
+          hoverIndex[2] = 0;
         }
-    };
+        this.setState(
+          update(this.state, {
+            cards: {
+              [hoverIndex[0]]: {
+                columnListArray: {
+                  [hoverIndex[1]]: {
+                    $splice: [[hoverIndex[2], 0, hoverItem]]
+                  }
+                }
+              }
+            }
+          })
+        );
+      }
+    } else if (hoverIndex.length === 2) {
+      if (!!hoverItem) {
+        this.setState(
+          update(this.state, {
+            cards: {
+              [hoverIndex[0]]: {
+                columnListArray: {
+                  [hoverIndex[1]]: {
+                    $splice: [[0, 0, hoverItem]]
+                  }
+                }
+              }
+            }
+          })
+        );
+      }
+    }
+  };
+
+  // 이동
+  // block on column -> block on column ([1,2,1] > [3,1,1])
+  // frame -> frame (5 > 7)
+  public moveCard = (
+    dragIndex: number | number[],
+    hoverIndex: number | number[]
+  ) => {
+    if (!Array.isArray(dragIndex) && !Array.isArray(hoverIndex)) {
+      // frame => frame
+      const { cards } = this.state;
+      const dragCard = cards[dragIndex];
+      console.log(dragIndex);
+      console.log(hoverIndex);
+      this.setState({ selectedIndex: null, selectedContent: null });
+      if (dragIndex < hoverIndex) {
+        this.setState(
+          update(this.state, {
+            cards: {
+              $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]]
+            }
+          })
+        );
+      } else if (dragIndex > hoverIndex) {
+        this.setState(
+          update(this.state, {
+            cards: {
+              $splice: [[dragIndex, 1], [hoverIndex + 1, 0, dragCard]]
+            }
+          })
+        );
+      }
+    } else if (Array.isArray(dragIndex) && Array.isArray(hoverIndex)) {
+      if (dragIndex.length === 3 && hoverIndex.length === 3) {
+        // block => block
+        const { cards } = this.state;
+        const dragCard =
+          cards[dragIndex[0]].columnListArray[dragIndex[1]][dragIndex[2]];
+        this.setState({
+          selectedIndex: null,
+          selectedContent: null
+        });
+        if (
+          dragIndex[0] === hoverIndex[0] &&
+          dragIndex[1] === hoverIndex[1] &&
+          dragIndex[2] === hoverIndex[2]
+        ) {
+          console.log("same index");
+        } else {
+          if (dragIndex[2] < hoverIndex[2]) {
+            this.setState(
+              update(this.state, {
+                cards: {
+                  [dragIndex[0]]: {
+                    columnListArray: {
+                      [dragIndex[1]]: {
+                        $splice: [[dragIndex[2], 1]]
+                      }
+                    }
+                  }
+                }
+              })
+            );
+            this.setState(
+              update(this.state, {
+                cards: {
+                  [hoverIndex[0]]: {
+                    columnListArray: {
+                      [hoverIndex[1]]: {
+                        $splice: [[hoverIndex[2] - 1, 0, dragCard]]
+                      }
+                    }
+                  }
+                }
+              })
+            );
+          } else {
+            this.setState(
+              update(this.state, {
+                cards: {
+                  [dragIndex[0]]: {
+                    columnListArray: {
+                      [dragIndex[1]]: {
+                        $splice: [[dragIndex[2], 1]]
+                      }
+                    }
+                  }
+                }
+              })
+            );
+            this.setState(
+              update(this.state, {
+                cards: {
+                  [hoverIndex[0]]: {
+                    columnListArray: {
+                      [hoverIndex[1]]: {
+                        $splice: [[hoverIndex[2] + 1, 0, dragCard]]
+                      }
+                    }
+                  }
+                }
+              })
+            );
+          }
+        }
+      } else if (dragIndex.length === 3 && hoverIndex.length === 2) {
+        // block => block
+        const { cards } = this.state;
+        const dragCard =
+          cards[dragIndex[0]].columnListArray[dragIndex[1]][dragIndex[2]];
+        console.log(dragIndex);
+        console.log(hoverIndex);
+        this.setState({
+          selectedIndex: null,
+          selectedContent: null
+        });
+        if (!!dragCard) {
+          this.setState(
+            update(this.state, {
+              cards: {
+                [dragIndex[0]]: {
+                  columnListArray: {
+                    [dragIndex[1]]: {
+                      $splice: [[dragIndex[2], 1]]
+                    }
+                  }
+                }
+              }
+            })
+          );
+          this.setState(
+            update(this.state, {
+              cards: {
+                [hoverIndex[0]]: {
+                  columnListArray: {
+                    [hoverIndex[1]]: {
+                      $splice: [[0, 0, dragCard]]
+                    }
+                  }
+                }
+              }
+            })
+          );
+        }
+      }
+    }
+  };
+
+  public masterCallback = (
+    type:
+      | "BodyBackgroundColor"
+      | "Title"
+      | "width"
+      | "font"
+      | "view"
+      | "onDrag"
+      | "rightMenu",
+    dataFromChild: any
+  ) => {
+    if (type === "BodyBackgroundColor") {
+      this.setState({ color: dataFromChild });
+    } else if (type === "Title") {
+      this.setState({ title: dataFromChild });
+    } else if (type === "width") {
+      this.setState({ contentWidth: dataFromChild });
+    } else if (type === "font") {
+      this.setState({ font: dataFromChild });
+    } else if (type === "view") {
+      this.setState({ view: dataFromChild });
+    } else if (type === "onDrag") {
+      this.setState({ onDrag: dataFromChild });
+    } else if (type === "rightMenu") {
+      this.setState({
+        rightMenu: dataFromChild,
+        selectedIndex: null,
+        selectedContent: null
+      });
+    } else if (type === "shownImage") {
+      this.setState({ exShownImg: dataFromChild });
+    }
+  };
+
+  public OnChangeCards = (index: number[], props: any, value: string) => {
+    if (value === "toggle") {
+      if (index.length === 2) {
+        this.setState(
+          update(this.state, {
+            cards: {
+              [index[0]]: {
+                [props]: { $set: !this.state.cards[index[0]][props] }
+              }
+            }
+          })
+        );
+      } else if (index.length === 3) {
+        this.setState(
+          update(this.state, {
+            cards: {
+              [index[0]]: {
+                columnListArray: {
+                  [index[1]]: {
+                    [index[2]]: {
+                      [props]: {
+                        $set: !this.state.cards[index[0]].columnListArray[
+                          index[1]
+                        ][index[2]][props]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          })
+        );
+      }
+    } else {
+      if (index.length === 2) {
+        this.setState(
+          update(this.state, {
+            cards: { [index[0]]: { [props]: { $set: value } } }
+          })
+        );
+      } else if (index.length === 3) {
+        this.setState(
+          update(this.state, {
+            cards: {
+              [index[0]]: {
+                columnListArray: {
+                  [index[1]]: {
+                    [index[2]]: {
+                      [props]: { $set: value }
+                    }
+                  }
+                }
+              }
+            }
+          })
+        );
+      }
+    }
+  };
+
+  public handleOnChange = (
+    value: any,
+    index: number[],
+    content: any,
+    type: "TEXT_CHANGE" | "LINK" | "ALT" | "URL"
+  ) => {
+    if (type === "TEXT_CHANGE") {
+      if (index.length === 2) {
+        this.setState(
+          update(this.state, {
+            cards: { [index[0]]: { value: { $set: value.value } } }
+          })
+        );
+      } else if (index.length === 3) {
+        this.setState(
+          update(this.state, {
+            cards: {
+              [index[0]]: {
+                columnListArray: {
+                  [index[1]]: {
+                    [index[2]]: {
+                      value: { $set: value.value }
+                    }
+                  }
+                }
+              }
+            }
+          })
+        );
+        // let cards = this.state.cards.slice();
+        // cards[index[0]].columnListArray[index[1]][index[2]].value = value;
+        // this.setState({ cards });
+      }
+    } else if (content === "IMAGE") {
+      if (type === "URL") {
+        if (index.length === 2) {
+          this.setState(
+            update(this.state, {
+              cards: { [index[0]]: { imageSrc: { $set: value } } }
+            })
+          );
+        } else if (index.length === 3) {
+          this.setState(
+            update(this.state, {
+              cards: {
+                [index[0]]: {
+                  columnListArray: {
+                    [index[1]]: {
+                      [index[2]]: {
+                        imageSrc: { $set: value }
+                      }
+                    }
+                  }
+                }
+              }
+            })
+          );
+        }
+      } else if (type === "ALT") {
+        if (index.length === 2) {
+          this.setState(
+            update(this.state, {
+              cards: { [index[0]]: { alt: { $set: value } } }
+            })
+          );
+        } else if (index.length === 3) {
+          this.setState(
+            update(this.state, {
+              cards: {
+                [index[0]]: {
+                  columnListArray: {
+                    [index[1]]: {
+                      [index[2]]: {
+                        alt: { $set: value }
+                      }
+                    }
+                  }
+                }
+              }
+            })
+          );
+        }
+      }
+    } else if (type === "LINK") {
+      if (index.length === 2) {
+        this.setState(
+          update(this.state, {
+            cards: { [index[0]]: { link: { $set: value } } }
+          })
+        );
+      } else if (index.length === 3) {
+        this.setState(
+          update(this.state, {
+            cards: {
+              [index[0]]: {
+                columnListArray: {
+                  [index[1]]: {
+                    [index[2]]: {
+                      link: { $set: value }
+                    }
+                  }
+                }
+              }
+            }
+          })
+        );
+      }
+    } else if (content === "VIDEO") {
+      if (type === "URL") {
+        if (index.length === 2) {
+          this.setState(
+            update(this.state, {
+              cards: { [index[0]]: { videoSrc: { $set: value } } }
+            })
+          );
+        } else if (index.length === 3) {
+          this.setState(
+            update(this.state, {
+              cards: {
+                [index[0]]: {
+                  columnListArray: {
+                    [index[1]]: {
+                      [index[2]]: {
+                        videoSrc: { $set: value }
+                      }
+                    }
+                  }
+                }
+              }
+            })
+          );
+        }
+      }
+    }
+  };
+
+  public showSelected = (index: number | number[] | null) => {
+    const { cards } = this.state;
+    if (index) {
+      if (!Array.isArray(index)) {
+        return cards[index];
+      } else {
+        if (index.length === 2) {
+          return cards[index[0]];
+        } else if (index.length === 3) {
+          return cards[index[0]].columnListArray[index[1]][index[2]];
+        }
+      }
+    }
+  };
+
+  public render() {
+    const { type } = this.props;
+    const {
+      cards,
+      selectedIndex,
+      hoveredIndex,
+      contentWidth,
+      view,
+      pos,
+      hoverImgJson,
+      onImage
+    } = this.state;
+
+    return (
+      <React.Fragment>
+        {this.props.type === "POST_ADD" ? (
+          <PostButtonContainer>
+            <PostButton
+              onClick={e => {
+                e.preventDefault();
+                const filteredState: IState = this.state;
+                filteredState.rightMenu = null;
+                filteredState.selectedContent = null;
+                filteredState.selectedIndex = null;
+                filteredState.onDrag = null;
+                filteredState.hoverImgJson = null;
+                filteredState.pos = { x: 0, y: 0 };
+                filteredState.onImage = false;
+                filteredState.view = "EDIT";
+                this.props.AddPost({
+                  refetchQueries: [
+                    {
+                      query: POSTS
+                    }
+                  ],
+                  variables: {
+                    title: this.state.title,
+                    categoryId: this.state.category[0],
+                    body: JSON.stringify(filteredState)
+                  }
+                });
+              }}
+            >
+              SEND
+            </PostButton>
+          </PostButtonContainer>
+        ) : this.props.type === "POST_EDIT" ? (
+          <PostButtonContainer>
+            <PostButton
+              onClick={e => {
+                e.preventDefault();
+                const filteredState: IState = this.state;
+                filteredState.rightMenu = null;
+                filteredState.selectedContent = null;
+                filteredState.selectedIndex = null;
+                filteredState.onDrag = null;
+                filteredState.hoverImgJson = null;
+                filteredState.pos = { x: 0, y: 0 };
+                filteredState.onImage = false;
+                filteredState.view = "EDIT";
+                filteredState.hoveredIndex = null;
+                this.props.EditPost({
+                  refetchQueries: [
+                    {
+                      query: POST,
+                      variables: {
+                        postId: this.props.postId
+                      }
+                    }
+                  ],
+                  variables: {
+                    postId: this.props.postId,
+                    title: this.state.title,
+                    categoryId: this.state.category[0],
+                    body: JSON.stringify(filteredState)
+                  }
+                });
+              }}
+            >
+              SEND
+            </PostButton>
+          </PostButtonContainer>
+        ) : this.props.type === "WIKIIMAGE_ADD" ? (
+          <React.Fragment>
+            <Upload
+              exShownImg={this.state.exShownImg}
+              masterCallback={this.masterCallback}
+            />
+            <ImagePopup
+              pos={pos}
+              follow={false}
+              json={JSON.stringify(this.state)}
+              onImage={true}
+            />
+            <PostButton
+              onClick={e => {
+                e.preventDefault();
+                const filteredState: IState = this.state;
+                filteredState.rightMenu = null;
+                filteredState.selectedContent = null;
+                filteredState.selectedIndex = null;
+                filteredState.onDrag = null;
+                filteredState.hoverImgJson = null;
+                filteredState.pos = { x: 0, y: 0 };
+                filteredState.onImage = false;
+                filteredState.view = "EDIT";
+                console.log(this.state.exShownImg);
+                this.props.AddWikiImage({
+                  variables: {
+                    categoryId: this.props.categoryId,
+                    name: this.state.title,
+                    shownImageId: this.state.exShownImg.id,
+                    hoverImage: JSON.stringify(filteredState)
+                  }
+                });
+              }}
+            >
+              SEND
+            </PostButton>
+          </React.Fragment>
+        ) : this.props.type === "WIKIIMAGE_EDIT" ? (
+          <React.Fragment>
+            <Upload
+              exShownImg={this.state.exShownImg}
+              masterCallback={this.masterCallback}
+            />
+            <ImagePopup
+              pos={pos}
+              follow={false}
+              json={JSON.stringify(this.state)}
+              onImage={true}
+            />
+            <PostButton
+              onClick={e => {
+                e.preventDefault();
+                const filteredState: IState = this.state;
+                filteredState.rightMenu = null;
+                filteredState.selectedContent = null;
+                filteredState.selectedIndex = null;
+                filteredState.onDrag = null;
+                filteredState.hoverImgJson = null;
+                filteredState.pos = { x: 0, y: 0 };
+                filteredState.onImage = false;
+                filteredState.view = "EDIT";
+                this.props.EditWikiImage({
+                  refetchQueries: [
+                    {
+                      query: WIKIIMAGE,
+                      variables: {
+                        wikiImageId: this.props.wikiImage.id
+                      }
+                    }
+                  ],
+                  variables: {
+                    wikiImageId: this.props.wikiImage.id,
+                    categoryId: this.props.categoryId,
+                    name: this.state.title,
+                    shownImageId: this.state.exShownImg.id,
+                    hoverImage: JSON.stringify(filteredState)
+                  }
+                });
+              }}
+            >
+              SEND
+            </PostButton>
+          </React.Fragment>
+        ) : null}
+        <EditorContainer type={type}>
+          <EditorLeftContainer view={view} color={this.state.color}>
+            {view === "EDIT" ? (
+              <React.Fragment>
+                <Row>
+                  <Col style={{ minHeight: "100vh" }}>
+                    <div className="toolbar">
+                      <FlexBox>
+                        {selectors.map((Type, i) => {
+                          if (
+                            this.state.selectedIndex !== null &&
+                            (this.state.selectedContent.content === "TEXT" ||
+                              this.state.selectedContent.content === "BUTTON" ||
+                              this.state.selectedContent.content === "HTML")
+                          ) {
+                            const { value } = this.showSelected(
+                              this.state.selectedIndex
+                            );
+                            const onChange = (change: any) => {
+                              this.handleOnChange(
+                                change,
+                                this.state.selectedIndex as number[],
+                                "TEXT",
+                                "TEXT_CHANGE"
+                              );
+                            };
+                            return (
+                              <Type
+                                change={value.change()}
+                                onChange={onChange}
+                                key={i}
+                                className="toolbar-select"
+                              />
+                            );
+                          } else {
+                            return null;
+                          }
+                        })}
+                      </FlexBox>
+                      <FlexBox>
+                        {icons.map((Type, i) => {
+                          if (
+                            this.state.selectedIndex !== null &&
+                            (this.state.selectedContent.content === "TEXT" ||
+                              this.state.selectedContent.content === "BUTTON" ||
+                              this.state.selectedContent.content === "HTML")
+                          ) {
+                            const { value } = this.showSelected(
+                              this.state.selectedIndex
+                            );
+                            const onChange = (change: any) => {
+                              this.handleOnChange(
+                                change,
+                                this.state.selectedIndex as number[],
+                                "TEXT",
+                                "TEXT_CHANGE"
+                              );
+                            };
+                            return (
+                              <Type
+                                change={value.change()}
+                                onChange={onChange}
+                                key={i}
+                                className="toolbar-item"
+                                activeClassName="toolbar-item-active"
+                                disableClassName="toolbar-item-disable"
+                                activeStrokeClassName="ql-stroke-active"
+                                activeFillClassName="ql-fill-active"
+                                activeThinClassName="ql-thin-active"
+                                activeEvenClassName="ql-even-active"
+                              />
+                            );
+                          } else {
+                            return null;
+                          }
+                        })}
+                      </FlexBox>
+                    </div>
+                  </Col>
+                </Row>
+                <EditorLeft
+                  color={this.state.color}
+                  contentWidth={this.state.contentWidth}
+                  font={this.state.font}
+                  view="EDIT"
+                >
+                  {cards.map((item, index) => {
+                    if (item.type === "columnList") {
+                      return (
+                        <Card
+                          cards={this.state.cards.length}
+                          key={index}
+                          index={index}
+                          moveCard={this.moveCard}
+                          handleDrop={this.handleDrop}
+                          onDrag={this.state.onDrag}
+                          callbackfromparent={this.buttonCallback}
+                          selectedIndex={selectedIndex}
+                          hoveredIndex={hoveredIndex}
+                          masterCallback={this.masterCallback}
+                        >
+                          <Column
+                            columnListArray={item.columnListArray}
+                            columnArray={item.content}
+                            index={[index, 0, 0]}
+                            callbackfromparent={this.buttonCallback}
+                            handleDrop={this.handleDrop}
+                            moveCard={this.moveCard}
+                            handleOnChange={this.handleOnChange}
+                            renderNode={this.renderNode}
+                            renderMark={this.renderMark}
+                            contentWidth={contentWidth}
+                            selectedIndex={selectedIndex}
+                            hoveredIndex={hoveredIndex}
+                            onDrag={this.state.onDrag}
+                            masterCallback={this.masterCallback}
+                          />
+                        </Card>
+                      );
+                    } else {
+                      return null;
+                    }
+                  })}
+                  {cards.length !== 0 ? null : (
+                    <EmptyCard
+                      index={0}
+                      masterCallback={this.masterCallback}
+                      moveCard={this.moveCard}
+                      handleDrop={this.handleDrop}
+                    />
+                  )}
+                </EditorLeft>
+              </React.Fragment>
+            ) : view === "USER" ? (
+              <UserView
+                renderNode={this.renderNode}
+                renderMark={this.renderMark}
+                json={this.state}
+              />
+            ) : view === "JSON" ? (
+              <JsonView json={this.state} />
+            ) : null}
+          </EditorLeftContainer>
+          <EditorRightContainer>
+            <EditorRight
+              rightMenu={this.state.rightMenu}
+              cards={this.state.cards}
+              masterCallback={this.masterCallback}
+              view={this.state.view}
+              title={this.state.title}
+              addIdToState={this.addIdToState}
+              deleteIdToState={this.deleteIdToState}
+              category={this.state.category}
+            />
+            <BlockOptions
+              type={this.props.type}
+              handleOnChange={this.handleOnChange}
+              selectedIndex={selectedIndex}
+              selectedContent={this.showSelected(selectedIndex)}
+              showSelected={this.showSelected}
+              OnChangeCards={this.OnChangeCards}
+              masterCallback={this.masterCallback}
+            />
+          </EditorRightContainer>
+        </EditorContainer>
+        <ImagePopup
+          pos={pos}
+          json={hoverImgJson ? hoverImgJson : null}
+          onImage={onImage}
+        />
+      </React.Fragment>
+    );
+  }
+
+  /**
+   * Render a Slate node.
+   *
+   * @param {Object} props
+   * @return {Element}
+   */
+
+  public renderNode = (props: {
+    attributes: any;
+    children: any;
+    node: { type: any; data: any };
+    isFocused: boolean;
+  }) => {
+    const { attributes, children, node, isFocused } = props;
+
+    switch (node.type) {
+      case "block-quote":
+        return <blockquote {...attributes}>{children}</blockquote>;
+      case "bulleted-list":
+        return <ul {...attributes}>{children}</ul>;
+      case "list-item":
+        return <li {...attributes}>{children}</li>;
+      case "numbered-list":
+        return <ol {...attributes}>{children}</ol>;
+      case "clap-image":
+        {
+          const representSrc = node.data.get("represent");
+          const hoverSrc = node.data.get("hover");
+          const name = node.data.get("name");
+          const type = node.data.get("type");
+          switch (type) {
+            case "TEXT":
+              return (
+                <ClapImageContainer
+                  onMouseOver={() =>
+                    this.setState({
+                      hoverImgJson: hoverSrc,
+                      onImage: true
+                    })
+                  }
+                  onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
+                    this.setState({ pos: GetPos(e) })
+                  }
+                  onMouseOut={() => {
+                    this.setState({ onImage: false });
+                  }}
+                  small={true}
+                >
+                  <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
+                    {name}
+                  </ClapImageText>
+                </ClapImageContainer>
+              );
+            case "MINI_IMG":
+              return (
+                <ClapImageContainer
+                  onMouseOver={() =>
+                    this.setState({
+                      hoverImgJson: hoverSrc,
+                      onImage: true
+                    })
+                  }
+                  onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
+                    this.setState({ pos: GetPos(e) })
+                  }
+                  onMouseOut={() => {
+                    this.setState({ onImage: false });
+                  }}
+                  small={true}
+                >
+                  <ClapImage
+                    small={true}
+                    src={`http://localhost:4000/uploads/${representSrc}`}
+                    alt={"hover"}
+                    selected={isFocused}
+                    {...attributes}
+                  />
+                  <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
+                    {name}
+                  </ClapImageText>
+                </ClapImageContainer>
+              );
+            case "NORMAL_IMG":
+              return (
+                <ClapImage
+                  src={`http://localhost:4000/uploads/${representSrc}`}
+                  alt={"hover"}
+                  selected={isFocused}
+                  onMouseOver={() =>
+                    this.setState({
+                      hoverImgJson: hoverSrc,
+                      onImage: true
+                    })
+                  }
+                  onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
+                    this.setState({ pos: GetPos(e) })
+                  }
+                  onMouseOut={() => {
+                    this.setState({ onImage: false });
+                  }}
+                  {...attributes}
+                />
+              );
+            default:
+              return null;
+          }
+        }
+        return null;
+      default:
+        return null;
+    }
+  };
+
+  /**
+   * Render a Slate mark.
+   *
+   * @param {Object} props
+   * @return {Element}
+   */
+
+  public renderMark = (props: {
+    children: any;
+    mark: Mark;
+    attributes: any;
+  }) => {
+    const { children, mark, attributes } = props;
+    switch (mark.type) {
+      case "bold":
+        return <strong {...attributes}>{children}</strong>;
+      case "code":
+        return <code {...attributes}>{children}</code>;
+      case "italic":
+        return <em {...attributes}>{children}</em>;
+      case "underlined":
+        return <u {...attributes}>{children}</u>;
+      default:
+        return;
+    }
+  };
 }
 
 export default DragDropContext(HTML5Backend)(Editor);

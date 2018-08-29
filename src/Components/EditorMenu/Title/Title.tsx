@@ -1,6 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import { BodyContainer, NavBar, BodyColumn, Item } from "../../../sharedStyle";
+import CategorySelection from "../../CategorySelection";
 
 interface IFunctionColumn {
   dir: "column";

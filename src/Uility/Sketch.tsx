@@ -56,9 +56,9 @@ interface IProps {
   type: "BodyBackgroundColor" | "font-color";
   color: { r: number; g: number; b: number };
   masterCallback: any;
-  OnChangeCards: any;
-  onChange: any;
-  selectedIndex: number | number[];
+  OnChangeCards?: any;
+  onChange?: any;
+  selectedIndex?: number | number[];
 }
 
 interface IState {

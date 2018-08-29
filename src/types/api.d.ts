@@ -81,6 +81,34 @@ export interface getCategoryByIdVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: uploadShownImage
+// ====================================================
+
+export interface uploadShownImage_UploadShownImage_shownImage {
+  __typename: "ShownImage";
+  id: number;
+  url: string;
+}
+
+export interface uploadShownImage_UploadShownImage {
+  __typename: "UploadShownImageResponse";
+  ok: boolean;
+  error: string | null;
+  shownImage: uploadShownImage_UploadShownImage_shownImage | null;
+}
+
+export interface uploadShownImage {
+  UploadShownImage: uploadShownImage_UploadShownImage;
+}
+
+export interface uploadShownImageVariables {
+  file: any;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: addPost
 // ====================================================
 

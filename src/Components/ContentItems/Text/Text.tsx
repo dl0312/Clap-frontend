@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Value, Change, Schema } from "slate";
+import { Value, Change, Schema, Mark } from "slate";
 import { RenderNodeProps, RenderMarkProps, Editor, Plugin } from "slate-react";
 
 interface ITextContainerProps {
@@ -39,14 +39,29 @@ interface IProps {
     backgroundColor?: { r: string; g: string; b: string; a: string };
     hoverColor?: { r: string; g: string; b: string; a: string };
   };
-  index: number[];
+  index?: number[];
   value: Value;
-  schema: Schema;
+  schema?: Schema;
   plugins: Plugin[];
-  active: boolean;
-  handleOnChange: any;
-  renderNode: RenderNodeProps;
-  renderMark: RenderMarkProps;
+  handleOnChange?: any;
+  renderNode: (
+    props: {
+      attributes: any;
+      children: any;
+      node: {
+        type: any;
+        data: any;
+      };
+      isFocused: boolean;
+    }
+  ) => JSX.Element | null;
+  renderMark: (
+    props: {
+      children: any;
+      mark: Mark;
+      attributes: any;
+    }
+  ) => JSX.Element | undefined;
 }
 
 const Text: React.SFC<IProps> = ({

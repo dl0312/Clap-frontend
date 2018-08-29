@@ -4,8 +4,6 @@ import Row from "../EditorMenu/Row";
 import Body from "../EditorMenu/Body";
 import Title from "../EditorMenu/Title";
 import styled from "styled-components";
-import EditorDefaults from "../../EditorDefaults";
-import CategorySelection from "../CategorySelection";
 
 const Container = styled.div`
   color: #505659;
@@ -40,117 +38,21 @@ const MenuTitle = styled.div`
   font-weight: 600;
 `;
 
-const ContentBody = styled.div`
-  padding: 15px;
-`;
-
-const ContentColumn = styled.ul`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-gap: 10px;
-`;
-
-const RowBody = styled.div`
-  padding: 25px;
-`;
-
-const Indicator = styled.input`
-  height: 30px;
-  text-align: center;
-  width: 45px;
-  border: none;
-  border-top: 0.4px solid #d8d8d8;
-  border-bottom: 0.4px solid #d8d8d8;
-`;
-
-const Operator = styled.button`
-  height: 30px;
-  width: 25px;
-  border: none;
-  background-color: #fff;
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
-  border: 0.5px solid #d8d8d8;
-  outline: none;
-`;
-
-const Swatch = styled.div`
-  width: 150px;
-  padding: 5px;
-  background-color: #fff;
-  border-radius: 1px;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-  display: inline-block;
-  cursor: pointer;
-`;
-
-interface ISwatchFontProps {
-  fontFamily: string;
-}
-
-const SwatchFont = styled<ISwatchFontProps, any>("div")`
-  padding: 5px 10px;
-  font-family: ${props => props.fontFamily};
-`;
-
-const PopOver = styled.div`
-  position: absolute;
-  margin-top: 5px;
-  z-index: 3;
-  background-color: white;
-`;
-
-const FontColumn = styled.div`
-  position: relative;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-  border: none;
-  border-radius: 3px;
-  border: 0.4px solid #d8d8d8;
-  padding: 5px 0;
-`;
-
-interface IFontColumnItem {
-  fontFamily: string;
-}
-
-const FontColumnItem = styled<IFontColumnItem, any>("div")`
-  cursor: pointer;
-  width: 150px;
-  padding: 5px 10px;
-  font-family: ${props => props.fontFamily};
-`;
-
-const ViewsContainer = styled.div`
-  width: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-interface IViewIconProps {
-  isSelected: boolean;
-}
-
-const ViewIcon = styled<IViewIconProps, any>("i")`
-  font-size: 20px;
-  transition: opacity 0.5s ease;
-  opacity: ${props => (props.isSelected ? "1" : "0.2")};
-  color: black;
-  &:hover {
-    opacity: ${props => (props.isSelected ? null : "0.5")};
-  }
-`;
-
 interface IProps {
-  rightMenu: number;
+  rightMenu: number | null;
+  cards: any[];
   masterCallback: any;
+  view: "EDIT" | "USER" | "JSON";
+  title: string;
+  addIdToState: any;
+  deleteIdToState: any;
+  category: number[];
+  selectedIndex: number | number[] | null;
+  selectedContent: any;
 }
 
 interface IState {
-  active: number;
+  active: number | null;
   hover: number | null;
 }
 

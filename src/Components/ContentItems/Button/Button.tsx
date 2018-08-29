@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Value, Change } from "slate";
+import { Value, Change, Mark } from "slate";
 import { RenderNodeProps, RenderMarkProps, Editor } from "slate-react";
 
 interface IButtonContainerProps {
@@ -48,11 +48,27 @@ interface IProps {
     backgroundColor?: { r: string; g: string; b: string; a: string };
     hoverColor?: { r: string; g: string; b: string; a: string };
   };
-  index: number[];
+  index?: number[];
   value: Value;
-  handleOnChange: any;
-  renderNode: RenderNodeProps;
-  renderMark: RenderMarkProps;
+  handleOnChange?: any;
+  renderNode: (
+    props: {
+      attributes: any;
+      children: any;
+      node: {
+        type: any;
+        data: any;
+      };
+      isFocused: boolean;
+    }
+  ) => JSX.Element | null;
+  renderMark: (
+    props: {
+      children: any;
+      mark: Mark;
+      attributes: any;
+    }
+  ) => JSX.Element | undefined;
 }
 
 const Button: React.SFC<IProps> = ({

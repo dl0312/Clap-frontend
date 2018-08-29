@@ -19,7 +19,7 @@ const InsertText = styled.div`
 const cardTarget = {
   drop(props: IProps, monitor: DropTargetMonitor) {
     const type = monitor.getItemType();
-    props.masterCallback("OnDrag", null);
+    props.masterCallback("onDrag", null);
     console.log(type);
     console.log(monitor.getItem());
     console.log(props.index);
@@ -36,7 +36,6 @@ interface IProps {
   masterCallback: any;
   moveCard: any;
   handleDrop: any;
-  OnDrag: any;
 }
 
 interface IDnDProps {

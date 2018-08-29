@@ -43,7 +43,7 @@ interface IProps {
   masterCallback: any;
   moveCard: any;
   handleDrop: (hoverItem: any, hoverIndex: number[]) => void;
-  OnDrag: any;
+  onDrag: any;
 }
 
 interface IState {
@@ -59,7 +59,7 @@ class EmptyContainer extends React.Component<IProps & IDnDProps, IState> {
   constructor(props: IProps & IDnDProps) {
     super(props);
     this.state = {
-      state: this.props.OnDrag === "content" ? "ONDRAG" : "NOTHING"
+      state: this.props.onDrag === "content" ? "ONDRAG" : "NOTHING"
     };
   }
 
@@ -70,7 +70,7 @@ class EmptyContainer extends React.Component<IProps & IDnDProps, IState> {
       connectDropTarget(
         <div style={{ width: "100%" }}>
           <InsertText>
-            {this.props.OnDrag === "content" ? (
+            {this.props.onDrag === "content" ? (
               isOverCurrent ? (
                 `DROP IT`
               ) : (

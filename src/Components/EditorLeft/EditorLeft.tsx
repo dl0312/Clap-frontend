@@ -43,8 +43,9 @@ const RealEditorContainer = styled<IRealEditorContainerProps, any>("div")`
 
 interface IProps {
   view: "EDIT" | "USER" | "JSON";
-  color: { r: string; g: string; b: string; a: string };
-  font: string;
+  contentWidth: number;
+  font: string | null;
+  color: { r: number; g: number; b: number; a: number };
 }
 
 class EditorLeft extends React.Component<IProps> {
@@ -53,7 +54,6 @@ class EditorLeft extends React.Component<IProps> {
     this.state = {};
   }
   public render() {
-    // 기본상태의 에디터화면 id=container
     return (
       <EditorLeftContainer view={this.props.view}>
         <RealEditorContainer

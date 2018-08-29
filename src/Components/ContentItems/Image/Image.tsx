@@ -27,6 +27,8 @@ const EmptyImageIcon = styled.i`
 
 interface IProps {
   src: string;
+  alt?: string;
+  link?: string;
   fullWidth: boolean;
 }
 

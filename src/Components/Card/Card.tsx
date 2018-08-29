@@ -14,7 +14,6 @@ import styled from "styled-components";
 import EditorDefaults from "../../EditorDefaults";
 import { findDOMNode } from "react-dom";
 import flow from "lodash/flow";
-import { RenderNodeProps, RenderMarkProps } from "slate-react";
 
 const Handle = styled.div`
   background-color: #9c88ff;
@@ -208,15 +207,10 @@ interface IProps {
   ) => void;
   handleDrop: (hoverItem: any, hoverIndex: number[] | number) => void;
   moveCard: any;
-  handleOnChange: any;
-  renderNode: RenderNodeProps;
-  renderMark: RenderMarkProps;
-  selectedIndex: number[] | number;
-  hoveredIndex: number[] | number;
-  OnDrag: any;
+  selectedIndex: number[] | number | null;
+  hoveredIndex: number[] | number | null;
+  onDrag: any;
   masterCallback: any;
-
-  connectDragPreview?: ConnectDragPreview;
 }
 
 interface IState {
@@ -337,7 +331,7 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
             <Builder
               // display={this.props.OnDrag === "columnList"}
               state={
-                this.props.OnDrag === "columnList"
+                this.props.onDrag === "columnList"
                   ? this.state.hoverPosition === "over" && isOver
                     ? "ISOVER"
                     : "ONDRAG"
@@ -386,7 +380,7 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
             <Builder
               // display={this.props.OnDrag === "columnList"}
               state={
-                this.props.OnDrag === "columnList"
+                this.props.onDrag === "columnList"
                   ? this.state.hoverPosition === "under" && isOver
                     ? "ISOVER"
                     : "ONDRAG"

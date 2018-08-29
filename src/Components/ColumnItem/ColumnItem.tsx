@@ -3,7 +3,7 @@ import styled from "styled-components";
 import EmptyContainer from "../EmptyContainer";
 import Container from "../Container";
 import { Color } from "csstype";
-import { RenderNodeProps, RenderMarkProps } from "slate-react";
+import { Mark } from "slate";
 
 interface IColumnProps {
   hasBlock: boolean;
@@ -29,16 +29,32 @@ interface IProps {
     type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
     dataFromchild: number[]
   ) => void;
-  selectedIndex: number[];
-  hoveredIndex: number[];
+  selectedIndex: number | number[] | null;
+  hoveredIndex: number | number[] | null;
   index: number[];
   handleOnChange: any;
-  renderNode: RenderNodeProps;
-  renderMark: RenderMarkProps;
+  renderNode: (
+    props: {
+      attributes: any;
+      children: any;
+      node: {
+        type: any;
+        data: any;
+      };
+      isFocused: boolean;
+    }
+  ) => JSX.Element | null;
+  renderMark: (
+    props: {
+      children: any;
+      mark: Mark;
+      attributes: any;
+    }
+  ) => JSX.Element | undefined;
   masterCallback: any;
   moveCard: any;
   handleDrop: (hoverItem: any, hoverIndex: number[]) => void;
-  OnDrag: "content" | "columnList";
+  onDrag: "content" | "columnList";
 }
 
 class ColumnItem extends React.Component<IProps> {
@@ -56,20 +72,22 @@ class ColumnItem extends React.Component<IProps> {
         {cards.map((item: any, index: number) => {
           return (
             <Container
-              item={item}
-              callbackfromparent={this.props.callbackfromparent}
-              selectedIndex={this.props.selectedIndex}
-              hoveredIndex={this.props.hoveredIndex}
-              index={this.props.index.concat(index)}
               key={index}
-              contentWidth={contentWidth}
-              handleOnChange={this.props.handleOnChange}
-              renderNode={this.props.renderNode}
-              renderMark={this.props.renderMark}
+              /* Action to Parent Component */
+              callbackfromparent={this.props.callbackfromparent}
               masterCallback={this.props.masterCallback}
               moveCard={this.props.moveCard}
               handleDrop={this.props.handleDrop}
-              OnDrag={this.props.OnDrag}
+              index={this.props.index.concat(index)}
+              handleOnChange={this.props.handleOnChange}
+              /* For Content Render */
+              selectedIndex={this.props.selectedIndex}
+              hoveredIndex={this.props.hoveredIndex}
+              item={item}
+              onDrag={this.props.onDrag}
+              contentWidth={contentWidth}
+              renderNode={this.props.renderNode}
+              renderMark={this.props.renderMark}
             />
           );
         })}
@@ -79,7 +97,7 @@ class ColumnItem extends React.Component<IProps> {
             masterCallback={this.props.masterCallback}
             moveCard={this.props.moveCard}
             handleDrop={this.props.handleDrop}
-            OnDrag={this.props.OnDrag}
+            onDrag={this.props.onDrag}
           />
         )}
       </Column>
