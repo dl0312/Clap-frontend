@@ -55,6 +55,7 @@
     "file-loader": "0.11.2",
     "fork-ts-checker-webpack-plugin": "^0.2.8",
     "fs-extra": "3.0.1",
+    "github-markdown-css": "^2.10.0",
     "graphql": "^0.13.2",
     "html-webpack-plugin": "2.29.0",
     "immutability-helper": "^2.7.1",
@@ -113,6 +114,7 @@
   "devDependencies": {
     "@types/apollo-upload-client": "^8.1.0",
     "@types/async": "^2.0.31",
+    "@types/chalk": "^2.2.0",
     "@types/classnames": "^2.2.6",
     "@types/jest": "^23.3.1",
     "@types/lodash": "^4.14.116",
@@ -126,6 +128,7 @@
     "@types/react-router-dom": "^4.3.0",
     "@types/react-toastify": "^4.0.1",
     "@types/reactcss": "^1.2.3",
+    "@types/slate": "^0.33.4",
     "@types/slate-react": "^0.12.3",
     "@types/webpack-env": "^1.13.6",
     "styled-components": "^3.4.5",

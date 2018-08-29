@@ -51,9 +51,6 @@ import LineHeight from "@canner/slate-select-lineheight";
 // plugins
 import "prismjs/themes/prism.css";
 
-// rules
-import "github-markdown.css";
-
 const selectors = [FontSize, LetterSpacing, LineHeight];
 const icons = [
   AlignLeft,

@@ -3,7 +3,7 @@ import { Query } from "react-apollo";
 import { RouteComponentProps } from "react-router-dom";
 import { getAllPosts, getAllPostsVariables } from "../../types/api";
 import BoardPresenter from "./BoardPresenter";
-import { POSTS } from "./BoardQueries";
+import { POSTS } from "../../sharedQueries";
 
 interface IProps extends RouteComponentProps<any> {}
 
