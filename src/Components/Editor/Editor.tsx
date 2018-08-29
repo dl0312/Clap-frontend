@@ -8,7 +8,7 @@ import Column from "../Column";
 import styled from "styled-components";
 import EditorDefaults from "../../EditorDefaults";
 import JsonView from "./JsonView";
-import UserView from "./UserView";
+import UserView from "../UserView";
 import BlockOptions from "./BlockOptions";
 import { media } from "../../config/_mixin";
 import ImagePopup from "../ImagePopup";
@@ -1318,7 +1318,7 @@ class Editor extends React.Component<IProps, IState> {
       case "underlined":
         return <u {...attributes}>{children}</u>;
       default:
-        return;
+        return null;
     }
   };
 }

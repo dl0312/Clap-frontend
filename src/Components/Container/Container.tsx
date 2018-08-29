@@ -464,10 +464,10 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
       case "IMAGE":
         return (
           <Image
-            src={this.props.item.imageSrc!}
+            src={this.props.item.imageSrc}
             alt={this.props.item.alt}
             link={this.props.item.link}
-            fullWidth={this.props.item.fullWidth!}
+            fullWidth={this.props.item.fullWidth}
           />
         );
       case "TEXT":

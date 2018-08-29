@@ -60,14 +60,13 @@ import EditPrism from "slate-prism";
 import EditCode from "slate-edit-code";
 import TrailingBlock from "slate-trailing-block";
 import EditTable from "slate-edit-table";
-
 const plugins = [
   EditPrism({
-    onlyIn: node => node.type === "code_block",
-    getSyntax: node => node.data.get("syntax")
+    onlyIn: (node: any) => node.type === "code_block",
+    getSyntax: (node: any) => node.data.get("syntax")
   }),
   EditCode({
-    onlyIn: node => node.type === "code_block"
+    onlyIn: (node: any) => node.type === "code_block"
   }),
   TrailingBlock(),
   EditTable(),
@@ -160,7 +159,7 @@ interface IState {
 }
 
 class UserView extends React.Component<IUserViewProps, IState> {
-  constructor(props) {
+  constructor(props: IUserViewProps) {
     super(props);
     this.state = { pos: { x: 0, y: 0 }, hoverImgJson: null, onImage: false };
   }
@@ -336,11 +335,6 @@ class UserView extends React.Component<IUserViewProps, IState> {
 export default UserView;
 
 class UserCard extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
   public render() {
     return (
       <div
@@ -375,19 +369,19 @@ interface IUserColumnProps {
       };
       isFocused: boolean;
     }
-  ) => JSX.Element;
+  ) => JSX.Element | null;
   renderMark: (
     props: {
       children: any;
       mark: Mark;
       attributes: any;
     }
-  ) => JSX.Element;
+  ) => JSX.Element | undefined;
   contentWidth: number;
 }
 
 class UserColumn extends React.Component<IUserColumnProps> {
-  constructor(props) {
+  constructor(props: IUserColumnProps) {
     super(props);
     this.state = {};
   }
@@ -445,19 +439,19 @@ interface IUserColumnItemProps {
       };
       isFocused: boolean;
     }
-  ) => JSX.Element;
+  ) => JSX.Element | null;
   renderMark: (
     props: {
       children: any;
       mark: Mark;
       attributes: any;
     }
-  ) => JSX.Element;
+  ) => JSX.Element | undefined;
   contentWidth: number;
 }
 
 class UserColumnItem extends React.Component<IUserColumnItemProps> {
-  constructor(props) {
+  constructor(props: IUserColumnItemProps) {
     super(props);
     this.state = {};
   }
@@ -466,7 +460,7 @@ class UserColumnItem extends React.Component<IUserColumnItemProps> {
     // 기본상태의 에디터화면 id=container, id=body
     const { contentWidth, cards } = this.props;
 
-    const compArray = [];
+    const compArray: any[] = [];
     cards.map((item, index) => {
       switch (item.type) {
         case "content":
@@ -536,82 +530,84 @@ interface IUserContainerProps {
       };
       isFocused: boolean;
     }
-  ) => JSX.Element;
+  ) => JSX.Element | null;
   renderMark: (
     props: {
       children: any;
       mark: Mark;
       attributes: any;
     }
-  ) => JSX.Element;
+  ) => JSX.Element | undefined;
 }
 
 class UserContainer extends React.Component<IUserContainerProps> {
-  constructor(props) {
+  constructor(props: IUserContainerProps) {
     super(props);
     this.state = {};
   }
 
   public showInner = () => {
-    if (this.props.item.type === "content") {
-      let value = null;
-      if (
-        this.props.item.content === "BUTTON" ||
-        this.props.item.content === "HTML" ||
-        this.props.item.content === "TEXT"
-      ) {
+    switch (this.props.item.content) {
+      case "BUTTON":
+        let value: Value | null = null;
         if (!Value.isValue(this.props.item.value)) {
           value = Value.fromJSON(this.props.item.value);
         } else {
           value = this.props.item.value;
         }
-      }
-      switch (this.props.item.content) {
-        case "BUTTON":
-          return (
-            <Button
-              item={this.props.item}
-              value={value}
-              renderNode={this.props.renderNode}
-              renderMark={this.props.renderMark}
-            />
-          );
-        case "DIVIDER":
-          return <Divider />;
-        case "HTML":
-          return (
-            <Html
-              value={value}
-              renderNode={this.props.renderNode}
-              renderMark={this.props.renderMark}
-            />
-          );
-        case "IMAGE":
-          return (
-            <Image
-              src={this.props.item.imageSrc}
-              alt={this.props.item.alt}
-              link={this.props.item.link}
-              fullWidth={this.props.item.fullWidth}
-            />
-          );
-        case "TEXT":
-          return (
-            <Text
-              value={value}
-              item={this.props.item}
-              plugins={plugins}
-              renderNode={this.props.renderNode}
-              renderMark={this.props.renderMark}
-            />
-          );
-        case "VIDEO":
-          return <Video src={this.props.item.videoSrc} />;
-        case "SOCIAL":
-          return <SocialMedia />;
-        default:
-          break;
-      }
+        return (
+          <Button
+            item={this.props.item}
+            value={value}
+            renderNode={this.props.renderNode}
+            renderMark={this.props.renderMark}
+          />
+        );
+      case "DIVIDER":
+        return <Divider />;
+      case "HTML":
+        if (!Value.isValue(this.props.item.value)) {
+          value = Value.fromJSON(this.props.item.value);
+        } else {
+          value = this.props.item.value;
+        }
+        return (
+          <Html
+            value={value}
+            renderNode={this.props.renderNode}
+            renderMark={this.props.renderMark}
+          />
+        );
+      case "IMAGE":
+        return (
+          <Image
+            src={this.props.item.imageSrc}
+            alt={this.props.item.alt}
+            link={this.props.item.link}
+            fullWidth={this.props.item.fullWidth}
+          />
+        );
+      case "TEXT":
+        if (!Value.isValue(this.props.item.value)) {
+          value = Value.fromJSON(this.props.item.value);
+        } else {
+          value = this.props.item.value;
+        }
+        return (
+          <Text
+            value={value}
+            item={this.props.item}
+            plugins={plugins}
+            renderNode={this.props.renderNode}
+            renderMark={this.props.renderMark}
+          />
+        );
+      case "VIDEO":
+        return <Video src={this.props.item.videoSrc} />;
+      case "SOCIAL":
+        return <SocialMedia />;
+      default:
+        return null;
     }
   };
 

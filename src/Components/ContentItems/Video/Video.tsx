@@ -34,7 +34,7 @@ const youtubeParser = (url: string) => {
 };
 
 interface IProps {
-  src: string | false;
+  src?: string | false;
 }
 
 const Video: React.SFC<IProps> = ({ src }) => {
