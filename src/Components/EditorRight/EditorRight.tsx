@@ -47,8 +47,6 @@ interface IProps {
   addIdToState: any;
   deleteIdToState: any;
   category: number[];
-  selectedIndex: number | number[] | null;
-  selectedContent: any;
 }
 
 interface IState {

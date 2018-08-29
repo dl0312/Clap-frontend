@@ -53,9 +53,9 @@ const Cover = styled.div`
 `;
 
 interface IProps {
-  type: "BodyBackgroundColor" | "font-color";
+  type: "bodyBackgroundColor" | "ButtonBackgroundColor" | "ButtonHoverColor";
   color: { r: number; g: number; b: number };
-  masterCallback: any;
+  masterCallback?: any;
   OnChangeCards?: any;
   onChange?: any;
   selectedIndex?: number | number[];
@@ -80,7 +80,7 @@ export default class Sketch extends React.Component<IProps, IState> {
     this.setState({
       displayColorPicker: !this.state.displayColorPicker
     });
-    if (this.props.type === "BodyBackgroundColor") {
+    if (this.props.type === "bodyBackgroundColor") {
       this.props.masterCallback(this.props.type, this.state.color);
     } else {
       this.props.OnChangeCards(
@@ -103,7 +103,7 @@ export default class Sketch extends React.Component<IProps, IState> {
   };
 
   public handleChange = (color: { rgb: any }) => {
-    if (this.props.type === "BodyBackgroundColor") {
+    if (this.props.type === "bodyBackgroundColor") {
       this.setState({ color: color.rgb }, () =>
         this.props.masterCallback(this.props.type, this.state.color)
       );
@@ -125,25 +125,25 @@ export default class Sketch extends React.Component<IProps, IState> {
   };
 
   public render() {
-    if (this.props.type === "font-color") {
-      return (
-        <div>
-          <FontColor
-            className="fas fa-font"
-            onMouseDown={this.handleFontOnClick}
-          />
-          {this.state.displayColorPicker ? (
-            <Popover>
-              <Cover onMouseDown={this.handleClose} />
-              <SketchPicker
-                color={this.state.color}
-                onChange={this.handleFontChange}
-              />
-            </Popover>
-          ) : null}
-        </div>
-      );
-    }
+    // if (this.props.type === "font-color") {
+    //   return (
+    //     <div>
+    //       <FontColor
+    //         className="fas fa-font"
+    //         onMouseDown={this.handleFontOnClick}
+    //       />
+    //       {this.state.displayColorPicker ? (
+    //         <Popover>
+    //           <Cover onMouseDown={this.handleClose} />
+    //           <SketchPicker
+    //             color={this.state.color}
+    //             onChange={this.handleFontChange}
+    //           />
+    //         </Popover>
+    //       ) : null}
+    //     </div>
+    //   );
+    // }
     return (
       <div>
         <Swatch onClick={this.handleOnClick}>

@@ -1,8 +1,7 @@
 import React from "react";
 import EditorLeft from "../EditorLeft";
 import styled from "styled-components";
-import { Editor } from "slate-react";
-import { Value, Change, Mark, ValueJSON, Schema, ObjectsAndTypes } from "slate";
+import { Value, Mark, ValueJSON } from "slate";
 import EditorDefaults from "../../EditorDefaults";
 import ImagePopup from "../ImagePopup";
 import { GetPos } from "../../Uility/GetPos";
@@ -14,7 +13,6 @@ import Html from "../ContentItems/Html";
 import Image from "../ContentItems/Image";
 import Video from "../ContentItems/Video";
 import SocialMedia from "../ContentItems/SocialMedia";
-import { LAST_CHILD_TYPE_INVALID } from "slate-schema-violations";
 
 import {
   AlignCenterPlugin,

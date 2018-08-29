@@ -7,15 +7,18 @@ import Card from "../Card";
 import Column from "../Column";
 import styled from "styled-components";
 import EditorDefaults from "../../EditorDefaults";
-import JsonView from "./JsonView";
+import JsonView from "../JsonView";
 import UserView from "../UserView";
-import BlockOptions from "./BlockOptions";
+import BlockOptions from "../BlockOptions";
 import { media } from "../../config/_mixin";
 import ImagePopup from "../ImagePopup";
 import { Value, Mark } from "slate";
 import EmptyCard from "../EmptyCard";
 import Upload from "../Upload";
-import { POST, WIKIIMAGE, POSTS } from "../../queries";
+
+import { POST, WIKIIMAGE } from "./EditorQueries";
+import { POSTS } from "../../sharedQueries";
+
 import { Row, Col, Tabs } from "antd";
 import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
 import Blockquote from "@canner/slate-icon-blockquote";
@@ -196,7 +199,7 @@ const PostButton = styled.div`
 `;
 
 interface IProps {
-  type?: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | "POST_ADD" | "POST_EDIT" | null;
+  type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | "POST_ADD" | "POST_EDIT";
   postId: number;
   wikiImage?: any;
   state?: any;
@@ -290,14 +293,14 @@ class Editor extends React.Component<IProps, IState> {
       if (selectedIndex !== null) {
         if (!Array.isArray(selectedIndex) && !Array.isArray(dataFromChild)) {
           if (selectedIndex === dataFromChild) {
-            return null;
+            console.log("same index");
           }
         } else if (
           Array.isArray(selectedIndex) &&
           Array.isArray(dataFromChild)
         ) {
           if (selectedIndex.every((v, i) => v === dataFromChild[i])) {
-            return null;
+            console.log("same index");
           }
         } else {
           this.setState({
@@ -926,6 +929,7 @@ class Editor extends React.Component<IProps, IState> {
         ) : this.props.type === "WIKIIMAGE_ADD" ? (
           <React.Fragment>
             <Upload
+              type={"WIKIIMAGE_ADD"}
               exShownImg={this.state.exShownImg}
               masterCallback={this.masterCallback}
             />
@@ -964,6 +968,7 @@ class Editor extends React.Component<IProps, IState> {
         ) : this.props.type === "WIKIIMAGE_EDIT" ? (
           <React.Fragment>
             <Upload
+              type={"WIKIIMAGE_EDIT"}
               exShownImg={this.state.exShownImg}
               masterCallback={this.masterCallback}
             />
@@ -1142,11 +1147,7 @@ class Editor extends React.Component<IProps, IState> {
                 </EditorLeft>
               </React.Fragment>
             ) : view === "USER" ? (
-              <UserView
-                renderNode={this.renderNode}
-                renderMark={this.renderMark}
-                json={this.state}
-              />
+              <UserView json={this.state} />
             ) : view === "JSON" ? (
               <JsonView json={this.state} />
             ) : null}
@@ -1167,9 +1168,7 @@ class Editor extends React.Component<IProps, IState> {
               handleOnChange={this.handleOnChange}
               selectedIndex={selectedIndex}
               selectedContent={this.showSelected(selectedIndex)}
-              showSelected={this.showSelected}
               OnChangeCards={this.OnChangeCards}
-              masterCallback={this.masterCallback}
             />
           </EditorRightContainer>
         </EditorContainer>
@@ -1318,7 +1317,7 @@ class Editor extends React.Component<IProps, IState> {
       case "underlined":
         return <u {...attributes}>{children}</u>;
       default:
-        return null;
+        return;
     }
   };
 }

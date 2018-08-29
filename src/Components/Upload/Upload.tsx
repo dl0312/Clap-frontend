@@ -5,7 +5,6 @@ import { UPLOAD_SHOWNIMAGE } from "./UploadQueries";
 import { uploadShownImage, uploadShownImageVariables } from "../../types/api";
 import styled from "styled-components";
 import { toast } from "react-toastify";
-import { RouteComponentProps } from "react-router";
 
 const FlexBox = styled.div`
   display: flex;
@@ -43,13 +42,11 @@ class UploadQuery extends Mutation<
   uploadShownImageVariables
 > {}
 
-interface IRouteProps extends RouteComponentProps<any> {}
-
 interface IProps {
-  type?: "POST_IMAGE";
+  type: "POST_IMAGE" | "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
   exShownImg: { url: string };
   handleOnChange?: any;
-  masterCallback: any;
+  masterCallback?: any;
   selectedIndex?: number | number[];
 }
 
@@ -70,18 +67,18 @@ class Upload extends React.Component<IProps, IState> {
         <FlexBox>
           <UploadQuery
             mutation={UPLOAD_SHOWNIMAGE}
-            // onCompleted={data => {
-            //   const { UploadShownImage } = data;
-            //   if (UploadShownImage.ok) {
-            //     toast.success("Place added!");
-            //     setTimeout(() => {
-            //       history.push("/places");
-            //     }, 2000);
-            //   } else {
-            //     toast.error(UploadShownImage.error);
-            //   }
-            //   history.push(`/guide`);
-            // }}
+            onCompleted={data => {
+              const { UploadShownImage } = data;
+              if (UploadShownImage.ok) {
+                toast.success("Place added!");
+                // setTimeout(() => {
+                //   history.push("/places");
+                // }, 2000);
+              } else {
+                toast.error(UploadShownImage.error);
+              }
+              // history.push(`/guide`);
+            }}
           >
             {(UploadShownImage, { data, loading }) => (
               <Dropzone

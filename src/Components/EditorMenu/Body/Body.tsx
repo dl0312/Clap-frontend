@@ -219,7 +219,7 @@ class Body extends React.Component<IProps, IState> {
             Background Color
             <Sketch
               masterCallback={this.props.masterCallback}
-              type="BodyBackgroundColor"
+              type="bodyBackgroundColor"
               color={EditorDefaults.BACKGROUND_COLOR}
             />
           </Item>
