@@ -33,3 +33,4 @@ declare module "slate-edit-code";
 declare module "slate-trailing-block";
 declare module "slate-edit-table";
 declare module "react-dnd-html5-backend";
+declare module "react-json-view";
