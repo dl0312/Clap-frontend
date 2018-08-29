@@ -87,6 +87,8 @@ const icons = [
 
 import update from "immutability-helper";
 import { GetPos } from "../../Uility/GetPos";
+import { MutationFn } from "react-apollo";
+import { addPost, addPostVariables } from "../../types/api";
 
 const TabPane = Tabs.TabPane;
 const DEFAULT_NODE = "paragraph";
@@ -200,14 +202,14 @@ const PostButton = styled.div`
 
 interface IProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | "POST_ADD" | "POST_EDIT";
-  postId: number;
+  postId?: number;
   wikiImage?: any;
   state?: any;
-  AddPost: any;
-  EditPost: any;
-  AddWikiImage: any;
-  EditWikiImage: any;
-  categoryId: number;
+  AddPost?: MutationFn<addPost, addPostVariables>;
+  EditPost?: any;
+  AddWikiImage?: any;
+  EditWikiImage?: any;
+  categoryId?: number;
 }
 
 interface IState {
@@ -873,10 +875,13 @@ class Editor extends React.Component<IProps, IState> {
                 filteredState.pos = { x: 0, y: 0 };
                 filteredState.onImage = false;
                 filteredState.view = "EDIT";
-                this.props.AddPost({
+                this.props.AddPost!({
                   refetchQueries: [
                     {
-                      query: POSTS
+                      query: POSTS,
+                      variables: {
+                        limit: 20
+                      }
                     }
                   ],
                   variables: {

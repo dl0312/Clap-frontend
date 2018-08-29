@@ -5,6 +5,11 @@ import { Query } from "react-apollo";
 import ImagePopup from "../ImagePopup";
 import { CATEGORIES_KEYWORD } from "./MiniWikiQueries";
 import { GetPos } from "../../Uility/GetPos";
+import { Change, Value } from "slate";
+import {
+  getCategoriesByKeyword,
+  getCategoriesByKeywordVariables
+} from "../../types/api";
 
 const WikiContainer = styled.div`
   padding-top: 15px;
@@ -84,7 +89,14 @@ const CategoryName = styled.div`
   text-align: center;
 `;
 
-function insertImage(change, represent, hover, name, type, target) {
+function insertImage(
+  change: Change,
+  represent: string,
+  hover: any,
+  name: string,
+  type: string,
+  target: any
+) {
   if (target) {
     change.select(target);
   }
@@ -110,6 +122,11 @@ interface IState {
   inputType: string;
 }
 
+class GetCategoriesByKeywordQuery extends Query<
+  getCategoriesByKeyword,
+  getCategoriesByKeywordVariables
+> {}
+
 class MiniWiki extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
@@ -125,7 +142,7 @@ class MiniWiki extends React.Component<IProps, IState> {
   public render() {
     const { inputType, pos, hoverImgJson, onImage } = this.state;
     return (
-      <Query
+      <GetCategoriesByKeywordQuery
         query={CATEGORIES_KEYWORD}
         variables={{ keyword: this.state.keyword }}
       >
@@ -181,8 +198,8 @@ class MiniWiki extends React.Component<IProps, IState> {
                   </InputTypeContainer>
                 </InputContainer>
                 <ListContainer>
-                  {data.GetCategoriesByKeyword.categories.map(
-                    (category, index) => (
+                  {data!.GetCategoriesByKeyword.categories!.map(
+                    (category: any, index: number) => (
                       <React.Fragment key={index}>
                         <DataContainer>
                           {category.wikiImages[0] ? (
@@ -250,7 +267,7 @@ class MiniWiki extends React.Component<IProps, IState> {
             </React.Fragment>
           );
         }}
-      </Query>
+      </GetCategoriesByKeywordQuery>
     );
   }
 }

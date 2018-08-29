@@ -10,7 +10,6 @@ import { ADD_POST } from "./AddPostQueries";
 interface IProps extends RouteComponentProps<any> {}
 
 interface IState {
-  title: string;
   body: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
@@ -40,7 +39,6 @@ class AddPostContainer extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      title: "",
       body: {
         rightMenu: null,
         view: "EDIT",
@@ -67,7 +65,7 @@ class AddPostContainer extends React.Component<IProps, IState> {
 
   public render() {
     const { history } = this.props;
-    const { title, body } = this.state;
+    const { body } = this.state;
     return (
       <AddPostQuery
         mutation={ADD_POST}
@@ -85,7 +83,7 @@ class AddPostContainer extends React.Component<IProps, IState> {
         }}
       >
         {(AddPost, { data, loading, error }) => {
-          return <AddPostPresenter title={title} body={body} />;
+          return <AddPostPresenter body={body} AddPost={AddPost} />;
         }}
       </AddPostQuery>
     );
