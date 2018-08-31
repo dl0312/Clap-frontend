@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import ItemTypes from "../../ItemTypes";
 import EditorDefaults from "../../EditorDefaults";
-import { DragSource, ConnectDragSource, DragSourceMonitor } from "react-dnd";
+import {
+  DragSource,
+  ConnectDragSource,
+  DragSourceMonitor,
+  DragSourceConnector
+} from "react-dnd";
 import { Value } from "slate";
 import styled from "styled-components";
 
@@ -40,11 +45,11 @@ const Title = styled.div`
 
 const itemSource = {
   beginDrag(props: IProps) {
-    props.masterCallback("OnDrag", "content");
+    props.masterCallback("onDrag", "content");
 
     const item: {
       type: "content" | null;
-      OnDrag: "content" | null;
+      onDrag: "content" | null;
       content: string;
       // Image
       imageSrc?: string;
@@ -58,7 +63,7 @@ const itemSource = {
       value?: Value;
     } = {
       type: "content",
-      OnDrag: "content",
+      onDrag: "content",
       content: props.item.name
     };
     // default block content src, text etc...
@@ -169,10 +174,10 @@ const itemSource = {
     return item;
   },
   endDrag(props: IProps, monitor: DragSourceMonitor, component: ContentItem) {
-    props.masterCallback("OnDrag", null);
+    props.masterCallback("onDrag", null);
     const item = {
       type: "content",
-      OnDrag: "content",
+      onDrag: "content",
       content: props.item.name
     };
     return item;
@@ -214,6 +219,10 @@ class ContentItem extends Component<IProps & IDnDProps> {
   }
 }
 
-export default DragSource(ItemTypes.CONTENT, itemSource, connect => ({
-  connectDragSource: connect.dragSource()
-}))(ContentItem);
+export default DragSource(
+  ItemTypes.CONTENT,
+  itemSource,
+  (connect: DragSourceConnector): object => ({
+    connectDragSource: connect.dragSource()
+  })
+)(ContentItem);

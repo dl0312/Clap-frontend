@@ -6,7 +6,9 @@ import {
   DragSourceMonitor,
   ConnectDragPreview,
   ConnectDragSource,
-  ConnectDropTarget
+  ConnectDropTarget,
+  DropTargetConnector,
+  DragSourceConnector
 } from "react-dnd";
 import ItemTypes from "../../ItemTypes";
 import classnames from "classnames";
@@ -378,7 +380,6 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
             ) : null}
             {this.props.children}
             <Builder
-              // display={this.props.OnDrag === "columnList"}
               state={
                 this.props.onDrag === "columnList"
                   ? this.state.hoverPosition === "under" && isOver
@@ -399,14 +400,18 @@ export default flow(
   DropTarget(
     [ItemTypes.COLUMN, ItemTypes.ROW],
     cardTarget,
-    (connect, monitor) => ({
+    (connect: DropTargetConnector, monitor: DropTargetMonitor): object => ({
       connectDropTarget: connect.dropTarget(),
       isOver: monitor.isOver()
     })
   ),
-  DragSource(ItemTypes.COLUMN, cardSource, (connect, monitor) => ({
-    connectDragSource: connect.dragSource(),
-    connectDragPreview: connect.dragPreview(),
-    isDragging: monitor.isDragging()
-  }))
+  DragSource(
+    ItemTypes.COLUMN,
+    cardSource,
+    (connect: DragSourceConnector, monitor: DragSourceMonitor): object => ({
+      connectDragSource: connect.dragSource(),
+      connectDragPreview: connect.dragPreview(),
+      isDragging: monitor.isDragging()
+    })
+  )
 )(Card);

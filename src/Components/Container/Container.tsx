@@ -8,19 +8,12 @@ import {
   ConnectDragPreview,
   ConnectDropTarget,
   DragSourceMonitor,
-  DropTargetMonitor
+  DropTargetMonitor,
+  DropTargetConnector,
+  DragSourceConnector
 } from "react-dnd";
-import {
-  Value,
-  Block,
-  Change,
-  Schema,
-  ObjectsAndTypes,
-  ValueJSON,
-  Mark
-} from "slate";
+import { Value, ValueJSON } from "slate";
 import styled from "styled-components";
-import { LAST_CHILD_TYPE_INVALID } from "slate-schema-violations";
 import flow from "lodash/flow";
 import EditorDefaults from "../../EditorDefaults";
 
@@ -53,7 +46,8 @@ import {
 import { HrPlugin } from "@canner/slate-icon-hr";
 import { ImagePlugin } from "@canner/slate-icon-image";
 import { ItalicPlugin } from "@canner/slate-icon-italic";
-import { TablePlugin } from "@canner/slate-icon-table";
+import { TablePlugin } from "../../Uility/Editor/Table";
+// import { TablePlugin } from "@canner/slate-icon-table";
 import { LinkPlugin } from "@canner/slate-icon-link";
 import { ListPlugin } from "@canner/slate-icon-list";
 import { StrikeThroughPlugin } from "@canner/slate-icon-strikethrough";
@@ -77,6 +71,7 @@ import EditCode from "slate-edit-code";
 import TrailingBlock from "slate-trailing-block";
 import EditTable from "slate-edit-table";
 import { findDOMNode } from "react-dom";
+import { RenderNodeProps, RenderMarkProps } from "slate-react";
 
 const plugins = [
   EditPrism({
@@ -211,6 +206,7 @@ const cardSource = {
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: Container) {
     const isJustOverThisOne = monitor.isOver({ shallow: true });
+    console.log("hover");
     if (isJustOverThisOne) {
       const dragIndex = monitor.getItem().index;
       const hoverIndex = props.index;
@@ -225,6 +221,7 @@ const cardTarget = {
         component
       )! as Element).getBoundingClientRect() as DOMRect;
 
+      console.log(hoverBoundingRect);
       // Get vertical middle
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
@@ -277,7 +274,6 @@ const cardTarget = {
     if (type === ItemTypes.CARD) {
       const index = props.index;
       if (dropPosition === "over") {
-        // index[2] -= 1;
         props.moveCard(monitor.getItem().index, index);
       } else if (dropPosition === "under") {
         index[2] += 1;
@@ -285,34 +281,15 @@ const cardTarget = {
       }
     } else if (type === ItemTypes.CONTENT) {
       const index = props.index;
-      console.log(index);
       if (dropPosition === "over") {
-        console.log(index);
         props.handleDrop(monitor.getItem(), index);
       } else if (dropPosition === "under") {
         index[2] += 1;
-        console.log(index);
         props.handleDrop(monitor.getItem(), index);
       }
     }
   }
 };
-
-const schema: Schema = {
-  document: {
-    last: { type: "paragraph" } as ObjectsAndTypes,
-    normalize: (change: Change, reason: any, { node, child }: any) => {
-      switch (reason) {
-        case LAST_CHILD_TYPE_INVALID: {
-          const paragraph = Block.create("paragraph");
-          return change.insertNodeByKey(node.key, node.nodes.size, paragraph);
-        }
-        default:
-          return;
-      }
-    }
-  }
-} as Schema;
 
 interface IProps {
   key: number;
@@ -366,24 +343,8 @@ interface IProps {
   };
   onDrag: "content" | "columnList";
   contentWidth: number;
-  renderNode: (
-    props: {
-      attributes: any;
-      children: any;
-      node: {
-        type: any;
-        data: any;
-      };
-      isFocused: boolean;
-    }
-  ) => JSX.Element | null;
-  renderMark: (
-    props: {
-      children: any;
-      mark: Mark;
-      attributes: any;
-    }
-  ) => JSX.Element | undefined;
+  renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
+  renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
 }
 
 interface IState {
@@ -485,7 +446,6 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
         return (
           <Text
             value={value}
-            schema={schema}
             index={this.props.index}
             item={this.props.item}
             plugins={plugins}
@@ -553,13 +513,15 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
     const opacity = isDragging ? 0.2 : 1;
     let hover: boolean = false;
     let active: boolean = false;
-    if (Array.isArray(hoveredIndex) && Array.isArray(selectedIndex)) {
+    if (Array.isArray(hoveredIndex)) {
       hover = hoveredIndex
         ? hoveredIndex.length === index.length &&
           hoveredIndex.every((v, i) => v === index[i])
           ? true
           : false
         : false;
+    }
+    if (Array.isArray(selectedIndex)) {
       active = selectedIndex
         ? selectedIndex.length === index.length &&
           selectedIndex.every((v, i) => v === index[i])
@@ -668,7 +630,6 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
             ) : null}
             {this.showInner(active)}
             <Builder
-              display={this.props.onDrag === "content"}
               state={
                 this.props.onDrag === "content"
                   ? this.state.hoverPosition === "under" && isOver
@@ -691,14 +652,18 @@ export default flow(
   DropTarget(
     [ItemTypes.CARD, ItemTypes.CONTENT],
     cardTarget,
-    (connect, monitor) => ({
+    (connect: DropTargetConnector, monitor: DropTargetMonitor): object => ({
       connectDropTarget: connect.dropTarget(),
       isOver: monitor.isOver()
     })
   ),
-  DragSource(ItemTypes.CARD, cardSource, (connect, monitor) => ({
-    connectDragSource: connect.dragSource(),
-    connectDragPreview: connect.dragPreview(),
-    isDragging: monitor.isDragging()
-  }))
+  DragSource(
+    ItemTypes.CARD,
+    cardSource,
+    (connect: DragSourceConnector, monitor: DragSourceMonitor): object => ({
+      connectDragSource: connect.dragSource(),
+      connectDragPreview: connect.dragPreview(),
+      isDragging: monitor.isDragging()
+    })
+  )
 )(Container);

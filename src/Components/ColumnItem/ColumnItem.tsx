@@ -3,7 +3,7 @@ import styled from "styled-components";
 import EmptyContainer from "../EmptyContainer";
 import Container from "../Container";
 import { Color } from "csstype";
-import { Mark } from "slate";
+import { RenderNodeProps, RenderMarkProps } from "slate-react";
 
 interface IColumnProps {
   hasBlock: boolean;
@@ -33,24 +33,8 @@ interface IProps {
   hoveredIndex: number | number[] | null;
   index: number[];
   handleOnChange: any;
-  renderNode: (
-    props: {
-      attributes: any;
-      children: any;
-      node: {
-        type: any;
-        data: any;
-      };
-      isFocused: boolean;
-    }
-  ) => JSX.Element | null;
-  renderMark: (
-    props: {
-      children: any;
-      mark: Mark;
-      attributes: any;
-    }
-  ) => JSX.Element | undefined;
+  renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
+  renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
   masterCallback: any;
   moveCard: any;
   handleDrop: (hoverItem: any, hoverIndex: number[]) => void;
@@ -66,11 +50,9 @@ class ColumnItem extends React.Component<IProps> {
     // 기본상태의 에디터화면 id=container, id=body
     const { contentWidth, cards } = this.props;
     const backgroundColor = cards.length === 1 ? "transparent" : "transparent";
-    console.log(cards);
     return (
       <Column hasBlock={cards.length !== 0} bgc={backgroundColor}>
         {cards.map((item: any, index: number) => {
-          console.log(item);
           return (
             <Container
               key={index}

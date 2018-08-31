@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ColumnItem from "../ColumnItem";
-import { Mark } from "slate";
+import { RenderNodeProps, RenderMarkProps } from "slate-react";
 
 interface IProps {
   columnArray: number[];
@@ -14,24 +14,8 @@ interface IProps {
   handleDrop: (hoverItem: any, hoverIndex: number[]) => void;
   moveCard: any;
   handleOnChange: any;
-  renderNode: (
-    props: {
-      attributes: any;
-      children: any;
-      node: {
-        type: any;
-        data: any;
-      };
-      isFocused: boolean;
-    }
-  ) => JSX.Element | null;
-  renderMark: (
-    props: {
-      children: any;
-      mark: Mark;
-      attributes: any;
-    }
-  ) => JSX.Element | undefined;
+  renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
+  renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
   selectedIndex: number | number[] | null;
   hoveredIndex: number | number[] | null;
   onDrag: any;
