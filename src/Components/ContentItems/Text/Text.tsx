@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Value, Change, Schema, Mark } from "slate";
+import { Value } from "slate";
 import { RenderNodeProps, RenderMarkProps, Editor, Plugin } from "slate-react";
 import "github-markdown-css";
 
@@ -42,33 +42,15 @@ interface IProps {
   };
   index?: number[];
   value: Value;
-  schema?: Schema;
   plugins: Plugin[];
   handleOnChange?: any;
-  renderNode: (
-    props: {
-      attributes: any;
-      children: any;
-      node: {
-        type: any;
-        data: any;
-      };
-      isFocused: boolean;
-    }
-  ) => JSX.Element | null;
-  renderMark: (
-    props: {
-      children: any;
-      mark: Mark;
-      attributes: any;
-    }
-  ) => JSX.Element | undefined;
+  renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
+  renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
 }
 
 const Text: React.SFC<IProps> = ({
   item,
   value,
-  schema,
   plugins,
   handleOnChange,
   index,
@@ -87,14 +69,13 @@ const Text: React.SFC<IProps> = ({
           fontFamily: "Nanum Gotic",
           wordBreak: "break-word"
         }}
-        schema={schema}
         value={value}
         readOnly={false}
-        onChange={(change: Change) => {
+        onChange={(change: any) => {
           handleOnChange(change, index, "TEXT", "TEXT_CHANGE");
         }}
-        renderNode={(props: RenderNodeProps) => renderNode}
-        renderMark={(props: RenderMarkProps) => renderMark}
+        renderNode={renderNode}
+        renderMark={renderMark}
         autoCorrect={false}
         spellCheck={false}
         plugins={plugins}

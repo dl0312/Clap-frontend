@@ -12,9 +12,10 @@ import UserView from "../UserView";
 import BlockOptions from "../BlockOptions";
 import { media } from "../../config/_mixin";
 import ImagePopup from "../ImagePopup";
-import { Value, Mark } from "slate";
+import { Value } from "slate";
 import EmptyCard from "../EmptyCard";
 import Upload from "../Upload";
+import { RenderNodeProps, RenderMarkProps } from "slate-react";
 
 import { POST, WIKIIMAGE } from "./EditorQueries";
 import { POSTS } from "../../sharedQueries";
@@ -50,6 +51,9 @@ import LineHeight from "@canner/slate-select-lineheight";
 
 // plugins
 import "prismjs/themes/prism.css";
+
+// rules
+import "github-markdown-css";
 
 const selectors = [FontSize, LetterSpacing, LineHeight];
 const icons = [
@@ -696,6 +700,7 @@ class Editor extends React.Component<IProps, IState> {
     content: any,
     type: "TEXT_CHANGE" | "LINK" | "ALT" | "URL"
   ) => {
+    console.log(value.value);
     if (type === "TEXT_CHANGE") {
       if (index.length === 2) {
         this.setState(
@@ -1025,22 +1030,22 @@ class Editor extends React.Component<IProps, IState> {
                         {selectors.map((Type, i) => {
                           if (
                             this.state.selectedIndex !== null &&
+                            Array.isArray(this.state.selectedIndex) &&
                             this.state.selectedContent !== undefined &&
                             (this.state.selectedContent.content === "TEXT" ||
                               this.state.selectedContent.content === "BUTTON" ||
                               this.state.selectedContent.content === "HTML")
                           ) {
-                            const { value } = this.showSelected(
-                              this.state.selectedIndex
-                            );
-                            const onChange = (change: any) => {
+                            const selected = this.state.selectedIndex;
+                            const onChange = ({ value }: any) => {
                               this.handleOnChange(
-                                change,
-                                this.state.selectedIndex as number[],
+                                { value },
+                                selected,
                                 "TEXT",
                                 "TEXT_CHANGE"
                               );
                             };
+                            const { value } = this.showSelected(selected);
                             return (
                               <Type
                                 change={value.change()}
@@ -1058,22 +1063,22 @@ class Editor extends React.Component<IProps, IState> {
                         {icons.map((Type, i) => {
                           if (
                             this.state.selectedIndex !== null &&
+                            Array.isArray(this.state.selectedIndex) &&
                             this.state.selectedContent !== undefined &&
                             (this.state.selectedContent.content === "TEXT" ||
                               this.state.selectedContent.content === "BUTTON" ||
                               this.state.selectedContent.content === "HTML")
                           ) {
-                            const { value } = this.showSelected(
-                              this.state.selectedIndex
-                            );
-                            const onChange = (change: any) => {
+                            const selected = this.state.selectedIndex;
+                            const onChange = ({ value }: any) => {
                               this.handleOnChange(
-                                change,
-                                this.state.selectedIndex as number[],
+                                { value },
+                                selected,
                                 "TEXT",
                                 "TEXT_CHANGE"
                               );
                             };
+                            const { value } = this.showSelected(selected);
                             return (
                               <Type
                                 change={value.change()}
@@ -1184,32 +1189,12 @@ class Editor extends React.Component<IProps, IState> {
     );
   }
 
-  /**
-   * Render a Slate node.
-   *
-   * @param {Object} props
-   * @return {Element}
-   */
-
-  public renderNode = (props: {
-    attributes: any;
-    children: any;
-    node: { type: any; data: any };
-    isFocused: boolean;
-  }) => {
-    const { attributes, children, node, isFocused } = props;
-
-    switch (node.type) {
-      case "block-quote":
-        return <blockquote {...attributes}>{children}</blockquote>;
-      case "bulleted-list":
-        return <ul {...attributes}>{children}</ul>;
-      case "list-item":
-        return <li {...attributes}>{children}</li>;
-      case "numbered-list":
-        return <ol {...attributes}>{children}</ol>;
-      case "clap-image":
-        {
+  public renderNode = (props: RenderNodeProps): JSX.Element | undefined => {
+    const { attributes, node, isSelected } = props;
+    console.log(props);
+    if (node.object === "block" || node.object === "inline") {
+      switch (node.type) {
+        case "clap-image": {
           const representSrc = node.data.get("represent");
           const hoverSrc = node.data.get("hover");
           const name = node.data.get("name");
@@ -1258,7 +1243,7 @@ class Editor extends React.Component<IProps, IState> {
                     small={true}
                     src={`http://localhost:4000/uploads/${representSrc}`}
                     alt={"hover"}
-                    selected={isFocused}
+                    selected={isSelected}
                     {...attributes}
                   />
                   <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
@@ -1271,7 +1256,7 @@ class Editor extends React.Component<IProps, IState> {
                 <ClapImage
                   src={`http://localhost:4000/uploads/${representSrc}`}
                   alt={"hover"}
-                  selected={isFocused}
+                  selected={isSelected}
                   onMouseOver={() =>
                     this.setState({
                       hoverImgJson: hoverSrc,
@@ -1288,37 +1273,22 @@ class Editor extends React.Component<IProps, IState> {
                 />
               );
             default:
-              return null;
+              return;
           }
         }
-        return null;
-      default:
-        return null;
+        default:
+          return;
+      }
+    } else {
+      return;
     }
   };
 
-  /**
-   * Render a Slate mark.
-   *
-   * @param {Object} props
-   * @return {Element}
-   */
+  public renderMark = (props: RenderMarkProps): JSX.Element | undefined => {
+    const { mark } = props;
+    console.log(props);
 
-  public renderMark = (props: {
-    children: any;
-    mark: Mark;
-    attributes: any;
-  }) => {
-    const { children, mark, attributes } = props;
     switch (mark.type) {
-      case "bold":
-        return <strong {...attributes}>{children}</strong>;
-      case "code":
-        return <code {...attributes}>{children}</code>;
-      case "italic":
-        return <em {...attributes}>{children}</em>;
-      case "underlined":
-        return <u {...attributes}>{children}</u>;
       default:
         return;
     }

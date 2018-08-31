@@ -46,7 +46,7 @@ import {
 import { HrPlugin } from "@canner/slate-icon-hr";
 import { ImagePlugin } from "@canner/slate-icon-image";
 import { ItalicPlugin } from "@canner/slate-icon-italic";
-import { TablePlugin } from "../../Uility/Editor/Table";
+import { TablePlugin } from "@canner/slate-icon-table";
 // import { TablePlugin } from "@canner/slate-icon-table";
 import { LinkPlugin } from "@canner/slate-icon-link";
 import { ListPlugin } from "@canner/slate-icon-list";

@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import ItemTypes from "../../ItemTypes";
 import styled from "styled-components";
-import { DragSource, ConnectDragSource, DragSourceMonitor } from "react-dnd";
+import {
+  DragSource,
+  ConnectDragSource,
+  DragSourceMonitor,
+  DragSourceConnector
+} from "react-dnd";
 
 const itemSource = {
   beginDrag(
@@ -10,18 +15,18 @@ const itemSource = {
     component: RowItem
   ): {
     type?: string;
-    OnDrag?: "content" | "columnList";
+    onDrag?: "content" | "columnList";
     content?: any[];
     columnListArray: any[];
   } {
-    props.masterCallback("OnDrag", "columnList");
+    props.masterCallback("onDrag", "columnList");
     const columnListArray: any[] = [];
     component.props.array.map(element => {
       return columnListArray.push([]);
     });
     return {
       type: "columnList",
-      OnDrag: "columnList",
+      onDrag: "columnList",
       content: props.item.array,
       columnListArray
     };
@@ -32,18 +37,18 @@ const itemSource = {
     component: RowItem
   ): {
     type?: string;
-    OnDrag?: "content" | "columnList";
+    onDrag?: "content" | "columnList";
     content?: any[];
     columnListArray: any[];
   } {
     const columnListArray: any[] = [];
-    props.masterCallback("OnDrag", null);
+    props.masterCallback("onDrag", null);
     component.props.array.map(element => {
       return columnListArray.push([]);
     });
     return {
       type: "columnList",
-      OnDrag: "columnList",
+      onDrag: "columnList",
       content: props.item.array,
       columnListArray
     };
@@ -102,6 +107,10 @@ class RowItem extends Component<IProps & IDnDProps> {
   }
 }
 
-export default DragSource(ItemTypes.ROW, itemSource, connect => ({
-  connectDragSource: connect.dragSource()
-}))(RowItem);
+export default DragSource(
+  ItemTypes.ROW,
+  itemSource,
+  (connect: DragSourceConnector): object => ({
+    connectDragSource: connect.dragSource()
+  })
+)(RowItem);

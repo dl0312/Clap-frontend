@@ -1,7 +1,7 @@
 import React from "react";
 import EditorLeft from "../EditorLeft";
 import styled from "styled-components";
-import { Value, Mark, ValueJSON } from "slate";
+import { Value, ValueJSON } from "slate";
 import EditorDefaults from "../../EditorDefaults";
 import { GetPos } from "../../Uility/GetPos";
 
@@ -57,6 +57,7 @@ import EditPrism from "slate-prism";
 import EditCode from "slate-edit-code";
 import TrailingBlock from "slate-trailing-block";
 import EditTable from "slate-edit-table";
+import { RenderMarkProps, RenderNodeProps } from "slate-react";
 const plugins = [
   EditPrism({
     onlyIn: (node: any) => node.type === "code_block",
@@ -166,25 +167,20 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
     this.state = { pos: { x: 0, y: 0 }, hoverImgJson: null, onImage: false };
   }
 
-  public renderNode = (props: {
-    attributes: any;
-    children: any;
-    node: { type: any; data: any };
-    isFocused: boolean;
-  }) => {
-    const { attributes, children, node, isFocused } = props;
+  public renderNode = (props: RenderNodeProps): JSX.Element | undefined => {
+    const { attributes, children, node, isSelected } = props;
 
-    switch (node.type) {
-      case "block-quote":
-        return <blockquote {...attributes}>{children}</blockquote>;
-      case "bulleted-list":
-        return <ul {...attributes}>{children}</ul>;
-      case "list-item":
-        return <li {...attributes}>{children}</li>;
-      case "numbered-list":
-        return <ol {...attributes}>{children}</ol>;
-      case "clap-image":
-        {
+    if (node.object === "block" || node.object === "inline") {
+      switch (node.type) {
+        case "block-quote":
+          return <blockquote {...attributes}>{children}</blockquote>;
+        case "bulleted-list":
+          return <ul {...attributes}>{children}</ul>;
+        case "list-item":
+          return <li {...attributes}>{children}</li>;
+        case "numbered-list":
+          return <ol {...attributes}>{children}</ol>;
+        case "clap-image": {
           const representSrc = node.data.get("represent");
           const hoverSrc = node.data.get("hover");
           const name = node.data.get("name");
@@ -233,7 +229,7 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
                     small={true}
                     src={`http://localhost:4000/uploads/${representSrc}`}
                     alt={"hover"}
-                    selected={isFocused}
+                    selected={isSelected}
                     {...attributes}
                   />
                   <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
@@ -246,7 +242,7 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
                 <ClapImage
                   src={`http://localhost:4000/uploads/${representSrc}`}
                   alt={"hover"}
-                  selected={isFocused}
+                  selected={isSelected}
                   onMouseOver={() =>
                     this.setState({
                       hoverImgJson: hoverSrc,
@@ -263,27 +259,18 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
                 />
               );
             default:
-              return null;
+              return;
           }
         }
-        return null;
-      default:
-        return null;
+        default:
+          return;
+      }
+    } else {
+      return;
     }
   };
 
-  /**
-   * Render a Slate mark.
-   *
-   * @param {Object} props
-   * @return {Element}
-   */
-
-  public renderMark = (props: {
-    children: any;
-    mark: Mark;
-    attributes: any;
-  }) => {
+  public renderMark = (props: RenderMarkProps): JSX.Element | undefined => {
     const { children, mark, attributes } = props;
     switch (mark.type) {
       case "bold":
@@ -395,24 +382,9 @@ interface IUserColumnProps {
   columnArray: any[];
   columnListArray: any[];
   index: number[];
-  renderNode: (
-    props: {
-      attributes: any;
-      children: any;
-      node: {
-        type: any;
-        data: any;
-      };
-      isFocused: boolean;
-    }
-  ) => JSX.Element | null;
-  renderMark: (
-    props: {
-      children: any;
-      mark: Mark;
-      attributes: any;
-    }
-  ) => JSX.Element | undefined;
+  renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
+  renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
+
   contentWidth: number;
 }
 
@@ -465,24 +437,9 @@ const Column = styled.div`
 interface IUserColumnItemProps {
   cards: any[];
   index: number[];
-  renderNode: (
-    props: {
-      attributes: any;
-      children: any;
-      node: {
-        type: any;
-        data: any;
-      };
-      isFocused: boolean;
-    }
-  ) => JSX.Element | null;
-  renderMark: (
-    props: {
-      children: any;
-      mark: Mark;
-      attributes: any;
-    }
-  ) => JSX.Element | undefined;
+  renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
+  renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
+
   contentWidth: number;
 }
 
@@ -556,24 +513,8 @@ interface IUserContainerProps {
   };
   index: number[];
   contentWidth: number;
-  renderNode: (
-    props: {
-      attributes: any;
-      children: any;
-      node: {
-        type: any;
-        data: any;
-      };
-      isFocused: boolean;
-    }
-  ) => JSX.Element | null;
-  renderMark: (
-    props: {
-      children: any;
-      mark: Mark;
-      attributes: any;
-    }
-  ) => JSX.Element | undefined;
+  renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
+  renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
 }
 
 class UserContainer extends React.Component<IUserContainerProps> {
