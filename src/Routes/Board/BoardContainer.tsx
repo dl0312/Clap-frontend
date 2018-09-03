@@ -8,12 +8,7 @@ import { POSTS } from "../../sharedQueries";
 interface IProps extends RouteComponentProps<any> {}
 
 interface IState {
-  hoverImgJson: {
-    cards: any[];
-    color: { r: string; g: string; b: string; a: string };
-    contentWidth: number;
-    font: string;
-  };
+  hoverImgJson: string;
   onImage: boolean;
   pos: { x: number; y: number };
 }
@@ -24,12 +19,7 @@ class BoardContainer extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      hoverImgJson: {
-        cards: [],
-        color: { r: "", g: "", b: "", a: "" },
-        contentWidth: 600,
-        font: ""
-      },
+      hoverImgJson: "",
       onImage: false,
       pos: { x: 0, y: 0 }
     };

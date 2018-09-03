@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import { getCategoryById, getCategoryByIdVariables } from "../../types/api";
-import { SIMPLE_CATEGORY } from "./SmallCategoryQueries";
+import { CATEGORY } from "../../sharedQueries";
 import { Query } from "react-apollo";
 
 const SelectedContainer = styled.div`
@@ -13,12 +13,6 @@ const SelectedContainer = styled.div`
   border-radius: 5px;
   margin: 2px;
 `;
-
-// const SelectedImg = styled.img`
-//   width: 20px;
-//   margin-right: 2px;
-//   border-radius: 2px;
-// `;
 
 const SelectedTitle = styled.span`
   text-transform: uppercase;
@@ -44,22 +38,30 @@ class SmallCategory extends React.Component<IProps> {
   }
   public render() {
     const { type, categoryId, deleteIdToState } = this.props;
+    console.log(this.props);
     return (
-      <CategoryById query={SIMPLE_CATEGORY} variables={{ categoryId }}>
+      <CategoryById query={CATEGORY} variables={{ categoryId }}>
         {({ loading, error, data }) => {
           if (loading) {
+            console.log("loading");
             return <p>Loading...</p>;
           }
           if (error) {
+            console.log("error");
             return <div>{error.message}</div>;
           }
           if (data === undefined) {
+            console.log("undefined");
             return <div>undefined data</div>;
           }
+          console.log(data);
           const { category } = data.GetCategoryById;
+          if (category === null) {
+            return <div>error</div>;
+          }
           return (
             <SelectedContainer>
-              <SelectedTitle>{category!.name}</SelectedTitle>
+              <SelectedTitle>{category.name}</SelectedTitle>
               <SelectedIcon
                 className="fas fa-times"
                 onClick={e => {

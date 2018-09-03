@@ -1,7 +1,7 @@
 import * as React from "react";
 import Dropzone from "react-dropzone";
-import { Mutation, FetchResult } from "react-apollo";
-import { UPLOAD_SHOWNIMAGE } from "./UploadQueries";
+import { Mutation } from "react-apollo";
+import { UPLOAD_SHOWNIMAGE } from "../../sharedQueries";
 import { uploadShownImage, uploadShownImageVariables } from "../../types/api";
 import styled from "styled-components";
 import { toast } from "react-toastify";
@@ -70,26 +70,21 @@ class Upload extends React.Component<IProps, IState> {
             onCompleted={data => {
               const { UploadShownImage } = data;
               if (UploadShownImage.ok) {
-                toast.success("Place added!");
-                // setTimeout(() => {
-                //   history.push("/places");
-                // }, 2000);
+                toast.success("Image Uploaded!");
               } else {
                 toast.error(UploadShownImage.error);
               }
-              // history.push(`/guide`);
             }}
           >
-            {(UploadShownImage, { data, loading }) => (
+            {uploadShownImage => (
               <Dropzone
                 accept="image/*"
                 multiple={false}
                 onDrop={async ([file]) => {
-                  console.log(file);
                   this.setState({ file });
-                  const response = (await UploadShownImage({
+                  const response: any = await uploadShownImage({
                     variables: { file }
-                  })) as FetchResult<uploadShownImage, Record<string, any>>;
+                  });
                   if (this.props.type === "POST_IMAGE") {
                     this.props.handleOnChange(
                       `http://localhost:4000/uploads/${

@@ -1,13 +1,13 @@
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { ApolloLink, split, concat, Operation } from "apollo-link";
+import { ApolloLink, split, Operation } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { createUploadLink } from "apollo-upload-client";
 import { withClientState } from "apollo-link-state";
 import { onError } from "apollo-link-error";
 import { toast } from "react-toastify";
-import { getMainDefinition } from "apollo-utilities";
-import { WebSocketLink } from "apollo-link-ws";
+// import { getMainDefinition } from "apollo-utilities";
+// import { WebSocketLink } from "apollo-link-ws";
 
 const isDev = process.env.NODE_ENV === "development";
 console.log(isDev);
@@ -51,30 +51,30 @@ const uploadLink = createUploadLink({
   uri: "http://localhost:4000/graphql"
 });
 
-const wsLink = new WebSocketLink({
-  options: {
-    connectionParams: {
-      "X-JWT": getToken()
-    },
-    reconnect: true
-  },
-  uri: isDev
-    ? "ws://localhost:4000/subscription"
-    : "ws://nuberserver.now.sh/subscription"
-});
+// const wsLink = new WebSocketLink({
+//   options: {
+//     connectionParams: {
+//       "X-JWT": getToken()
+//     },
+//     reconnect: true
+//   },
+//   uri: isDev
+//     ? "ws://localhost:4000/subscription"
+//     : "ws://nuberserver.now.sh/subscription"
+// });
 
 // const requestLink = split(isSubscriptionOperation, httpLink);
 
 const terminalLink = split(isUpload, uploadLink, httpLink);
 
-const combinedLinks = split(
-  ({ query }) => {
-    const { kind, operation }: any = getMainDefinition(query);
-    return kind === "OperationDefinition" && operation === "subscription";
-  },
-  wsLink,
-  httpLink
-);
+// const combinedLinks = split(
+//   ({ query }) => {
+//     const { kind, operation }: any = getMainDefinition(query);
+//     return kind === "OperationDefinition" && operation === "subscription";
+//   },
+//   wsLink,
+//   httpLink
+// );
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
@@ -129,7 +129,7 @@ const client = new ApolloClient({
   link: ApolloLink.from([
     errorLink,
     localStateLink,
-    concat(authMiddleware, combinedLinks),
+    authMiddleware,
     terminalLink
   ]),
   cache

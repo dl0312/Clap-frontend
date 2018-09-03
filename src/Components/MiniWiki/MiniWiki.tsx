@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { Query } from "react-apollo";
 import ImagePopup from "../ImagePopup";
-import { CATEGORIES_KEYWORD } from "./MiniWikiQueries";
-import { GetPos } from "../../Uility/GetPos";
+import { CATEGORIES_KEYWORD } from "../../sharedQueries";
+import { GetPos } from "../../Utility/GetPos";
 import { Change } from "slate";
 import {
   getCategoriesByKeyword,
@@ -116,7 +116,7 @@ interface IProps {
 
 interface IState {
   keyword: string;
-  hoverImgJson: any;
+  hoverImgJson: string;
   pos: { x: number; y: number };
   onImage: boolean;
   inputType: string;
@@ -132,7 +132,7 @@ class MiniWiki extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       keyword: "",
-      hoverImgJson: null,
+      hoverImgJson: "",
       pos: { x: 0, y: 0 },
       onImage: false,
       inputType: "MINI_IMG"
@@ -258,11 +258,7 @@ class MiniWiki extends React.Component<IProps, IState> {
                     )
                   )}
                 </ListContainer>
-                <ImagePopup
-                  pos={pos}
-                  json={hoverImgJson ? hoverImgJson : null}
-                  onImage={onImage}
-                />
+                <ImagePopup pos={pos} json={hoverImgJson} onImage={onImage} />
               </WikiContainer>
             </React.Fragment>
           );

@@ -3,9 +3,10 @@ import { Mutation } from "react-apollo";
 import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
 import { addPost, addPostVariables } from "../../types/api";
-import { ADD_POST } from "./PostAddQueries";
+import { ADD_POST } from "../../sharedQueries";
 import { Helmet } from "react-helmet";
 import Editor from "../../Components/Editor";
+import EditorDefaults from "../../EditorDefaults";
 
 interface IProps extends RouteComponentProps<any> {}
 
@@ -13,7 +14,7 @@ interface IState {
   body: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
-    color: { r: string; g: string; b: string; a: string };
+    bodyBackgroundColor: { r: number; g: number; b: number; a: number };
     contentWidth: number | null;
     font: string;
     selectedIndex: number | null;
@@ -42,9 +43,9 @@ class PostAdd extends React.Component<IProps, IState> {
       body: {
         rightMenu: null,
         view: "EDIT",
-        contentWidth: 600,
-        color: { r: "", g: "", b: "", a: "" },
-        font: "",
+        bodyBackgroundColor: EditorDefaults.BACKGROUND_COLOR,
+        contentWidth: EditorDefaults.WIDTH,
+        font: EditorDefaults.FONT,
         selectedIndex: null,
         hoveredIndex: null,
         selectedContent: null,

@@ -7,12 +7,12 @@ import {
   getCategoriesByKeyword,
   getCategoriesByKeywordVariables
 } from "../../types/api";
-import { CATEGORIES_KEYWORD } from "./CategorySelectionQueries";
-import { GetPos } from "../../Uility/GetPos";
+import { CATEGORIES_KEYWORD } from "../../sharedQueries";
+import { GetPos } from "../../Utility/GetPos";
 
 const ListContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   grid-gap: 5px;
   margin: 5px 0;
 `;
@@ -58,6 +58,7 @@ const DataContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
+  cursor: pointer;
 `;
 
 const Button = styled.div`
@@ -98,9 +99,10 @@ interface IProps {
 
 interface IState {
   keyword: string;
-  hoverImgJson: any | null;
+  hoverImgJson: string;
   selectedCategories: number[];
   onImage: boolean;
+  pos: { x: number; y: number };
 }
 
 class CategoriesByKeyword extends Query<
@@ -114,8 +116,9 @@ class CategorySelection extends React.Component<IProps, IState> {
     this.state = {
       keyword: "",
       selectedCategories: this.props.selectedCategories,
-      hoverImgJson: null,
-      onImage: false
+      hoverImgJson: "",
+      onImage: false,
+      pos: { x: 0, y: 0 }
     };
   }
 
@@ -129,41 +132,45 @@ class CategorySelection extends React.Component<IProps, IState> {
   public render() {
     const { type, addIdToState, deleteIdToState } = this.props;
     const { selectedCategories, keyword } = this.state;
+    console.log(selectedCategories);
     return (
-      <CategoriesByKeyword
-        query={CATEGORIES_KEYWORD}
-        variables={{
-          keyword
-        }}
-        key={type}
-      >
-        {({ loading, data, error }) => {
-          if (loading) {
-            return "loading";
-          }
-          if (error) {
-            return <div>{error.message}</div>;
-          }
-          if (data === undefined) {
-            return <div>undefined data</div>;
-          }
-          return (
-            <CategorySelectionContainer>
-              <Helmet>
-                <title>Wiki | CLAP</title>
-              </Helmet>
-              <UpperContainer>
-                <Button>{type}</Button>
-                <SearchInput
-                  type="text"
-                  value={keyword}
-                  onChange={e => {
-                    e.preventDefault();
-                    this.setState({ keyword: e.target.value });
-                  }}
-                />
+      <CategorySelectionContainer>
+        <Helmet>
+          <title>Wiki | CLAP</title>
+        </Helmet>
+        <UpperContainer>
+          <Button>{type}</Button>
+          <SearchInput
+            type="text"
+            value={keyword}
+            onChange={e => {
+              e.preventDefault();
+              this.setState({ keyword: e.target.value });
+            }}
+          />
+          <CategoriesByKeyword
+            query={CATEGORIES_KEYWORD}
+            variables={{
+              keyword
+            }}
+          >
+            {({ loading, data, error }) => {
+              if (loading) {
+                console.log("loading");
+                return <div>loading</div>;
+              }
+              if (error) {
+                console.log("error");
+                return <div>{error.message}</div>;
+              }
+              if (data === undefined || data === null) {
+                console.log("undefined");
+                return <div>undefined data</div>;
+              }
+              console.log(data);
+              return (
                 <ListContainer>
-                  {data!.GetCategoriesByKeyword.categories!.map(
+                  {data.GetCategoriesByKeyword.categories!.map(
                     (category, index) => (
                       <React.Fragment key={index}>
                         <DataContainer
@@ -185,7 +192,9 @@ class CategorySelection extends React.Component<IProps, IState> {
                                   onImage: true
                                 })
                               }
-                              onMouseMove={GetPos}
+                              onMouseMove={(
+                                e: React.MouseEvent<HTMLImageElement>
+                              ) => this.setState({ pos: GetPos(e) })}
                               onMouseOut={() => {
                                 this.setState({
                                   onImage: false
@@ -205,24 +214,24 @@ class CategorySelection extends React.Component<IProps, IState> {
                     )
                   )}
                 </ListContainer>
-                <SelectedListContainer>
-                  {selectedCategories.map((categoryId, index) => {
-                    console.log(categoryId);
-                    return (
-                      <SmallCategory
-                        deleteIdToState={deleteIdToState}
-                        type={type}
-                        categoryId={categoryId}
-                        key={index}
-                      />
-                    );
-                  })}
-                </SelectedListContainer>
-              </UpperContainer>
-            </CategorySelectionContainer>
-          );
-        }}
-      </CategoriesByKeyword>
+              );
+            }}
+          </CategoriesByKeyword>
+          <SelectedListContainer>
+            {selectedCategories.map((categoryId, index) => {
+              console.log(categoryId);
+              return (
+                <SmallCategory
+                  deleteIdToState={deleteIdToState}
+                  type={type}
+                  categoryId={categoryId}
+                  key={index}
+                />
+              );
+            })}
+          </SelectedListContainer>
+        </UpperContainer>
+      </CategorySelectionContainer>
     );
   }
 }

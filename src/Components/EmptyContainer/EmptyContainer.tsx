@@ -19,7 +19,6 @@ const InsertText = styled.div`
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: EmptyContainer) {
     const isJustOverThisOne = monitor.isOver({ shallow: true });
-    console.log(isJustOverThisOne);
     if (isJustOverThisOne) {
       component.setState({ state: "ISOVER" });
     }
@@ -27,9 +26,6 @@ const cardTarget = {
   drop(props: IProps, monitor: DropTargetMonitor) {
     const type = monitor.getItemType();
     props.masterCallback("OnDrag", null);
-    console.log(type);
-    console.log(monitor.getItem());
-    console.log(props.index);
     if (type === ItemTypes.CARD) {
       props.moveCard(monitor.getItem().index, props.index);
     } else if (type === ItemTypes.CONTENT) {

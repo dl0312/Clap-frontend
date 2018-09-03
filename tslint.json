@@ -8,7 +8,10 @@
     "ordered-imports": false,
     "no-var-requires": false,
     "curly": false,
-    "no-shadowed-variable": false
+    "no-shadowed-variable": false,
+    "member-ordering": false,
+    "member-access": false,
+    "one-variable-per-declaration": false
     // "no-unused-expression": false
   },
   "linterOptions": {

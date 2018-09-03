@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 // import ImagePopup from '../../components/ImagePopup';
 import { getAllPosts } from "../../types/api";
+import ImagePopup from "../../Components/ImagePopup";
 
 const BoardContainer = styled.div`
   width: 100%;
@@ -133,12 +134,7 @@ interface IProps {
   data?: getAllPosts;
   loading: boolean;
   error?: string;
-  hoverImgJson: {
-    cards: any[];
-    color: { r: string; g: string; b: string; a: string };
-    contentWidth: number;
-    font: string;
-  };
+  hoverImgJson: string;
   onImage: boolean;
   pos: { x: number; y: number };
   getPos: any;
@@ -176,7 +172,7 @@ const BoardPresenter: React.SFC<IProps> = ({
                           : "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
                       }
                       alt={post.category.name}
-                      onMouseOver={handleOnMouseOver}
+                      onMouseOver={() => handleOnMouseOver(post, true)}
                       onMouseMove={getPos}
                       onMouseOut={handleonMouseOut}
                     />
@@ -223,11 +219,7 @@ const BoardPresenter: React.SFC<IProps> = ({
         </BoardBox>
       </BoardContainer>
     )}
-    {/* <ImagePopup
-      pos={pos}
-      json={hoverImgJson ? hoverImgJson : null}
-      onImage={onImage}
-    /> */}
+    <ImagePopup pos={pos} json={hoverImgJson} onImage={onImage} />
   </React.Fragment>
 );
 

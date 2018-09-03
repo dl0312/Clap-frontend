@@ -39,13 +39,18 @@ const MenuTitle = styled.div`
 `;
 
 interface IProps {
-  rightMenu: number | null;
-  cards: any[];
+  // func
   masterCallback: any;
-  view: "EDIT" | "USER" | "JSON";
-  title: string;
   addIdToState: any;
   deleteIdToState: any;
+
+  rightMenu: number | null;
+  cards: any[];
+  view: "EDIT" | "USER" | "JSON";
+  title: string;
+  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
+  contentWidth: number;
+  font: string;
   category: number[];
 }
 
@@ -114,8 +119,11 @@ class EditorRight extends Component<IProps, IState> {
       case 2:
         return (
           <Body
-            view={this.props.view}
             masterCallback={this.props.masterCallback}
+            view={this.props.view}
+            bodyBackgroundColor={this.props.bodyBackgroundColor}
+            contentWidth={this.props.contentWidth}
+            font={this.props.font}
           />
         );
       case 3:
@@ -134,6 +142,7 @@ class EditorRight extends Component<IProps, IState> {
   };
 
   public render() {
+    console.log(this.props);
     return (
       <Fragment>
         <Container>

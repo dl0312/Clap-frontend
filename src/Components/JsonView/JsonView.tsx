@@ -11,7 +11,7 @@ interface IProps {
   json: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
-    color: { r: number; g: number; b: number; a: number };
+    bodyBackgroundColor: { r: number; g: number; b: number; a: number };
     contentWidth: number;
     font: string | null;
     onDrag: "content" | "columnList" | null;

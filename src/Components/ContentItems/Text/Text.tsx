@@ -63,23 +63,40 @@ const Text: React.SFC<IProps> = ({
       textAlign={item.textAlign ? item.textAlign : "left"}
       className="markdown-body"
     >
-      <Editor
-        style={{
-          color: "rgba(0,0,0,1)",
-          fontFamily: "Nanum Gotic",
-          wordBreak: "break-word"
-        }}
-        value={value}
-        readOnly={false}
-        onChange={(change: any) => {
-          handleOnChange(change, index, "TEXT", "TEXT_CHANGE");
-        }}
-        renderNode={renderNode}
-        renderMark={renderMark}
-        autoCorrect={false}
-        spellCheck={false}
-        plugins={plugins}
-      />
+      {handleOnChange !== undefined ? (
+        <Editor
+          style={{
+            color: "rgba(0,0,0,1)",
+            fontFamily: "Nanum Gotic",
+            wordBreak: "break-word"
+          }}
+          value={value}
+          readOnly={false}
+          onChange={(change: any) => {
+            handleOnChange(change, index, "TEXT", "TEXT_CHANGE");
+          }}
+          renderNode={renderNode}
+          renderMark={renderMark}
+          autoCorrect={false}
+          spellCheck={false}
+          plugins={plugins}
+        />
+      ) : (
+        <Editor
+          style={{
+            color: "rgba(0,0,0,1)",
+            fontFamily: "Nanum Gotic",
+            wordBreak: "break-word"
+          }}
+          value={value}
+          readOnly={false}
+          renderNode={renderNode}
+          renderMark={renderMark}
+          autoCorrect={false}
+          spellCheck={false}
+          plugins={plugins}
+        />
+      )}
     </TextContainer>
   );
 };

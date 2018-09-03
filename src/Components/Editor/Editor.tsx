@@ -17,8 +17,7 @@ import EmptyCard from "../EmptyCard";
 import Upload from "../Upload";
 import { RenderNodeProps, RenderMarkProps } from "slate-react";
 
-import { POST, WIKIIMAGE } from "./EditorQueries";
-import { POSTS } from "../../sharedQueries";
+import { POST, POSTS, WIKIIMAGE } from "../../sharedQueries";
 
 import { Row, Col } from "antd";
 import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
@@ -87,7 +86,7 @@ const icons = [
 ];
 
 import update from "immutability-helper";
-import { GetPos } from "../../Uility/GetPos";
+import { GetPos } from "../../Utility/GetPos";
 import { MutationFn } from "react-apollo";
 import { addPost, addPostVariables } from "../../types/api";
 
@@ -126,7 +125,7 @@ const EditorContainer = styled<IEditorContainerProps, any>("div")`
 `;
 
 interface IEditorLeftContainerProps {
-  color: { r: string; g: string; b: string; a: string };
+  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
 }
 
 const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
@@ -135,9 +134,9 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   overflow-y: auto;
   overflow-x: hidden;
   background-color: ${props =>
-    `rgba(${props.color.r}, ${props.color.g}, ${props.color.b}, ${
-      props.color.a
-    })`};
+    `rgba(${props.bodyBackgroundColor.r}, ${props.bodyBackgroundColor.g}, ${
+      props.bodyBackgroundColor.b
+    }, ${props.bodyBackgroundColor.a})`};
   border-right: 1px solid rgba(0, 0, 0, 0.2);
   transition: width 0.5s ease;
   ${media.tablet`width: 100%;`};
@@ -213,9 +212,9 @@ interface IProps {
 interface IState {
   rightMenu: number | null;
   view: "EDIT" | "USER" | "JSON";
-  color: { r: number; g: number; b: number; a: number };
+  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
   contentWidth: number;
-  font: string | null;
+  font: string;
   onDrag: "content" | "columnList" | null;
   selectedIndex: number | number[] | null;
   hoveredIndex: number | number[] | null;
@@ -236,9 +235,9 @@ class Editor extends React.Component<IProps, IState> {
     this.state = {
       rightMenu: null,
       view: "EDIT",
-      color: EditorDefaults.BACKGROUND_COLOR,
+      bodyBackgroundColor: EditorDefaults.BACKGROUND_COLOR,
       contentWidth: EditorDefaults.WIDTH,
-      font: null,
+      font: EditorDefaults.FONT,
       onDrag: null,
       selectedIndex: null,
       hoveredIndex: null,
@@ -261,8 +260,12 @@ class Editor extends React.Component<IProps, IState> {
     type: "parent" | "child" | null,
     category: { id: number }
   ): void => {
-    const found = this.state.category.indexOf(category.id);
+    console.log(type);
+    console.log(category);
+    const found = this.state.category.indexOf(category.id) !== -1;
     const hasUnique = this.state.category.length === 1;
+    console.log(found);
+    console.log(hasUnique);
     if (!found && !hasUnique) {
       this.setState({ category: this.state.category.concat(category.id) });
     }
@@ -602,20 +605,20 @@ class Editor extends React.Component<IProps, IState> {
 
   public masterCallback = (
     type:
-      | "BodyBackgroundColor"
-      | "Title"
-      | "width"
+      | "bodyBackgroundColor"
+      | "title"
+      | "contentWidth"
       | "font"
       | "view"
       | "onDrag"
       | "rightMenu",
     dataFromChild: any
   ) => {
-    if (type === "BodyBackgroundColor") {
-      this.setState({ color: dataFromChild });
-    } else if (type === "Title") {
+    if (type === "bodyBackgroundColor") {
+      this.setState({ bodyBackgroundColor: dataFromChild });
+    } else if (type === "title") {
       this.setState({ title: dataFromChild });
-    } else if (type === "width") {
+    } else if (type === "contentWidth") {
       this.setState({ contentWidth: dataFromChild });
     } else if (type === "font") {
       this.setState({ font: dataFromChild });
@@ -700,7 +703,6 @@ class Editor extends React.Component<IProps, IState> {
     content: any,
     type: "TEXT_CHANGE" | "LINK" | "ALT" | "URL"
   ) => {
-    console.log(value.value);
     if (type === "TEXT_CHANGE") {
       if (index.length === 2) {
         this.setState(
@@ -859,7 +861,7 @@ class Editor extends React.Component<IProps, IState> {
       hoverImgJson,
       onImage
     } = this.state;
-
+    console.log(this.state);
     return (
       <React.Fragment>
         {this.props.type === "POST_ADD" ? (
@@ -1020,7 +1022,10 @@ class Editor extends React.Component<IProps, IState> {
           </React.Fragment>
         ) : null}
         <EditorContainer type={type}>
-          <EditorLeftContainer view={view} color={this.state.color}>
+          <EditorLeftContainer
+            view={view}
+            bodyBackgroundColor={this.state.bodyBackgroundColor}
+          >
             {view === "EDIT" ? (
               <React.Fragment>
                 <Row>
@@ -1102,7 +1107,7 @@ class Editor extends React.Component<IProps, IState> {
                   </Col>
                 </Row>
                 <EditorLeft
-                  color={this.state.color}
+                  bodyBackgroundColor={this.state.bodyBackgroundColor}
                   contentWidth={this.state.contentWidth}
                   font={this.state.font}
                   view="EDIT"
@@ -1162,13 +1167,20 @@ class Editor extends React.Component<IProps, IState> {
           </EditorLeftContainer>
           <EditorRightContainer>
             <EditorRight
-              rightMenu={this.state.rightMenu}
-              cards={this.state.cards}
-              masterCallback={this.masterCallback}
-              view={this.state.view}
-              title={this.state.title}
+              masterCallback={
+                this.masterCallback // func
+              }
               addIdToState={this.addIdToState}
               deleteIdToState={this.deleteIdToState}
+              rightMenu={
+                this.state.rightMenu // values
+              }
+              cards={this.state.cards}
+              view={this.state.view}
+              title={this.state.title}
+              bodyBackgroundColor={this.state.bodyBackgroundColor}
+              contentWidth={this.state.contentWidth}
+              font={this.state.font}
               category={this.state.category}
             />
             <BlockOptions
@@ -1191,7 +1203,6 @@ class Editor extends React.Component<IProps, IState> {
 
   public renderNode = (props: RenderNodeProps): JSX.Element | undefined => {
     const { attributes, node, isSelected } = props;
-    console.log(props);
     if (node.object === "block" || node.object === "inline") {
       switch (node.type) {
         case "clap-image": {

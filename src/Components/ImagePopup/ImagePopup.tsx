@@ -32,6 +32,8 @@ class ImagePopup extends React.Component<IProps> {
       pos: { x, y },
       onImage
     } = this.props;
+    console.log(this.props);
+
     return this.props.follow === undefined ? (
       <PopupContainer hover={onImage ? true : false} left={x} top={y}>
         {onImage ? <HoverView json={JSON.parse(this.props.json)} /> : null}

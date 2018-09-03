@@ -3,7 +3,7 @@ import EditorLeft from "../EditorLeft";
 import styled from "styled-components";
 import { Value, ValueJSON } from "slate";
 import EditorDefaults from "../../EditorDefaults";
-import { GetPos } from "../../Uility/GetPos";
+import { GetPos } from "../../Utility/GetPos";
 
 import Button from "../ContentItems/Button";
 import Text from "../ContentItems/Text";
@@ -138,7 +138,7 @@ interface IHoverViewProps {
   json: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
-    color: { r: number; g: number; b: number; a: number };
+    bodyBackgroundColor: { r: number; g: number; b: number; a: number };
     contentWidth: number;
     font: string | null;
     onDrag: "content" | "columnList" | null;
@@ -326,7 +326,7 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
     return (
       <HoverBorder>
         <EditorLeft
-          color={json.color}
+          bodyBackgroundColor={json.bodyBackgroundColor}
           contentWidth={json.contentWidth}
           font={json.font}
           view="USER"

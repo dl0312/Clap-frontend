@@ -1,7 +1,8 @@
 import * as React from "react";
 import styled from "styled-components";
-import EditorDefaults from "../../../EditorDefaults";
-import Sketch from "../../../Uility/Sketch";
+import Sketch from "../../../Utility/Sketch";
+
+const INTERVAL = 50;
 
 const fontFamily = [
   "Roboto",
@@ -141,13 +142,20 @@ const ViewIcon = styled<IViewIconProps, any>("i")`
 `;
 
 interface IProps {
-  view: "EDIT" | "USER" | "JSON";
+  // callback func
   masterCallback: any;
+
+  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
+  view: "EDIT" | "USER" | "JSON";
+  contentWidth: number;
+  font: string;
 }
 
 interface IState {
+  // display toggle
   displayFontFamily: boolean;
-  displayViews: boolean;
+
+  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
   view: "EDIT" | "USER" | "JSON";
   contentWidth: number;
   font: string;
@@ -158,55 +166,58 @@ class Body extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       displayFontFamily: false,
-      displayViews: false,
+      bodyBackgroundColor: this.props.bodyBackgroundColor,
       view: this.props.view,
-      contentWidth: EditorDefaults.WIDTH,
-      font: EditorDefaults.FONT
+      contentWidth: this.props.contentWidth,
+      font: this.props.font
     };
   }
 
+  static getDerivedStateFromProps = (nextProps: IProps, prevState: IState) => {
+    console.log(nextProps);
+    if (nextProps.contentWidth !== prevState.contentWidth) {
+      return { contentWidth: nextProps.contentWidth };
+    }
+    if (nextProps.font !== prevState.font) {
+      return { font: nextProps.font };
+    }
+    if (nextProps.view !== prevState.view) {
+      return { view: nextProps.view };
+    } else {
+      return null;
+    }
+  };
+
   public handleOnChange = () => {
-    this.props.masterCallback("width", this.state.contentWidth);
+    this.props.masterCallback("contentWidth", this.props.contentWidth);
   };
 
   public handleOnClick = (type: "FontFamily" | "View") => {
     if (type === "FontFamily") {
       this.setState({ displayFontFamily: !this.state.displayFontFamily });
-    } else if (type === "View") {
-      this.setState({ displayViews: !this.state.displayViews });
     }
   };
 
   public handleOperatorOnClick = (operator: "-" | "+") => {
     if (operator === "-") {
-      if (this.state.contentWidth > 200) {
-        this.setState(
-          {
-            contentWidth: this.state.contentWidth - 50
-          },
-          () => this.handleOnChange()
+      if (this.props.contentWidth > 200) {
+        this.props.masterCallback(
+          "contentWidth",
+          this.props.contentWidth - INTERVAL
         );
       }
     } else if (operator === "+") {
-      if (this.state.contentWidth < 800) {
-        this.setState(
-          {
-            contentWidth: this.state.contentWidth + 50
-          },
-          () => this.handleOnChange()
+      if (this.props.contentWidth < 800) {
+        this.props.masterCallback(
+          "contentWidth",
+          this.props.contentWidth + INTERVAL
         );
       }
     }
   };
 
-  public handleOnClickFont = () => {
-    this.props.masterCallback("font", this.state.font);
-  };
-
   public handleOnClickView = (view: "EDIT" | "USER" | "JSON") => {
-    this.setState({ view }, () =>
-      this.props.masterCallback("view", this.state.view)
-    );
+    this.props.masterCallback("view", view);
   };
 
   public render() {
@@ -220,7 +231,7 @@ class Body extends React.Component<IProps, IState> {
             <Sketch
               masterCallback={this.props.masterCallback}
               type="bodyBackgroundColor"
-              color={EditorDefaults.BACKGROUND_COLOR}
+              color={this.props.bodyBackgroundColor}
             />
           </Item>
           <Item>
@@ -229,7 +240,7 @@ class Body extends React.Component<IProps, IState> {
               <Operator onClick={() => this.handleOperatorOnClick("-")}>
                 -
               </Operator>
-              <Indicator value={this.state.contentWidth} readOnly={true} />
+              <Indicator value={this.props.contentWidth} readOnly={true} />
               <Operator onClick={() => this.handleOperatorOnClick("+")}>
                 +
               </Operator>
@@ -240,22 +251,18 @@ class Body extends React.Component<IProps, IState> {
             <div className="func">
               <div>
                 <Swatch onClick={() => this.handleOnClick("FontFamily")}>
-                  <SwatchFont fontFamily={this.state.font}>
-                    {this.state.font}
+                  <SwatchFont fontFamily={this.props.font}>
+                    {this.props.font}
                   </SwatchFont>
                 </Swatch>
                 {this.state.displayFontFamily ? (
                   <PopOver>
                     <FontColumn>
-                      {fontFamily.map(font => (
+                      {fontFamily.map((font: string, index: number) => (
                         <FontColumnItem
+                          key={index}
                           onClick={() =>
-                            this.setState(
-                              {
-                                font
-                              },
-                              () => this.handleOnClickFont()
-                            )
+                            this.props.masterCallback("font", this.state.font)
                           }
                           fontFamily={font}
                         >

@@ -45,7 +45,7 @@ interface IProps {
   view: "EDIT" | "USER" | "JSON";
   contentWidth: number;
   font: string | null;
-  color: { r: number; g: number; b: number; a: number };
+  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
 }
 
 class EditorLeft extends React.Component<IProps> {
@@ -57,7 +57,7 @@ class EditorLeft extends React.Component<IProps> {
     return (
       <EditorLeftContainer view={this.props.view}>
         <RealEditorContainer
-          backgroundColor={this.props.color}
+          backgroundColor={this.props.bodyBackgroundColor}
           fontFamily={this.props.font}
           id="container"
           view={this.props.view}

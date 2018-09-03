@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import Sketch from "../../Uility/Sketch";
+import Sketch from "../../Utility/Sketch";
 import Wiki from "../MiniWiki";
 import Upload from "../Upload";
 

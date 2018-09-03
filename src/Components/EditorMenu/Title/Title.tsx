@@ -60,7 +60,7 @@ interface IProps {
 
 class Title extends React.Component<IProps> {
   public handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
-    this.props.masterCallback("Title", e.currentTarget!.value);
+    this.props.masterCallback("title", e.currentTarget!.value);
   };
 
   public render() {
