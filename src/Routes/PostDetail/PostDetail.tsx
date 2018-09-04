@@ -50,7 +50,7 @@ const TitleContainer = styled<ITitleContainerProps, any>("div")`
   padding: 30px 30px;
   border: 1px solid black;
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.9)),
-    url(${props => props.src});
+    url("${props => props.src}");
   background-size: cover;
   background-position: center;
   color: white;

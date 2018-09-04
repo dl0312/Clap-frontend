@@ -16,6 +16,11 @@ import WikiImageEdit from "../../Routes/WikiImageEdit";
 import PostDetail from "../../Routes/PostDetail";
 import PostAdd from "../../Routes/PostAdd";
 import PostEdit from "../../Routes/PostEdit";
+import CategoryDetail from "../../Routes/CategoryDetail";
+import CategoryAdd from "../../Routes/CategoryAdd";
+import CategoryEdit from "../../Routes/CategoryEdit";
+import LogIn from "../../Routes/LogIn";
+import SignUp from "../../Routes/SignUp";
 
 // import { ApolloProvider } from 'react-apollo';
 
@@ -32,6 +37,19 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
     <AppBox>
       <Navigation isLoggedIn={isLoggedIn} />
       <Switch>
+        <Route path="/login" exact={true} component={LogIn} />
+        <Route path="/signup" exact={true} component={SignUp} />
+        <Route
+          path="/category/read/:categoryId"
+          exact={true}
+          component={CategoryDetail}
+        />
+        <Route path="/category/add" exact={true} component={CategoryAdd} />
+        <Route
+          path="/category/edit/:categoryId"
+          exact={true}
+          component={CategoryEdit}
+        />
         <Route path="/post/read/:postId" exact={true} component={PostDetail} />
         <Route path="/post/add" exact={true} component={PostAdd} />
         <Route path="/post/edit/:postId" exact={true} component={PostEdit} />

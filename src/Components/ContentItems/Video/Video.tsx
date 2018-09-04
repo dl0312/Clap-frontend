@@ -35,9 +35,10 @@ const youtubeParser = (url: string) => {
 
 interface IProps {
   src?: string | false;
+  autoplay: boolean;
 }
 
-const Video: React.SFC<IProps> = ({ src }) => {
+const Video: React.SFC<IProps> = ({ src, autoplay }) => {
   if (src) {
     src = youtubeParser(src);
   }
@@ -58,7 +59,9 @@ const Video: React.SFC<IProps> = ({ src }) => {
           }}
           width="560"
           height="315"
-          src={`https://www.youtube.com/embed/${src}?ecver=1`}
+          src={`https://www.youtube.com/embed/${src}?${
+            autoplay ? "autoplay=1" : null
+          }`}
           frameBorder="0"
           allowFullScreen={true}
         />

@@ -580,7 +580,7 @@ class UserContainer extends React.Component<IUserContainerProps> {
           />
         );
       case "VIDEO":
-        return <Video src={this.props.item.videoSrc} />;
+        return <Video src={this.props.item.videoSrc} autoplay={true} />;
       case "SOCIAL":
         return <SocialMedia />;
       default:

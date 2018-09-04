@@ -455,7 +455,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
           />
         );
       case "VIDEO":
-        return <Video src={this.props.item.videoSrc!} />;
+        return <Video src={this.props.item.videoSrc!} autoplay={false} />;
       case "SOCIAL":
         return <SocialMedia />;
       default:

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Helmet } from "react-helmet";
 import { Query } from "react-apollo";
-import SmallCategory from "../SmallCategory";
+// import SmallCategory from "../SmallCategory";
 import {
   getCategoriesByKeyword,
   getCategoriesByKeywordVariables
@@ -130,9 +130,8 @@ class CategorySelection extends React.Component<IProps, IState> {
   };
 
   public render() {
-    const { type, addIdToState, deleteIdToState } = this.props;
+    const { type, addIdToState } = this.props;
     const { selectedCategories, keyword } = this.state;
-    console.log(selectedCategories);
     return (
       <CategorySelectionContainer>
         <Helmet>
@@ -220,14 +219,14 @@ class CategorySelection extends React.Component<IProps, IState> {
           <SelectedListContainer>
             {selectedCategories.map((categoryId, index) => {
               console.log(categoryId);
-              return (
-                <SmallCategory
-                  deleteIdToState={deleteIdToState}
-                  type={type}
-                  categoryId={categoryId}
-                  key={index}
-                />
-              );
+              // return (
+              //   <SmallCategory
+              //     deleteIdToState={deleteIdToState}
+              //     type={type}
+              //     categoryId={categoryId}
+              //     key={index}
+              //   />
+              // );
             })}
           </SelectedListContainer>
         </UpperContainer>
