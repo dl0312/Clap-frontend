@@ -210,32 +210,6 @@ export const CATEGORY = gql`
       category {
         id
         name
-        wikiImages {
-          shownImage {
-            url
-          }
-          hoverImage
-        }
-        parent {
-          name
-          id
-          wikiImages {
-            shownImage {
-              url
-            }
-            hoverImage
-          }
-        }
-        children {
-          name
-          id
-          wikiImages {
-            shownImage {
-              url
-            }
-            hoverImage
-          }
-        }
       }
     }
   }
