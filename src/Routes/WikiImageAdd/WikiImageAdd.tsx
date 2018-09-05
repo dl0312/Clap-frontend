@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Editor from "../../Components/Editor";
 import { ADD_WIKIIMAGE } from "../../sharedQueries";
 import EditorDefaults from "../../EditorDefaults";
+import { toast } from "react-toastify";
 
 const WikiImageAddContainer = styled.div`
   width: 100%;
@@ -77,19 +78,27 @@ class WikiImageAdd extends React.Component<IProps, IState> {
     this.setState({ hoverJson });
   };
 
-  render() {
+  public confirm = async (data: any) => {
+    if (data.AddWikiImage.ok) {
+      toast.success("Wiki Image Add success");
+      this.props.history.push(
+        `/category/${this.props.match.params.categoryId}/wikiImage/read/${
+          data.AddWikiImage.wikiImageId
+        }`
+      );
+    } else if (data) {
+      toast.error(data.AddWikiImage.error);
+    }
+  };
+
+  public render() {
     return (
       <React.Fragment>
         <WikiImageAddContainer>
           <Mutation
             mutation={ADD_WIKIIMAGE}
             onCompleted={data => {
-              console.log(data);
-              this.props.history.push(
-                `/category/${
-                  this.props.match.params.categoryId
-                }/wikiImage/read/${data.AddWikiImage.wikiImageId}`
-              );
+              this.confirm(data);
             }}
           >
             {(AddWikiImage, { data }) => (

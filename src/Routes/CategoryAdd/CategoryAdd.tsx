@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { ADD_CATEGORY } from "../../sharedQueries";
 import { Mutation } from "react-apollo";
 import CategorySelection from "../../Components/CategorySelection";
+import { toast } from "react-toastify";
 
 const FlexBox = styled.div`
   display: flex;
@@ -83,8 +84,12 @@ class CategoryAdd extends React.Component<any, IState> {
   };
 
   public confirm = async (data: any) => {
-    console.log(data);
-    this.props.history.push(`/wiki`);
+    if (data.AddCategory.ok) {
+      toast.success("Log In success");
+      this.props.history.push(`/category/read/${data.AddCategory.categoryId}`);
+    } else {
+      toast.error(data.AddCategory.error);
+    }
   };
 
   render() {

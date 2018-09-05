@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { CATEGORY, EDIT_CATEGORY } from "../../sharedQueries";
 import { Mutation, Query } from "react-apollo";
 import CategorySelection from "../../Components/CategorySelection";
+import { toast } from "react-toastify";
 
 const FlexBox = styled.div`
   display: flex;
@@ -89,7 +90,13 @@ class CategoryEdit extends React.Component<any, IState> {
   };
 
   public confirm = async (data: any) => {
-    this.props.history.push(`/wiki`);
+    const { EditCategory } = data;
+    if (EditCategory.ok) {
+      toast.success("Category Edit Success");
+      this.props.history.push(`/wiki`);
+    } else {
+      toast.error(EditCategory.error);
+    }
   };
 
   public render() {

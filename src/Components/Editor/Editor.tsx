@@ -17,7 +17,12 @@ import EmptyCard from "../EmptyCard";
 import Upload from "../Upload";
 import { RenderNodeProps, RenderMarkProps } from "slate-react";
 
-import { POST, POSTS, WIKIIMAGE } from "../../sharedQueries";
+import {
+  POST,
+  POSTS,
+  WIKIIMAGE,
+  CATEGORIES_KEYWORD
+} from "../../sharedQueries";
 
 import { Row, Col } from "antd";
 import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
@@ -961,6 +966,14 @@ class Editor extends React.Component<IProps, IState> {
                 filteredState.view = "EDIT";
                 console.log(this.state.exShownImg);
                 this.props.AddWikiImage({
+                  refetchQueries: [
+                    {
+                      query: CATEGORIES_KEYWORD,
+                      variables: {
+                        keyword: ""
+                      }
+                    }
+                  ],
                   variables: {
                     categoryId: this.props.categoryId,
                     name: this.state.title,
@@ -998,6 +1011,8 @@ class Editor extends React.Component<IProps, IState> {
                 filteredState.pos = { x: 0, y: 0 };
                 filteredState.onImage = false;
                 filteredState.view = "EDIT";
+                console.log("wikiimageedit");
+                console.log(filteredState);
                 this.props.EditWikiImage({
                   refetchQueries: [
                     {

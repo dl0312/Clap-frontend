@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Mutation } from "react-apollo";
-import { RouteComponentProps } from "react-router-dom";
 import { toast } from "react-toastify";
 import { addPost, addPostVariables } from "../../types/api";
 import { ADD_POST } from "../../sharedQueries";
@@ -8,7 +7,9 @@ import { Helmet } from "react-helmet";
 import Editor from "../../Components/Editor";
 import EditorDefaults from "../../EditorDefaults";
 
-interface IProps extends RouteComponentProps<any> {}
+interface IProps {
+  history: any;
+}
 
 interface IState {
   body: {
@@ -64,24 +65,24 @@ class PostAdd extends React.Component<IProps, IState> {
     };
   }
 
+  public confirm = (data: any) => {
+    const { AddPost } = data;
+    if (AddPost.ok) {
+      toast.success("Post Add Success");
+      setTimeout(() => {
+        this.props.history.push(`/board`);
+      }, 2000);
+    } else {
+      toast.error(AddPost.error);
+    }
+  };
+
   public render() {
-    const { history } = this.props;
     const { body } = this.state;
     return (
       <AddPostQuery
         mutation={ADD_POST}
-        onCompleted={data => {
-          const { AddPost } = data;
-          if (AddPost.ok) {
-            toast.success("Place added!");
-            setTimeout(() => {
-              history.push("/places");
-            }, 2000);
-          } else {
-            toast.error(AddPost.error);
-          }
-          history.push(`/guide`);
-        }}
+        onCompleted={data => this.confirm(data)}
       >
         {AddPost => {
           return (

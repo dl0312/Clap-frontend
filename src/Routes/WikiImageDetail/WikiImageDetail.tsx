@@ -8,9 +8,12 @@ import {
 } from "../../sharedQueries";
 import { Helmet } from "react-helmet";
 import styled from "styled-components";
+import { deleteWikiImage, deleteWikiImageVariables } from "../../types/api";
+// import toast from "react-toastify"
 
 import ImagePopup from "../../Components/ImagePopup";
 import { GetPos } from "../../Utility/GetPos";
+import { toast } from "react-toastify";
 
 const WikiEditContainer = styled.div`
   width: 100%;
@@ -50,6 +53,11 @@ interface IState {
   category: any;
 }
 
+class WikiImageDeleteQuery extends Mutation<
+  deleteWikiImage,
+  deleteWikiImageVariables
+> {}
+
 class WikiImageDetail extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
@@ -63,7 +71,17 @@ class WikiImageDetail extends React.Component<IProps, IState> {
     };
   }
 
-  render() {
+  public confirm = (data: any) => {
+    const { DeleteWikiImage } = data;
+    if (DeleteWikiImage.ok) {
+      toast.success("Delete WikiImage Success");
+      this.props.history.push(`/wiki`);
+    } else {
+      toast.error(DeleteWikiImage.error);
+    }
+  };
+
+  public render() {
     const { pos, hoverImgJson, onImage } = this.state;
     return (
       <React.Fragment>
@@ -89,11 +107,11 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                   >
                     <button>Edit</button>
                   </Link>
-                  <Mutation
+                  <WikiImageDeleteQuery
                     mutation={DELETE_WIKIIMAGE}
-                    onCompleted={() => this.props.history.push(`/wiki`)}
+                    onCompleted={data => this.confirm(data)}
                   >
-                    {(DeleteWikiImage, { data }) => (
+                    {DeleteWikiImage => (
                       <button
                         onClick={e => {
                           e.preventDefault();
@@ -115,8 +133,7 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                         Delete
                       </button>
                     )}
-                  </Mutation>
-
+                  </WikiImageDeleteQuery>
                   {wikiImage ? (
                     <React.Fragment>
                       <CurrentImg

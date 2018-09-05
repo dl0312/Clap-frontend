@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
-import { getCategoryById, getCategoryByIdVariables } from "../../types/api";
-import { CATEGORY } from "../../sharedQueries";
+// import { getCategoryById, getCategoryByIdVariables } from "../../types/api";
+import { SIMPLE_CATEGORY } from "../../sharedQueries";
 import { Query } from "react-apollo";
 
 const SelectedContainer = styled.div`
@@ -24,8 +24,6 @@ const SelectedIcon = styled.i`
   font-size: 10px;
 `;
 
-class CategoryById extends Query<getCategoryById, getCategoryByIdVariables> {}
-
 interface IProps {
   type: any;
   categoryId: number;
@@ -40,7 +38,7 @@ class SmallCategory extends React.Component<IProps> {
     const { type, categoryId, deleteIdToState } = this.props;
     console.log(this.props);
     return (
-      <CategoryById query={CATEGORY} variables={{ categoryId }}>
+      <Query query={SIMPLE_CATEGORY} variables={{ categoryId }}>
         {({ loading, error, data }) => {
           if (loading) {
             console.log("loading");
@@ -72,7 +70,7 @@ class SmallCategory extends React.Component<IProps> {
             </SelectedContainer>
           );
         }}
-      </CategoryById>
+      </Query>
     );
   }
 }

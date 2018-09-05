@@ -24,6 +24,7 @@ import {
   deleteComment,
   deleteCommentVariables
 } from "../../types/api";
+import { toast } from "react-toastify";
 
 const DetailContainer = styled.div`
   width: 100%;
@@ -51,6 +52,7 @@ const TitleContainer = styled<ITitleContainerProps, any>("div")`
   border: 1px solid black;
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.9)),
     url("${props => props.src}");
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   background-size: cover;
   background-position: center;
   color: white;
@@ -305,19 +307,40 @@ const DeleteCommentButton = styled.button`
   color: darkred;
 `;
 
-const ButtonsContainer = styled.div`
+const ClapContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
+const ButtonsContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+`;
+
 const PostButton = styled.div`
   padding: 5px 10px;
   margin: 5px;
-  border: 0.5px solid rgba(0, 0, 0, 0.3);
+  border: 0.5px solid rgba(0, 0, 0, 0.5);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  width: 60px;
+  text-align: center;
+  text-transform: uppercase;
+`;
 
-  border-radius: 5px;
+// const ClapButton = styled.div`
+//   /* height: 60px; */
+//   margin: 5px;
+//   border: 0.5px solid rgba(0, 0, 0, 0.3);
+//   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+// `;
+
+const ClapImage = styled.img`
+  margin-top: 15px;
+  border: 1px solid black;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  width: 60px;
 `;
 
 class PostQuery extends Query<getPostById, getPostByIdVariables> {}
@@ -368,6 +391,45 @@ class PostDetail extends React.Component<IProps, IState> {
     return [year, month, day].join("-");
   }
 
+  public sendClapConfirm = (data: any) => {
+    const { SendClap } = data;
+    if (SendClap.ok) {
+      toast.success("Send Clap Success");
+    } else {
+      toast.error(SendClap.error);
+    }
+  };
+
+  public deletePostConfirm = (data: any) => {
+    const { DeletePost } = data;
+    if (DeletePost.ok) {
+      toast.success("Delete Post Success");
+      this.props.history.push(`/guide`);
+    } else {
+      toast.error(DeletePost.error);
+    }
+  };
+
+  public deleteCommentConfirm = (data: any) => {
+    const { DeleteComment } = data;
+    if (DeleteComment.ok) {
+      toast.success("Delete Comment Success");
+      this.props.history.push(`/post/read/${this.props.match.params.postId}`);
+    } else {
+      toast.error(DeleteComment.error);
+    }
+  };
+
+  public addCommentConfirm = (data: any) => {
+    const { AddComment } = data;
+    if (AddComment.ok) {
+      toast.success("Add Comment Success");
+      this.props.history.push(`/post/read/${this.props.match.params.postId}`);
+    } else {
+      toast.error(AddComment.error);
+    }
+  };
+
   public render() {
     return (
       <React.Fragment>
@@ -388,6 +450,7 @@ class PostDetail extends React.Component<IProps, IState> {
               return <div>something wrong</div>;
             }
             const post = data.GetPostById.post;
+            const isClapped = data.GetPostById.isClapped;
             if (post === null) {
               return <div>have no post</div>;
             }
@@ -441,56 +504,69 @@ class PostDetail extends React.Component<IProps, IState> {
                     </TitleContainer>
                     <BodyContainer>
                       <UserView json={body} />
+                      <ClapContainer>
+                        <Mutation
+                          mutation={SEND_CLAP}
+                          onCompleted={data => this.sendClapConfirm(data)}
+                        >
+                          {SendClap =>
+                            isClapped ? (
+                              "박수쳤네"
+                            ) : (
+                              <ClapImage
+                                onClick={e => {
+                                  e.preventDefault();
+                                  SendClap({
+                                    refetchQueries: [
+                                      {
+                                        query: POST,
+                                        variables: {
+                                          postId: this.props.match.params.postId
+                                        }
+                                      }
+                                    ],
+                                    variables: { postId: post.id }
+                                  });
+                                }}
+                                src="https://cdn.dribbble.com/users/474675/screenshots/2221967/chad_clap_gif_2.gif"
+                              />
+                            )
+                          }
+                        </Mutation>
+                      </ClapContainer>
+                      <ButtonsContainer>
+                        <Link
+                          to={`/post/edit/${post.id}`}
+                          style={{ textDecoration: "none" }}
+                        >
+                          <PostButton>Edit</PostButton>
+                        </Link>
+                        <DeletePostQuery
+                          mutation={DELETE_POST}
+                          onCompleted={data => this.deletePostConfirm(data)}
+                        >
+                          {(DeletePost, { data }) => (
+                            <PostButton
+                              onClick={e => {
+                                e.preventDefault();
+                                DeletePost({
+                                  refetchQueries: [
+                                    {
+                                      query: POSTS
+                                    }
+                                  ]
+                                });
+                              }}
+                            >
+                              Delete
+                            </PostButton>
+                          )}
+                        </DeletePostQuery>
+                      </ButtonsContainer>
                     </BodyContainer>
-                    <ButtonsContainer>
-                      <Mutation
-                        mutation={SEND_CLAP}
-                        onCompleted={() => this.props.history.push(`/guide`)}
-                      >
-                        {SendClap => (
-                          <PostButton
-                            onClick={e => {
-                              e.preventDefault();
-                              SendClap({
-                                variables: { postId: post.id }
-                              });
-                            }}
-                          >
-                            CLAP!
-                          </PostButton>
-                        )}
-                      </Mutation>
-                      <Link
-                        to={`/post/edit/${post.id}`}
-                        style={{ textDecoration: "none" }}
-                      >
-                        <PostButton>Edit</PostButton>
-                      </Link>
-                      <DeletePostQuery
-                        mutation={DELETE_POST}
-                        onCompleted={() => this.props.history.push(`/guide`)}
-                      >
-                        {(DeletePost, { data }) => (
-                          <PostButton
-                            onClick={e => {
-                              e.preventDefault();
-                              DeletePost({
-                                refetchQueries: [
-                                  {
-                                    query: POSTS
-                                  }
-                                ]
-                              });
-                            }}
-                          >
-                            Delete
-                          </PostButton>
-                        )}
-                      </DeletePostQuery>
-                    </ButtonsContainer>
+
                     <CommentsListContainer>
                       <tbody>
-                        {/* <Comments items={post.comments} /> */}
                         {post.comments!.map((comment: any, index: number) => (
                           <CommentContainer key={index}>
                             <CommentBodyContainer level={comment!.level}>
@@ -520,11 +596,7 @@ class PostDetail extends React.Component<IProps, IState> {
                               <DeleteCommentQuery
                                 mutation={DELETE_COMMENT}
                                 onCompleted={data =>
-                                  this.props.history.push(
-                                    `/post/read/${
-                                      this.props.match.params.postId
-                                    }`
-                                  )
+                                  this.deleteCommentConfirm(data)
                                 }
                               >
                                 {(DeleteComment, { error }) => {
@@ -557,11 +629,7 @@ class PostDetail extends React.Component<IProps, IState> {
                                 <AddCommentQuery
                                   mutation={ADD_COMMENT}
                                   onCompleted={data =>
-                                    this.props.history.push(
-                                      `/post/read/${
-                                        this.props.match.params.postId
-                                      }`
-                                    )
+                                    this.addCommentConfirm(data)
                                   }
                                 >
                                   {(AddComment, { error }) => {
@@ -633,11 +701,7 @@ class PostDetail extends React.Component<IProps, IState> {
                       />
                       <AddCommentQuery
                         mutation={ADD_COMMENT}
-                        onCompleted={data =>
-                          this.props.history.push(
-                            `/post/read/${this.props.match.params.postId}`
-                          )
-                        }
+                        onCompleted={data => this.addCommentConfirm(data)}
                       >
                         {(AddComment, { error }) => {
                           // if (loading) return "Loading...";

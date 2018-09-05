@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Editor from "../../Components/Editor";
 import { WIKIIMAGE, EDIT_WIKIIMAGE } from "../../sharedQueries";
 import EditorDefaults from "../../EditorDefaults";
+import { toast } from "react-toastify";
 
 const WikiImageAddContainer = styled.div`
   width: 100%;
@@ -58,7 +59,7 @@ class WikiImageEdit extends React.Component<IProps, IState> {
         rightMenu: null,
         view: "EDIT",
         bodyBackgroundColor: EditorDefaults.BACKGROUND_COLOR,
-        contentWidth: EditorDefaults.WIDTH,
+        contentWidth: null,
         font: EditorDefaults.FONT,
         selectedIndex: null,
         hoveredIndex: null,
@@ -77,6 +78,19 @@ class WikiImageEdit extends React.Component<IProps, IState> {
     this.setState({ hoverJson });
   };
 
+  public confirm = (data: any) => {
+    if (data.EditWikiImage.ok) {
+      toast.success("Wiki Image Edit success");
+      this.props.history.push(
+        `/category/${this.props.match.params.categoryId}/wikiImage/read/${
+          this.props.match.params.wikiImageId
+        }`
+      );
+    } else {
+      toast.error(data.EditWikiImage.error);
+    }
+  };
+
   render() {
     return (
       <Query
@@ -93,7 +107,7 @@ class WikiImageEdit extends React.Component<IProps, IState> {
               <WikiImageAddContainer>
                 <Mutation
                   mutation={EDIT_WIKIIMAGE}
-                  onCompleted={data => this.props.history.push(`/wiki`)}
+                  onCompleted={data => this.confirm(data)}
                 >
                   {(EditWikiImage, { data }) => (
                     <HoverImageContainer>

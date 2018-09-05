@@ -494,7 +494,6 @@ class BlockOptions extends React.Component<IProps, any> {
             </OptionRows>
           );
         case "IMAGE":
-          console.log(selectedContent.align);
           return (
             <OptionRows>
               <Option>
@@ -513,7 +512,7 @@ class BlockOptions extends React.Component<IProps, any> {
                       <Upload
                         type="POST_IMAGE"
                         selectedIndex={selectedIndex}
-                        exShownImg={selectedContent.imageSrc}
+                        exShownImg={{ url: selectedContent.imageSrc }}
                         handleOnChange={this.props.handleOnChange}
                       />
                     </UrlColumn>
@@ -706,6 +705,7 @@ class BlockOptions extends React.Component<IProps, any> {
   };
 
   public render() {
+    console.log(this.props);
     return (
       <BlockOptionContainer
         isSelected={

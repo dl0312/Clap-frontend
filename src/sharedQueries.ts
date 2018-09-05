@@ -64,6 +64,7 @@ export const POST = gql`
         }
         createdAt
       }
+      isClapped
     }
   }
 `;
@@ -210,6 +211,33 @@ export const CATEGORY = gql`
       category {
         id
         name
+        wikiImages {
+          shownImage {
+            url
+          }
+          hoverImage
+        }
+        parent {
+          name
+          id
+        }
+        children {
+          name
+          id
+        }
+      }
+    }
+  }
+`;
+
+export const SIMPLE_CATEGORY = gql`
+  query GetCategoryById($categoryId: Int!) {
+    GetCategoryById(categoryId: $categoryId) {
+      ok
+      error
+      category {
+        id
+        name
       }
     }
   }
@@ -239,6 +267,7 @@ export const ADD_CATEGORY = gql`
     AddCategory(name: $name, parentIds: $parentIds, childrenIds: $childrenIds) {
       ok
       error
+      categoryId
     }
   }
 `;
@@ -296,6 +325,7 @@ export const ADD_WIKIIMAGE = gql`
     ) {
       ok
       error
+      wikiImageId
     }
   }
 `;

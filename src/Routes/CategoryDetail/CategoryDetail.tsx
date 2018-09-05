@@ -1,12 +1,17 @@
 import React from "react";
 import { Mutation, Query } from "react-apollo";
 import { Link } from "react-router-dom";
-import { CATEGORY, DELETE_CATEGORY } from "../../sharedQueries";
+import {
+  CATEGORY,
+  DELETE_CATEGORY,
+  CATEGORIES_KEYWORD
+} from "../../sharedQueries";
 import { Helmet } from "react-helmet";
 import styled from "styled-components";
 
 import ImagePopup from "../../Components/ImagePopup";
 import { GetPos } from "../../Utility/GetPos";
+import { toast } from "react-toastify";
 
 const Subtitle = styled.div`
   font-size: 15px;
@@ -95,6 +100,16 @@ class CategoryDetail extends React.Component<any, IState> {
     };
   }
 
+  public confirm = (data: any) => {
+    const { DeleteCategory } = data;
+    if (DeleteCategory.ok) {
+      toast.success("Category Delete Success");
+      this.props.history.push(`/wiki`);
+    } else {
+      toast.error(DeleteCategory.error);
+    }
+  };
+
   public render() {
     const {
       pos,
@@ -136,14 +151,24 @@ class CategoryDetail extends React.Component<any, IState> {
                   </Link>
                   <Mutation
                     mutation={DELETE_CATEGORY}
-                    onCompleted={() => this.props.history.push(`/wiki`)}
+                    onCompleted={data => this.confirm(data)}
                   >
                     {(DeleteCategory, { data }) => (
                       <button
                         onClick={e => {
                           e.preventDefault();
                           DeleteCategory({
-                            variables: { categoryId: category.id }
+                            refetchQueries: [
+                              {
+                                query: CATEGORIES_KEYWORD,
+                                variables: {
+                                  keyword: ""
+                                }
+                              }
+                            ],
+                            variables: {
+                              categoryId: category.id
+                            }
                           });
                         }}
                       >

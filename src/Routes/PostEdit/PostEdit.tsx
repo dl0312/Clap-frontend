@@ -2,6 +2,7 @@ import React from "react";
 import Editor from "../../Components/Editor";
 import { POST, EDIT_POST } from "../../sharedQueries";
 import { Query, Mutation } from "react-apollo";
+import { toast } from "react-toastify";
 
 interface IProps {
   match: { params: { postId: number } };
@@ -14,7 +15,17 @@ class PostEdit extends React.Component<IProps, any> {
     this.state = {};
   }
 
-  render() {
+  public confirm = (data: any) => {
+    const { EditPost } = data;
+    if (EditPost.ok) {
+      toast.success("Edit Post Success");
+      this.props.history.push(`/post/read/${this.props.match.params.postId}`);
+    } else {
+      toast.error(EditPost.error);
+    }
+  };
+
+  public render() {
     return (
       <React.Fragment>
         <Query
@@ -28,9 +39,7 @@ class PostEdit extends React.Component<IProps, any> {
             return (
               <Mutation
                 mutation={EDIT_POST}
-                onCompleted={data =>
-                  this.props.history.push(`/post/read/${post.id}`)
-                }
+                onCompleted={data => this.confirm(data)}
               >
                 {(EditPost, { data }) => (
                   <React.Fragment>

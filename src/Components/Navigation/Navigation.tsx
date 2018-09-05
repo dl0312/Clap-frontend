@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { NavLink } from 'react-router-dom';
-import styled from 'styled-components';
-import { AUTH_TOKEN } from '../../constants';
+import * as React from "react";
+import { NavLink } from "react-router-dom";
+import styled from "styled-components";
+import { AUTH_TOKEN } from "../../constants";
 
 const NavContainer = styled.div`
   width: 100%;
@@ -31,9 +31,9 @@ const MenuItem = styled.div`
   padding: 9px 30px;
   color: black;
   text-decoration: none;
-  font-family: 'Raleway';
+  font-family: "Raleway";
   font-weight: 100;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   letter-spacing: 10px;
   width: 250px;
 `;
@@ -57,7 +57,7 @@ interface ISocialIconProps {
   size: number;
 }
 
-const SocialIcon = styled<ISocialIconProps, any>('img')`
+const SocialIcon = styled<ISocialIconProps, any>("img")`
   width: ${(props: ISocialIconProps) => props.size};
   margin: 0 2px;
   border-radius: 2px;
@@ -72,10 +72,10 @@ const Navigation: React.SFC<IProps> = ({ isLoggedIn }) => {
   return (
     <NavContainer>
       <Header>
-        <div style={{ width: '100%' }}>
+        <div style={{ width: "100%" }}>
           <ProfileContainer>
-            {authToken ? (
-              <NavLink to="/" style={{ textDecoration: 'none' }}>
+            {authToken !== null ? (
+              <NavLink to="/" style={{ textDecoration: "none" }}>
                 <ProfileItemContainer
                   onClick={() => {
                     localStorage.removeItem(AUTH_TOKEN);
@@ -85,12 +85,12 @@ const Navigation: React.SFC<IProps> = ({ isLoggedIn }) => {
                 </ProfileItemContainer>
               </NavLink>
             ) : (
-              <NavLink to="/login" style={{ textDecoration: 'none' }}>
+              <NavLink to="/login" style={{ textDecoration: "none" }}>
                 <ProfileItemContainer>LOG IN</ProfileItemContainer>
               </NavLink>
             )}
             {!authToken && (
-              <NavLink to="/signin" style={{ textDecoration: 'none' }}>
+              <NavLink to="/signin" style={{ textDecoration: "none" }}>
                 <ProfileItemContainer>JOIN US</ProfileItemContainer>
               </NavLink>
             )}
@@ -121,9 +121,9 @@ const Navigation: React.SFC<IProps> = ({ isLoggedIn }) => {
             <NavLink
               to="/"
               style={{
-                fontSize: '20px',
-                marginRight: '150px',
-                textDecoration: 'none'
+                fontSize: "20px",
+                marginRight: "150px",
+                textDecoration: "none"
               }}
             >
               <MenuItem>
@@ -132,22 +132,22 @@ const Navigation: React.SFC<IProps> = ({ isLoggedIn }) => {
                   role="img"
                   aria-label="Game"
                   style={{
-                    fontFamily: 'Open Sans',
-                    fontSize: '5px',
-                    letterSpacing: '2px'
+                    fontFamily: "Open Sans",
+                    fontSize: "5px",
+                    letterSpacing: "2px"
                   }}
                 >
                   🕹️POWERED BY GAMERS🕹️
                 </div>
               </MenuItem>
             </NavLink>
-            <NavLink to="/board" style={{ textDecoration: 'none' }}>
+            <NavLink to="/board" style={{ textDecoration: "none" }}>
               <MenuItem>GUIDE</MenuItem>
             </NavLink>
-            <NavLink to="/wiki" style={{ textDecoration: 'none' }}>
+            <NavLink to="/wiki" style={{ textDecoration: "none" }}>
               <MenuItem>WIKI</MenuItem>
             </NavLink>
-            <NavLink to="/store" style={{ textDecoration: 'none' }}>
+            <NavLink to="/store" style={{ textDecoration: "none" }}>
               <MenuItem>STORE</MenuItem>
             </NavLink>
             {/* <NavLink to="/editor" style={{ textDecoration: "none" }}>

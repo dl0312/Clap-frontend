@@ -1,5 +1,6 @@
 import reset from "styled-reset";
 import { injectGlobal } from "./typed-components";
+import { fontSize, color } from "./config/_mixin";
 
 // tslint:disable-next-line
 injectGlobal`
@@ -13,7 +14,9 @@ ${reset};
       box-sizing: border-box;
   }
   body{
-      font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background-color: ${color.bgColor};
+    font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size: ${fontSize.normalFontSize};
   }
   a{ 
       color:inherit;

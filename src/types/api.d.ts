@@ -104,6 +104,7 @@ export interface getPostById_GetPostById {
   ok: boolean;
   error: string | null;
   post: getPostById_GetPostById_post | null;
+  isClapped: boolean | null;
 }
 
 export interface getPostById {
@@ -378,40 +379,16 @@ export interface getCategoryById_GetCategoryById_category_wikiImages {
   hoverImage: string;
 }
 
-export interface getCategoryById_GetCategoryById_category_parent_wikiImages_shownImage {
-  __typename: "ShownImage";
-  url: string;
-}
-
-export interface getCategoryById_GetCategoryById_category_parent_wikiImages {
-  __typename: "WikiImage";
-  shownImage: getCategoryById_GetCategoryById_category_parent_wikiImages_shownImage | null;
-  hoverImage: string;
-}
-
 export interface getCategoryById_GetCategoryById_category_parent {
   __typename: "Category";
   name: string;
   id: number;
-  wikiImages: (getCategoryById_GetCategoryById_category_parent_wikiImages | null)[] | null;
-}
-
-export interface getCategoryById_GetCategoryById_category_children_wikiImages_shownImage {
-  __typename: "ShownImage";
-  url: string;
-}
-
-export interface getCategoryById_GetCategoryById_category_children_wikiImages {
-  __typename: "WikiImage";
-  shownImage: getCategoryById_GetCategoryById_category_children_wikiImages_shownImage | null;
-  hoverImage: string;
 }
 
 export interface getCategoryById_GetCategoryById_category_children {
   __typename: "Category";
   name: string;
   id: number;
-  wikiImages: (getCategoryById_GetCategoryById_category_children_wikiImages | null)[] | null;
 }
 
 export interface getCategoryById_GetCategoryById_category {
@@ -435,6 +412,34 @@ export interface getCategoryById {
 }
 
 export interface getCategoryByIdVariables {
+  categoryId: number;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GetCategoryById
+// ====================================================
+
+export interface GetCategoryById_GetCategoryById_category {
+  __typename: "Category";
+  id: number;
+  name: string;
+}
+
+export interface GetCategoryById_GetCategoryById {
+  __typename: "GetCategoryByIdResponse";
+  ok: boolean;
+  error: string | null;
+  category: GetCategoryById_GetCategoryById_category | null;
+}
+
+export interface GetCategoryById {
+  GetCategoryById: GetCategoryById_GetCategoryById;
+}
+
+export interface GetCategoryByIdVariables {
   categoryId: number;
 }
 
@@ -489,6 +494,7 @@ export interface addCategory_AddCategory {
   __typename: "AddCategoryResponse";
   ok: boolean;
   error: string | null;
+  categoryId: number | null;
 }
 
 export interface addCategory {
@@ -580,6 +586,7 @@ export interface addWikiImage_AddWikiImage {
   __typename: "AddWikiImageResponse";
   ok: boolean | null;
   error: string | null;
+  wikiImageId: number | null;
 }
 
 export interface addWikiImage {

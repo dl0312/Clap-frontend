@@ -9,6 +9,7 @@ import { Mutation } from "react-apollo";
 // } from "../../types/api";
 import { LOGIN_MUTATION, SIGNUP_MUTATION } from "../../sharedQueries";
 import { AUTH_TOKEN } from "../../constants";
+import { toast } from "react-toastify";
 
 const LoginContainer = styled.div`
   width: 100%;
@@ -21,9 +22,12 @@ const LoginContainer = styled.div`
 const RealLoginContainer = styled.div`
   border: 0.5px solid grey;
   padding: 20px;
+  min-width: 300px;
 `;
 
-const LoginTitle = styled.div``;
+const LoginTitle = styled.div`
+  padding-bottom: 10px;
+`;
 
 const SearchInput = styled.input`
   width: 100%;
@@ -43,6 +47,15 @@ const Button = styled.button`
   width: 100%;
   height: 30px;
   margin: 2px 0;
+  border: none;
+  background-color: white;
+  border-radius: 5px;
+  text-transform: uppercase;
+  border: 0.5px solid rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.2s ease;
+  &:hover {
+    box-shadow: 0px 1px 2px black;
+  }
 `;
 
 interface IProps {
@@ -75,8 +88,24 @@ class LogIn extends React.Component<IProps, IState> {
   public confirm = async (data: any) => {
     console.log(data);
     const { token } = this.state.login ? data.EmailSignIn : data.EmailSignUp;
-    this.saveUserData(token);
-    this.props.history.push(`/`);
+    if (this.state.login) {
+      if (data.EmailSignIn.ok) {
+        toast.success("Log In success");
+      } else {
+        toast.error(data.EmailSignIn.error);
+      }
+    } else {
+      if (data.EmailSignUp.ok) {
+        toast.success("Sign Up success");
+      } else {
+        toast.error(data.EmailSignUp.error);
+      }
+    }
+
+    if (token !== null) {
+      this.saveUserData(token);
+      this.props.history.push(`/`);
+    }
   };
 
   public saveUserData = (token: any) => {

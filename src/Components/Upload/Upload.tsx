@@ -60,21 +60,24 @@ class Upload extends React.Component<IProps, IState> {
     this.state = { file: null };
   }
 
+  public confirm = (data: any) => {
+    const { UploadShownImage } = data;
+    if (UploadShownImage.ok) {
+      toast.success("Image Uploaded!");
+    } else {
+      toast.error(UploadShownImage.error);
+    }
+  };
+
   public render() {
     // const { history } = this.props;
+    console.log(this.props);
     return (
       <div>
         <FlexBox>
           <UploadQuery
             mutation={UPLOAD_SHOWNIMAGE}
-            onCompleted={data => {
-              const { UploadShownImage } = data;
-              if (UploadShownImage.ok) {
-                toast.success("Image Uploaded!");
-              } else {
-                toast.error(UploadShownImage.error);
-              }
-            }}
+            onCompleted={data => this.confirm(data)}
           >
             {uploadShownImage => (
               <Dropzone
@@ -103,13 +106,8 @@ class Upload extends React.Component<IProps, IState> {
                 }}
               >
                 {this.props.type === "POST_IMAGE" ? (
-                  this.props.exShownImg ? (
-                    <PreviewImg
-                      src={`http://localhost:4000/uploads/${
-                        this.props.exShownImg.url
-                      }`}
-                      alt="preview"
-                    />
+                  this.props.exShownImg.url !== undefined ? (
+                    <PreviewImg src={this.props.exShownImg.url} alt="preview" />
                   ) : (
                     <DropInnerText>
                       Try dropping some files here, or click to select files to
