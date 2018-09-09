@@ -106,6 +106,18 @@ class CategoryEdit extends React.Component<any, IState> {
         <Query
           query={CATEGORY}
           variables={{ categoryId: this.props.match.params.categoryId }}
+          onCompleted={data => {
+            const { category }: any = data.GetCategoryById;
+            this.setState({
+              name: category.name,
+              parentIds: category.parent.map((ele: any) => {
+                return ele.id;
+              }),
+              childrenIds: category.children.map((ele: any) => {
+                return ele.id;
+              })
+            });
+          }}
         >
           {({ loading, error, data }) => {
             if (loading) {

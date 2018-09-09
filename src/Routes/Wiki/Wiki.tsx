@@ -29,6 +29,7 @@ const SearchInput = styled.input`
   height: 30px;
   border: 1px solid #ced4da;
   border-radius: 5px;
+  background-color: white;
   &:focus {
     outline: none;
   }
@@ -60,9 +61,12 @@ const Button = styled.div`
   text-transform: uppercase;
   padding: 5px 10px;
   margin: 15px 10px;
-  border-radius: 5px;
   border: 0.5px solid rgba(0, 0, 0, 0.2);
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  background-color: white;
+  transition: box-shadow 0.5s ease;
+  &:hover {
+    box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.5);
+  }
 `;
 
 const CategoryContainer = styled.div`

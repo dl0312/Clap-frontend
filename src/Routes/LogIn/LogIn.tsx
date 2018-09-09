@@ -20,9 +20,12 @@ const LoginContainer = styled.div`
 `;
 
 const RealLoginContainer = styled.div`
-  border: 0.5px solid grey;
+  border-radius: 3px;
+  border: 1px solid #e6e6e6;
   padding: 20px;
   min-width: 300px;
+  background-color: white;
+  color: black;
 `;
 
 const LoginTitle = styled.div`
@@ -49,12 +52,12 @@ const Button = styled.button`
   margin: 2px 0;
   border: none;
   background-color: white;
-  border-radius: 5px;
   text-transform: uppercase;
-  border: 0.5px solid rgba(0, 0, 0, 0.5);
-  transition: box-shadow 0.2s ease;
+  border-radius: 3px;
+  border: 1px solid #e6e6e6;
+  transition: box-shadow 0.3s ease;
   &:hover {
-    box-shadow: 0px 1px 2px black;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5);
   }
 `;
 

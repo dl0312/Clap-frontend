@@ -21,6 +21,7 @@ import CategoryAdd from "../../Routes/CategoryAdd";
 import CategoryEdit from "../../Routes/CategoryEdit";
 import LogIn from "../../Routes/LogIn";
 import SignUp from "../../Routes/SignUp";
+import Profile from "../../Routes/Profile";
 
 // import { ApolloProvider } from 'react-apollo';
 
@@ -39,6 +40,8 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
       <Switch>
         <Route path="/login" exact={true} component={LogIn} />
         <Route path="/signup" exact={true} component={SignUp} />
+        <Route path="/profile" exact={true} component={Profile} />
+
         <Route
           path="/category/read/:categoryId"
           exact={true}

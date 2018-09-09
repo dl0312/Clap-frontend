@@ -12,10 +12,9 @@ const NavContainer = styled.div`
 const Header = styled.header`
   display: flex;
   justify-content: center;
-  color: black;
-  background-color: #fafafa;
+  color: white;
+  background-color: rgba(5, 5, 5, 0.94);
   transition: background-color 0.1s ease;
-  background-color: transparent;
 `;
 
 const MenuList = styled.ul`
@@ -23,18 +22,19 @@ const MenuList = styled.ul`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  border-top: 0.1px solid darkgrey;
+  background-color: rgba(30, 30, 30, 0.94);
+  box-shadow: 0px 0.5px 2px rgba(0, 0, 0, 0.3);
 `;
 
 const MenuItem = styled.div`
   text-align: center;
   padding: 9px 30px;
-  color: black;
+  color: white;
   text-decoration: none;
   font-family: "Raleway";
   font-weight: 100;
-  font-family: "Roboto";
   letter-spacing: 10px;
+  font-size: 15px;
   width: 250px;
 `;
 
@@ -46,7 +46,7 @@ const ProfileContainer = styled.div`
 `;
 
 const ProfileItemContainer = styled.div`
-  padding: 3px 10px;
+  padding: 5px 10px;
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -99,23 +99,27 @@ const Navigation: React.SFC<IProps> = ({ isLoggedIn }) => {
                 <ProfileItemContainer>SOCIAL LOGIN </ProfileItemContainer>
                 <SocialIcon
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Facebook_logo_%28square%29.png/600px-Facebook_logo_%28square%29.png"
-                  size="18px"
+                  size="16px"
                 />
                 <SocialIcon
                   src="https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-512.png"
-                  size="18px"
+                  size="16px"
                 />
                 <SocialIcon
                   src="http://pluspng.com/img-png/naver-logo-png-naver-300.png"
-                  size="18px"
+                  size="16px"
                 />
                 <SocialIcon
                   src="https://cdn.iconscout.com/public/images/icon/free/png-512/kakaotalk-logo-social-media-3790821a3904b250-512x512.png"
-                  size="18px"
+                  size="16px"
                 />
               </React.Fragment>
             )}
-            {authToken && <ProfileItemContainer>PROFILE</ProfileItemContainer>}
+            {authToken && (
+              <NavLink to="/profile" style={{ textDecoration: "none" }}>
+                <ProfileItemContainer>PROFILE</ProfileItemContainer>
+              </NavLink>
+            )}
           </ProfileContainer>
           <MenuList>
             <NavLink

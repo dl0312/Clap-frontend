@@ -4,19 +4,20 @@ import { fontSize, color } from "./config/_mixin";
 
 // tslint:disable-next-line
 injectGlobal`
+${reset};
 @import url("https://cdnjs.cloudflare.com/ajax/libs/antd/3.6.6/antd.min.css");
 @import url("https://www.w3schools.com/w3css/4/w3.css");
 @import url("https://use.fontawesome.com/releases/v5.0.13/css/all.css");
 @import url("https://fonts.googleapis.com/css?family=Maven+Pro|Roboto:300:400,700|Eczar|Oswald|Playfair+Display|Hanalei+Fill|Quicksand|Open+Sans|Raleway|Anton|Do+Hyeon|Kirang+Haerang|Nanum+Gothic|Nanum+Gothic+Coding|Nanum+Myeongjo|Nanum+Pen+Script|Sunflower:300");
 @import url("//cdn.jsdelivr.net/font-iropke-batang/1.2/font-iropke-batang.css");
-${reset};
   * {
       box-sizing: border-box;
   }
   body{
     background-color: ${color.bgColor};
-    font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    /* font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Releway"; */
     font-size: ${fontSize.normalFontSize};
+    color: white;
   }
   a{ 
       color:inherit;

@@ -111,21 +111,10 @@ class CategoryDetail extends React.Component<any, IState> {
   };
 
   public render() {
-    const {
-      pos,
-      name,
-      // parentId,
-      // childrenIds,
-      // category,
-      hoverImgJson,
-      onImage
-    } = this.state;
+    const { pos, hoverImgJson, onImage } = this.state;
     console.log(this.props);
     return (
       <React.Fragment>
-        <Helmet>
-          <title>{`category: ${name}`}</title>
-        </Helmet>
         <Query
           query={CATEGORY}
           variables={{ categoryId: this.props.match.params.categoryId }}
@@ -137,6 +126,9 @@ class CategoryDetail extends React.Component<any, IState> {
             const { category } = data.GetCategoryById;
             return (
               <WikiEditContainer>
+                <Helmet>
+                  <title>{`Category ${category.name} | CLAP`}</title>
+                </Helmet>
                 <ParentOrChildrenContainer>
                   <Subtitle>PARENT</Subtitle>
                   <ParentOrChildrenListContainer>

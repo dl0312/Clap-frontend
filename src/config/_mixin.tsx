@@ -1,7 +1,7 @@
 // these sizes are arbitrary and you can set them to whatever you wish
 import { css } from "styled-components";
 
-const sizes = {
+export const sizes = {
   giant: 1170,
   desktop: 992,
   tablet: 768,
@@ -15,7 +15,7 @@ export const fontSize = {
 };
 
 export const color = {
-  bgColor: "#fafafa"
+  bgColor: "rgb(20, 20, 20)"
 };
 
 // iterate through the sizes and create a media template

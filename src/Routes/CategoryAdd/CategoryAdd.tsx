@@ -4,6 +4,7 @@ import { ADD_CATEGORY } from "../../sharedQueries";
 import { Mutation } from "react-apollo";
 import CategorySelection from "../../Components/CategorySelection";
 import { toast } from "react-toastify";
+import { Helmet } from "react-helmet";
 
 const FlexBox = styled.div`
   display: flex;
@@ -98,72 +99,77 @@ class CategoryAdd extends React.Component<any, IState> {
     console.log(parentIds);
     console.log(childrenIds);
     return (
-      <Mutation
-        mutation={ADD_CATEGORY}
-        onCompleted={data => this.confirm(data)}
-      >
-        {(AddCategory, { data }) => (
-          <CategoryAddContainer>
-            <SearchInput
-              type="text"
-              onChange={e => {
-                this.setState({ name: e.target.value });
-              }}
-            />
-            <CategorySelectionsContainer>
-              <CategorySelection
-                addIdToState={this.addIdToState}
-                deleteIdToState={this.deleteIdToState}
-                selectedCategories={parentIds}
-                type="parent"
-                key="parent"
+      <React.Fragment>
+        <Helmet>
+          <title>Add Category | CLAP</title>
+        </Helmet>
+        <Mutation
+          mutation={ADD_CATEGORY}
+          onCompleted={data => this.confirm(data)}
+        >
+          {(AddCategory, { data }) => (
+            <CategoryAddContainer>
+              <SearchInput
+                type="text"
+                onChange={e => {
+                  this.setState({ name: e.target.value });
+                }}
               />
-              <CategorySelection
-                addIdToState={this.addIdToState}
-                deleteIdToState={this.deleteIdToState}
-                selectedCategories={childrenIds}
-                type="children"
-                key="children"
-              />
-            </CategorySelectionsContainer>
-            <SendIcon
-              onClick={() =>
-                parentIds.length === 0 && childrenIds.length === 0
-                  ? AddCategory({
-                      variables: {
-                        name
-                      }
-                    })
-                  : parentIds.length !== 0 && childrenIds.length === 0
+              <CategorySelectionsContainer>
+                <CategorySelection
+                  addIdToState={this.addIdToState}
+                  deleteIdToState={this.deleteIdToState}
+                  selectedCategories={parentIds}
+                  type="parent"
+                  key="parent"
+                />
+                <CategorySelection
+                  addIdToState={this.addIdToState}
+                  deleteIdToState={this.deleteIdToState}
+                  selectedCategories={childrenIds}
+                  type="children"
+                  key="children"
+                />
+              </CategorySelectionsContainer>
+              <SendIcon
+                onClick={() =>
+                  parentIds.length === 0 && childrenIds.length === 0
                     ? AddCategory({
                         variables: {
-                          name,
-                          parentIds
+                          name
                         }
                       })
-                    : parentIds.length === 0 && childrenIds.length !== 0
+                    : parentIds.length !== 0 && childrenIds.length === 0
                       ? AddCategory({
                           variables: {
                             name,
-                            childrenIds
+                            parentIds
                           }
                         })
-                      : parentIds.length !== 0 && childrenIds.length !== 0
+                      : parentIds.length === 0 && childrenIds.length !== 0
                         ? AddCategory({
                             variables: {
                               name,
-                              parentIds,
                               childrenIds
                             }
                           })
-                        : null
-              }
-            >
-              Send
-            </SendIcon>
-          </CategoryAddContainer>
-        )}
-      </Mutation>
+                        : parentIds.length !== 0 && childrenIds.length !== 0
+                          ? AddCategory({
+                              variables: {
+                                name,
+                                parentIds,
+                                childrenIds
+                              }
+                            })
+                          : null
+                }
+              >
+                Send
+              </SendIcon>
+            </CategoryAddContainer>
+          )}
+        </Mutation>
+      </React.Fragment>
     );
   }
 }

@@ -1,7 +1,7 @@
 import * as React from "react";
 import Dropzone from "react-dropzone";
 import { Mutation } from "react-apollo";
-import { UPLOAD_SHOWNIMAGE } from "../../sharedQueries";
+import { PROFILE, UPLOAD_SHOWNIMAGE } from "../../sharedQueries";
 import { uploadShownImage, uploadShownImageVariables } from "../../types/api";
 import styled from "styled-components";
 import { toast } from "react-toastify";
@@ -43,10 +43,11 @@ class UploadQuery extends Mutation<
 > {}
 
 interface IProps {
-  type: "POST_IMAGE" | "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
+  type: "POST_IMAGE" | "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | "PROFILE";
   exShownImg: { url: string };
   handleOnChange?: any;
   masterCallback?: any;
+  UpdateMyProfile?: any;
   selectedIndex?: number | number[];
 }
 
@@ -97,6 +98,19 @@ class Upload extends React.Component<IProps, IState> {
                       "IMAGE",
                       "URL"
                     );
+                  } else if (this.props.type === "PROFILE") {
+                    this.props.UpdateMyProfile({
+                      refetchQueries: [
+                        {
+                          query: PROFILE
+                        }
+                      ],
+                      variables: {
+                        profilePhoto: `http://localhost:4000/uploads/${
+                          response!.data!.UploadShownImage!.shownImage!.url
+                        }`
+                      }
+                    });
                   } else {
                     this.props.masterCallback(
                       "shownImage",
@@ -105,7 +119,8 @@ class Upload extends React.Component<IProps, IState> {
                   }
                 }}
               >
-                {this.props.type === "POST_IMAGE" ? (
+                {this.props.type === "POST_IMAGE" ||
+                this.props.type === "PROFILE" ? (
                   this.props.exShownImg.url !== undefined ? (
                     <PreviewImg src={this.props.exShownImg.url} alt="preview" />
                   ) : (

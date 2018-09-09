@@ -121,6 +121,9 @@ export const POSTS = gql`
         category {
           id
           name
+          parent {
+            name
+          }
           wikiImages {
             id
             shownImage {
@@ -425,6 +428,56 @@ export const IS_LOGGED_IN = gql`
   {
     auth {
       isLoggedIn @client
+    }
+  }
+`;
+
+export const PROFILE = gql`
+  query getMyProfile {
+    GetMyProfile {
+      ok
+      error
+      user {
+        id
+        email
+        fullName
+        nickName
+        age
+        gender
+        password
+        profilePhoto
+        following {
+          fullName
+        }
+        followers {
+          fullName
+        }
+      }
+    }
+  }
+`;
+
+export const EDIT_PROFILE = gql`
+  mutation updateMyProfile(
+    $email: String
+    $firstName: String
+    $lastName: String
+    $nickName: String
+    $age: Int
+    $password: String
+    $profilePhoto: String
+  ) {
+    UpdateMyProfile(
+      email: $email
+      firstName: $firstName
+      lastName: $lastName
+      nickName: $nickName
+      age: $age
+      password: $password
+      profilePhoto: $profilePhoto
+    ) {
+      ok
+      error
     }
   }
 `;

@@ -1,2 +1,2 @@
-import BoardContainer from './BoardContainer';
-export default BoardContainer;
+import Board from "./Board";
+export default Board;

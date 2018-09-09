@@ -25,6 +25,7 @@ import {
   deleteCommentVariables
 } from "../../types/api";
 import { toast } from "react-toastify";
+import { formatDate } from "../../Utility/FormatDate";
 
 const DetailContainer = styled.div`
   width: 100%;
@@ -327,6 +328,7 @@ const PostButton = styled.div`
   width: 60px;
   text-align: center;
   text-transform: uppercase;
+  cursor: pointer;
 `;
 
 // const ClapButton = styled.div`
@@ -377,18 +379,6 @@ class PostDetail extends React.Component<IProps, IState> {
       reCommentBody: "",
       parentCommentId: null
     };
-  }
-
-  public formatDate(date: any) {
-    const d = new Date(date);
-    let month = "" + (d.getMonth() + 1),
-      day = "" + d.getDate();
-    const year = d.getFullYear();
-
-    if (month.length < 2) month = "0" + month;
-    if (day.length < 2) day = "0" + day;
-
-    return [year, month, day].join("-");
   }
 
   public sendClapConfirm = (data: any) => {
@@ -684,7 +674,7 @@ class PostDetail extends React.Component<IProps, IState> {
                             </CommentBodyContainer>
                             <CommentInfo>
                               <CommentDate>
-                                {this.formatDate(comment.createdAt)}
+                                {formatDate(comment.createdAt)}
                               </CommentDate>
                             </CommentInfo>
                           </CommentContainer>

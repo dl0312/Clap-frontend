@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { Helmet } from "react-helmet";
 import { Query } from "react-apollo";
 import SmallCategory from "../SmallCategory";
 import {
@@ -134,9 +133,6 @@ class CategorySelection extends React.Component<IProps, IState> {
     const { selectedCategories, keyword } = this.state;
     return (
       <CategorySelectionContainer>
-        <Helmet>
-          <title>Add Category | CLAP</title>
-        </Helmet>
         <UpperContainer>
           <Button>{type}</Button>
           <SearchInput
