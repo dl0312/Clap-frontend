@@ -48,7 +48,7 @@ const TitleContainer = styled<ITitleContainerProps, any>("div")`
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding: 20px 40px;
+  padding: 40px 40px;
   border: 1px solid black;
   background-color: black;
   background-image: linear-gradient(to left, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 1)),
@@ -66,7 +66,7 @@ const Title = styled.div`
   font-weight: bolder;
   /* width: 100%; */
   text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
-  margin-bottom: 10px;
+  margin: 10px 0px;
 `;
 
 const TitleInnerContainer = styled.div`
@@ -102,6 +102,7 @@ const CountContainer = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  font-size: 15px;
 `;
 
 const CountItem = styled.div`
@@ -121,7 +122,30 @@ const CountIcon = styled.i`
   text-shadow: 0 3px 5px rgba(0, 0, 0, 1);
 `;
 
-const UserContainer = styled.div`
+interface IUserImgProps {
+  url: string;
+}
+
+const UserImg = styled<IUserImgProps, any>("div")`
+  width: 25px;
+  height: 25px;
+  overflow: hidden;
+  border-radius: 100%;
+  background-image: url(${props => `${props.url}`});
+  background-size: auto 100%;
+  background-position: 50% 50%;
+
+  margin-left: 5px;
+`;
+
+const UserContainer = styled.span`
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+const UserNickName = styled.div`
   margin-left: 5px;
   text-shadow: 0 3px 5px rgba(0, 0, 0, 1);
 `;
@@ -492,9 +516,10 @@ class PostDetail extends React.Component<IProps, IState> {
                             <CountText>{post.clapsCount}</CountText>
                           </CountItem>
                         </CountContainer>
-                        <UserContainer>{`by ${
-                          post.user.nickName
-                        }`}</UserContainer>
+                        <UserContainer>
+                          <UserImg url={post.user.profilePhoto!} />
+                          <UserNickName>{`${post.user.nickName}`}</UserNickName>
+                        </UserContainer>
                       </TitleInnerContainer>
                     </TitleContainer>
                     <BodyContainer>

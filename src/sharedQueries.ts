@@ -29,6 +29,7 @@ export const POST = gql`
         user {
           id
           nickName
+          profilePhoto
         }
         clapsCount
         commentsCount

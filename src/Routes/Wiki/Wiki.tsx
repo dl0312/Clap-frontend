@@ -14,7 +14,7 @@ const FlexBox = styled.div`
 `;
 
 const WikiContainer = styled.div`
-  padding: 20px 100px;
+  padding: 20px 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -39,6 +39,7 @@ const ListContainer = styled.div`
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
+  width: 100%;
 `;
 
 const WikiImage = styled.img`
@@ -85,19 +86,9 @@ const CategoryName = styled.div`
   font-size: 15px;
   color: white;
   padding: 5px 10px;
-  background-color: white;
   font-weight: bolder;
   letter-spacing: 2px;
   font-family: "Nanum Gothic";
-  background-color: #ff3cac;
-  background-image: linear-gradient(
-    225deg,
-    #ff3cac 0%,
-    #784ba0 50%,
-    #2b86c5 100%
-  );
-  text-shadow: 1px 1px 3px #000000;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.8);
 `;
 
 const WikiImageCountContainer = FlexBox.extend`
@@ -113,14 +104,15 @@ const WikiImageCountContainer = FlexBox.extend`
 const WikiImageContainer = FlexBox.extend`
   /* border: 0.5px solid rgba(0, 0, 0, 0.5);
   border-left: none; */
+  display: inline-flex;
   position: relative;
-  z-index: 2;
-  height: 100%;
-  margin: 0 5px;
+  z-index: 0;
+  height: 150px;
+  margin: 5px;
   justify-content: space-between;
   flex-direction: column;
   /* border: 0.5px solid rgba(0, 0, 0, 0.2); */
-  filter: drop-shadow(0px 0px 5px #222);
+  /* filter: drop-shadow(0px 0px 5px #222); */
   /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
   &:hover {
     ${WikiImageCountContainer} {
@@ -129,9 +121,10 @@ const WikiImageContainer = FlexBox.extend`
   }
 `;
 
-const DataContainer = FlexBox.extend`
-  height: 150px;
-  margin: 5px 0 10px 0;
+const DataContainer = styled.div`
+  white-space: pre-wrap;
+  padding: 10px;
+  background-color: black;
 `;
 
 const WikiImageCount = FlexBox.extend`
@@ -151,7 +144,7 @@ const NoWikiImageContainer = FlexBox.extend`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 15px;
+  margin: 10px;
   /* border-top: 0.5px solid rgba(0, 0, 0, 0.5);
   border-right: 0.5px solid rgba(0, 0, 0, 0.5);
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.5); */
@@ -229,6 +222,20 @@ class Wiki extends React.Component<any, IState> {
                               </CategoryName>
                             </Link>
                           </CategoryContainer>
+                          <NoWikiImageContainer>
+                            <Link
+                              to={`/category/${category.id}/wikiImage/add`}
+                              style={{
+                                textDecoration: "none",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexDirection: "column"
+                              }}
+                            >
+                              <NoWikiImageIcon className="fas fa-plus-circle" />
+                            </Link>
+                          </NoWikiImageContainer>
                           {category.wikiImages.length !== 0 ? (
                             <DataContainer>
                               {category.wikiImages.map(
@@ -287,36 +294,23 @@ class Wiki extends React.Component<any, IState> {
                                   );
                                 }
                               )}
-                              <NoWikiImageContainer>
-                                <Link
-                                  to={`/category/${category.id}/wikiImage/add`}
-                                  style={{
-                                    textDecoration: "none",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    flexDirection: "column"
-                                  }}
-                                >
-                                  <NoWikiImageIcon className="fas fa-plus-circle" />
-                                </Link>
-                              </NoWikiImageContainer>
                             </DataContainer>
                           ) : (
-                            <NoWikiImageContainer>
-                              <Link
-                                to={`/category/${category.id}/wikiImage/add`}
-                                style={{
-                                  textDecoration: "none",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  flexDirection: "column"
-                                }}
-                              >
-                                <NoWikiImageIcon className="fas fa-plus-circle" />
-                              </Link>
-                            </NoWikiImageContainer>
+                            <div>h</div>
+                            // <NoWikiImageContainer>
+                            //   <Link
+                            //     to={`/category/${category.id}/wikiImage/add`}
+                            //     style={{
+                            //       textDecoration: "none",
+                            //       display: "flex",
+                            //       alignItems: "center",
+                            //       justifyContent: "center",
+                            //       flexDirection: "column"
+                            //     }}
+                            //   >
+                            //     <NoWikiImageIcon className="fas fa-plus-circle" />
+                            //   </Link>
+                            // </NoWikiImageContainer>
                           )}
                         </React.Fragment>
                       )

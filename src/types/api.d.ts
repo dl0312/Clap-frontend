@@ -36,6 +36,7 @@ export interface getPostById_GetPostById_post_user {
   __typename: "User";
   id: number;
   nickName: string;
+  profilePhoto: string | null;
 }
 
 export interface getPostById_GetPostById_post_comments_user {
@@ -196,6 +197,11 @@ export interface getAllPosts_GetAllPosts_posts_user {
   nickName: string;
 }
 
+export interface getAllPosts_GetAllPosts_posts_category_parent {
+  __typename: "Category";
+  name: string;
+}
+
 export interface getAllPosts_GetAllPosts_posts_category_wikiImages_shownImage {
   __typename: "ShownImage";
   id: number;
@@ -213,6 +219,7 @@ export interface getAllPosts_GetAllPosts_posts_category {
   __typename: "Category";
   id: number;
   name: string;
+  parent: (getAllPosts_GetAllPosts_posts_category_parent | null)[] | null;
   wikiImages: (getAllPosts_GetAllPosts_posts_category_wikiImages | null)[] | null;
 }
 
@@ -753,6 +760,75 @@ export interface emailSignUpVariables {
   email: string;
   password: string;
   phoneNumber: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getMyProfile
+// ====================================================
+
+export interface getMyProfile_GetMyProfile_user_following {
+  __typename: "User";
+  fullName: string | null;
+}
+
+export interface getMyProfile_GetMyProfile_user_followers {
+  __typename: "User";
+  fullName: string | null;
+}
+
+export interface getMyProfile_GetMyProfile_user {
+  __typename: "User";
+  id: number;
+  email: string | null;
+  fullName: string | null;
+  nickName: string;
+  age: number | null;
+  gender: string | null;
+  password: string | null;
+  profilePhoto: string | null;
+  following: (getMyProfile_GetMyProfile_user_following | null)[] | null;
+  followers: (getMyProfile_GetMyProfile_user_followers | null)[] | null;
+}
+
+export interface getMyProfile_GetMyProfile {
+  __typename: "GetMyProfileResponse";
+  ok: boolean;
+  error: string | null;
+  user: getMyProfile_GetMyProfile_user | null;
+}
+
+export interface getMyProfile {
+  GetMyProfile: getMyProfile_GetMyProfile;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: updateMyProfile
+// ====================================================
+
+export interface updateMyProfile_UpdateMyProfile {
+  __typename: "UpdateMyProfileResponse";
+  ok: boolean;
+  error: string | null;
+}
+
+export interface updateMyProfile {
+  UpdateMyProfile: updateMyProfile_UpdateMyProfile;
+}
+
+export interface updateMyProfileVariables {
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  nickName?: string | null;
+  age?: number | null;
+  password?: string | null;
+  profilePhoto?: string | null;
 }
 
 /* tslint:disable */
