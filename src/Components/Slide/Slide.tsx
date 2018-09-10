@@ -3,11 +3,13 @@ import styled from "styled-components";
 
 const SlideContainer = styled.div`
   width: 100%;
-  height: 400px;
+  height: 500px;
   position: relative;
-  z-index: 1;
+  z-index: 0;
   top: 0px;
   overflow: hidden;
+  margin-bottom: 20px;
+  padding-bottom: 40%;
 `;
 
 interface ISlideImageProps {
@@ -25,9 +27,10 @@ const SlideImage = styled<ISlideImageProps, any>("div")`
   z-index: 1;
   top: 0px;
   /* filter: brightness(50%); */
-  background-size: 100px 100px;
-  background-position: 50% 50%;
-  background: url(${props => `${props.url}`});
+  background-size: 100%;
+  background-position: 50% auto;
+  background-image: linear-gradient(rgba(20, 20, 20, 0.3), rgba(20, 20, 20, 1)),
+    url(${props => `${props.url}`});
   transition: opacity 1s ease;
   opacity: ${props => (props.isSelect ? "1" : "0")};
   animation-duration: 30s;
@@ -53,7 +56,7 @@ interface ISlideTextProps {
 const SlideText = styled<ISlideTextProps, any>("div")`
   position: absolute;
   z-index: 2;
-  top: 50%;
+  top: 55%;
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: ${props => (props.isSelect ? "1" : "0")};
@@ -143,20 +146,21 @@ class Slide extends React.Component<any, IState> {
           title: "pubg"
         },
         {
-          src: "https://pbs.twimg.com/media/DM-oPseUEAIglCP.jpg",
-          title: "onmyoji"
+          src:
+            "https://www.gtaku.net/files/attach/images/68/892/105/44e2c3d392f4016f70af8c929d53cd5f.jpg",
+          title: "monster hunter world"
         },
         {
           src:
-            "http://www.gameinsight.co.kr/news/photo/201711/14730_24283_254.jpg",
-          title: "tera m"
+            "https://cdn02.nintendo-europe.com/media/images/10_share_images/games_15/wiiu_14/SI_WiiU_TheLegendOfZeldaBreathOfTheWild.jpg",
+          title: "The Legend of Zelda: Breath of the Wild"
         }
       ]
     };
   }
 
   public componentDidMount() {
-    setInterval(() => this.imgChange("arrow", 1), 50000000);
+    setInterval(() => this.imgChange("arrow", 1), 5000);
   }
 
   public imgChange = (type: "dot" | "arrow", imgNum: number) => {

@@ -46,57 +46,61 @@ interface ITitleContainerProps {
 
 const TitleContainer = styled<ITitleContainerProps, any>("div")`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  flex-direction: column;
-  padding: 30px 30px;
+  padding: 20px 40px;
   border: 1px solid black;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.9)),
+  background-color: black;
+  background-image: linear-gradient(to left, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 1)),
     url("${props => props.src}");
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  background-size: cover;
-  background-position: center;
+  background-size: 60%;
+  background-position: right center;
+      background-repeat: no-repeat;
+
   color: white;
 `;
 
 const Title = styled.div`
-  font-size: 30px;
-  font-weight: 100;
+  font-size: 40px;
+  font-weight: bolder;
   /* width: 100%; */
   text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  margin-bottom: 10px;
 `;
 
 const TitleInnerContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
+  /* align-items: center;
+  justify-content: center; */
   flex-direction: column;
 `;
 
 const CategoryContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: row;
+  margin-left: 4px;
 `;
 
 const Category = styled.div`
-  padding: 3px 7px;
+  padding: 2px 5px;
   background-color: white;
   color: black;
   font-weight: bolder;
-  border-radius: 5px;
-  font-size: 12px;
-  margin-bottom: 15px;
-  margin-left: 2px;
-  margin-right: 2px;
+  border-radius: 2px;
+  font-size: 10px;
+  margin-bottom: 5px;
+  margin-right: 5px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 1);
 `;
 
 const CountContainer = styled.div`
-  margin: 10px 0;
+  margin: 5px 0;
+  margin-left: 5px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 `;
 
@@ -113,11 +117,12 @@ const CountText = styled.div`
 `;
 
 const CountIcon = styled.i`
-  margin: 0 5px;
+  margin-right: 5px;
   text-shadow: 0 3px 5px rgba(0, 0, 0, 1);
 `;
 
 const UserContainer = styled.div`
+  margin-left: 5px;
   text-shadow: 0 3px 5px rgba(0, 0, 0, 1);
 `;
 
@@ -467,14 +472,14 @@ class PostDetail extends React.Component<IProps, IState> {
                         <CategoryContainer>
                           {post.category.parent![0] !== undefined ? (
                             <Category>
-                              {`${post.category.parent![0]!.name}`}
+                              {`# ${post.category.parent![0]!.name}`}
                             </Category>
                           ) : null}
-                          <Category>{`${post.category.name}`}</Category>
+                          <Category>{`# ${post.category.name}`}</Category>
                         </CategoryContainer>
                         <Title>{post.title}</Title>
                         <CountContainer>
-                          <CountItem>
+                          <CountItem style={{ marginLeft: "0px" }}>
                             <CountIcon className="far fa-eye" />
                             <CountText>{post.view}</CountText>
                           </CountItem>

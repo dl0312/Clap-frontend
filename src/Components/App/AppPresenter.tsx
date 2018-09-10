@@ -33,49 +33,59 @@ const AppBox = styled.div`
   width: 100%;
 `;
 
+const MainContainer = styled.div`
+  margin-top: 70px;
+`;
+
 const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
   <Router>
     <AppBox>
       <Navigation isLoggedIn={isLoggedIn} />
-      <Switch>
-        <Route path="/login" exact={true} component={LogIn} />
-        <Route path="/signup" exact={true} component={SignUp} />
-        <Route path="/profile" exact={true} component={Profile} />
+      <MainContainer>
+        <Switch>
+          <Route path="/login" exact={true} component={LogIn} />
+          <Route path="/signup" exact={true} component={SignUp} />
+          <Route path="/profile" exact={true} component={Profile} />
 
-        <Route
-          path="/category/read/:categoryId"
-          exact={true}
-          component={CategoryDetail}
-        />
-        <Route path="/category/add" exact={true} component={CategoryAdd} />
-        <Route
-          path="/category/edit/:categoryId"
-          exact={true}
-          component={CategoryEdit}
-        />
-        <Route path="/post/read/:postId" exact={true} component={PostDetail} />
-        <Route path="/post/add" exact={true} component={PostAdd} />
-        <Route path="/post/edit/:postId" exact={true} component={PostEdit} />
-        <Route
-          path="/category/:categoryId/wikiImage/read/:wikiImageId"
-          exact={true}
-          component={WikiImageDetail}
-        />
-        <Route
-          path="/category/:categoryId/wikiImage/add"
-          exact={true}
-          component={WikiImageAdd}
-        />
-        <Route
-          path="/category/:categoryId/wikiImage/edit/:wikiImageId"
-          exact={true}
-          component={WikiImageEdit}
-        />
-        <Route path={"/wiki"} exact={true} component={Wiki} />
-        <Route path={"/board"} exact={true} component={Board} />
-        <Route path={""} exact={true} component={Home} />
-        <Redirect from={"*"} to={"/"} />
-      </Switch>
+          <Route
+            path="/category/read/:categoryId"
+            exact={true}
+            component={CategoryDetail}
+          />
+          <Route path="/category/add" exact={true} component={CategoryAdd} />
+          <Route
+            path="/category/edit/:categoryId"
+            exact={true}
+            component={CategoryEdit}
+          />
+          <Route
+            path="/post/read/:postId"
+            exact={true}
+            component={PostDetail}
+          />
+          <Route path="/post/add" exact={true} component={PostAdd} />
+          <Route path="/post/edit/:postId" exact={true} component={PostEdit} />
+          <Route
+            path="/category/:categoryId/wikiImage/read/:wikiImageId"
+            exact={true}
+            component={WikiImageDetail}
+          />
+          <Route
+            path="/category/:categoryId/wikiImage/add"
+            exact={true}
+            component={WikiImageAdd}
+          />
+          <Route
+            path="/category/:categoryId/wikiImage/edit/:wikiImageId"
+            exact={true}
+            component={WikiImageEdit}
+          />
+          <Route path={"/wiki"} exact={true} component={Wiki} />
+          <Route path={"/board"} exact={true} component={Board} />
+          <Route path={""} exact={true} component={Home} />
+          <Redirect from={"*"} to={"/"} />
+        </Switch>
+      </MainContainer>
     </AppBox>
   </Router>
 );

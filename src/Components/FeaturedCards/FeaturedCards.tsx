@@ -1,12 +1,13 @@
 import * as React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const BoardContainer = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 100px 0px;
+  /* padding: 50px 0px; */
   font-family: "Open Sans", sans-serif;
 `;
 
@@ -248,31 +249,40 @@ class FeaturedCards extends React.Component<IProps, IState> {
                   </SlideHandle>
                   <FeaturedCardContainer newGuideCounter={this.state.counter}>
                     {posts.map((post: any, index: number) => (
-                      <CardContainer>
-                        <CardImage
-                          url={
-                            post.category.wikiImages[0] !== undefined
-                              ? `http://localhost:4000/uploads/${
-                                  post.category.wikiImages[0].shownImage.url
-                                }`
-                              : "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
-                          }
-                          alt={post.category.name}
-                        >
-                          <CategoryContainer>
-                            {post.category.parent![0] !== undefined ? (
-                              <Category>
-                                {`# ${post.category.parent![0]!.name}`}
-                              </Category>
-                            ) : null}
-                            <Category>{`# ${post.category.name}`}</Category>
-                          </CategoryContainer>
-                          <CardTextContainer>
-                            <CardTitle>{post.title}</CardTitle>
-                            <CardSubTitle>BY {post.user.nickName}</CardSubTitle>
-                          </CardTextContainer>
-                        </CardImage>
-                      </CardContainer>
+                      <Link
+                        to={`/post/read/${post.id}`}
+                        style={{
+                          textDecoration: "none"
+                        }}
+                      >
+                        <CardContainer>
+                          <CardImage
+                            url={
+                              post.category.wikiImages[0] !== undefined
+                                ? `http://localhost:4000/uploads/${
+                                    post.category.wikiImages[0].shownImage.url
+                                  }`
+                                : "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
+                            }
+                            alt={post.category.name}
+                          >
+                            <CategoryContainer>
+                              {post.category.parent![0] !== undefined ? (
+                                <Category>
+                                  {`# ${post.category.parent![0]!.name}`}
+                                </Category>
+                              ) : null}
+                              <Category>{`# ${post.category.name}`}</Category>
+                            </CategoryContainer>
+                            <CardTextContainer>
+                              <CardTitle>{post.title}</CardTitle>
+                              <CardSubTitle>
+                                BY {post.user.nickName}
+                              </CardSubTitle>
+                            </CardTextContainer>
+                          </CardImage>
+                        </CardContainer>
+                      </Link>
                     ))}
                   </FeaturedCardContainer>
                   <SlideHandle
