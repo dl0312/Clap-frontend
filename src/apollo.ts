@@ -93,6 +93,10 @@ const localStateLink = withClientState({
     auth: {
       __typename: "Auth",
       isLoggedIn: Boolean(localStorage.getItem("jwt"))
+    },
+    lang: {
+      __typename: "Lang",
+      language: "ko"
     }
   },
   resolvers: {

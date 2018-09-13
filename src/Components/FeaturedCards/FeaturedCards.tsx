@@ -1,6 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { media } from "../../config/_mixin";
 
 const BoardContainer = styled.div`
   width: 100%;
@@ -86,6 +87,9 @@ const CardContainer = styled.div`
   width: 20%;
   padding: 0 2px;
   display: inline-block;
+  transition: width 0.5s ease;
+  ${media.tablet`width: 25%;`};
+  ${media.phone`width: 50%;`};
 `;
 
 const Slider = styled.div`
@@ -122,7 +126,7 @@ interface ICardImageProps {
 }
 
 const CardImage = styled<ICardImageProps, any>("div")`
-  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 1)),
+  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)),
     url(${props => `${props.url}`});
   background-size: 100%;
   background-position: 50% 50%;

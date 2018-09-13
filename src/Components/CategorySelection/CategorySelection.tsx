@@ -24,6 +24,7 @@ const CategorySelectionContainer = styled.div`
   justify-content: space-between;
   flex-direction: column;
   padding: 5px;
+  background-color: #222;
 `;
 
 const SearchInput = styled.input`
@@ -80,6 +81,7 @@ const SelectedListContainer = styled.div`
   justify-content: flex-start;
   border: 1px solid black;
   padding: 5px;
+  background-color: #777;
 `;
 
 const UpperContainer = styled.div`

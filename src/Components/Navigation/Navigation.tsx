@@ -1,7 +1,9 @@
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
-import { AUTH_TOKEN } from "../../constants";
+import { LOG_USER_OUT } from "../../sharedQueries.local";
+import { Mutation } from "react-apollo";
+import { toast } from "react-toastify";
 
 const NavContainer = styled.div`
   width: 100%;
@@ -32,8 +34,9 @@ const MenuList = styled<IMenuListProps, any>("ul")`
   justify-content: center;
   background-color: ${props =>
     props.darken ? "rgba(20, 20, 20, 0.94)" : "transparent"};
-  transition: background-color 0.3s ease;
-  box-shadow: 0px 0.5px 2px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease, box-shadow 0.5s ease;
+  box-shadow: ${props =>
+    props.darken ? "0px 0.5px 2px rgba(0, 0, 0, 0.3)" : null};
 `;
 
 const MenuItem = styled.div`
@@ -115,96 +118,100 @@ class Navigation extends React.Component<IProps, IState> {
   };
 
   render() {
-    const authToken = localStorage.getItem(AUTH_TOKEN);
     return (
-      <NavContainer>
-        <Header>
-          <div style={{ width: "100%" }}>
-            <ProfileContainer darken={this.state.darken}>
-              {authToken !== null ? (
-                <NavLink to="/" style={{ textDecoration: "none" }}>
-                  <ProfileItemContainer
-                    onClick={() => {
-                      localStorage.removeItem(AUTH_TOKEN);
-                    }}
-                  >
-                    LOG OUT
-                  </ProfileItemContainer>
-                </NavLink>
-              ) : (
-                <NavLink to="/login" style={{ textDecoration: "none" }}>
-                  <ProfileItemContainer>LOG IN</ProfileItemContainer>
-                </NavLink>
-              )}
-              {!authToken && (
-                <NavLink to="/signin" style={{ textDecoration: "none" }}>
-                  <ProfileItemContainer>JOIN US</ProfileItemContainer>
-                </NavLink>
-              )}
-              {!authToken && (
-                <React.Fragment>
-                  <ProfileItemContainer>SOCIAL LOGIN </ProfileItemContainer>
-                  <SocialIcon
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Facebook_logo_%28square%29.png/600px-Facebook_logo_%28square%29.png"
-                    size="16px"
-                  />
-                  <SocialIcon
-                    src="https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-512.png"
-                    size="16px"
-                  />
-                  <SocialIcon
-                    src="http://pluspng.com/img-png/naver-logo-png-naver-300.png"
-                    size="16px"
-                  />
-                  <SocialIcon
-                    src="https://cdn.iconscout.com/public/images/icon/free/png-512/kakaotalk-logo-social-media-3790821a3904b250-512x512.png"
-                    size="16px"
-                  />
-                </React.Fragment>
-              )}
-              {authToken && (
-                <NavLink to="/profile" style={{ textDecoration: "none" }}>
-                  <ProfileItemContainer>PROFILE</ProfileItemContainer>
-                </NavLink>
-              )}
-            </ProfileContainer>
-            <MenuList darken={this.state.darken}>
-              <NavLink
-                to="/"
-                style={{
-                  fontSize: "20px",
-                  marginRight: "150px",
-                  textDecoration: "none"
-                }}
-              >
-                <MenuItem>
-                  CLAP
-                  <div
-                    role="img"
-                    aria-label="Game"
+      <Mutation
+        mutation={LOG_USER_OUT}
+        onCompleted={data => toast.success("Log Out Success")}
+      >
+        {logUserOut => (
+          <NavContainer>
+            <Header>
+              <div style={{ width: "100%" }}>
+                <ProfileContainer darken={this.state.darken}>
+                  {this.props.isLoggedIn ? (
+                    <NavLink to="/" style={{ textDecoration: "none" }}>
+                      <ProfileItemContainer
+                        onClick={() => {
+                          logUserOut();
+                        }}
+                      >
+                        LOG OUT
+                      </ProfileItemContainer>
+                    </NavLink>
+                  ) : (
+                    <NavLink to="/login" style={{ textDecoration: "none" }}>
+                      <ProfileItemContainer>LOG IN</ProfileItemContainer>
+                    </NavLink>
+                  )}
+                  {!this.props.isLoggedIn && (
+                    <NavLink to="/signin" style={{ textDecoration: "none" }}>
+                      <ProfileItemContainer>JOIN US</ProfileItemContainer>
+                    </NavLink>
+                  )}
+                  {!this.props.isLoggedIn && (
+                    <React.Fragment>
+                      <ProfileItemContainer>SOCIAL LOGIN </ProfileItemContainer>
+                      <SocialIcon
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Facebook_logo_%28square%29.png/600px-Facebook_logo_%28square%29.png"
+                        size="16px"
+                      />
+                      <SocialIcon
+                        src="https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-512.png"
+                        size="16px"
+                      />
+                      <SocialIcon
+                        src="http://pluspng.com/img-png/naver-logo-png-naver-300.png"
+                        size="16px"
+                      />
+                      <SocialIcon
+                        src="https://cdn.iconscout.com/public/images/icon/free/png-512/kakaotalk-logo-social-media-3790821a3904b250-512x512.png"
+                        size="16px"
+                      />
+                    </React.Fragment>
+                  )}
+                  {this.props.isLoggedIn && (
+                    <NavLink to="/profile" style={{ textDecoration: "none" }}>
+                      <ProfileItemContainer>PROFILE</ProfileItemContainer>
+                    </NavLink>
+                  )}
+                </ProfileContainer>
+                <MenuList darken={this.state.darken}>
+                  <NavLink
+                    to="/"
                     style={{
-                      fontFamily: "Open Sans",
-                      fontSize: "5px",
-                      letterSpacing: "2px"
+                      fontSize: "20px",
+                      marginRight: "150px",
+                      textDecoration: "none"
                     }}
                   >
-                    🕹️POWERED BY GAMERS🕹️
-                  </div>
-                </MenuItem>
-              </NavLink>
-              <NavLink to="/board" style={{ textDecoration: "none" }}>
-                <MenuItem>GUIDE</MenuItem>
-              </NavLink>
-              <NavLink to="/wiki" style={{ textDecoration: "none" }}>
-                <MenuItem>WIKI</MenuItem>
-              </NavLink>
-              <NavLink to="/store" style={{ textDecoration: "none" }}>
-                <MenuItem>STORE</MenuItem>
-              </NavLink>
-              {/* <NavLink to="/editor" style={{ textDecoration: "none" }}>
+                    <MenuItem>
+                      CLAP
+                      <div
+                        role="img"
+                        aria-label="Game"
+                        style={{
+                          fontFamily: "Open Sans",
+                          fontSize: "5px",
+                          letterSpacing: "2px"
+                        }}
+                      >
+                        🕹️POWERED BY GAMERS🕹️
+                      </div>
+                    </MenuItem>
+                  </NavLink>
+                  <NavLink to="/board" style={{ textDecoration: "none" }}>
+                    <MenuItem>GUIDE</MenuItem>
+                  </NavLink>
+                  <NavLink to="/wiki" style={{ textDecoration: "none" }}>
+                    <MenuItem>WIKI</MenuItem>
+                  </NavLink>
+                  <NavLink to="/store" style={{ textDecoration: "none" }}>
+                    <MenuItem>STORE</MenuItem>
+                  </NavLink>
+                  {/* <NavLink to="/editor" style={{ textDecoration: "none" }}>
                 <MenuItem>EDITOR</MenuItem>
               </NavLink> */}
-              {/* <MenuItem style={{ fontSize: "20px" }}>
+                  {/* <MenuItem style={{ fontSize: "20px" }}>
               <i className="fas fa-bell" />
             </MenuItem>
             <NavLink to="/profile" style={{ textDecoration: "none" }}>
@@ -212,10 +219,12 @@ class Navigation extends React.Component<IProps, IState> {
                 <i className="fas fa-user-circle" />
               </MenuItem>
             </NavLink> */}
-            </MenuList>
-          </div>
-        </Header>
-      </NavContainer>
+                </MenuList>
+              </div>
+            </Header>
+          </NavContainer>
+        )}
+      </Mutation>
     );
   }
 }

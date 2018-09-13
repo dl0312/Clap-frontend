@@ -1,5 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
+import { media } from "../../config/_mixin";
 
 const SlideContainer = styled.div`
   width: 100%;
@@ -27,8 +28,8 @@ const SlideImage = styled<ISlideImageProps, any>("div")`
   z-index: 1;
   top: 0px;
   /* filter: brightness(50%); */
-  background-size: 100%;
-  background-position: 50% auto;
+  background-size: 100% auto;
+  background-position: 50% 0%;
   background-image: linear-gradient(rgba(20, 20, 20, 0.3), rgba(20, 20, 20, 1)),
     url(${props => `${props.url}`});
   transition: opacity 1s ease;
@@ -36,6 +37,9 @@ const SlideImage = styled<ISlideImageProps, any>("div")`
   animation-duration: 30s;
   animation-name: animation;
   animation-iteration-count: infinite;
+
+  ${media.tablet`background-size: auto 100%`};
+  ${media.phone``};
   @keyframes animation {
     0% {
       transform: scale(1);

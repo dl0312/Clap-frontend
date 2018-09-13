@@ -425,14 +425,6 @@ export const SIGNUP_MUTATION = gql`
   }
 `;
 
-export const IS_LOGGED_IN = gql`
-  {
-    auth {
-      isLoggedIn @client
-    }
-  }
-`;
-
 export const PROFILE = gql`
   query getMyProfile {
     GetMyProfile {
@@ -482,15 +474,3 @@ export const EDIT_PROFILE = gql`
     }
   }
 `;
-
-// export const LOG_USER_IN = gql`
-//   mutation logUserIn($token: String!) {
-//     logUserIn(token: $token) @client
-//   }
-// `;
-
-// export const LOG_USER_OUT = gql`
-//   mutation logUserOut {
-//     logUserOut @client
-//   }
-// `;

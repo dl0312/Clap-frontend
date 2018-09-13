@@ -21,6 +21,7 @@ const SearchInput = styled.input`
   height: 30px;
   border: 1px solid #ced4da;
   border-radius: 5px;
+  color: black;
   &:focus {
     outline: none;
   }
@@ -35,7 +36,13 @@ const CategorySelectionsContainer = styled.div`
   justify-content: center;
 `;
 
-const SendIcon = styled.button``;
+const SendIcon = styled.button`
+  color: black;
+  padding: 3px 10px;
+  border-radius: 2px;
+  margin: 5px;
+  border: none;
+`;
 
 interface IState {
   name: string;
@@ -86,7 +93,7 @@ class CategoryAdd extends React.Component<any, IState> {
 
   public confirm = async (data: any) => {
     if (data.AddCategory.ok) {
-      toast.success("Log In success");
+      toast.success("Category Add success");
       this.props.history.push(`/category/read/${data.AddCategory.categoryId}`);
     } else {
       toast.error(data.AddCategory.error);

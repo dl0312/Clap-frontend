@@ -7,9 +7,12 @@ import { Mutation } from "react-apollo";
 //   emailSignUp,
 //   emailSignUpVariables
 // } from "../../types/api";
+import Form from "../../Components/Form";
+import Input from "../../Components/Input";
+import SubmitButton from "../../Components/SubmitButton";
 import { LOGIN_MUTATION, SIGNUP_MUTATION } from "../../sharedQueries";
-import { AUTH_TOKEN } from "../../constants";
 import { toast } from "react-toastify";
+import { LOG_USER_IN } from "../../sharedQueries.local";
 
 const LoginContainer = styled.div`
   width: 100%;
@@ -19,7 +22,7 @@ const LoginContainer = styled.div`
   padding: 100px;
 `;
 
-const RealLoginContainer = styled.div`
+const RealLoginContainer = styled(Form)`
   border-radius: 3px;
   border: 1px solid #e6e6e6;
   padding: 20px;
@@ -32,13 +35,14 @@ const LoginTitle = styled.div`
   padding-bottom: 10px;
 `;
 
-const SearchInput = styled.input`
+const SearchInput = styled(Input)`
   width: 100%;
   margin-bottom: 30px;
   padding: 0 10px;
   height: 30px;
   border: 1px solid #ced4da;
   border-radius: 5px;
+
   &:focus {
     outline: none;
   }
@@ -46,7 +50,7 @@ const SearchInput = styled.input`
 
 const ButtonContainer = styled.div``;
 
-const Button = styled.button`
+const Button = styled(SubmitButton)`
   width: 100%;
   height: 30px;
   margin: 2px 0;
@@ -56,6 +60,7 @@ const Button = styled.button`
   border-radius: 3px;
   border: 1px solid #e6e6e6;
   transition: box-shadow 0.3s ease;
+  color: black
   &:hover {
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5);
   }
@@ -88,128 +93,135 @@ class LogIn extends React.Component<IProps, IState> {
     };
   }
 
-  public confirm = async (data: any) => {
-    console.log(data);
-    const { token } = this.state.login ? data.EmailSignIn : data.EmailSignUp;
-    if (this.state.login) {
-      if (data.EmailSignIn.ok) {
-        toast.success("Log In success");
-      } else {
-        toast.error(data.EmailSignIn.error);
-      }
-    } else {
-      if (data.EmailSignUp.ok) {
-        toast.success("Sign Up success");
-      } else {
-        toast.error(data.EmailSignUp.error);
-      }
-    }
-
-    if (token !== null) {
-      this.saveUserData(token);
-      this.props.history.push(`/`);
-    }
-  };
-
-  public saveUserData = (token: any) => {
-    localStorage.setItem(AUTH_TOKEN, token);
-  };
-
   public render() {
     const { email, password, login, nickName, phoneNumber } = this.state;
     return (
-      <LoginContainer>
-        <RealLoginContainer>
-          {login ? (
-            <React.Fragment>
-              <LoginTitle>E-MAIL</LoginTitle>
-              <SearchInput
-                type="text"
-                onChange={e =>
-                  this.setState({
-                    email: e.target.value
-                  })
+      <Mutation mutation={LOG_USER_IN}>
+        {logUserIn => (
+          <Mutation
+            mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
+            variables={{ email, password, nickName, phoneNumber }}
+            onCompleted={data => {
+              const { token } = this.state.login
+                ? data.EmailSignIn
+                : data.EmailSignUp;
+              if (this.state.login) {
+                if (data.EmailSignIn.ok) {
+                  toast.success("Log In success");
+                } else {
+                  toast.error(data.EmailSignIn.error);
                 }
-                placeholder="Your email address"
-              />
-              <LoginTitle>PASSWORD</LoginTitle>
-              <SearchInput
-                type="text"
-                onChange={e =>
-                  this.setState({
-                    password: e.target.value
-                  })
+              } else {
+                if (data.EmailSignUp.ok) {
+                  toast.success("Sign Up success");
+                } else {
+                  toast.error(data.EmailSignUp.error);
                 }
-                placeholder="password"
-              />
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <LoginTitle>NICKNAME</LoginTitle>
-              <SearchInput
-                type="text"
-                onChange={e =>
-                  this.setState({
-                    nickName: e.target.value
-                  })
-                }
-              />
-              <LoginTitle>E-MAIL</LoginTitle>
-              <SearchInput
-                type="text"
-                onChange={e =>
-                  this.setState({
-                    email: e.target.value
-                  })
-                }
-              />
-              <LoginTitle>PASSWORD</LoginTitle>
-              <SearchInput
-                type="text"
-                onChange={e =>
-                  this.setState({
-                    password: e.target.value
-                  })
-                }
-              />
-              <LoginTitle>PHONENUMBER</LoginTitle>
-              <SearchInput
-                type="text"
-                onChange={e =>
-                  this.setState({
-                    phoneNumber: e.target.value
-                  })
-                }
-              />
-            </React.Fragment>
-          )}
-          <ButtonContainer>
-            <Mutation
-              mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
-              variables={{ email, password, nickName, phoneNumber }}
-              onCompleted={data => this.confirm(data)}
-            >
-              {mutation => (
-                <React.Fragment>
-                  <Button onClick={() => mutation()}>
-                    {login ? "login" : "create account"}
-                  </Button>
-                </React.Fragment>
-              )}
-            </Mutation>
-            <Button
-              onClick={e => {
-                e.preventDefault();
-                this.setState({ login: !login });
-              }}
-            >
-              {login
-                ? "need to create an account?"
-                : "already have an account?"}
-            </Button>
-          </ButtonContainer>
-        </RealLoginContainer>
-      </LoginContainer>
+              }
+
+              if (token !== null) {
+                logUserIn({ variables: { token } });
+                this.props.history.push(`/`);
+              }
+            }}
+          >
+            {mutation => (
+              <LoginContainer>
+                <RealLoginContainer submitFn={() => mutation()}>
+                  {login ? (
+                    <React.Fragment>
+                      <LoginTitle>E-MAIL</LoginTitle>
+                      <SearchInput
+                        type="text"
+                        value={this.state.email}
+                        onChange={(e: any) =>
+                          this.setState({
+                            email: e.target.value
+                          })
+                        }
+                        placeholder="Your email address"
+                      />
+                      <LoginTitle>PASSWORD</LoginTitle>
+                      <SearchInput
+                        type="text"
+                        value={this.state.password}
+                        onChange={(e: any) =>
+                          this.setState({
+                            password: e.target.value
+                          })
+                        }
+                        placeholder="password"
+                      />
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <LoginTitle>NICKNAME</LoginTitle>
+                      <SearchInput
+                        type="text"
+                        value={this.state.nickName}
+                        onChange={(e: any) =>
+                          this.setState({
+                            nickName: e.target.value
+                          })
+                        }
+                      />
+                      <LoginTitle>E-MAIL</LoginTitle>
+                      <SearchInput
+                        type="text"
+                        value={this.state.email}
+                        onChange={(e: any) =>
+                          this.setState({
+                            email: e.target.value
+                          })
+                        }
+                      />
+                      <LoginTitle>PASSWORD</LoginTitle>
+                      <SearchInput
+                        type="text"
+                        value={this.state.password}
+                        onChange={(e: any) =>
+                          this.setState({
+                            password: e.target.value
+                          })
+                        }
+                      />
+                      <LoginTitle>PHONENUMBER</LoginTitle>
+                      <SearchInput
+                        type="text"
+                        value={this.state.phoneNumber}
+                        onChange={(e: any) =>
+                          this.setState({
+                            phoneNumber: e.target.value
+                          })
+                        }
+                      />
+                    </React.Fragment>
+                  )}
+                  <ButtonContainer>
+                    <React.Fragment>
+                      <Button
+                        value={login ? "login" : "create account"}
+                        onClick={() => mutation()}
+                      />
+                    </React.Fragment>
+                    <Button
+                      value={
+                        login
+                          ? "need to create an account?"
+                          : "already have an account?"
+                      }
+                      onClick={(e: any) => {
+                        e.preventDefault();
+                        this.setState({ login: !login });
+                      }}
+                    />
+                  </ButtonContainer>
+                </RealLoginContainer>
+              </LoginContainer>
+            )}
+          </Mutation>
+        )}
+      </Mutation>
     );
   }
 }

@@ -153,6 +153,7 @@ const UserNickName = styled.div`
 const BodyContainer = styled.div`
   padding: 10px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  background-color: #333333;
 `;
 
 const CommentsListContainer = styled.table`
@@ -367,11 +368,18 @@ const PostButton = styled.div`
 //   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 // `;
 
-const ClapImage = styled.img`
+interface IClapImageProps {
+  isClapped: boolean;
+}
+
+const ClapImage = styled<IClapImageProps, any>("i")`
   margin-top: 15px;
-  border: 1px solid black;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  width: 60px;
+  font-size: 20px;
+  opacity: ${props => (props.isClapped ? "1" : "0.5")};
+  transition: opacity 0.5s ease;
+  &:hover {
+    opacity: 0.75;
+  }
 `;
 
 class PostQuery extends Query<getPostById, getPostByIdVariables> {}
@@ -413,7 +421,7 @@ class PostDetail extends React.Component<IProps, IState> {
   public sendClapConfirm = (data: any) => {
     const { SendClap } = data;
     if (SendClap.ok) {
-      toast.success("Send Clap Success");
+      toast.success("Clap Success");
     } else {
       toast.error(SendClap.error);
     }
@@ -529,29 +537,26 @@ class PostDetail extends React.Component<IProps, IState> {
                           mutation={SEND_CLAP}
                           onCompleted={data => this.sendClapConfirm(data)}
                         >
-                          {SendClap =>
-                            isClapped ? (
-                              "박수쳤네"
-                            ) : (
-                              <ClapImage
-                                onClick={e => {
-                                  e.preventDefault();
-                                  SendClap({
-                                    refetchQueries: [
-                                      {
-                                        query: POST,
-                                        variables: {
-                                          postId: this.props.match.params.postId
-                                        }
+                          {SendClap => (
+                            <ClapImage
+                              onClick={(e: any) => {
+                                e.preventDefault();
+                                SendClap({
+                                  refetchQueries: [
+                                    {
+                                      query: POST,
+                                      variables: {
+                                        postId: this.props.match.params.postId
                                       }
-                                    ],
-                                    variables: { postId: post.id }
-                                  });
-                                }}
-                                src="https://cdn.dribbble.com/users/474675/screenshots/2221967/chad_clap_gif_2.gif"
-                              />
-                            )
-                          }
+                                    }
+                                  ],
+                                  variables: { postId: post.id }
+                                });
+                              }}
+                              className="far fa-thumbs-up"
+                              isClapped={isClapped}
+                            />
+                          )}
                         </Mutation>
                       </ClapContainer>
                       <ButtonsContainer>

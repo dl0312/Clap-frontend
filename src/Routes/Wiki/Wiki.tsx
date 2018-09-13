@@ -6,6 +6,7 @@ import { Query } from "react-apollo";
 import ImagePopup from "../../Components/ImagePopup";
 import { GetPos } from "../../Utility/GetPos";
 import { CATEGORIES_KEYWORD } from "../../sharedQueries";
+import { media } from "../../config/_mixin";
 
 const FlexBox = styled.div`
   display: flex;
@@ -30,6 +31,7 @@ const SearchInput = styled.input`
   border: 1px solid #ced4da;
   border-radius: 5px;
   background-color: white;
+  color: black;
   &:focus {
     outline: none;
   }
@@ -56,6 +58,7 @@ const Buttons = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  color: black;
 `;
 
 const Button = styled.div`
@@ -73,7 +76,7 @@ const Button = styled.div`
 const CategoryContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   height: 100%;
   /* border-left: 0.5px solid rgba(0, 0, 0, 0.5);
   border-top: 0.5px solid rgba(0, 0, 0, 0.5);
@@ -85,7 +88,6 @@ const CategoryName = styled.div`
   text-transform: uppercase;
   font-size: 15px;
   color: white;
-  padding: 5px 10px;
   font-weight: bolder;
   letter-spacing: 2px;
   font-family: "Nanum Gothic";
@@ -108,9 +110,17 @@ const WikiImageContainer = FlexBox.extend`
   position: relative;
   z-index: 0;
   height: 150px;
-  margin: 5px;
+  margin: 2px;
   justify-content: space-between;
   flex-direction: column;
+  transition: height 0.5s ease, margin 0.5s ease;
+  ${media.tablet`
+    height: 100px;
+    margin: 2px;
+  `} ${media.phone`
+    height: 75px;
+    margin: 1px;
+  `}
   /* border: 0.5px solid rgba(0, 0, 0, 0.2); */
   /* filter: drop-shadow(0px 0px 5px #222); */
   /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
@@ -122,9 +132,19 @@ const WikiImageContainer = FlexBox.extend`
 `;
 
 const DataContainer = styled.div`
-  white-space: pre-wrap;
-  padding: 10px;
+  white-space: normal;
+  padding: 10px 20px;
   background-color: black;
+  transition: padding 0.5s ease;
+  margin-bottom: 20px;
+  ${media.tablet`
+    padding: 10px 3px;
+    margin-bottom: 10px;
+  `};
+  ${media.phone`
+    padding: 5px 1px;
+    margin-bottom: 5px;
+  `};
 `;
 
 const WikiImageCount = FlexBox.extend`
@@ -144,7 +164,6 @@ const NoWikiImageContainer = FlexBox.extend`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 10px;
   /* border-top: 0.5px solid rgba(0, 0, 0, 0.5);
   border-right: 0.5px solid rgba(0, 0, 0, 0.5);
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.5); */
@@ -209,35 +228,38 @@ class Wiki extends React.Component<any, IState> {
                     {data.GetCategoriesByKeyword.categories.map(
                       (category: any, index: number) => (
                         <React.Fragment key={index}>
-                          <CategoryContainer>
-                            <Link
-                              to={`/category/read/${category.id}`}
-                              style={{ textDecoration: "none" }}
-                            >
-                              <CategoryName>
-                                {category.parent[0] !== undefined
-                                  ? `${category.parent[0].name} `
-                                  : null}
-                                {category.name}
-                              </CategoryName>
-                            </Link>
-                          </CategoryContainer>
-                          <NoWikiImageContainer>
-                            <Link
-                              to={`/category/${category.id}/wikiImage/add`}
-                              style={{
-                                textDecoration: "none",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flexDirection: "column"
-                              }}
-                            >
-                              <NoWikiImageIcon className="fas fa-plus-circle" />
-                            </Link>
-                          </NoWikiImageContainer>
                           {category.wikiImages.length !== 0 ? (
                             <DataContainer>
+                              <Link
+                                to={`/category/read/${category.id}`}
+                                style={{
+                                  textDecoration: "none"
+                                }}
+                              >
+                                <CategoryName>{category.name}</CategoryName>
+                              </Link>
+
+                              <CategoryContainer>
+                                <div>
+                                  TOTAL IMAGE: {category.wikiImages.length}
+                                </div>
+                                <NoWikiImageContainer>
+                                  <Link
+                                    to={`/category/${
+                                      category.id
+                                    }/wikiImage/add`}
+                                    style={{
+                                      textDecoration: "none",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      flexDirection: "column"
+                                    }}
+                                  >
+                                    <NoWikiImageIcon className="fas fa-plus-circle" />
+                                  </Link>
+                                </NoWikiImageContainer>
+                              </CategoryContainer>
                               {category.wikiImages.map(
                                 (wikiImage: any, index: number) => {
                                   // console.log(wikiImage);
@@ -270,7 +292,9 @@ class Wiki extends React.Component<any, IState> {
                                                 HTMLImageElement
                                               >
                                             ) =>
-                                              this.setState({ pos: GetPos(e) })
+                                              this.setState({
+                                                pos: GetPos(e)
+                                              })
                                             }
                                             onMouseOut={() => {
                                               this.setState({
