@@ -77,7 +77,14 @@ const CategoryContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
+  /* background-color: #222; */
+  color: white;
+  padding: 10px 15px;
+  background-color: #222;
+  box-shadow: 0 0 1px 1px #060606, inset 0 0 0 1px #060606;
+  border-top: 1px solid #1a1a1a;
+  border-bottom: 1px solid #1a1a1a;
+
   /* border-left: 0.5px solid rgba(0, 0, 0, 0.5);
   border-top: 0.5px solid rgba(0, 0, 0, 0.5);
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.5); */
@@ -87,7 +94,7 @@ const CategoryName = styled.div`
   margin: 5px 0;
   text-transform: uppercase;
   font-size: 15px;
-  color: white;
+  /* color: white; */
   font-weight: bolder;
   letter-spacing: 2px;
   font-family: "Nanum Gothic";
@@ -103,6 +110,10 @@ const WikiImageCountContainer = FlexBox.extend`
   color: white;
 `;
 
+const WikiImagesContainer = styled.div`
+  margin: 10px;
+`;
+
 const WikiImageContainer = FlexBox.extend`
   /* border: 0.5px solid rgba(0, 0, 0, 0.5);
   border-left: none; */
@@ -114,6 +125,7 @@ const WikiImageContainer = FlexBox.extend`
   justify-content: space-between;
   flex-direction: column;
   transition: height 0.5s ease, margin 0.5s ease;
+
   ${media.tablet`
     height: 100px;
     margin: 2px;
@@ -133,10 +145,13 @@ const WikiImageContainer = FlexBox.extend`
 
 const DataContainer = styled.div`
   white-space: normal;
-  padding: 10px 20px;
+  /* padding: 10px 20px; */
+  /* padding-bottom: 20px; */
   background-color: black;
   transition: padding 0.5s ease;
   margin-bottom: 20px;
+  box-shadow: 0 0 1px 1px #060606, inset 0 0 0 1px #060606;
+  border: 1px solid #1a1a1a;
   ${media.tablet`
     padding: 10px 3px;
     margin-bottom: 10px;
@@ -156,27 +171,40 @@ const WikiImageCount = FlexBox.extend`
 
 const WikiImageCountIcon = styled.i`
   margin-right: 5px;
+  color: white;
   text-shadow: 0 0 5px rgba(0, 0, 0, 1);
 `;
 
-const NoWikiImageContainer = FlexBox.extend`
+const ButtonContainer = FlexBox.extend`
   flex-direction: column;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2px 5px;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); */
+  border-radius: 100px;
+  /* background-color: white; */
+  /* color: white; */
+  font-size: 15px;
+  margin-right: 3px;
   /* border-top: 0.5px solid rgba(0, 0, 0, 0.5);
   border-right: 0.5px solid rgba(0, 0, 0, 0.5);
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.5); */
 `;
 
-const NoWikiImageIcon = styled.i`
-  font-size: 25px;
-  opacity: 0.5;
+const ButtonIcon = styled.i`
   transition: opacity 0.5s ease;
-  &:hover {
-    opacity: 1;
-  }
+  /* margin-right: 3px; */
 `;
+
+const CategoryOptionContainer = FlexBox.extend``;
+
+const CategoryInfo = styled.div`
+  margin-right: 5px;
+  font-size: 15px;
+`;
+
+// const ButtonTitle = styled.div``;
 
 interface IState {
   keyword: string;
@@ -228,8 +256,8 @@ class Wiki extends React.Component<any, IState> {
                     {data.GetCategoriesByKeyword.categories.map(
                       (category: any, index: number) => (
                         <React.Fragment key={index}>
-                          {category.wikiImages.length !== 0 ? (
-                            <DataContainer>
+                          <DataContainer>
+                            <CategoryContainer>
                               <Link
                                 to={`/category/read/${category.id}`}
                                 style={{
@@ -238,12 +266,20 @@ class Wiki extends React.Component<any, IState> {
                               >
                                 <CategoryName>{category.name}</CategoryName>
                               </Link>
-
-                              <CategoryContainer>
-                                <div>
-                                  TOTAL IMAGE: {category.wikiImages.length}
-                                </div>
-                                <NoWikiImageContainer>
+                              <CategoryOptionContainer>
+                                <CategoryInfo>
+                                  <i className="far fa-images" />{" "}
+                                  {category.wikiImages.length}
+                                </CategoryInfo>
+                                {/* <i className="far fa-edit" />
+                                <i className="far fa-trash-alt" /> */}
+                                <ButtonContainer>
+                                  <ButtonIcon className="fas fa-edit" />
+                                </ButtonContainer>
+                                <ButtonContainer>
+                                  <ButtonIcon className="far fa-trash-alt" />
+                                </ButtonContainer>
+                                <ButtonContainer>
                                   <Link
                                     to={`/category/${
                                       category.id
@@ -253,89 +289,79 @@ class Wiki extends React.Component<any, IState> {
                                       display: "flex",
                                       alignItems: "center",
                                       justifyContent: "center",
-                                      flexDirection: "column"
+                                      flexDirection: "row"
                                     }}
                                   >
-                                    <NoWikiImageIcon className="fas fa-plus-circle" />
+                                    <ButtonIcon className="fas fa-plus" />
                                   </Link>
-                                </NoWikiImageContainer>
-                              </CategoryContainer>
-                              {category.wikiImages.map(
-                                (wikiImage: any, index: number) => {
-                                  // console.log(wikiImage);
-                                  return (
-                                    <React.Fragment key={index}>
-                                      <WikiImageContainer>
-                                        <Link
-                                          to={`/category/${
-                                            category.id
-                                          }/wikiImage/read/${wikiImage.id}`}
-                                          style={{
-                                            height: "100%",
-                                            textDecoration: "none"
-                                          }}
-                                        >
-                                          <WikiImage
-                                            src={`http://localhost:4000/uploads/${
-                                              wikiImage.shownImage.url
-                                            }`}
-                                            alt={category.name}
-                                            onMouseOver={() =>
-                                              this.setState({
-                                                hoverImgJson:
-                                                  wikiImage.hoverImage,
-                                                onImage: true
-                                              })
-                                            }
-                                            onMouseMove={(
-                                              e: React.MouseEvent<
-                                                HTMLImageElement
-                                              >
-                                            ) =>
-                                              this.setState({
-                                                pos: GetPos(e)
-                                              })
-                                            }
-                                            onMouseOut={() => {
-                                              this.setState({
-                                                onImage: false
-                                              });
+                                </ButtonContainer>
+                              </CategoryOptionContainer>
+                            </CategoryContainer>
+                            {category.wikiImages.length !== 0 ? (
+                              <WikiImagesContainer>
+                                {category.wikiImages.map(
+                                  (wikiImage: any, index: number) => {
+                                    // console.log(wikiImage);
+                                    return (
+                                      <React.Fragment key={index}>
+                                        <WikiImageContainer>
+                                          <Link
+                                            to={`/category/${
+                                              category.id
+                                            }/wikiImage/read/${wikiImage.id}`}
+                                            style={{
+                                              height: "100%",
+                                              textDecoration: "none"
                                             }}
-                                          />
-                                        </Link>
-                                        <WikiImageCountContainer>
-                                          <WikiImageCount>
-                                            <WikiImageCountIcon className="fas fa-heart" />
-                                            {wikiImage.clapsCount}
-                                          </WikiImageCount>
-                                          <WikiImageCount>
-                                            <WikiImageCountIcon className="fas fa-pencil-alt" />
-                                            {wikiImage.postsCount}
-                                          </WikiImageCount>
-                                        </WikiImageCountContainer>
-                                      </WikiImageContainer>
-                                    </React.Fragment>
-                                  );
-                                }
-                              )}
-                            </DataContainer>
-                          ) : (
-                            <div>h</div>
-                            // <NoWikiImageContainer>
-                            //   <Link
-                            //     to={`/category/${category.id}/wikiImage/add`}
-                            //     style={{
-                            //       textDecoration: "none",
-                            //       display: "flex",
-                            //       alignItems: "center",
-                            //       justifyContent: "center",
-                            //       flexDirection: "column"
-                            //     }}
-                            //   >
-                            //     <NoWikiImageIcon className="fas fa-plus-circle" />
-                            //   </Link>
-                            // </NoWikiImageContainer>
-                          )}
+                                          >
+                                            <WikiImage
+                                              src={`http://localhost:4000/uploads/${
+                                                wikiImage.shownImage.url
+                                              }`}
+                                              alt={category.name}
+                                              onMouseOver={() =>
+                                                this.setState({
+                                                  hoverImgJson:
+                                                    wikiImage.hoverImage,
+                                                  onImage: true
+                                                })
+                                              }
+                                              onMouseMove={(
+                                                e: React.MouseEvent<
+                                                  HTMLImageElement
+                                                >
+                                              ) =>
+                                                this.setState({
+                                                  pos: GetPos(e)
+                                                })
+                                              }
+                                              onMouseOut={() => {
+                                                this.setState({
+                                                  onImage: false
+                                                });
+                                              }}
+                                            />
+                                          </Link>
+                                          <WikiImageCountContainer>
+                                            <WikiImageCount>
+                                              <WikiImageCountIcon className="fas fa-heart" />
+                                              {wikiImage.clapsCount}
+                                            </WikiImageCount>
+                                            <WikiImageCount>
+                                              <WikiImageCountIcon className="fas fa-pencil-alt" />
+                                              {wikiImage.postsCount}
+                                            </WikiImageCount>
+                                          </WikiImageCountContainer>
+                                        </WikiImageContainer>
+                                      </React.Fragment>
+                                    );
+                                  }
+                                )}
+                              </WikiImagesContainer>
+                            ) : (
+                              <div>{""}</div>
+                            )}
+                          </DataContainer>
                         </React.Fragment>
                       )
                     )}

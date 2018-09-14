@@ -474,3 +474,49 @@ export const EDIT_PROFILE = gql`
     }
   }
 `;
+
+export const FACEBOOK_CONNECT = gql`
+  mutation facebookConnect(
+    $firstName: String!
+    $lastName: String!
+    $nickName: String!
+    $email: String
+    $fbId: String!
+  ) {
+    FacebookConnect(
+      firstName: $firstName
+      lastName: $lastName
+      nickName: $nickName
+      email: $email
+      fbId: $fbId
+    ) {
+      ok
+      error
+      token
+    }
+  }
+`;
+
+export const GOOGLE_CONNECT = gql`
+  mutation googleConnect(
+    $firstName: String!
+    $lastName: String!
+    $nickName: String!
+    $email: String
+    $profilePhoto: String
+    $googleId: String!
+  ) {
+    GoogleConnect(
+      firstName: $firstName
+      lastName: $lastName
+      nickName: $nickName
+      email: $email
+      profilePhoto: $profilePhoto
+      googleId: $googleId
+    ) {
+      ok
+      error
+      token
+    }
+  }
+`;

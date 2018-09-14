@@ -834,6 +834,59 @@ export interface updateMyProfileVariables {
 /* tslint:disable */
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL mutation operation: facebookConnect
+// ====================================================
+
+export interface facebookConnect_FacebookConnect {
+  __typename: "FacebookConnectResponse";
+  ok: boolean;
+  error: string | null;
+  token: string | null;
+}
+
+export interface facebookConnect {
+  FacebookConnect: facebookConnect_FacebookConnect;
+}
+
+export interface facebookConnectVariables {
+  firstName: string;
+  lastName: string;
+  nickName: string;
+  email?: string | null;
+  fbId: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: googleConnect
+// ====================================================
+
+export interface googleConnect_GoogleConnect {
+  __typename: "GoogleConnectResponse";
+  ok: boolean;
+  error: string | null;
+  token: string | null;
+}
+
+export interface googleConnect {
+  GoogleConnect: googleConnect_GoogleConnect;
+}
+
+export interface googleConnectVariables {
+  firstName: string;
+  lastName: string;
+  nickName: string;
+  email?: string | null;
+  profilePhoto?: string | null;
+  googleId: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
 //==============================================================
 // START Enums and Input Objects
 //==============================================================

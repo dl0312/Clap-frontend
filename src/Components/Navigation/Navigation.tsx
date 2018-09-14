@@ -1,9 +1,18 @@
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
-import { LOG_USER_OUT } from "../../sharedQueries.local";
+import { LOG_USER_OUT, LOG_USER_IN } from "../../sharedQueries.local";
 import { Mutation } from "react-apollo";
 import { toast } from "react-toastify";
+import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
+import GoogleLogin from "react-google-login";
+import {
+  facebookConnect,
+  facebookConnectVariables,
+  googleConnect,
+  googleConnectVariables
+} from "../../types/api";
+import { FACEBOOK_CONNECT, GOOGLE_CONNECT } from "../../sharedQueries";
 
 const NavContainer = styled.div`
   width: 100%;
@@ -81,7 +90,18 @@ const SocialIcon = styled<ISocialIconProps, any>("img")`
   width: ${(props: ISocialIconProps) => props.size};
   margin: 0 2px;
   border-radius: 2px;
+  cursor: pointer;
 `;
+
+class FacebookConnectMutation extends Mutation<
+  facebookConnect,
+  facebookConnectVariables
+> {}
+
+class GoogelConnectMutation extends Mutation<
+  googleConnect,
+  googleConnectVariables
+> {}
 
 interface IProps {
   isLoggedIn: boolean;
@@ -117,7 +137,17 @@ class Navigation extends React.Component<IProps, IState> {
     }
   };
 
-  render() {
+  public facebookConnectConfirm = (data: any) => {
+    const { FacebookConnect } = data;
+    console.log(data);
+    if (FacebookConnect.ok) {
+      toast.success("Facebook Connection Success");
+    } else {
+      toast.error(FacebookConnect.error);
+    }
+  };
+
+  public render() {
     return (
       <Mutation
         mutation={LOG_USER_OUT}
@@ -149,25 +179,117 @@ class Navigation extends React.Component<IProps, IState> {
                     </NavLink>
                   )}
                   {!this.props.isLoggedIn && (
-                    <React.Fragment>
-                      <ProfileItemContainer>SOCIAL LOGIN </ProfileItemContainer>
-                      <SocialIcon
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Facebook_logo_%28square%29.png/600px-Facebook_logo_%28square%29.png"
-                        size="16px"
-                      />
-                      <SocialIcon
-                        src="https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-512.png"
-                        size="16px"
-                      />
-                      <SocialIcon
-                        src="http://pluspng.com/img-png/naver-logo-png-naver-300.png"
-                        size="16px"
-                      />
-                      <SocialIcon
-                        src="https://cdn.iconscout.com/public/images/icon/free/png-512/kakaotalk-logo-social-media-3790821a3904b250-512x512.png"
-                        size="16px"
-                      />
-                    </React.Fragment>
+                    <Mutation mutation={LOG_USER_IN}>
+                      {logUserIn => (
+                        <React.Fragment>
+                          <ProfileItemContainer>
+                            SOCIAL LOGIN{" "}
+                          </ProfileItemContainer>
+
+                          <FacebookConnectMutation
+                            mutation={FACEBOOK_CONNECT}
+                            onCompleted={data => {
+                              const { FacebookConnect } = data;
+                              const { token } = FacebookConnect;
+                              console.log(data);
+                              if (FacebookConnect.ok) {
+                                toast.success("Facebook Connection Success");
+                              } else {
+                                toast.error(FacebookConnect.error);
+                              }
+                              if (token !== null) {
+                                logUserIn({ variables: { token } });
+                              }
+                            }}
+                          >
+                            {(facebookConnect, { loading }) => (
+                              <FacebookLogin
+                                appId="1660436057369700"
+                                autoLoad={false}
+                                fields="first_name,last_name,name,email,id"
+                                callback={(response: any) => {
+                                  console.log(response);
+                                  facebookConnect({
+                                    variables: {
+                                      firstName: response.first_name,
+                                      lastName: response.last_name,
+                                      nickName: response.name,
+                                      email: response.email,
+                                      fbId: response.id
+                                    }
+                                  });
+                                }}
+                                render={(renderProps: any) => (
+                                  <SocialIcon
+                                    onClick={renderProps.onClick}
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Facebook_logo_%28square%29.png/600px-Facebook_logo_%28square%29.png"
+                                    size="16px"
+                                  />
+                                )}
+                              />
+                            )}
+                          </FacebookConnectMutation>
+                          <GoogelConnectMutation
+                            mutation={GOOGLE_CONNECT}
+                            onCompleted={data => {
+                              const { GoogleConnect } = data;
+                              const { token } = GoogleConnect;
+                              console.log(data);
+                              if (GoogleConnect.ok) {
+                                toast.success("Google Connect Success");
+                              } else {
+                                toast.error(GoogleConnect.error);
+                              }
+                              if (token !== null) {
+                                logUserIn({ variables: { token } });
+                              }
+                            }}
+                          >
+                            {(GoogleConnect, { loading }) => (
+                              <GoogleLogin
+                                clientId={
+                                  "507629564813-jp4arkeqhitdcf6mlhnums7dib204odf.apps.googleusercontent.com"
+                                }
+                                autoLoad={false}
+                                onSuccess={(response: any) => {
+                                  console.log(response);
+                                  GoogleConnect({
+                                    variables: {
+                                      firstName: response.profileObj.givenName,
+                                      lastName: response.profileObj.familyName,
+                                      nickName: response.profileObj.name,
+                                      email: response.profileObj.email,
+                                      profilePhoto:
+                                        response.profileObj.imageUrl,
+                                      googleId: response.googleId
+                                    }
+                                  });
+                                }}
+                                onFailure={() =>
+                                  toast.error("Google Connect Failed")
+                                }
+                                render={(renderProps: any) => (
+                                  <SocialIcon
+                                    src="https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-512.png"
+                                    size="16px"
+                                    onClick={renderProps.onClick}
+                                  />
+                                )}
+                              />
+                            )}
+                          </GoogelConnectMutation>
+
+                          <SocialIcon
+                            src="http://pluspng.com/img-png/naver-logo-png-naver-300.png"
+                            size="16px"
+                          />
+                          <SocialIcon
+                            src="https://cdn.iconscout.com/public/images/icon/free/png-512/kakaotalk-logo-social-media-3790821a3904b250-512x512.png"
+                            size="16px"
+                          />
+                        </React.Fragment>
+                      )}
+                    </Mutation>
                   )}
                   {this.props.isLoggedIn && (
                     <NavLink to="/profile" style={{ textDecoration: "none" }}>
