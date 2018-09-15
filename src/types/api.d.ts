@@ -195,6 +195,7 @@ export interface getAllPosts_GetAllPosts_posts_user {
   __typename: "User";
   id: number;
   nickName: string;
+  profilePhoto: string | null;
 }
 
 export interface getAllPosts_GetAllPosts_posts_category_parent {
@@ -248,6 +249,66 @@ export interface getAllPosts {
 
 export interface getAllPostsVariables {
   limit: number;
+  type: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getWikiImages
+// ====================================================
+
+export interface getWikiImages_GetWikiImages_wikiImages_user {
+  __typename: "User";
+  id: number;
+  nickName: string;
+  profilePhoto: string | null;
+}
+
+export interface getWikiImages_GetWikiImages_wikiImages_category_parent {
+  __typename: "Category";
+  name: string;
+}
+
+export interface getWikiImages_GetWikiImages_wikiImages_category {
+  __typename: "Category";
+  parent: (getWikiImages_GetWikiImages_wikiImages_category_parent | null)[] | null;
+}
+
+export interface getWikiImages_GetWikiImages_wikiImages_shownImage {
+  __typename: "ShownImage";
+  id: number;
+  url: string;
+}
+
+export interface getWikiImages_GetWikiImages_wikiImages {
+  __typename: "WikiImage";
+  id: number;
+  user: getWikiImages_GetWikiImages_wikiImages_user;
+  category: getWikiImages_GetWikiImages_wikiImages_category;
+  shownImage: getWikiImages_GetWikiImages_wikiImages_shownImage | null;
+  hoverImage: string;
+  postsCount: number;
+  clapsCount: number;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface getWikiImages_GetWikiImages {
+  __typename: "GetWikiImagesResponse";
+  ok: boolean;
+  error: string | null;
+  wikiImages: (getWikiImages_GetWikiImages_wikiImages | null)[] | null;
+}
+
+export interface getWikiImages {
+  GetWikiImages: getWikiImages_GetWikiImages;
+}
+
+export interface getWikiImagesVariables {
+  limit: number;
+  type: string;
 }
 
 /* tslint:disable */
@@ -759,7 +820,6 @@ export interface emailSignUpVariables {
   nickName: string;
   email: string;
   password: string;
-  phoneNumber: string;
 }
 
 /* tslint:disable */
@@ -882,6 +942,48 @@ export interface googleConnectVariables {
   email?: string | null;
   profilePhoto?: string | null;
   googleId: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: nickNameOverlap
+// ====================================================
+
+export interface nickNameOverlap_NickNameOverlap {
+  __typename: "NickNameOverlapResponse";
+  ok: boolean;
+  error: string | null;
+}
+
+export interface nickNameOverlap {
+  NickNameOverlap: nickNameOverlap_NickNameOverlap;
+}
+
+export interface nickNameOverlapVariables {
+  nickName: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: emailOverlap
+// ====================================================
+
+export interface emailOverlap_EmailOverlap {
+  __typename: "EmailOverlapResponse";
+  ok: boolean;
+  error: string | null;
+}
+
+export interface emailOverlap {
+  EmailOverlap: emailOverlap_EmailOverlap;
+}
+
+export interface emailOverlapVariables {
+  email: string;
 }
 
 /* tslint:disable */

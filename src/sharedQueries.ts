@@ -108,8 +108,8 @@ export const DELETE_POST = gql`
 `;
 
 export const POSTS = gql`
-  query getAllPosts($limit: Int!) {
-    GetAllPosts(limit: $limit) {
+  query getAllPosts($limit: Int!, $type: String!) {
+    GetAllPosts(limit: $limit, type: $type) {
       ok
       error
       posts {
@@ -118,6 +118,7 @@ export const POSTS = gql`
         user {
           id
           nickName
+          profilePhoto
         }
         category {
           id
@@ -138,6 +139,38 @@ export const POSTS = gql`
         clapsCount
         view
         createdAt
+      }
+    }
+  }
+`;
+
+export const WIKIIMAGES = gql`
+  query getWikiImages($limit: Int!, $type: String!) {
+    GetWikiImages(limit: $limit, type: $type) {
+      ok
+      error
+      wikiImages {
+        id
+        user {
+          id
+          nickName
+          profilePhoto
+        }
+        category {
+          name
+          parent {
+            name
+          }
+        }
+        shownImage {
+          id
+          url
+        }
+        hoverImage
+        postsCount
+        clapsCount
+        createdAt
+        updatedAt
       }
     }
   }
@@ -411,14 +444,8 @@ export const SIGNUP_MUTATION = gql`
     $nickName: String!
     $email: String!
     $password: String!
-    $phoneNumber: String!
   ) {
-    EmailSignUp(
-      nickName: $nickName
-      email: $email
-      password: $password
-      phoneNumber: $phoneNumber
-    ) {
+    EmailSignUp(nickName: $nickName, email: $email, password: $password) {
       ok
       error
     }
@@ -517,6 +544,24 @@ export const GOOGLE_CONNECT = gql`
       ok
       error
       token
+    }
+  }
+`;
+
+export const NICKNAME_OVERLAP = gql`
+  query nickNameOverlap($nickName: String!) {
+    NickNameOverlap(nickName: $nickName) {
+      ok
+      error
+    }
+  }
+`;
+
+export const EMAIL_OVERLAP = gql`
+  query emailOverlap($email: String!) {
+    EmailOverlap(email: $email) {
+      ok
+      error
     }
   }
 `;

@@ -14,7 +14,7 @@ const BoardContainer = styled.div`
 
 const BoardOneContainer = styled.div`
   width: 100%;
-  padding: 20px 0px;
+  padding: 5px 0px;
   background-color: background-color;
   display: flex;
   align-items: center;
@@ -190,19 +190,13 @@ interface IProps {
 }
 
 interface IState {
-  hoverImgJson: string;
-  onImage: boolean;
-  pos: { x: number; y: number };
   counter: number;
 }
 
-class FeaturedCards extends React.Component<IProps, IState> {
+class FeaturedPostCards extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      hoverImgJson: "",
-      onImage: false,
-      pos: { x: 0, y: 0 },
       counter: 0
     };
   }
@@ -243,11 +237,15 @@ class FeaturedCards extends React.Component<IProps, IState> {
                     role="button"
                     aria-label="이전 콘텐츠 보기"
                     style={{ left: "0px" }}
-                    onClick={() =>
-                      this.setState({
-                        counter: this.state.counter - 1
-                      })
-                    }
+                    onClick={() => {
+                      this.state.counter >= 1
+                        ? this.setState({
+                            counter: this.state.counter - 1
+                          })
+                        : this.setState({
+                            counter: this.state.counter
+                          });
+                    }}
                   >
                     <SlideIcon className="fas fa-angle-left" />
                   </SlideHandle>
@@ -295,9 +293,13 @@ class FeaturedCards extends React.Component<IProps, IState> {
                     aria-label="다음 콘텐츠 보기"
                     style={{ right: "0px" }}
                     onClick={() =>
-                      this.setState({
-                        counter: this.state.counter + 1
-                      })
+                      this.state.counter <= 3
+                        ? this.setState({
+                            counter: this.state.counter + 1
+                          })
+                        : this.setState({
+                            counter: this.state.counter
+                          })
                     }
                   >
                     <SlideIcon className="fas fa-angle-right" />
@@ -313,4 +315,4 @@ class FeaturedCards extends React.Component<IProps, IState> {
   }
 }
 
-export default FeaturedCards;
+export default FeaturedPostCards;

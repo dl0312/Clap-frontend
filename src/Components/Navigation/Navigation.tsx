@@ -170,12 +170,7 @@ class Navigation extends React.Component<IProps, IState> {
                     </NavLink>
                   ) : (
                     <NavLink to="/login" style={{ textDecoration: "none" }}>
-                      <ProfileItemContainer>LOG IN</ProfileItemContainer>
-                    </NavLink>
-                  )}
-                  {!this.props.isLoggedIn && (
-                    <NavLink to="/signin" style={{ textDecoration: "none" }}>
-                      <ProfileItemContainer>JOIN US</ProfileItemContainer>
+                      <ProfileItemContainer>LOG IN / JOIN US</ProfileItemContainer>
                     </NavLink>
                   )}
                   {!this.props.isLoggedIn && (
