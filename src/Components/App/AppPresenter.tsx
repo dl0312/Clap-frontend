@@ -22,6 +22,7 @@ import CategoryEdit from "../../Routes/CategoryEdit";
 import LogIn from "../../Routes/LogIn";
 import SignUp from "../../Routes/SignUp";
 import Profile from "../../Routes/Profile";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 // import { ApolloProvider } from 'react-apollo';
 
@@ -35,58 +36,95 @@ const AppBox = styled.div`
 
 const MainContainer = styled.div`
   margin-top: 70px;
+  .fade-enter {
+    opacity: 0.01;
+  }
+
+  .fade-enter.fade-enter-active {
+    opacity: 1;
+    transition: opacity 600ms ease;
+  }
+
+  .fade-exit {
+    opacity: 1;
+  }
+
+  .fade-exit.fade-exit-active {
+    opacity: 0.01;
+    transition: opacity 600ms ease;
+  }
 `;
 
 const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
   <Router>
-    <AppBox>
-      <Navigation isLoggedIn={isLoggedIn} />
-      <MainContainer>
-        <Switch>
-          <Route path="/login" exact={true} component={LogIn} />
-          <Route path="/signup" exact={true} component={SignUp} />
-          <Route path="/profile" exact={true} component={Profile} />
+    <Route
+      render={({ location }) => (
+        <AppBox>
+          <Navigation isLoggedIn={isLoggedIn} />
+          <MainContainer>
+            <TransitionGroup>
+              <CSSTransition
+                key={location.pathname.split("/")[1]}
+                classNames={"fade"}
+                timeout={{ enter: 500, exit: 500 }}
+              >
+                <Switch location={location}>
+                  <Route path="/login" exact={true} component={LogIn} />
+                  <Route path="/signup" exact={true} component={SignUp} />
+                  <Route path="/profile" exact={true} component={Profile} />
 
-          <Route
-            path="/category/read/:categoryId"
-            exact={true}
-            component={CategoryDetail}
-          />
-          <Route path="/category/add" exact={true} component={CategoryAdd} />
-          <Route
-            path="/category/edit/:categoryId"
-            exact={true}
-            component={CategoryEdit}
-          />
-          <Route
-            path="/post/read/:postId"
-            exact={true}
-            component={PostDetail}
-          />
-          <Route path="/post/add" exact={true} component={PostAdd} />
-          <Route path="/post/edit/:postId" exact={true} component={PostEdit} />
-          <Route
-            path="/category/:categoryId/wikiImage/read/:wikiImageId"
-            exact={true}
-            component={WikiImageDetail}
-          />
-          <Route
-            path="/category/:categoryId/wikiImage/add"
-            exact={true}
-            component={WikiImageAdd}
-          />
-          <Route
-            path="/category/:categoryId/wikiImage/edit/:wikiImageId"
-            exact={true}
-            component={WikiImageEdit}
-          />
-          <Route path={"/wiki"} exact={true} component={Wiki} />
-          <Route path={"/board"} exact={true} component={Board} />
-          <Route path={""} exact={true} component={Home} />
-          <Redirect from={"*"} to={"/"} />
-        </Switch>
-      </MainContainer>
-    </AppBox>
+                  <Route
+                    path="/category/read/:categoryId"
+                    exact={true}
+                    component={CategoryDetail}
+                  />
+                  <Route
+                    path="/category/add"
+                    exact={true}
+                    component={CategoryAdd}
+                  />
+                  <Route
+                    path="/category/edit/:categoryId"
+                    exact={true}
+                    component={CategoryEdit}
+                  />
+                  <Route
+                    path="/post/read/:postId"
+                    exact={true}
+                    component={PostDetail}
+                  />
+                  <Route path="/post/add" exact={true} component={PostAdd} />
+                  <Route
+                    path="/post/edit/:postId"
+                    exact={true}
+                    component={PostEdit}
+                  />
+                  <Route
+                    path="/category/:categoryId/wikiImage/read/:wikiImageId"
+                    exact={true}
+                    component={WikiImageDetail}
+                  />
+                  <Route
+                    path="/category/:categoryId/wikiImage/add"
+                    exact={true}
+                    component={WikiImageAdd}
+                  />
+                  <Route
+                    path="/category/:categoryId/wikiImage/edit/:wikiImageId"
+                    exact={true}
+                    component={WikiImageEdit}
+                  />
+                  <Route path={"/wiki"} exact={true} component={Wiki} />
+                  <Route path={"/board"} exact={true} component={Board} />
+                  <Route path={""} exact={true} component={Home} />
+                  <Redirect from={"*"} to={"/"} />
+                </Switch>
+              </CSSTransition>
+            </TransitionGroup>
+          </MainContainer>
+        </AppBox>
+      )}
+    />
   </Router>
 );
 

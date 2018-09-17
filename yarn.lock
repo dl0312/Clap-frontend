@@ -657,6 +657,12 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-transition-group@^2.0.14":
+  version "2.0.14"
+  resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-2.0.14.tgz#afd0cd785a97f070b55765e9f9d76ff568269001"
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*", "@types/react@^16.3.14", "@types/react@^16.4.11":
   version "16.4.11"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.11.tgz#330f3d864300f71150dc2d125e48644c098f8770"
