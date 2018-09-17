@@ -468,9 +468,13 @@ export const PROFILE = gql`
         profilePhoto
         following {
           fullName
+          nickName
+          profilePhoto
         }
         followers {
           fullName
+          nickName
+          profilePhoto
         }
       }
     }

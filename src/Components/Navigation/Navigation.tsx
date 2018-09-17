@@ -13,6 +13,8 @@ import {
   googleConnectVariables
 } from "../../types/api";
 import { FACEBOOK_CONNECT, GOOGLE_CONNECT } from "../../sharedQueries";
+import AutoSuggestInput from "../AutoSuggestInput";
+import { Route } from "react-router-dom";
 
 const NavContainer = styled.div`
   width: 100%;
@@ -170,7 +172,9 @@ class Navigation extends React.Component<IProps, IState> {
                     </NavLink>
                   ) : (
                     <NavLink to="/login" style={{ textDecoration: "none" }}>
-                      <ProfileItemContainer>LOG IN / JOIN US</ProfileItemContainer>
+                      <ProfileItemContainer>
+                        LOG IN / JOIN US
+                      </ProfileItemContainer>
                     </NavLink>
                   )}
                   {!this.props.isLoggedIn && (
@@ -325,6 +329,12 @@ class Navigation extends React.Component<IProps, IState> {
                   <NavLink to="/store" style={{ textDecoration: "none" }}>
                     <MenuItem>STORE</MenuItem>
                   </NavLink>
+                  <Route
+                    render={({ history }) => {
+                      return <AutoSuggestInput history={history} />;
+                    }}
+                  />
+
                   {/* <NavLink to="/editor" style={{ textDecoration: "none" }}>
                 <MenuItem>EDITOR</MenuItem>
               </NavLink> */}

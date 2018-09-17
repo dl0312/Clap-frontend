@@ -39,7 +39,8 @@ const SearchInput = styled.input`
 
 const ListContainer = styled.div`
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   width: 100%;
 `;
@@ -81,7 +82,7 @@ const CategoryContainer = styled.div`
   color: white;
   padding: 10px 15px;
   background-color: #222;
-  box-shadow: 0 0 1px 1px #060606, inset 0 0 0 1px #060606;
+  /* box-shadow: 0 0 1px 1px #060606, inset 0 0 0 1px #060606; */
   border-top: 1px solid #1a1a1a;
   border-bottom: 1px solid #1a1a1a;
 
@@ -149,9 +150,11 @@ const DataContainer = styled.div`
   /* padding-bottom: 20px; */
   background-color: black;
   transition: padding 0.5s ease;
+  width: 95%;
   margin-bottom: 20px;
   box-shadow: 0 0 1px 1px #060606, inset 0 0 0 1px #060606;
   border: 1px solid #1a1a1a;
+  border-radius: 5px;
   ${media.tablet`
     padding: 10px 3px;
     margin-bottom: 10px;

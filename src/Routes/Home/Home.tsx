@@ -100,7 +100,7 @@ class Home extends React.Component {
                 return (
                   <FeaturedImageCards
                     images={wikiImages}
-                    type="새로운 이미지"
+                    type="새로운 위키 이미지"
                   />
                 );
               } else {
@@ -127,7 +127,7 @@ class Home extends React.Component {
                 return (
                   <FeaturedImageCards
                     images={wikiImages}
-                    type="업데이트 이미지"
+                    type="업데이트 위키 이미지"
                   />
                 );
               } else {

@@ -163,255 +163,218 @@ class Profile extends React.Component<any, any> {
 
   public render() {
     return (
-      <React.Fragment>
-        <Query
-          query={PROFILE}
-          onCompleted={data => {
-            const { user }: any = data.GetMyProfile;
-            this.setState({
-              email: user.email,
-              password: user.password,
-              fullName: user.fullName,
-              nickName: user.nickName
-            });
-          }}
-        >
-          {({ loading, error, data }) => {
-            if (loading) {
-              return <div>Loading...</div>;
-            }
-            if (error) {
-              return <div>{error.message}</div>;
-            }
-            console.log(data);
-            const user = data.GetMyProfile.user;
-            return (
-              <ProfileContainer>
-                <ProfileInnerContainer>
-                  <ProfileTitle>계정</ProfileTitle>
-                  <ProfileInfoContainer>
-                    <Mutation
-                      mutation={EDIT_PROFILE}
-                      onCompleted={data => this.confirm(data)}
-                    >
-                      {UpdateMyProfile => (
-                        <React.Fragment>
-                          {this.state.editProfilePhoto ? (
-                            <Upload
-                              type={"PROFILE"}
-                              exShownImg={{ url: user.profilePhoto }}
-                              UpdateMyProfile={UpdateMyProfile}
-                            />
-                          ) : (
-                            <ProfileImgContainer
-                              onClick={() =>
-                                this.setState({ editProfilePhoto: true })
-                              }
-                            >
-                              <ProfilePhotoHoverContainer>
-                                <EditIcon
-                                  style={{ fontSize: "30px" }}
-                                  className="fas fa-edit"
-                                />
-                              </ProfilePhotoHoverContainer>
-                              <ProfileImg url={user.profilePhoto} />
-                            </ProfileImgContainer>
-                          )}
+      <Query query={PROFILE}>
+        {({ loading, error, data }) => {
+          if (loading) {
+            return <div>Loading...</div>;
+          }
+          if (error) {
+            return <div>{error.message}</div>;
+          }
+          console.log(data);
+          const user = data.GetMyProfile.user;
+          return (
+            <ProfileContainer>
+              <ProfileInnerContainer>
+                <ProfileTitle>계정</ProfileTitle>
+                <ProfileInfoContainer>
+                  <Mutation
+                    mutation={EDIT_PROFILE}
+                    onCompleted={data => this.confirm(data)}
+                  >
+                    {(UpdateMyProfile, { data }) => (
+                      <React.Fragment>
+                        {this.state.editProfilePhoto ? (
+                          <Upload
+                            type={"PROFILE"}
+                            exShownImg={{ url: user.profilePhoto }}
+                            UpdateMyProfile={UpdateMyProfile}
+                          />
+                        ) : (
+                          <ProfileImgContainer
+                            onClick={() =>
+                              this.setState({ editProfilePhoto: true })
+                            }
+                          >
+                            <ProfilePhotoHoverContainer>
+                              <EditIcon
+                                style={{ fontSize: "30px" }}
+                                className="fas fa-edit"
+                              />
+                            </ProfilePhotoHoverContainer>
+                            <ProfileImg url={user.profilePhoto} />
+                          </ProfileImgContainer>
+                        )}
 
-                          <ProfileTextInfoContainer>
-                            <ProfileSubTitle>
-                              <span>이메일</span>
-                              {this.state.editEmail ? (
-                                <ProfileSubTitleData style={{ color: "black" }}>
-                                  <EditInput
-                                    type="text"
-                                    value={this.state.email}
-                                    onChange={e => {
-                                      this.setState({ email: e.target.value });
-                                    }}
-                                  />
-                                  <EditContainer
-                                    onClick={() => {
-                                      console.log(this.state.email);
-                                      UpdateMyProfile({
-                                        refetchQueries: [
-                                          {
-                                            query: PROFILE
-                                          }
-                                        ],
-                                        variables: { email: this.state.email }
-                                      });
-                                    }}
-                                  >
-                                    <span>확인</span>
-                                  </EditContainer>
-                                </ProfileSubTitleData>
-                              ) : (
-                                <ProfileSubTitleData>
-                                  <span>{user.email}</span>
-                                  <EditContainer
-                                    onClick={() =>
-                                      this.setState({ editEmail: true })
-                                    }
-                                  >
-                                    <span>이메일 변경</span>
-                                  </EditContainer>
-                                </ProfileSubTitleData>
-                              )}
-                            </ProfileSubTitle>
-                            <ProfileSubTitle>
-                              <span>비밀번호</span>
-                              {this.state.editPassword ? (
-                                <ProfileSubTitleData style={{ color: "black" }}>
-                                  <EditInput
-                                    type="text"
-                                    value={this.state.password}
-                                    onChange={e => {
-                                      this.setState({ email: e.target.value });
-                                    }}
-                                  />
-                                  <EditContainer
-                                    onClick={() => {
-                                      console.log(this.state.password);
-                                      UpdateMyProfile({
-                                        refetchQueries: [
-                                          {
-                                            query: PROFILE
-                                          }
-                                        ],
-                                        variables: {
-                                          password: this.state.password
+                        <ProfileTextInfoContainer>
+                          <ProfileSubTitle>
+                            <span>이메일</span>
+                            {this.state.editEmail ? (
+                              <ProfileSubTitleData style={{ color: "black" }}>
+                                <EditInput
+                                  type="text"
+                                  value={this.state.email}
+                                  onChange={e => {
+                                    this.setState({
+                                      email: e.target.value
+                                    });
+                                  }}
+                                />
+                                <EditContainer
+                                  onClick={() => {
+                                    console.log(this.state.email);
+                                    UpdateMyProfile({
+                                      refetchQueries: [
+                                        {
+                                          query: PROFILE
                                         }
-                                      });
-                                    }}
-                                  >
-                                    <span>확인</span>
-                                  </EditContainer>
-                                </ProfileSubTitleData>
-                              ) : (
-                                <ProfileSubTitleData>
-                                  {/* {user.password} */}
-                                  <span>*******</span>
-                                  <EditContainer
-                                    onClick={() =>
-                                      this.setState({ editPassword: true })
-                                    }
-                                  >
-                                    비밀번호 변경
-                                  </EditContainer>
-                                </ProfileSubTitleData>
-                              )}
-                            </ProfileSubTitle>
-                            <ProfileSubTitle>
-                              <span>이름</span>
-                              {this.state.editFullName ? (
-                                <ProfileSubTitleData style={{ color: "black" }}>
-                                  <EditInput
-                                    type="text"
-                                    value={this.state.fullName}
-                                    onChange={e => {
-                                      this.setState({
-                                        fullName: e.target.value
-                                      });
-                                    }}
-                                  />
-                                  <EditContainer
-                                    onClick={() => {
-                                      console.log(this.state.fullName);
-                                      UpdateMyProfile({
-                                        refetchQueries: [
-                                          {
-                                            query: PROFILE
-                                          }
-                                        ],
-                                        variables: {
-                                          fullName: this.state.fullName
-                                        }
-                                      });
-                                    }}
-                                  >
-                                    <span>확인</span>
-                                  </EditContainer>
-                                </ProfileSubTitleData>
-                              ) : (
-                                <ProfileSubTitleData>
-                                  <span>{user.fullName}</span>
-                                  <EditContainer
-                                    onClick={() =>
-                                      this.setState({ editFullName: true })
-                                    }
-                                  >
-                                    이름 변경
-                                  </EditContainer>
-                                </ProfileSubTitleData>
-                              )}
-                            </ProfileSubTitle>
-                            <ProfileSubTitle>
-                              <span>닉네임</span>
-                              {this.state.editNickName ? (
-                                <ProfileSubTitleData style={{ color: "black" }}>
-                                  <EditInput
-                                    type="text"
-                                    value={this.state.nickName}
-                                    onChange={e => {
-                                      this.setState({
-                                        nickName: e.target.value
-                                      });
-                                    }}
-                                  />
-                                  <EditContainer
-                                    onClick={() => {
-                                      UpdateMyProfile({
-                                        refetchQueries: [
-                                          {
-                                            query: PROFILE
-                                          }
-                                        ],
-                                        variables: {
-                                          nickName: this.state.nickName
-                                        }
-                                      });
-                                    }}
-                                  >
-                                    <span>확인</span>
-                                  </EditContainer>
-                                </ProfileSubTitleData>
-                              ) : (
-                                <ProfileSubTitleData>
-                                  <span>{user.nickName}</span>
-                                  <EditContainer
-                                    onClick={() =>
-                                      this.setState({ editNickName: true })
-                                    }
-                                  >
-                                    닉네임 변경
-                                  </EditContainer>
-                                </ProfileSubTitleData>
-                              )}
-                            </ProfileSubTitle>
-                            <ProfileSubTitle>
-                              <span>팔로잉</span>
-                              <ProfileSubTitleData>
-                                <span>{user.following}</span>
+                                      ],
+                                      variables: {
+                                        email: this.state.email
+                                      }
+                                    });
+                                  }}
+                                >
+                                  <span>확인</span>
+                                </EditContainer>
                               </ProfileSubTitleData>
-                            </ProfileSubTitle>
-                            <ProfileSubTitle>
-                              <span>팔로워</span>
+                            ) : (
                               <ProfileSubTitleData>
-                                <span>{user.follower}</span>
+                                <span>{user.email}</span>
+                                <EditContainer
+                                  onClick={() =>
+                                    this.setState({ editEmail: true })
+                                  }
+                                >
+                                  <span>이메일 변경</span>
+                                </EditContainer>
                               </ProfileSubTitleData>
-                            </ProfileSubTitle>
-                          </ProfileTextInfoContainer>
-                        </React.Fragment>
-                      )}
-                    </Mutation>
-                  </ProfileInfoContainer>
-                </ProfileInnerContainer>
-              </ProfileContainer>
-            );
-          }}
-        </Query>
-      </React.Fragment>
+                            )}
+                          </ProfileSubTitle>
+                          <ProfileSubTitle>
+                            <span>비밀번호</span>
+                            {this.state.editPassword ? (
+                              <ProfileSubTitleData style={{ color: "black" }}>
+                                <EditInput
+                                  type="text"
+                                  value={this.state.password}
+                                  onChange={e => {
+                                    this.setState({
+                                      email: e.target.value
+                                    });
+                                  }}
+                                />
+                                <EditContainer
+                                  onClick={() => {
+                                    console.log(this.state.password);
+                                    UpdateMyProfile({
+                                      refetchQueries: [
+                                        {
+                                          query: PROFILE
+                                        }
+                                      ],
+                                      variables: {
+                                        password: this.state.password
+                                      }
+                                    });
+                                  }}
+                                >
+                                  <span>확인</span>
+                                </EditContainer>
+                              </ProfileSubTitleData>
+                            ) : (
+                              <ProfileSubTitleData>
+                                {/* {user.password} */}
+                                <span>*******</span>
+                                <EditContainer
+                                  onClick={() =>
+                                    this.setState({
+                                      editPassword: true
+                                    })
+                                  }
+                                >
+                                  비밀번호 변경
+                                </EditContainer>
+                              </ProfileSubTitleData>
+                            )}
+                          </ProfileSubTitle>
+                          <ProfileSubTitle>
+                            <span>이름</span>
+                            <ProfileSubTitleData>
+                              <span>{user.fullName}</span>
+                            </ProfileSubTitleData>
+                          </ProfileSubTitle>
+                          <ProfileSubTitle>
+                            <span>닉네임</span>
+                            {this.state.editNickName ? (
+                              <ProfileSubTitleData style={{ color: "black" }}>
+                                <EditInput
+                                  type="text"
+                                  value={this.state.nickName}
+                                  onChange={e => {
+                                    this.setState({
+                                      nickName: e.target.value
+                                    });
+                                  }}
+                                />
+                                <EditContainer
+                                  onClick={() => {
+                                    UpdateMyProfile({
+                                      refetchQueries: [
+                                        {
+                                          query: PROFILE
+                                        }
+                                      ],
+                                      variables: {
+                                        nickName: this.state.nickName
+                                      }
+                                    });
+                                  }}
+                                >
+                                  <span>확인</span>
+                                </EditContainer>
+                              </ProfileSubTitleData>
+                            ) : (
+                              <ProfileSubTitleData>
+                                <span>{user.nickName}</span>
+                                <EditContainer
+                                  onClick={() =>
+                                    this.setState({
+                                      editNickName: true
+                                    })
+                                  }
+                                >
+                                  닉네임 변경
+                                </EditContainer>
+                              </ProfileSubTitleData>
+                            )}
+                          </ProfileSubTitle>
+                          <ProfileSubTitle>
+                            <span>팔로잉</span>
+                            <ProfileSubTitleData>
+                              {user.following.map((user: any, index: any) => {
+                                return <div key={index}>{user.nickName}</div>;
+                              })}
+                            </ProfileSubTitleData>
+                          </ProfileSubTitle>
+                          <ProfileSubTitle>
+                            <span>팔로워</span>
+                            <ProfileSubTitleData>
+                              {user.followers.map((user: any, index: any) => {
+                                return <div key={index}>{user.nickName}</div>;
+                              })}
+                            </ProfileSubTitleData>
+                          </ProfileSubTitle>
+                        </ProfileTextInfoContainer>
+                      </React.Fragment>
+                    )}
+                  </Mutation>
+                </ProfileInfoContainer>
+              </ProfileInnerContainer>
+            </ProfileContainer>
+          );
+        }}
+      </Query>
     );
   }
 }
