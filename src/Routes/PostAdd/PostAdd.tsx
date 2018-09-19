@@ -67,6 +67,7 @@ class PostAdd extends React.Component<IProps, IState> {
 
   public confirm = (data: any) => {
     const { AddPost } = data;
+    console.log(data);
     if (AddPost.ok) {
       toast.success("Post Add Success");
       setTimeout(() => {

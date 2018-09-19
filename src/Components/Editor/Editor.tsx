@@ -866,7 +866,7 @@ class Editor extends React.Component<IProps, IState> {
       hoverImgJson,
       onImage
     } = this.state;
-    console.log(this.state);
+    // console.log(this.state);
     return (
       <React.Fragment>
         {this.props.type === "POST_ADD" ? (
@@ -888,7 +888,8 @@ class Editor extends React.Component<IProps, IState> {
                     {
                       query: POSTS,
                       variables: {
-                        limit: 20
+                        limit: 20,
+                        types: "createdAt"
                       }
                     }
                   ],

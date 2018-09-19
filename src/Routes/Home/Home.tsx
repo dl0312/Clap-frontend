@@ -11,6 +11,7 @@ import {
   getWikiImagesVariables
 } from "../../types/api";
 import styled from "styled-components";
+import { Helmet } from "react-helmet";
 
 const HomeContainer = styled.div`
   margin-top: -70px;
@@ -27,6 +28,9 @@ class Home extends React.Component {
   public render() {
     return (
       <HomeContainer>
+        <Helmet>
+          <title>CLAP</title>
+          </Helmet>
         <Slide />
         <FeaturedContainer>
           <PostsQuery

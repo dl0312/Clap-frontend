@@ -256,6 +256,7 @@ class FeaturedPostCards extends React.Component<IProps, IState> {
                         style={{
                           textDecoration: "none"
                         }}
+                        key={index}
                       >
                         <CardContainer>
                           <CardImage

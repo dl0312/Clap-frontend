@@ -22,6 +22,7 @@ import CategoryEdit from "../../Routes/CategoryEdit";
 import LogIn from "../../Routes/LogIn";
 import SignUp from "../../Routes/SignUp";
 import Profile from "../../Routes/Profile";
+import SearchResult from "../../Routes/SearchResult";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 // import { ApolloProvider } from 'react-apollo';
@@ -37,12 +38,12 @@ const AppBox = styled.div`
 const MainContainer = styled.div`
   margin-top: 70px;
   .fade-enter {
-    opacity: 0.01;
+    opacity: 0;
   }
 
   .fade-enter.fade-enter-active {
     opacity: 1;
-    transition: opacity 600ms ease;
+    transition: opacity 2000ms ease;
   }
 
   .fade-exit {
@@ -50,8 +51,8 @@ const MainContainer = styled.div`
   }
 
   .fade-exit.fade-exit-active {
-    opacity: 0.01;
-    transition: opacity 600ms ease;
+    opacity: 0;
+    transition: opacity 2000ms ease;
   }
 `;
 
@@ -66,9 +67,15 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
               <CSSTransition
                 key={location.pathname.split("/")[1]}
                 classNames={"fade"}
-                timeout={{ enter: 500, exit: 500 }}
+                timeout={{ enter: 2000, exit: 2000 }}
               >
                 <Switch location={location}>
+                  <Route
+                    path="/search/:keyword"
+                    exact={true}
+                    component={SearchResult}
+                  />
+
                   <Route path="/login" exact={true} component={LogIn} />
                   <Route path="/signup" exact={true} component={SignUp} />
                   <Route path="/profile" exact={true} component={Profile} />

@@ -157,6 +157,7 @@ export const WIKIIMAGES = gql`
           profilePhoto
         }
         category {
+          id
           name
           parent {
             name

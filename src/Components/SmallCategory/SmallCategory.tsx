@@ -36,7 +36,7 @@ class SmallCategory extends React.Component<IProps> {
   }
   public render() {
     const { type, categoryId, deleteIdToState } = this.props;
-    console.log(this.props);
+    // console.log(this.props);
     return (
       <Query query={SIMPLE_CATEGORY} variables={{ categoryId }}>
         {({ loading, error, data }) => {

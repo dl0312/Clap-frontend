@@ -503,7 +503,7 @@ class Board extends React.Component<IProps, IState> {
                           newGuideCounter={this.state.newGuideCounter}
                         >
                           {posts.map((post: any, index: number) => (
-                            <CardContainer>
+                            <CardContainer key={index}>
                               <CardImage
                                 url={
                                   post.category.wikiImages[0] !== undefined

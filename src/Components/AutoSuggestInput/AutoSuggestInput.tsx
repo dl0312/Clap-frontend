@@ -1,65 +1,69 @@
 import React from "react";
-import AutoSuggest from "react-autosuggest";
-import AutosuggestHighlightMatch from "autosuggest-highlight/match";
-import AutosuggestHighlightParse from "autosuggest-highlight/parse";
-import "./AutoSuggestInput.css";
+import Downshift from "downshift";
+import styled from "styled-components";
+import { Query } from "react-apollo";
+import { CATEGORIES_KEYWORD } from "../../sharedQueries";
 
-const people = [
-  {
-    name: "League of Legend"
-  },
-  {
-    name: "World of Warcraft"
-  },
-  {
-    name: "PUBG"
-  },
-  {
-    name: "Monster Hunter"
-  }
-];
+// // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
+// function escapeRegexCharacters(str: string) {
+//   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// }
 
-// https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
-function escapeRegexCharacters(str: string) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+// function renderSuggestion(suggestion: any, { query }: any) {
+//   const suggestionText = `${suggestion.name}`;
+//   const matches = AutosuggestHighlightMatch(suggestionText, query);
+//   const parts = AutosuggestHighlightParse(suggestionText, matches);
 
-function getSuggestions(value: any) {
-  const escapedValue = escapeRegexCharacters(value.trim());
+//   return (
+//     <span className={"suggestion-content " + suggestion.twitter}>
+//       <span className="name">
+//         {parts.map((part, index) => {
+//           const className = part.highlight ? "highlight" : undefined;
+//           return (
+//             <span className={className} key={index}>
+//               {part.text}
+//             </span>
+//           );
+//         })}
+//       </span>
+//     </span>
+//   );
+// }
 
-  if (escapedValue === "") {
-    return [];
-  }
+// const SuggestContainer = styled.div`
+//   position: relative;
+// `;
 
-  const regex = new RegExp("\\b" + escapedValue, "i");
+const SuggestInput = styled.input`
+  width: 200px;
+  height: 30px;
+  padding: 10px 10px;
+  font-family: Helvetica, sans-serif;
+  font-weight: 300;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+`;
 
-  return people.filter(person => regex.test(getSuggestionValue(person)));
-}
+const SuggestList = styled.ul`
+  color: black;
+  display: block;
+  position: absolute;
+  top: 30px;
+  width: 200px;
+  border: 1px solid transparent;
+  background-color: #fff;
+  font-family: Helvetica, sans-serif;
+  font-weight: 300;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  z-index: 2;
+`;
 
-function getSuggestionValue(suggestion: any) {
-  return `${suggestion.name}`;
-}
-
-function renderSuggestion(suggestion: any, { query }: any) {
-  const suggestionText = `${suggestion.name}`;
-  const matches = AutosuggestHighlightMatch(suggestionText, query);
-  const parts = AutosuggestHighlightParse(suggestionText, matches);
-
-  return (
-    <span className={"suggestion-content " + suggestion.twitter}>
-      <span className="name">
-        {parts.map((part, index) => {
-          const className = part.highlight ? "highlight" : undefined;
-          return (
-            <span className={className} key={index}>
-              {part.text}
-            </span>
-          );
-        })}
-      </span>
-    </span>
-  );
-}
+const SuggestListItem = styled.div`
+  cursor: pointer;
+  padding: 10px 10px;
+  color: black;
+`;
 
 interface IState {
   value: string;
@@ -75,53 +79,107 @@ class AutoSuggestInput extends React.Component<any, IState> {
     };
   }
 
-  onChange = (event: any, { newValue, method }: any) => {
-    const emptyRegex = /^(?!\s*$).+/;
-    const emptyTest = emptyRegex.test(newValue.toLocaleLowerCase());
-    if (!emptyTest) {
-      this.setState({
-        value: newValue
-      });
-      this.props.history.push(`/`);
-    } else {
-      newValue = newValue.trimStart();
-      console.log(newValue);
-      this.setState({ value: newValue });
-      this.props.history.push(`/search?q=${newValue}`);
-    }
-  };
-
-  onSuggestionsFetchRequested = ({ value }: any) => {
-    this.setState({
-      suggestions: getSuggestions(value)
-    });
-  };
-
-  onSuggestionsClearRequested = () => {
-    this.setState({
-      suggestions: []
-    });
-  };
-
   public render() {
-    const { value, suggestions }: any = this.state;
-    const inputProps = {
-      placeholder: "클랩 카테고리로 검색",
-      value,
-      onChange: this.onChange
-    };
+    // const { value, suggestions }: any = this.state;
+    // const inputProps = {
+    //   placeholder: "클랩 카테고리로 검색",
+    //   value,
+    //   onChange: this.onChange
+    // };
 
     return (
-      <AutoSuggest
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-        getSuggestionValue={getSuggestionValue}
-        renderSuggestion={renderSuggestion}
-        inputProps={inputProps}
-      />
+      <Downshift
+        onChange={selectedItem => {
+          console.log(selectedItem);
+          this.props.history.push(`/search/${selectedItem.name}`);
+        }}
+        itemToString={item => (item ? item.name : "")}
+      >
+        {({
+          inputValue,
+          getInputProps,
+          getMenuProps,
+          getItemProps,
+          selectedItem,
+          highlightedIndex,
+          isOpen
+        }) => (
+          <div style={{ position: "relative" }}>
+            {/* <label {...getLabelProps()}>Enter Categroy</label> */}
+            <SuggestInput
+              placeholder={"클랩 카테고리로 검색"}
+              {...getInputProps()}
+            />
+            <ApolloAutocompleteMenu
+              {...{
+                inputValue,
+                getMenuProps,
+                getItemProps,
+                selectedItem,
+                highlightedIndex,
+                isOpen
+              }}
+            />
+          </div>
+        )}
+      </Downshift>
     );
   }
+}
+
+function ApolloAutocompleteMenu({
+  selectedItem,
+  highlightedIndex,
+  isOpen,
+  getItemProps,
+  getMenuProps,
+  inputValue
+}: any) {
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <Query
+      query={CATEGORIES_KEYWORD}
+      variables={{
+        keyword: inputValue
+      }}
+    >
+      {({ loading, error, data }) => {
+        if (loading) {
+          return <div />;
+        }
+
+        if (error) {
+          return <div>Error! ${error.message}</div>;
+        }
+        console.log(data);
+        const categories =
+          (data && data.GetCategoriesByKeyword.categories) || [];
+        return (
+          <SuggestList {...getMenuProps()}>
+            {categories.map((item: any, index: number) => (
+              <SuggestListItem
+                key={item.name}
+                {...getItemProps({
+                  index,
+                  item,
+                  style: {
+                    backgroundColor:
+                      highlightedIndex === index ? "lightgray" : "white",
+                    fontWeight: selectedItem === item ? "bold" : "normal"
+                  }
+                })}
+              >
+                {item.name}
+              </SuggestListItem>
+            ))}
+          </SuggestList>
+        );
+      }}
+    </Query>
+  );
 }
 
 export default AutoSuggestInput;

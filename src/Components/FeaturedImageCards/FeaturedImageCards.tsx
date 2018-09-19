@@ -252,10 +252,13 @@ class FeaturedImageCards extends React.Component<IProps, IState> {
                   <FeaturedCardContainer newGuideCounter={this.state.counter}>
                     {images.map((image: any, index: number) => (
                       <Link
-                        to={`/image/read/${image.id}`}
+                        to={`/category/${image.category.id}/wikiImage/read/${
+                          image.id
+                        }`}
                         style={{
                           textDecoration: "none"
                         }}
+                        key={index}
                       >
                         <CardContainer>
                           <CardImage
