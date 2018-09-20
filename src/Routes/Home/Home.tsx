@@ -30,12 +30,12 @@ class Home extends React.Component {
       <HomeContainer>
         <Helmet>
           <title>CLAP</title>
-          </Helmet>
+        </Helmet>
         <Slide />
         <FeaturedContainer>
           <PostsQuery
             query={POSTS}
-            variables={{ limit: 20, type: "createdAt" }}
+            variables={{ limit: 25, type: "createdAt" }}
           >
             {({ loading, data, error }) => {
               if (loading) {
@@ -61,7 +61,7 @@ class Home extends React.Component {
           </PostsQuery>
           <PostsQuery
             query={POSTS}
-            variables={{ limit: 20, type: "updatedAt" }}
+            variables={{ limit: 25, type: "updatedAt" }}
           >
             {({ loading, data, error }) => {
               if (loading) {
@@ -77,7 +77,7 @@ class Home extends React.Component {
               if (posts) {
                 return (
                   <React.Fragment>
-                    <FeaturedPostCards posts={posts} type="업데이트 공략" />
+                    <FeaturedPostCards posts={posts} type="업데이트 된 공략" />
                   </React.Fragment>
                 );
               } else {
@@ -87,7 +87,7 @@ class Home extends React.Component {
           </PostsQuery>
           <WikiImagesQuery
             query={WIKIIMAGES}
-            variables={{ limit: 20, type: "createdAt" }}
+            variables={{ limit: 25, type: "createdAt" }}
           >
             {({ loading, data, error }) => {
               if (loading) {
@@ -114,7 +114,7 @@ class Home extends React.Component {
           </WikiImagesQuery>
           <WikiImagesQuery
             query={WIKIIMAGES}
-            variables={{ limit: 20, type: "createdAt" }}
+            variables={{ limit: 25, type: "createdAt" }}
           >
             {({ loading, data, error }) => {
               if (loading) {
@@ -131,7 +131,7 @@ class Home extends React.Component {
                 return (
                   <FeaturedImageCards
                     images={wikiImages}
-                    type="업데이트 위키 이미지"
+                    type="업데이트 된 위키 이미지"
                   />
                 );
               } else {

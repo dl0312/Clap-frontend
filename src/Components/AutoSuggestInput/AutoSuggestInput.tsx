@@ -80,18 +80,11 @@ class AutoSuggestInput extends React.Component<any, IState> {
   }
 
   public render() {
-    // const { value, suggestions }: any = this.state;
-    // const inputProps = {
-    //   placeholder: "클랩 카테고리로 검색",
-    //   value,
-    //   onChange: this.onChange
-    // };
-
     return (
       <Downshift
         onChange={selectedItem => {
           console.log(selectedItem);
-          this.props.history.push(`/search/${selectedItem.name}`);
+          this.props.history.push(`/search/${selectedItem.id}`);
         }}
         itemToString={item => (item ? item.name : "")}
       >

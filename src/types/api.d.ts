@@ -188,6 +188,38 @@ export interface deletePostVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: getPostsByCategoryId
+// ====================================================
+
+export interface getPostsByCategoryId_GetPostsByCategoryId_posts {
+  __typename: "Post";
+  id: number;
+  title: string;
+  commentsCount: number | null;
+  clapsCount: number | null;
+  view: number;
+  createdAt: string;
+}
+
+export interface getPostsByCategoryId_GetPostsByCategoryId {
+  __typename: "GetPostsByCategoryIdResponse";
+  ok: boolean;
+  error: string | null;
+  posts: (getPostsByCategoryId_GetPostsByCategoryId_posts | null)[] | null;
+}
+
+export interface getPostsByCategoryId {
+  GetPostsByCategoryId: getPostsByCategoryId_GetPostsByCategoryId;
+}
+
+export interface getPostsByCategoryIdVariables {
+  categoryId: number;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: getAllPosts
 // ====================================================
 
@@ -273,6 +305,8 @@ export interface getWikiImages_GetWikiImages_wikiImages_category_parent {
 
 export interface getWikiImages_GetWikiImages_wikiImages_category {
   __typename: "Category";
+  id: number;
+  name: string;
   parent: (getWikiImages_GetWikiImages_wikiImages_category_parent | null)[] | null;
 }
 
@@ -832,11 +866,15 @@ export interface emailSignUpVariables {
 export interface getMyProfile_GetMyProfile_user_following {
   __typename: "User";
   fullName: string | null;
+  nickName: string;
+  profilePhoto: string | null;
 }
 
 export interface getMyProfile_GetMyProfile_user_followers {
   __typename: "User";
   fullName: string | null;
+  nickName: string;
+  profilePhoto: string | null;
 }
 
 export interface getMyProfile_GetMyProfile_user {

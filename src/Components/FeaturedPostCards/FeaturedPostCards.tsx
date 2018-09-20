@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { media } from "../../config/_mixin";
@@ -86,7 +86,7 @@ const FeaturedCardCounter = styled<IFeaturedCardCounterProps, any>("div")`
 const CardContainer = styled.div`
   width: 20%;
   padding: 0 2px;
-  display: inline-block;
+  display: inline-flex;
   transition: width 0.5s ease;
   ${media.tablet`width: 25%;`};
   ${media.phone`width: 50%;`};
@@ -176,6 +176,7 @@ const CardTitle = styled.div`
   font-size: 15px;
   margin-bottom: 5px;
   font-weight: bolder;
+  white-space: normal;
 `;
 
 const CardSubTitle = styled.div`

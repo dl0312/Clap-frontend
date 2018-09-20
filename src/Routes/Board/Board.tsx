@@ -358,7 +358,7 @@ class Board extends React.Component<IProps, IState> {
   public render() {
     const { pos, hoverImgJson, onImage } = this.state;
     return (
-      <PostsQuery query={POSTS} variables={{ limit: 20, type: "createdAt" }}>
+      <PostsQuery query={POSTS} variables={{ limit: 100, type: "createdAt" }}>
         {({ loading, data, error }) => {
           if (loading) {
             return <div>Loading...</div>;

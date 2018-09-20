@@ -107,6 +107,37 @@ export const DELETE_POST = gql`
   }
 `;
 
+export const POSTS_CATEGORY = gql`
+  query getPostsByCategoryId($categoryId: Int!) {
+    GetPostsByCategoryId(categoryId: $categoryId) {
+      ok
+      error
+      posts {
+        id
+        title
+        user {
+          nickName
+        }
+        category {
+          name
+          parent {
+            name
+          }
+          wikiImages {
+            shownImage {
+              url
+            }
+          }
+        }
+        commentsCount
+        clapsCount
+        view
+        createdAt
+      }
+    }
+  }
+`;
+
 export const POSTS = gql`
   query getAllPosts($limit: Int!, $type: String!) {
     GetAllPosts(limit: $limit, type: $type) {

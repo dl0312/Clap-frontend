@@ -889,7 +889,7 @@ class Editor extends React.Component<IProps, IState> {
                       query: POSTS,
                       variables: {
                         limit: 20,
-                        types: "createdAt"
+                        type: "createdAt"
                       }
                     }
                   ],
