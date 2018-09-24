@@ -116,6 +116,7 @@ export const POSTS_CATEGORY = gql`
         id
         title
         user {
+          profilePhoto
           nickName
         }
         category {

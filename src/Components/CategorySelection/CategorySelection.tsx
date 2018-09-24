@@ -10,21 +10,33 @@ import { CATEGORIES_KEYWORD } from "../../sharedQueries";
 import { GetPos } from "../../Utility/GetPos";
 
 const ListContainer = styled.div`
+  background-color: white;
+  height: 250px;
+  overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   grid-gap: 5px;
   margin: 5px 0;
+  ::-webkit-scrollbar {
+    width: 6px;
+    background-color: #e5e5e5;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #000000;
+  }
 `;
 
 const CategorySelectionContainer = styled.div`
-  border: 1px solid black;
+  border: 1px solid #ced4da;
   border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-direction: column;
   padding: 5px;
-  background-color: #222;
+  color: black;
+  background-color: white;
+  margin: 0 5px;
 `;
 
 const SearchInput = styled.input`
@@ -61,14 +73,12 @@ const DataContainer = styled.div`
   cursor: pointer;
 `;
 
-const Button = styled.div`
+const CategoryTitle = styled.div`
   text-transform: uppercase;
   text-align: center;
-  padding: 5px 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  border: 0.5px solid rgba(0, 0, 0, 0.2);
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  margin: 10px 0px;
+  font-size: 15px;
+  font-weight: bolder;
 `;
 
 const SelectedListContainer = styled.div`
@@ -79,9 +89,9 @@ const SelectedListContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  border: 1px solid black;
+
+  border: 1px solid #ced4da;
   padding: 5px;
-  background-color: #777;
 `;
 
 const UpperContainer = styled.div`
@@ -136,7 +146,7 @@ class CategorySelection extends React.Component<IProps, IState> {
     return (
       <CategorySelectionContainer>
         <UpperContainer>
-          <Button>{type}</Button>
+          <CategoryTitle>{type}</CategoryTitle>
           <SearchInput
             type="text"
             value={keyword}
@@ -147,9 +157,7 @@ class CategorySelection extends React.Component<IProps, IState> {
           />
           <CategoriesByKeyword
             query={CATEGORIES_KEYWORD}
-            variables={{
-              keyword
-            }}
+            variables={{ keyword }}
           >
             {({ loading, data, error }) => {
               if (loading) {

@@ -62,10 +62,19 @@ const InputIcon = styled<IInputIconProps, any>("i")`
 `;
 
 const ListContainer = styled.div`
+  height: 340px;
+  overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(6, 75px);
-  grid-gap: 10px;
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-rows: 75px;
+  grid-gap: 5px;
+  ::-webkit-scrollbar {
+    width: 6px;
+    background-color: #e5e5e5;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #000000;
+  }
 `;
 
 const WikiImage = styled.img`

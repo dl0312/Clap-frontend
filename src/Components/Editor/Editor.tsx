@@ -149,6 +149,7 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
 `;
 
 const EditorRightContainer = styled.div`
+  background-color: white;
   outline: 0.05px solid rgb(172, 172, 172);
   transition: width 1s ease;
   width: 25%;
@@ -195,6 +196,8 @@ const PostButtonContainer = styled.div`
 `;
 
 const PostButton = styled.div`
+  background-color: white;
+  color: black;
   border: 0.5px solid rgba(0, 0, 0, 0.5);
   padding: 5px 10px;
   border-radius: 5px;

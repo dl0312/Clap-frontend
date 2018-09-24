@@ -42,6 +42,7 @@ const SuggestInput = styled.input`
   font-weight: 300;
   border: 1px solid #aaa;
   border-radius: 4px;
+  color: black;
 `;
 
 const SuggestList = styled.ul`

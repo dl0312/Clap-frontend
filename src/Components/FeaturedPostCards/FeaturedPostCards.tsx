@@ -128,7 +128,7 @@ interface ICardImageProps {
 const CardImage = styled<ICardImageProps, any>("div")`
   background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)),
     url(${props => `${props.url}`});
-  background-size: 100%;
+  background-size: 130%;
   background-position: 50% 50%;
   height: 130px;
   width: 100%;
@@ -181,6 +181,29 @@ const CardTitle = styled.div`
 
 const CardSubTitle = styled.div`
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+interface ICardUserImageProps {
+  url: string;
+}
+
+const CardUserImage = styled<ICardUserImageProps, any>("div")`
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 100%;
+  transition: filter 0.5s ease;
+  background-image: url(${props => `${props.url}`});
+  background-size: auto 100%;
+  background-position: 50% 50%;
+  &:hover {
+    filter: brightness(0.5);
+  }
+  margin-right: 10px;
 `;
 
 const BoardTwoContainer = styled.div``;
@@ -281,7 +304,8 @@ class FeaturedPostCards extends React.Component<IProps, IState> {
                             <CardTextContainer>
                               <CardTitle>{post.title}</CardTitle>
                               <CardSubTitle>
-                                BY {post.user.nickName}
+                                <CardUserImage url={post.user.profilePhoto} />
+                                <div>{post.user.nickName}</div>
                               </CardSubTitle>
                             </CardTextContainer>
                           </CardImage>

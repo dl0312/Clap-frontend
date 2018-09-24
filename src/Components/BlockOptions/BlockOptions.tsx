@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import Sketch from "../../Utility/Sketch";
-import Wiki from "../MiniWiki";
+import MiniWiki from "../MiniWiki";
 import Upload from "../Upload";
 
 interface IBlockOptionContainerProps {
@@ -484,7 +484,7 @@ class BlockOptions extends React.Component<IProps, any> {
                       </Align>
                     </ActionColumn>
                   </FunctionColumn>
-                  <Wiki
+                  <MiniWiki
                     handleOnChange={handleOnChange}
                     selectedIndex={selectedIndex}
                     selectedContent={selectedContent}
