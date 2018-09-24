@@ -18,10 +18,7 @@ export const POST = gql`
           wikiImages {
             id
             name
-            shownImage {
-              id
-              url
-            }
+            shownImage
             hoverImage
           }
         }
@@ -116,18 +113,18 @@ export const POSTS_CATEGORY = gql`
         id
         title
         user {
+          id
           profilePhoto
           nickName
         }
         category {
+          id
           name
           parent {
             name
           }
           wikiImages {
-            shownImage {
-              url
-            }
+            shownImage
           }
         }
         commentsCount
@@ -160,10 +157,7 @@ export const POSTS = gql`
           }
           wikiImages {
             id
-            shownImage {
-              id
-              url
-            }
+            shownImage
             hoverImage
           }
         }
@@ -195,10 +189,7 @@ export const WIKIIMAGES = gql`
             name
           }
         }
-        shownImage {
-          id
-          url
-        }
+        shownImage
         hoverImage
         postsCount
         clapsCount
@@ -260,10 +251,7 @@ export const CATEGORIES_KEYWORD = gql`
         }
         wikiImages {
           id
-          shownImage {
-            id
-            url
-          }
+          shownImage
           hoverImage
           clapsCount
           postsCount
@@ -282,9 +270,7 @@ export const CATEGORY = gql`
         id
         name
         wikiImages {
-          shownImage {
-            url
-          }
+          shownImage
           hoverImage
         }
         parent {
@@ -322,9 +308,7 @@ export const CATEGORIES_IDS = gql`
         id
         name
         wikiImages {
-          shownImage {
-            url
-          }
+          shownImage
           hoverImage
         }
       }
@@ -384,13 +368,13 @@ export const ADD_WIKIIMAGE = gql`
   mutation addWikiImage(
     $categoryId: Int!
     $name: String
-    $shownImageId: Int!
+    $shownImage: String!
     $hoverImage: String!
   ) {
     AddWikiImage(
       categoryId: $categoryId
       name: $name
-      shownImageId: $shownImageId
+      shownImage: $shownImage
       hoverImage: $hoverImage
     ) {
       ok
@@ -405,14 +389,14 @@ export const EDIT_WIKIIMAGE = gql`
     $wikiImageId: Int!
     $categoryId: Int
     $name: String
-    $shownImageId: Int!
-    $hoverImage: String!
+    $shownImage: String
+    $hoverImage: String
   ) {
     EditWikiImage(
       wikiImageId: $wikiImageId
       categoryId: $categoryId
       name: $name
-      shownImageId: $shownImageId
+      shownImage: $shownImage
       hoverImage: $hoverImage
     ) {
       ok
@@ -438,10 +422,7 @@ export const WIKIIMAGE = gql`
       wikiImage {
         id
         name
-        shownImage {
-          id
-          url
-        }
+        shownImage
         hoverImage
       }
     }

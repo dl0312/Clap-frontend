@@ -138,7 +138,7 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                     <React.Fragment>
                       <CurrentImg
                         src={`http://localhost:4000/uploads/${
-                          wikiImage.shownImage.url
+                          wikiImage.shownImage
                         }`}
                         alt={wikiImage.name}
                         onMouseOver={() =>

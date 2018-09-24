@@ -1,3 +1,4 @@
+import axios from "axios";
 import * as React from "react";
 import Dropzone from "react-dropzone";
 import { Mutation } from "react-apollo";
@@ -53,12 +54,13 @@ interface IProps {
 
 interface IState {
   file: File | null;
+  uploading: boolean;
 }
 
 class Upload extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    this.state = { file: null };
+    this.state = { file: null, uploading: false };
   }
 
   public confirm = (data: any) => {
@@ -71,8 +73,6 @@ class Upload extends React.Component<IProps, IState> {
   };
 
   public render() {
-    // const { history } = this.props;
-    console.log(this.props);
     return (
       <div>
         <FlexBox>
@@ -85,42 +85,55 @@ class Upload extends React.Component<IProps, IState> {
                 accept="image/*"
                 multiple={false}
                 onDrop={async ([file]) => {
-                  this.setState({ file });
-                  const response: any = await uploadShownImage({
-                    variables: { file }
+                  this.setState({
+                    uploading: true
                   });
-                  if (this.props.type === "POST_IMAGE") {
-                    this.props.handleOnChange(
-                      `http://localhost:4000/uploads/${
-                        response!.data!.UploadShownImage!.shownImage!.url
-                      }`,
-                      this.props.selectedIndex,
-                      "IMAGE",
-                      "URL"
-                    );
-                  } else if (this.props.type === "PROFILE") {
-                    this.props.UpdateMyProfile({
-                      refetchQueries: [
-                        {
-                          query: PROFILE
+                  const formData = new FormData();
+                  formData.append("file", file);
+                  formData.append("api_key", "641929979264519");
+                  formData.append("upload_preset", "clap_image_manager");
+                  formData.append("timestamp", String(Date.now() / 1000));
+                  const {
+                    data: { secure_url, public_id }
+                  } = await axios.post(
+                    "https://api.cloudinary.com/v1_1/clap_image_manager/image/upload",
+                    formData
+                  );
+                  console.log();
+                  if (secure_url) {
+                    if (this.props.type === "POST_IMAGE") {
+                      this.props.handleOnChange(
+                        secure_url,
+                        this.props.selectedIndex,
+                        "IMAGE",
+                        "URL"
+                      );
+                    } else if (this.props.type === "PROFILE") {
+                      this.props.UpdateMyProfile({
+                        refetchQueries: [
+                          {
+                            query: PROFILE
+                          }
+                        ],
+                        variables: {
+                          profilePhoto: secure_url
                         }
-                      ],
-                      variables: {
-                        profilePhoto: `http://localhost:4000/uploads/${
-                          response!.data!.UploadShownImage!.shownImage!.url
-                        }`
-                      }
+                      });
+                    } else {
+                      this.props.masterCallback(
+                        "shownImage",
+                        secure_url,
+                        public_id
+                      );
+                    }
+                    this.setState({
+                      uploading: false
                     });
-                  } else {
-                    this.props.masterCallback(
-                      "shownImage",
-                      response!.data!.UploadShownImage.shownImage
-                    );
                   }
+                  this.setState({ file });
                 }}
               >
-                {this.props.type === "POST_IMAGE" ||
-                this.props.type === "PROFILE" ? (
+                {this.props.type === "POST_IMAGE" ? (
                   this.props.exShownImg.url !== undefined ? (
                     <PreviewImg src={this.props.exShownImg.url} alt="preview" />
                   ) : (
@@ -129,19 +142,26 @@ class Upload extends React.Component<IProps, IState> {
                       upload.
                     </DropInnerText>
                   )
-                ) : this.props.exShownImg ? (
-                  <PreviewImg
-                    src={`http://localhost:4000/uploads/${
-                      this.props.exShownImg.url
-                    }`}
-                    alt="preview"
-                  />
-                ) : (
-                  <DropInnerText>
-                    Try dropping some files here, or click to select files to
-                    upload.
-                  </DropInnerText>
-                )}
+                ) : this.props.type === "PROFILE" ? (
+                  this.props.exShownImg.url !== undefined ? (
+                    <PreviewImg src={this.props.exShownImg.url} alt="preview" />
+                  ) : (
+                    <DropInnerText>
+                      Try dropping some files here, or click to select files to
+                      upload.
+                    </DropInnerText>
+                  )
+                ) : this.props.type === "WIKIIMAGE_ADD" ||
+                this.props.type === "WIKIIMAGE_EDIT" ? (
+                  this.props.exShownImg !== undefined ? (
+                    <PreviewImg src={this.props.exShownImg.url} alt="preview" />
+                  ) : (
+                    <DropInnerText>
+                      Try dropping some files here, or click to select files to
+                      upload.
+                    </DropInnerText>
+                  )
+                ) : null}
               </Dropzone>
             )}
           </UploadQuery>
@@ -157,6 +177,38 @@ class Upload extends React.Component<IProps, IState> {
       </div>
     );
   }
+
+  public onInputChange: React.ChangeEventHandler<
+    HTMLInputElement
+  > = async event => {
+    const {
+      target: { name, value, files }
+    } = event;
+    if (files) {
+      this.setState({
+        uploading: true
+      });
+      const formData = new FormData();
+      formData.append("file", files[0]);
+      formData.append("api_key", "641929979264519");
+      formData.append("upload_preset", "clap_image_manager");
+      formData.append("timestamp", String(Date.now() / 1000));
+      const {
+        data: { secure_url }
+      } = await axios.post(
+        "https://api.cloudinary.com/v1_1/clap_image_manager/image/upload",
+        formData
+      );
+      if (secure_url) {
+        this.setState({
+          uploading: false
+        });
+      }
+    }
+    this.setState({
+      [name]: value
+    } as any);
+  };
 }
 
 export default Upload;

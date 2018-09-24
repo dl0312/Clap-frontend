@@ -214,7 +214,7 @@ class MiniWiki extends React.Component<IProps, IState> {
                           {category.wikiImages[0] ? (
                             <WikiImage
                               src={`http://localhost:4000/uploads/${
-                                category.wikiImages[0].shownImage.url
+                                category.wikiImages[0].shownImage
                               }`}
                               alt={category.name}
                               onMouseOver={() =>
@@ -232,7 +232,7 @@ class MiniWiki extends React.Component<IProps, IState> {
                               }}
                               onClick={() => {
                                 const represent =
-                                  category.wikiImages[0].shownImage.url;
+                                  category.wikiImages[0].shownImage;
                                 const hover = category.wikiImages[0].hoverImage;
                                 console.log(this.props);
                                 const change = this.props.selectedContent.value

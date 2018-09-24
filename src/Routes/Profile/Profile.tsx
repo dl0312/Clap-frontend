@@ -163,7 +163,27 @@ class Profile extends React.Component<any, any> {
 
   public render() {
     return (
-      <Query query={PROFILE}>
+      <Query
+        query={PROFILE}
+        fetchPolicy={"cache-and-network"}
+        onCompleted={data => {
+          if ("GetMyProfile" in data) {
+            const {
+              GetMyProfile: { user }
+            } = data;
+            if (user !== null) {
+              const { email, nickName, profilePhoto, password } = user;
+              this.setState({
+                email,
+                nickName,
+                profilePhoto,
+                password,
+                uploaded: profilePhoto !== null
+              } as any);
+            }
+          }
+        }}
+      >
         {({ loading, error, data }) => {
           if (loading) {
             return <div>Loading...</div>;
@@ -180,6 +200,7 @@ class Profile extends React.Component<any, any> {
                 <ProfileInfoContainer>
                   <Mutation
                     mutation={EDIT_PROFILE}
+                    refetchQueries={[{ query: PROFILE }]}
                     onCompleted={data => this.confirm(data)}
                   >
                     {(UpdateMyProfile, { data }) => (
@@ -212,13 +233,15 @@ class Profile extends React.Component<any, any> {
                             {this.state.editEmail ? (
                               <ProfileSubTitleData style={{ color: "black" }}>
                                 <EditInput
-                                  type="text"
+                                  type="email"
                                   value={this.state.email}
                                   onChange={e => {
                                     this.setState({
                                       email: e.target.value
                                     });
                                   }}
+                                  placeholder={"Email"}
+                                  name={"email"}
                                 />
                                 <EditContainer
                                   onClick={() => {
@@ -256,13 +279,15 @@ class Profile extends React.Component<any, any> {
                             {this.state.editPassword ? (
                               <ProfileSubTitleData style={{ color: "black" }}>
                                 <EditInput
-                                  type="text"
+                                  type="password"
                                   value={this.state.password}
                                   onChange={e => {
                                     this.setState({
                                       email: e.target.value
                                     });
                                   }}
+                                  placeholder={"Password"}
+                                  name={"password"}
                                 />
                                 <EditContainer
                                   onClick={() => {
@@ -316,6 +341,8 @@ class Profile extends React.Component<any, any> {
                                       nickName: e.target.value
                                     });
                                   }}
+                                  placeholder={"Nick Name"}
+                                  name={"nickName"}
                                 />
                                 <EditContainer
                                   onClick={() => {

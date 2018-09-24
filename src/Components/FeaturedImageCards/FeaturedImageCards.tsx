@@ -287,7 +287,7 @@ class FeaturedImageCards extends React.Component<IProps, IState> {
                             url={
                               image.shownImage !== undefined
                                 ? `http://localhost:4000/uploads/${
-                                    image.shownImage.url
+                                    image.shownImage
                                   }`
                                 : "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
                             }

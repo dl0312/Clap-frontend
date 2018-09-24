@@ -191,10 +191,42 @@ export interface deletePostVariables {
 // GraphQL query operation: getPostsByCategoryId
 // ====================================================
 
+export interface getPostsByCategoryId_GetPostsByCategoryId_posts_user {
+  __typename: "User";
+  id: number;
+  profilePhoto: string | null;
+  nickName: string;
+}
+
+export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category_parent {
+  __typename: "Category";
+  name: string;
+}
+
+export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages_shownImage {
+  __typename: "ShownImage";
+  url: string;
+}
+
+export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages {
+  __typename: "WikiImage";
+  shownImage: getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages_shownImage | null;
+}
+
+export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category {
+  __typename: "Category";
+  id: number;
+  name: string;
+  parent: (getPostsByCategoryId_GetPostsByCategoryId_posts_category_parent | null)[] | null;
+  wikiImages: (getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages | null)[] | null;
+}
+
 export interface getPostsByCategoryId_GetPostsByCategoryId_posts {
   __typename: "Post";
   id: number;
   title: string;
+  user: getPostsByCategoryId_GetPostsByCategoryId_posts_user;
+  category: getPostsByCategoryId_GetPostsByCategoryId_posts_category | null;
   commentsCount: number | null;
   clapsCount: number | null;
   view: number;
@@ -698,7 +730,7 @@ export interface addWikiImage {
 export interface addWikiImageVariables {
   categoryId: number;
   name?: string | null;
-  shownImageId: number;
+  shownImageId: string;
   hoverImage: string;
 }
 

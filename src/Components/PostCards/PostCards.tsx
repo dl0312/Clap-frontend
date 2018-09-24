@@ -165,7 +165,7 @@ class PostCards extends React.Component<IProps, any> {
                   url={
                     post.category.wikiImages[0] !== undefined
                       ? `http://localhost:4000/uploads/${
-                          post.category.wikiImages[0].shownImage.url
+                          post.category.wikiImages[0].shownImage
                         }`
                       : "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
                   }

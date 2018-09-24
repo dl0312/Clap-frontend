@@ -131,7 +131,7 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
 
             <Switch>
               <Route
-                path="/search/:keyword"
+                path="/search/:categoryId"
                 exact={true}
                 component={SearchResult}
               />

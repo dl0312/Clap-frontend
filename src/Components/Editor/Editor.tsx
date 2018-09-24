@@ -229,7 +229,7 @@ interface IState {
   selectedContent: any;
   hoverImgJson: any;
   onImage: boolean;
-  exShownImg: { url: string; id: number };
+  exShownImg: { url: string; id: string };
   pos: { x: number; y: number };
   title: string;
   category: number[];
@@ -255,7 +255,7 @@ class Editor extends React.Component<IProps, IState> {
       exShownImg:
         this.props.type === "WIKIIMAGE_EDIT"
           ? this.props.wikiImage.shownImage
-          : null,
+          : { url: null, id: null },
       pos: { x: 0, y: 0 },
       title: "",
       category: [],
@@ -620,7 +620,8 @@ class Editor extends React.Component<IProps, IState> {
       | "view"
       | "onDrag"
       | "rightMenu",
-    dataFromChild: any
+    dataFromChild: any,
+    secondDataFromChild?: any
   ) => {
     if (type === "bodyBackgroundColor") {
       this.setState({ bodyBackgroundColor: dataFromChild });
@@ -641,7 +642,9 @@ class Editor extends React.Component<IProps, IState> {
         selectedContent: null
       });
     } else if (type === "shownImage") {
-      this.setState({ exShownImg: dataFromChild });
+      this.setState({
+        exShownImg: { url: dataFromChild, id: secondDataFromChild }
+      });
     }
   };
 
@@ -869,7 +872,7 @@ class Editor extends React.Component<IProps, IState> {
       hoverImgJson,
       onImage
     } = this.state;
-    // console.log(this.state);
+    console.log(this.state);
     return (
       <React.Fragment>
         {this.props.type === "POST_ADD" ? (
@@ -981,7 +984,7 @@ class Editor extends React.Component<IProps, IState> {
                   variables: {
                     categoryId: this.props.categoryId,
                     name: this.state.title,
-                    shownImageId: this.state.exShownImg.id,
+                    shownImage: this.state.exShownImg.id,
                     hoverImage: JSON.stringify(filteredState)
                   }
                 });

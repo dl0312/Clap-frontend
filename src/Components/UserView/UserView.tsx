@@ -143,7 +143,7 @@ interface IUserViewProps {
     selectedContent: any;
     hoverImgJson: any;
     onImage: boolean;
-    exShownImg: { url: string; id: number };
+    exShownImg: { url: string; id: string };
     pos: { x: number; y: number };
     title: string;
     category: number[];

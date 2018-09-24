@@ -175,49 +175,50 @@ class CategorySelection extends React.Component<IProps, IState> {
               console.log(data);
               return (
                 <ListContainer>
-                  {data.GetCategoriesByKeyword.categories!.map(
-                    (category, index) => (
-                      <React.Fragment key={index}>
-                        <DataContainer
-                          onClick={e => {
-                            e.preventDefault();
-                            addIdToState(type, category);
-                          }}
-                        >
-                          {category!.wikiImages![0] ? (
-                            <WikiImage
-                              src={`http://localhost:4000/uploads/${
-                                category!.wikiImages![0]!.shownImage!.url
-                              }`}
-                              alt={category!.name}
-                              onMouseOver={() =>
-                                this.setState({
-                                  hoverImgJson: category!.wikiImages![0]!
-                                    .hoverImage,
-                                  onImage: true
-                                })
-                              }
-                              onMouseMove={(
-                                e: React.MouseEvent<HTMLImageElement>
-                              ) => this.setState({ pos: GetPos(e) })}
-                              onMouseOut={() => {
-                                this.setState({
-                                  onImage: false
-                                });
-                              }}
-                            />
-                          ) : (
-                            <WikiImage
-                              src={
-                                "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
-                              }
-                            />
-                          )}
-                          <CategoryName>{category!.name}</CategoryName>
-                        </DataContainer>
-                      </React.Fragment>
-                    )
-                  )}
+                  {data.GetCategoriesByKeyword.categories &&
+                    data.GetCategoriesByKeyword.categories.map(
+                      (category, index) => (
+                        <React.Fragment key={index}>
+                          <DataContainer
+                            onClick={e => {
+                              e.preventDefault();
+                              addIdToState(type, category);
+                            }}
+                          >
+                            {category!.wikiImages![0] ? (
+                              <WikiImage
+                                src={`http://localhost:4000/uploads/${
+                                  category!.wikiImages![0]!.shownImage!.url
+                                }`}
+                                alt={category!.name}
+                                onMouseOver={() =>
+                                  this.setState({
+                                    hoverImgJson: category!.wikiImages![0]!
+                                      .hoverImage,
+                                    onImage: true
+                                  })
+                                }
+                                onMouseMove={(
+                                  e: React.MouseEvent<HTMLImageElement>
+                                ) => this.setState({ pos: GetPos(e) })}
+                                onMouseOut={() => {
+                                  this.setState({
+                                    onImage: false
+                                  });
+                                }}
+                              />
+                            ) : (
+                              <WikiImage
+                                src={
+                                  "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
+                                }
+                              />
+                            )}
+                            <CategoryName>{category!.name}</CategoryName>
+                          </DataContainer>
+                        </React.Fragment>
+                      )
+                    )}
                 </ListContainer>
               );
             }}

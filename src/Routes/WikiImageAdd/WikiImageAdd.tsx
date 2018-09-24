@@ -79,6 +79,7 @@ class WikiImageAdd extends React.Component<IProps, IState> {
   };
 
   public confirm = async (data: any) => {
+    console.log(data);
     if (data.AddWikiImage.ok) {
       toast.success("Wiki Image Add success");
       this.props.history.push(

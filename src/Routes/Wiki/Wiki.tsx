@@ -256,118 +256,119 @@ class Wiki extends React.Component<any, IState> {
                     <title>Wiki | CLAP</title>
                   </Helmet>
                   <ListContainer>
-                    {data.GetCategoriesByKeyword.categories.map(
-                      (category: any, index: number) => (
-                        <React.Fragment key={index}>
-                          <DataContainer>
-                            <CategoryContainer>
-                              <Link
-                                to={`/category/read/${category.id}`}
-                                style={{
-                                  textDecoration: "none"
-                                }}
-                              >
-                                <CategoryName>{category.name}</CategoryName>
-                              </Link>
-                              <CategoryOptionContainer>
-                                <CategoryInfo>
-                                  <i className="far fa-images" />{" "}
-                                  {category.wikiImages.length}
-                                </CategoryInfo>
-                                {/* <i className="far fa-edit" />
+                    {data.GetCategoriesByKeyword.categories &&
+                      data.GetCategoriesByKeyword.categories.map(
+                        (category: any, index: number) => (
+                          <React.Fragment key={index}>
+                            <DataContainer>
+                              <CategoryContainer>
+                                <Link
+                                  to={`/category/read/${category.id}`}
+                                  style={{
+                                    textDecoration: "none"
+                                  }}
+                                >
+                                  <CategoryName>{category.name}</CategoryName>
+                                </Link>
+                                <CategoryOptionContainer>
+                                  <CategoryInfo>
+                                    <i className="far fa-images" />{" "}
+                                    {category.wikiImages.length}
+                                  </CategoryInfo>
+                                  {/* <i className="far fa-edit" />
                                 <i className="far fa-trash-alt" /> */}
-                                <ButtonContainer>
-                                  <ButtonIcon className="fas fa-edit" />
-                                </ButtonContainer>
-                                <ButtonContainer>
-                                  <ButtonIcon className="far fa-trash-alt" />
-                                </ButtonContainer>
-                                <ButtonContainer>
-                                  <Link
-                                    to={`/category/${
-                                      category.id
-                                    }/wikiImage/add`}
-                                    style={{
-                                      textDecoration: "none",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                      flexDirection: "row"
-                                    }}
-                                  >
-                                    <ButtonIcon className="fas fa-plus" />
-                                  </Link>
-                                </ButtonContainer>
-                              </CategoryOptionContainer>
-                            </CategoryContainer>
-                            {category.wikiImages.length !== 0 ? (
-                              <WikiImagesContainer>
-                                {category.wikiImages.map(
-                                  (wikiImage: any, index: number) => {
-                                    // console.log(wikiImage);
-                                    return (
-                                      <React.Fragment key={index}>
-                                        <WikiImageContainer>
-                                          <Link
-                                            to={`/category/${
-                                              category.id
-                                            }/wikiImage/read/${wikiImage.id}`}
-                                            style={{
-                                              height: "100%",
-                                              textDecoration: "none"
-                                            }}
-                                          >
-                                            <WikiImage
-                                              src={`http://localhost:4000/uploads/${
-                                                wikiImage.shownImage.url
-                                              }`}
-                                              alt={category.name}
-                                              onMouseOver={() =>
-                                                this.setState({
-                                                  hoverImgJson:
-                                                    wikiImage.hoverImage,
-                                                  onImage: true
-                                                })
-                                              }
-                                              onMouseMove={(
-                                                e: React.MouseEvent<
-                                                  HTMLImageElement
-                                                >
-                                              ) =>
-                                                this.setState({
-                                                  pos: GetPos(e)
-                                                })
-                                              }
-                                              onMouseOut={() => {
-                                                this.setState({
-                                                  onImage: false
-                                                });
+                                  <ButtonContainer>
+                                    <ButtonIcon className="fas fa-edit" />
+                                  </ButtonContainer>
+                                  <ButtonContainer>
+                                    <ButtonIcon className="far fa-trash-alt" />
+                                  </ButtonContainer>
+                                  <ButtonContainer>
+                                    <Link
+                                      to={`/category/${
+                                        category.id
+                                      }/wikiImage/add`}
+                                      style={{
+                                        textDecoration: "none",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        flexDirection: "row"
+                                      }}
+                                    >
+                                      <ButtonIcon className="fas fa-plus" />
+                                    </Link>
+                                  </ButtonContainer>
+                                </CategoryOptionContainer>
+                              </CategoryContainer>
+                              {category.wikiImages.length !== 0 ? (
+                                <WikiImagesContainer>
+                                  {category.wikiImages.map(
+                                    (wikiImage: any, index: number) => {
+                                      // console.log(wikiImage);
+                                      return (
+                                        <React.Fragment key={index}>
+                                          <WikiImageContainer>
+                                            <Link
+                                              to={`/category/${
+                                                category.id
+                                              }/wikiImage/read/${wikiImage.id}`}
+                                              style={{
+                                                height: "100%",
+                                                textDecoration: "none"
                                               }}
-                                            />
-                                          </Link>
-                                          <WikiImageCountContainer>
-                                            <WikiImageCount>
-                                              <WikiImageCountIcon className="fas fa-heart" />
-                                              {wikiImage.clapsCount}
-                                            </WikiImageCount>
-                                            <WikiImageCount>
-                                              <WikiImageCountIcon className="fas fa-pencil-alt" />
-                                              {wikiImage.postsCount}
-                                            </WikiImageCount>
-                                          </WikiImageCountContainer>
-                                        </WikiImageContainer>
-                                      </React.Fragment>
-                                    );
-                                  }
-                                )}
-                              </WikiImagesContainer>
-                            ) : (
-                              <div>{""}</div>
-                            )}
-                          </DataContainer>
-                        </React.Fragment>
-                      )
-                    )}
+                                            >
+                                              <WikiImage
+                                                src={`http://localhost:4000/uploads/${
+                                                  wikiImage.shownImage
+                                                }`}
+                                                alt={category.name}
+                                                onMouseOver={() =>
+                                                  this.setState({
+                                                    hoverImgJson:
+                                                      wikiImage.hoverImage,
+                                                    onImage: true
+                                                  })
+                                                }
+                                                onMouseMove={(
+                                                  e: React.MouseEvent<
+                                                    HTMLImageElement
+                                                  >
+                                                ) =>
+                                                  this.setState({
+                                                    pos: GetPos(e)
+                                                  })
+                                                }
+                                                onMouseOut={() => {
+                                                  this.setState({
+                                                    onImage: false
+                                                  });
+                                                }}
+                                              />
+                                            </Link>
+                                            <WikiImageCountContainer>
+                                              <WikiImageCount>
+                                                <WikiImageCountIcon className="fas fa-heart" />
+                                                {wikiImage.clapsCount}
+                                              </WikiImageCount>
+                                              <WikiImageCount>
+                                                <WikiImageCountIcon className="fas fa-pencil-alt" />
+                                                {wikiImage.postsCount}
+                                              </WikiImageCount>
+                                            </WikiImageCountContainer>
+                                          </WikiImageContainer>
+                                        </React.Fragment>
+                                      );
+                                    }
+                                  )}
+                                </WikiImagesContainer>
+                              ) : (
+                                <div>{""}</div>
+                              )}
+                            </DataContainer>
+                          </React.Fragment>
+                        )
+                      )}
                   </ListContainer>
                 </React.Fragment>
               );

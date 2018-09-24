@@ -6,7 +6,7 @@ import PostCards from "../../Components/PostCards";
 
 interface IProps {
   history: any;
-  match: { params: { keyword: string } };
+  match: { params: { categoryId: number } };
 }
 
 interface IState {
@@ -21,10 +21,12 @@ class SearchResult extends React.Component<IProps, IState> {
     };
   }
   public render() {
+    console.log(this.props);
     return (
       <Query
         query={POSTS_CATEGORY}
-        variables={{ categoryId: this.props.match.params.keyword }}
+        fetchPolicy={"network-only"}
+        variables={{ categoryId: this.props.match.params.categoryId }}
       >
         {({ loading, data, error }) => {
           if (loading) {

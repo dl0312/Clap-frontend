@@ -187,14 +187,15 @@ class LogIn extends React.Component<IProps, IState> {
                       </LoginTitleContainer>
                       <UserInfoInputContainer>
                         <UserInfoInput
-                          type="text"
+                          type={"email"}
                           value={this.state.email}
                           onChange={(e: any) =>
                             this.setState({
                               email: e.target.value
                             })
                           }
-                          placeholder="Your email address"
+                          placeholder="Email"
+                          name={"email"}
                         />
                       </UserInfoInputContainer>
 
@@ -203,14 +204,15 @@ class LogIn extends React.Component<IProps, IState> {
                       </LoginTitleContainer>
                       <UserInfoInputContainer>
                         <UserInfoInput
-                          type="text"
+                          type={"password"}
                           value={this.state.password}
                           onChange={(e: any) =>
                             this.setState({
                               password: e.target.value
                             })
                           }
-                          placeholder="password"
+                          placeholder="Password"
+                          name={"password"}
                         />
                       </UserInfoInputContainer>
                     </React.Fragment>

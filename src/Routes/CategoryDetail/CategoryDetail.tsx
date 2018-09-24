@@ -172,7 +172,7 @@ class CategoryDetail extends React.Component<any, IState> {
                     <React.Fragment>
                       <CurrentImg
                         src={`http://localhost:4000/uploads/${
-                          category.wikiImages[0].shownImage.url
+                          category.wikiImages[0].shownImage
                         }`}
                         alt={category.name}
                         onMouseOver={() =>
