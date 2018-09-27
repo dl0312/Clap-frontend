@@ -10,17 +10,11 @@ export interface getPostById_GetPostById_post_category_parent {
   name: string;
 }
 
-export interface getPostById_GetPostById_post_category_wikiImages_shownImage {
-  __typename: "ShownImage";
-  id: number;
-  url: string;
-}
-
 export interface getPostById_GetPostById_post_category_wikiImages {
   __typename: "WikiImage";
   id: number;
   name: string | null;
-  shownImage: getPostById_GetPostById_post_category_wikiImages_shownImage | null;
+  shownImage: string;
   hoverImage: string;
 }
 
@@ -203,14 +197,9 @@ export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category_parent
   name: string;
 }
 
-export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages_shownImage {
-  __typename: "ShownImage";
-  url: string;
-}
-
 export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages {
   __typename: "WikiImage";
-  shownImage: getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages_shownImage | null;
+  shownImage: string;
 }
 
 export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category {
@@ -267,16 +256,10 @@ export interface getAllPosts_GetAllPosts_posts_category_parent {
   name: string;
 }
 
-export interface getAllPosts_GetAllPosts_posts_category_wikiImages_shownImage {
-  __typename: "ShownImage";
-  id: number;
-  url: string;
-}
-
 export interface getAllPosts_GetAllPosts_posts_category_wikiImages {
   __typename: "WikiImage";
   id: number;
-  shownImage: getAllPosts_GetAllPosts_posts_category_wikiImages_shownImage | null;
+  shownImage: string;
   hoverImage: string;
 }
 
@@ -342,18 +325,12 @@ export interface getWikiImages_GetWikiImages_wikiImages_category {
   parent: (getWikiImages_GetWikiImages_wikiImages_category_parent | null)[] | null;
 }
 
-export interface getWikiImages_GetWikiImages_wikiImages_shownImage {
-  __typename: "ShownImage";
-  id: number;
-  url: string;
-}
-
 export interface getWikiImages_GetWikiImages_wikiImages {
   __typename: "WikiImage";
   id: number;
   user: getWikiImages_GetWikiImages_wikiImages_user;
   category: getWikiImages_GetWikiImages_wikiImages_category;
-  shownImage: getWikiImages_GetWikiImages_wikiImages_shownImage | null;
+  shownImage: string;
   hoverImage: string;
   postsCount: number;
   clapsCount: number;
@@ -457,16 +434,10 @@ export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_parent
   name: string;
 }
 
-export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_wikiImages_shownImage {
-  __typename: "ShownImage";
-  id: number;
-  url: string;
-}
-
 export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_wikiImages {
   __typename: "WikiImage";
   id: number;
-  shownImage: getCategoriesByKeyword_GetCategoriesByKeyword_categories_wikiImages_shownImage | null;
+  shownImage: string;
   hoverImage: string;
   clapsCount: number;
   postsCount: number;
@@ -502,14 +473,9 @@ export interface getCategoriesByKeywordVariables {
 // GraphQL query operation: getCategoryById
 // ====================================================
 
-export interface getCategoryById_GetCategoryById_category_wikiImages_shownImage {
-  __typename: "ShownImage";
-  url: string;
-}
-
 export interface getCategoryById_GetCategoryById_category_wikiImages {
   __typename: "WikiImage";
-  shownImage: getCategoryById_GetCategoryById_category_wikiImages_shownImage | null;
+  shownImage: string;
   hoverImage: string;
 }
 
@@ -584,14 +550,9 @@ export interface GetCategoryByIdVariables {
 // GraphQL query operation: getCategoriesByIds
 // ====================================================
 
-export interface getCategoriesByIds_GetCategoriesByIds_categories_wikiImages_shownImage {
-  __typename: "ShownImage";
-  url: string;
-}
-
 export interface getCategoriesByIds_GetCategoriesByIds_categories_wikiImages {
   __typename: "WikiImage";
-  shownImage: getCategoriesByIds_GetCategoriesByIds_categories_wikiImages_shownImage | null;
+  shownImage: string;
   hoverImage: string;
 }
 
@@ -730,7 +691,7 @@ export interface addWikiImage {
 export interface addWikiImageVariables {
   categoryId: number;
   name?: string | null;
-  shownImageId: string;
+  shownImage: string;
   hoverImage: string;
 }
 
@@ -755,8 +716,8 @@ export interface editWikiImageVariables {
   wikiImageId: number;
   categoryId?: number | null;
   name?: string | null;
-  shownImageId: number;
-  hoverImage: string;
+  shownImage?: string | null;
+  hoverImage?: string | null;
 }
 
 /* tslint:disable */
@@ -787,17 +748,11 @@ export interface deleteWikiImageVariables {
 // GraphQL query operation: getWikiImageById
 // ====================================================
 
-export interface getWikiImageById_GetWikiImageById_wikiImage_shownImage {
-  __typename: "ShownImage";
-  id: number;
-  url: string;
-}
-
 export interface getWikiImageById_GetWikiImageById_wikiImage {
   __typename: "WikiImage";
   id: number;
   name: string | null;
-  shownImage: getWikiImageById_GetWikiImageById_wikiImage_shownImage | null;
+  shownImage: string;
   hoverImage: string;
 }
 

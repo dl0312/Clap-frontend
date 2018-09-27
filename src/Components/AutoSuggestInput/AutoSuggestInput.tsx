@@ -81,11 +81,18 @@ class AutoSuggestInput extends React.Component<any, IState> {
   }
 
   public render() {
+    const { history } = this.props;
+    console.log(history);
     return (
       <Downshift
         onChange={selectedItem => {
           console.log(selectedItem);
-          this.props.history.push(`/search/${selectedItem.id}`);
+          this.props.history.push({
+            pathname: `/search/${selectedItem.id}`,
+            state: {
+              prevLocation: history.location.pathname
+            }
+          });
         }}
         itemToString={item => (item ? item.name : "")}
       >

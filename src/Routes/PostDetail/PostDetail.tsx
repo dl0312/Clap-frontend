@@ -496,9 +496,7 @@ class PostDetail extends React.Component<IProps, IState> {
                 <DetailContainer>
                   <PostContainer>
                     <TitleContainer
-                      src={`http://localhost:4000/uploads/${
-                        post.category.wikiImages![0]!.shownImage!.url
-                      }`}
+                      src={post.category.wikiImages![0]!.shownImage}
                     >
                       <TitleInnerContainer>
                         <CategoryContainer>

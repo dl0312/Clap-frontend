@@ -8,6 +8,7 @@ import {
 } from "../../types/api";
 import { CATEGORIES_KEYWORD } from "../../sharedQueries";
 import { GetPos } from "../../Utility/GetPos";
+import { LOST_IMAGE_URL } from "../../constants";
 
 const ListContainer = styled.div`
   background-color: white;
@@ -40,7 +41,7 @@ const CategorySelectionContainer = styled.div`
 `;
 
 const SearchInput = styled.input`
-  width: 200px;
+  width: 100%;
   margin-bottom: 5px;
   padding: 0 10px;
   height: 30px;
@@ -154,6 +155,7 @@ class CategorySelection extends React.Component<IProps, IState> {
               e.preventDefault();
               this.setState({ keyword: e.target.value });
             }}
+            placeholder={`Search ${type} Name`}
           />
           <CategoriesByKeyword
             query={CATEGORIES_KEYWORD}
@@ -187,9 +189,7 @@ class CategorySelection extends React.Component<IProps, IState> {
                           >
                             {category!.wikiImages![0] ? (
                               <WikiImage
-                                src={`http://localhost:4000/uploads/${
-                                  category!.wikiImages![0]!.shownImage!.url
-                                }`}
+                                src={category!.wikiImages![0]!.shownImage}
                                 alt={category!.name}
                                 onMouseOver={() =>
                                   this.setState({
@@ -208,11 +208,7 @@ class CategorySelection extends React.Component<IProps, IState> {
                                 }}
                               />
                             ) : (
-                              <WikiImage
-                                src={
-                                  "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
-                                }
-                              />
+                              <WikiImage src={LOST_IMAGE_URL} />
                             )}
                             <CategoryName>{category!.name}</CategoryName>
                           </DataContainer>

@@ -24,7 +24,7 @@ const WikiContainer = styled.div`
 `;
 
 const SearchInput = styled.input`
-  width: 200px;
+  width: 300px;
   margin-bottom: 30px;
   padding: 0 10px;
   height: 30px;
@@ -50,9 +50,6 @@ const WikiImage = styled.img`
   /* filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35)); */
   /* border: 1px solid rgba(0, 0, 0, 0.35); */
   transition: filter 0.5s ease;
-  &:hover {
-    filter: brightness(0.5) blur(0.5px);
-  }
 `;
 
 const Buttons = styled.div`
@@ -64,14 +61,14 @@ const Buttons = styled.div`
 
 const Button = styled.div`
   text-transform: uppercase;
-  padding: 5px 10px;
+  padding: 10px 25px;
   margin: 15px 10px;
-  border: 0.5px solid rgba(0, 0, 0, 0.2);
+  font-weight: bolder;
   background-color: white;
-  transition: box-shadow 0.5s ease;
+  /* transition: box-shadow 0.5s ease;
   &:hover {
     box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.5);
-  }
+  } */
 `;
 
 const CategoryContainer = styled.div`
@@ -81,7 +78,7 @@ const CategoryContainer = styled.div`
   /* background-color: #222; */
   color: white;
   padding: 10px 15px;
-  background-color: #222;
+  background-color: #333;
   /* box-shadow: 0 0 1px 1px #060606, inset 0 0 0 1px #060606; */
   border-top: 1px solid #1a1a1a;
   border-bottom: 1px solid #1a1a1a;
@@ -141,6 +138,9 @@ const WikiImageContainer = FlexBox.extend`
     ${WikiImageCountContainer} {
       opacity: 1;
     }
+    ${WikiImage} {
+      filter: brightness(0.5) blur(0.5px);
+    }
   }
 `;
 
@@ -152,15 +152,12 @@ const DataContainer = styled.div`
   transition: padding 0.5s ease;
   width: 95%;
   margin-bottom: 20px;
-  box-shadow: 0 0 1px 1px #060606, inset 0 0 0 1px #060606;
-  border: 1px solid #1a1a1a;
-  border-radius: 5px;
   ${media.tablet`
-    padding: 10px 3px;
-    margin-bottom: 10px;
+    margin: 10px 3px 20px 3px;
   `};
   ${media.phone`
-    padding: 5px 1px;
+  margin: 5px 1px 10px 1px;
+
     margin-bottom: 5px;
   `};
 `;
@@ -189,7 +186,8 @@ const ButtonContainer = FlexBox.extend`
   /* background-color: white; */
   /* color: white; */
   font-size: 15px;
-  margin-right: 3px;
+  margin-left: 15px;
+  cursor: pointer;
   /* border-top: 0.5px solid rgba(0, 0, 0, 0.5);
   border-right: 0.5px solid rgba(0, 0, 0, 0.5);
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.5); */
@@ -239,12 +237,14 @@ class Wiki extends React.Component<any, IState> {
           </Buttons>
           <SearchInput
             type="text"
+            placeholder={"Search Category or WikiImage"}
             onChange={e => {
               this.setState({ keyword: e.target.value });
             }}
           />
           <Query
             query={CATEGORIES_KEYWORD}
+            fetchPolicy={"cache-and-network"}
             variables={{ keyword: this.state.keyword }}
           >
             {({ loading, data, error }) => {
@@ -308,7 +308,25 @@ class Wiki extends React.Component<any, IState> {
                                       // console.log(wikiImage);
                                       return (
                                         <React.Fragment key={index}>
-                                          <WikiImageContainer>
+                                          <WikiImageContainer
+                                            onMouseOver={() =>
+                                              this.setState({
+                                                hoverImgJson:
+                                                  wikiImage.hoverImage,
+                                                onImage: true
+                                              })
+                                            }
+                                            onMouseMove={(event: any) =>
+                                              this.setState({
+                                                pos: GetPos(event)
+                                              })
+                                            }
+                                            onMouseOut={() => {
+                                              this.setState({
+                                                onImage: false
+                                              });
+                                            }}
+                                          >
                                             <Link
                                               to={`/category/${
                                                 category.id
@@ -319,31 +337,8 @@ class Wiki extends React.Component<any, IState> {
                                               }}
                                             >
                                               <WikiImage
-                                                src={`http://localhost:4000/uploads/${
-                                                  wikiImage.shownImage
-                                                }`}
+                                                src={wikiImage.shownImage}
                                                 alt={category.name}
-                                                onMouseOver={() =>
-                                                  this.setState({
-                                                    hoverImgJson:
-                                                      wikiImage.hoverImage,
-                                                    onImage: true
-                                                  })
-                                                }
-                                                onMouseMove={(
-                                                  e: React.MouseEvent<
-                                                    HTMLImageElement
-                                                  >
-                                                ) =>
-                                                  this.setState({
-                                                    pos: GetPos(e)
-                                                  })
-                                                }
-                                                onMouseOut={() => {
-                                                  this.setState({
-                                                    onImage: false
-                                                  });
-                                                }}
                                               />
                                             </Link>
                                             <WikiImageCountContainer>

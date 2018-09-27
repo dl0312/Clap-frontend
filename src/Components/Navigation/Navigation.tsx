@@ -42,7 +42,7 @@ const MenuList = styled<IMenuListProps, any>("ul")`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   background-color: ${props =>
     props.darken ? "rgba(20, 20, 20, 0.94)" : "transparent"};
   transition: background-color 0.3s ease, box-shadow 0.5s ease;
@@ -59,7 +59,6 @@ const MenuItem = styled.div`
   font-weight: 100;
   letter-spacing: 10px;
   font-size: 15px;
-  width: 250px;
 `;
 
 interface IProfileContainerProps {
@@ -301,7 +300,7 @@ class Navigation extends React.Component<IProps, IState> {
                     to="/"
                     style={{
                       fontSize: "20px",
-                      marginRight: "150px",
+                      marginRight: "100px",
                       textDecoration: "none"
                     }}
                   >

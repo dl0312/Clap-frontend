@@ -38,10 +38,13 @@ const CategorySelectionsContainer = styled.div`
 
 const SendIcon = styled.button`
   color: black;
-  padding: 3px 10px;
-  border-radius: 2px;
-  margin: 5px;
+  padding: 10px 25px;
+  margin-top: 15px;
+  font-size: 15px;
   border: none;
+  background-color: white;
+  text-transform: uppercase;
+  cursor: pointer;
 `;
 
 interface IState {
@@ -121,6 +124,7 @@ class CategoryAdd extends React.Component<any, IState> {
                 onChange={e => {
                   this.setState({ name: e.target.value });
                 }}
+                placeholder={"Category Name"}
               />
               <CategorySelectionsContainer>
                 <CategorySelection

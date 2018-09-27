@@ -6,6 +6,7 @@ import { Helmet } from "react-helmet";
 import styled from "styled-components";
 import ImagePopup from "../../Components/ImagePopup";
 import { POSTS } from "../../sharedQueries";
+import { LOST_IMAGE_URL } from "../../constants";
 
 const BoardContainer = styled.div`
   width: 100%;
@@ -390,7 +391,7 @@ class Board extends React.Component<IProps, IState> {
                                         post.category.wikiImages[0].shownImage
                                           .url
                                       }`
-                                    : "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
+                                    : LOST_IMAGE_URL
                                 }
                                 alt={post.category.name}
                               />
@@ -511,7 +512,7 @@ class Board extends React.Component<IProps, IState> {
                                         post.category.wikiImages[0].shownImage
                                           .url
                                       }`
-                                    : "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
+                                    : LOST_IMAGE_URL
                                 }
                                 alt={post.category.name}
                                 // onMouseOver={() => handleOnMouseOver(post, true)}

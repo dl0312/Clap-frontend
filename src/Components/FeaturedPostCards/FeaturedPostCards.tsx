@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { media } from "../../config/_mixin";
+import { LOST_IMAGE_URL } from "../../constants";
 
 const BoardContainer = styled.div`
   width: 100%;
@@ -289,7 +290,7 @@ class FeaturedPostCards extends React.Component<IProps, IState> {
                                 ? `http://localhost:4000/uploads/${
                                     post.category.wikiImages[0].shownImage
                                   }`
-                                : "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
+                                : LOST_IMAGE_URL
                             }
                             alt={post.category.name}
                           >

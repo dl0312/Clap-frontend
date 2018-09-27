@@ -189,11 +189,7 @@ class LogIn extends React.Component<IProps, IState> {
                         <UserInfoInput
                           type={"email"}
                           value={this.state.email}
-                          onChange={(e: any) =>
-                            this.setState({
-                              email: e.target.value
-                            })
-                          }
+                          onChange={this.onInputChange}
                           placeholder="Email"
                           name={"email"}
                         />
@@ -206,11 +202,7 @@ class LogIn extends React.Component<IProps, IState> {
                         <UserInfoInput
                           type={"password"}
                           value={this.state.password}
-                          onChange={(e: any) =>
-                            this.setState({
-                              password: e.target.value
-                            })
-                          }
+                          onChange={this.onInputChange}
                           placeholder="Password"
                           name={"password"}
                         />
@@ -307,7 +299,7 @@ class LogIn extends React.Component<IProps, IState> {
                             </LoginTitleContainer>
                             <UserInfoInputContainer>
                               <UserInfoInput
-                                type="text"
+                                type="email"
                                 placeholder="email"
                                 value={this.state.email}
                                 onChange={(e: any) =>
@@ -350,14 +342,10 @@ class LogIn extends React.Component<IProps, IState> {
                       </LoginTitleContainer>
                       <UserInfoInputContainer>
                         <UserInfoInput
-                          type="text"
+                          type="password"
                           placeholder="password"
                           value={this.state.password}
-                          onChange={(e: any) =>
-                            this.setState({
-                              password: e.target.value
-                            })
-                          }
+                          onChange={this.onInputChange}
                         />
                       </UserInfoInputContainer>
 
@@ -444,6 +432,16 @@ class LogIn extends React.Component<IProps, IState> {
       </Mutation>
     );
   }
+  public onInputChange: React.ChangeEventHandler<
+    HTMLInputElement
+  > = async event => {
+    const {
+      target: { name, value }
+    } = event;
+    this.setState({
+      [name]: value
+    } as any);
+  };
 }
 
 export default LogIn;

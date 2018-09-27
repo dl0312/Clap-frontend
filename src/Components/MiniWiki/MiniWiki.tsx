@@ -10,6 +10,7 @@ import {
   getCategoriesByKeyword,
   getCategoriesByKeywordVariables
 } from "../../types/api";
+import { LOST_IMAGE_URL } from "../../constants";
 
 const WikiContainer = styled.div`
   padding-top: 15px;
@@ -255,11 +256,7 @@ class MiniWiki extends React.Component<IProps, IState> {
                               }}
                             />
                           ) : (
-                            <WikiImage
-                              src={
-                                "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
-                              }
-                            />
+                            <WikiImage src={LOST_IMAGE_URL} />
                           )}
                           <CategoryName>{category.name}</CategoryName>
                         </DataContainer>

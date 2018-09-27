@@ -2,6 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { media } from "../../config/_mixin";
+import { LOST_IMAGE_URL } from "../../constants";
 
 const BoardContainer = styled.div`
   width: 100%;
@@ -286,10 +287,8 @@ class FeaturedImageCards extends React.Component<IProps, IState> {
                           <CardImage
                             url={
                               image.shownImage !== undefined
-                                ? `http://localhost:4000/uploads/${
-                                    image.shownImage
-                                  }`
-                                : "https://image.freepik.com/free-icon/question-mark-inside-a-box-outline_318-51427.jpg"
+                                ? image.shownImage
+                                : LOST_IMAGE_URL
                             }
                             alt={image.category.name}
                           >

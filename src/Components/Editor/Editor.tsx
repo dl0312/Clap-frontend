@@ -984,7 +984,7 @@ class Editor extends React.Component<IProps, IState> {
                   variables: {
                     categoryId: this.props.categoryId,
                     name: this.state.title,
-                    shownImage: this.state.exShownImg.id,
+                    shownImage: this.state.exShownImg.url,
                     hoverImage: JSON.stringify(filteredState)
                   }
                 });

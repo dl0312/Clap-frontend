@@ -60,7 +60,7 @@ const Video: React.SFC<IProps> = ({ src, autoplay }) => {
           width="560"
           height="315"
           src={`https://www.youtube.com/embed/${src}?${
-            autoplay ? "autoplay=1" : null
+            autoplay ? "autoplay=1&mute=1" : null
           }`}
           frameBorder="0"
           allowFullScreen={true}
