@@ -20,6 +20,7 @@ const SearchInput = styled.input`
   height: 30px;
   border: 1px solid #ced4da;
   border-radius: 5px;
+  color: black;
   &:focus {
     outline: none;
   }
@@ -34,7 +35,16 @@ const CategorySelectionsContainer = styled.div`
   justify-content: center;
 `;
 
-const SendIcon = styled.button``;
+const SendIcon = styled.button`
+  color: black;
+  padding: 10px 25px;
+  margin-top: 15px;
+  font-size: 15px;
+  border: none;
+  background-color: white;
+  text-transform: uppercase;
+  cursor: pointer;
+`;
 
 interface IState {
   name: string;
@@ -105,6 +115,7 @@ class CategoryEdit extends React.Component<any, IState> {
       <CategoryAddContainer>
         <Query
           query={CATEGORY}
+          fetchPolicy={"cache-and-network"}
           variables={{ categoryId: this.props.match.params.categoryId }}
           onCompleted={data => {
             const { category }: any = data.GetCategoryById;

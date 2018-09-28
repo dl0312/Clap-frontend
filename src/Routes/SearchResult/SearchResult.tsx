@@ -25,7 +25,6 @@ class SearchResult extends React.Component<IProps, IState> {
     return (
       <Query
         query={POSTS_CATEGORY}
-        fetchPolicy={"network-only"}
         variables={{ categoryId: this.props.match.params.categoryId }}
       >
         {({ loading, data, error }) => {
@@ -38,6 +37,7 @@ class SearchResult extends React.Component<IProps, IState> {
           if (data === undefined) {
             return <div>data undefined</div>;
           }
+          console.log(data);
           const { posts } = data.GetPostsByCategoryId;
           if (posts) {
             return (
@@ -46,6 +46,7 @@ class SearchResult extends React.Component<IProps, IState> {
               </React.Fragment>
             );
           } else {
+            console.log("error");
             return null;
           }
         }}

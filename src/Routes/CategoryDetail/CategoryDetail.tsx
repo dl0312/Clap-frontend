@@ -229,7 +229,7 @@ class CategoryDetail extends React.Component<any, IState> {
                     {category.wikiImages[0] ? (
                       <React.Fragment>
                         <CurrentImg
-                          src={`category.wikiImages[0].shownImage`}
+                          src={category.wikiImages[0].shownImage}
                           alt={category.name}
                           onMouseOver={() =>
                             this.setState({

@@ -82,7 +82,26 @@ const FeaturedCardCounter = styled<IFeaturedCardCounterProps, any>("div")`
   transition: opacity 0.25s ease;
 `;
 
-// const FeaturedCard = styled.div``;
+interface ICardImageProps {
+  url: string;
+}
+
+const CardImage = styled<ICardImageProps, any>("div")`
+  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)),
+    url(${props => `${props.url}`});
+  background-size: 130%;
+  background-position: 50% 50%;
+  height: 130px;
+  width: 100%;
+  /* position: relative; */
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 1);
+  transition: background-size 0.2s ease;
+  /* margin: 5px; */
+  /* border-bottom: 0.5px solid #efefef;
+  border-right: 0.5px solid #efefef; */
+
+  /* filter: brightness(0.5); */
+`;
 
 const CardContainer = styled.div`
   width: 20%;
@@ -91,6 +110,11 @@ const CardContainer = styled.div`
   transition: width 0.5s ease;
   ${media.tablet`width: 25%;`};
   ${media.phone`width: 50%;`};
+  &:hover {
+    ${CardImage} {
+      background-size: 150%;
+    }
+  }
 `;
 
 const Slider = styled.div`
@@ -120,26 +144,6 @@ const SlideIcon = styled.i`
   align-self: center;
   font-size: 2.5vw;
   color: white;
-`;
-
-interface ICardImageProps {
-  url: string;
-}
-
-const CardImage = styled<ICardImageProps, any>("div")`
-  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)),
-    url(${props => `${props.url}`});
-  background-size: 130%;
-  background-position: 50% 50%;
-  height: 130px;
-  width: 100%;
-  /* position: relative; */
-  box-shadow: 0px 0px 2px rgba(0, 0, 0, 1);
-  /* margin: 5px; */
-  /* border-bottom: 0.5px solid #efefef;
-  border-right: 0.5px solid #efefef; */
-
-  /* filter: brightness(0.5); */
 `;
 
 const CategoryContainer = styled.div`

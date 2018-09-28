@@ -135,7 +135,6 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
                 exact={true}
                 component={SearchResult}
               />
-
               <Route path="/login" exact={true} component={LogIn} />
               <Route path="/signup" exact={true} component={SignUp} />
               <Route path="/profile" exact={true} component={Profile} />

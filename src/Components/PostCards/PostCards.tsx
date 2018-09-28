@@ -149,8 +149,8 @@ class PostCards extends React.Component<IProps, any> {
     return (
       <PostCardsInfoContainer>
         <SuggestionContainer>
-          <SuggestionTitle>추천 검색어: </SuggestionTitle>
-          <SuggestionSubtitle>추천된 단어</SuggestionSubtitle>
+          <SuggestionTitle>Recommended Keyword: </SuggestionTitle>
+          <SuggestionSubtitle>Keyword</SuggestionSubtitle>
         </SuggestionContainer>
         <PostCardsContainer>
           {posts.map((post: any, index: number) => (
@@ -165,9 +165,7 @@ class PostCards extends React.Component<IProps, any> {
                 <CardImage
                   url={
                     post.category.wikiImages[0] !== undefined
-                      ? `http://localhost:4000/uploads/${
-                          post.category.wikiImages[0].shownImage
-                        }`
+                      ? post.category.wikiImages[0].shownImage
                       : LOST_IMAGE_URL
                   }
                   alt={post.category.name}

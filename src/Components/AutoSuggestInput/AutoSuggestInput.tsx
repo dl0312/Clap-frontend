@@ -107,10 +107,7 @@ class AutoSuggestInput extends React.Component<any, IState> {
         }) => (
           <div style={{ position: "relative" }}>
             {/* <label {...getLabelProps()}>Enter Categroy</label> */}
-            <SuggestInput
-              placeholder={"클랩 카테고리로 검색"}
-              {...getInputProps()}
-            />
+            <SuggestInput placeholder={"CLAP CATEGORY"} {...getInputProps()} />
             <ApolloAutocompleteMenu
               {...{
                 inputValue,

@@ -35,6 +35,7 @@ class Home extends React.Component {
         <FeaturedContainer>
           <PostsQuery
             query={POSTS}
+            fetchPolicy={"cache-and-network"}
             variables={{ limit: 25, type: "createdAt" }}
           >
             {({ loading, data, error }) => {
@@ -51,7 +52,7 @@ class Home extends React.Component {
               if (posts) {
                 return (
                   <React.Fragment>
-                    <FeaturedPostCards posts={posts} type="새로운 공략" />
+                    <FeaturedPostCards posts={posts} type="New Guides" />
                   </React.Fragment>
                 );
               } else {
@@ -61,6 +62,7 @@ class Home extends React.Component {
           </PostsQuery>
           <PostsQuery
             query={POSTS}
+            fetchPolicy={"cache-and-network"}
             variables={{ limit: 25, type: "updatedAt" }}
           >
             {({ loading, data, error }) => {
@@ -77,7 +79,7 @@ class Home extends React.Component {
               if (posts) {
                 return (
                   <React.Fragment>
-                    <FeaturedPostCards posts={posts} type="업데이트 된 공략" />
+                    <FeaturedPostCards posts={posts} type="Updated Guides" />
                   </React.Fragment>
                 );
               } else {
@@ -87,6 +89,7 @@ class Home extends React.Component {
           </PostsQuery>
           <WikiImagesQuery
             query={WIKIIMAGES}
+            fetchPolicy={"cache-and-network"}
             variables={{ limit: 25, type: "createdAt" }}
           >
             {({ loading, data, error }) => {
@@ -104,7 +107,7 @@ class Home extends React.Component {
                 return (
                   <FeaturedImageCards
                     images={wikiImages}
-                    type="새로운 위키 이미지"
+                    type="New Wiki Images"
                   />
                 );
               } else {
@@ -114,6 +117,7 @@ class Home extends React.Component {
           </WikiImagesQuery>
           <WikiImagesQuery
             query={WIKIIMAGES}
+            fetchPolicy={"cache-and-network"}
             variables={{ limit: 25, type: "createdAt" }}
           >
             {({ loading, data, error }) => {
@@ -131,7 +135,7 @@ class Home extends React.Component {
                 return (
                   <FeaturedImageCards
                     images={wikiImages}
-                    type="업데이트 된 위키 이미지"
+                    type="Updated Wiki Images"
                   />
                 );
               } else {

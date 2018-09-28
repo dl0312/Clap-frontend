@@ -256,7 +256,7 @@ class Wiki extends React.Component<any, IState> {
                     <title>Wiki | CLAP</title>
                   </Helmet>
                   <ListContainer>
-                    {data.GetCategoriesByKeyword.categories &&
+                    {data &&
                       data.GetCategoriesByKeyword.categories.map(
                         (category: any, index: number) => (
                           <React.Fragment key={index}>
