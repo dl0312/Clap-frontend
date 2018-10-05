@@ -37,7 +37,6 @@ const CategorySelectionContainer = styled.div`
   padding: 5px;
   color: black;
   background-color: white;
-  margin: 0 5px;
 `;
 
 const SearchInput = styled.input`

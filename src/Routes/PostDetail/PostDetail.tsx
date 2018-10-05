@@ -26,6 +26,7 @@ import {
 } from "../../types/api";
 import { toast } from "react-toastify";
 import { formatDate } from "../../Utility/FormatDate";
+import { LOST_IMAGE_URL } from "../../constants";
 
 const DetailContainer = styled.div`
   width: 100%;
@@ -488,6 +489,7 @@ class PostDetail extends React.Component<IProps, IState> {
               return <div>have no post</div>;
             }
             const body = JSON.parse(post.body);
+            console.log(post.category.wikiImages!.length);
             return (
               <React.Fragment>
                 <Helmet>
@@ -496,7 +498,11 @@ class PostDetail extends React.Component<IProps, IState> {
                 <DetailContainer>
                   <PostContainer>
                     <TitleContainer
-                      src={post.category.wikiImages![0]!.shownImage}
+                      src={
+                        post.category.wikiImages!.length !== 0
+                          ? post.category.wikiImages![0]!.shownImage
+                          : LOST_IMAGE_URL
+                      }
                     >
                       <TitleInnerContainer>
                         <CategoryContainer>

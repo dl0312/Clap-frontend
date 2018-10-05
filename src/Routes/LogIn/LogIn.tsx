@@ -342,10 +342,11 @@ class LogIn extends React.Component<IProps, IState> {
                       </LoginTitleContainer>
                       <UserInfoInputContainer>
                         <UserInfoInput
-                          type="password"
-                          placeholder="password"
+                          type={"password"}
+                          placeholder="Password"
                           value={this.state.password}
                           onChange={this.onInputChange}
+                          name={"password"}
                         />
                       </UserInfoInputContainer>
 
@@ -363,14 +364,15 @@ class LogIn extends React.Component<IProps, IState> {
                       </LoginTitleContainer>
                       <UserInfoInputContainer>
                         <UserInfoInput
-                          type="text"
-                          placeholder="password check"
+                          type={"password"}
+                          placeholder="Password Check"
                           value={this.state.passwordCheck}
                           onChange={(e: any) =>
                             this.setState({
                               passwordCheck: e.target.value
                             })
                           }
+                          name={"password"}
                         />
                       </UserInfoInputContainer>
 

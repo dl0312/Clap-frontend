@@ -214,9 +214,7 @@ class MiniWiki extends React.Component<IProps, IState> {
                         <DataContainer>
                           {category.wikiImages[0] ? (
                             <WikiImage
-                              src={`http://localhost:4000/uploads/${
-                                category.wikiImages[0].shownImage
-                              }`}
+                              src={category.wikiImages[0].shownImage}
                               alt={category.name}
                               onMouseOver={() =>
                                 this.setState({

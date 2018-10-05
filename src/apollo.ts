@@ -1,8 +1,7 @@
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { ApolloLink, split, Operation } from "apollo-link";
+import { ApolloLink, Operation } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
-import { createUploadLink } from "apollo-upload-client";
 import { withClientState } from "apollo-link-state";
 import { onError } from "apollo-link-error";
 import { toast } from "react-toastify";
@@ -10,13 +9,6 @@ import { toast } from "react-toastify";
 // import { WebSocketLink } from "apollo-link-ws";
 
 const isDev = process.env.NODE_ENV === "development";
-console.log(isDev);
-
-const isFile = (value: any) =>
-  (typeof File !== "undefined" && value instanceof File) ||
-  (typeof Blob !== "undefined" && value instanceof Blob);
-
-const isUpload = ({ variables }: any) => Object.values(variables).some(isFile);
 
 // const isSubscriptionOperation = ({ query }) => {
 //   const { kind, operation } = getMainDefinition(query);
@@ -44,11 +36,9 @@ const authMiddleware = new ApolloLink((operation: Operation, forward: any) => {
 });
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql"
-});
-
-const uploadLink = createUploadLink({
-  uri: "http://localhost:4000/graphql"
+  uri: isDev
+    ? "http://localhost:4000/graphql"
+    : "https://clapserver.now.sh/graphql"
 });
 
 // const wsLink = new WebSocketLink({
@@ -64,8 +54,6 @@ const uploadLink = createUploadLink({
 // });
 
 // const requestLink = split(isSubscriptionOperation, httpLink);
-
-const terminalLink = split(isUpload, uploadLink, httpLink);
 
 // const combinedLinks = split(
 //   ({ query }) => {
@@ -130,12 +118,7 @@ const localStateLink = withClientState({
 });
 
 const client = new ApolloClient({
-  link: ApolloLink.from([
-    errorLink,
-    localStateLink,
-    authMiddleware,
-    terminalLink
-  ]),
+  link: ApolloLink.from([errorLink, localStateLink, authMiddleware, httpLink]),
   cache
 });
 

@@ -222,7 +222,7 @@ class UserView extends React.Component<IUserViewProps, IState> {
                 >
                   <ClapImage
                     small={true}
-                    src={`http://localhost:4000/uploads/${representSrc}`}
+                    src={representSrc}
                     alt={"hover"}
                     selected={isSelected}
                     {...attributes}

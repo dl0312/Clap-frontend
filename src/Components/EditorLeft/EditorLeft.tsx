@@ -15,7 +15,7 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   top: ${props => {
     switch (props.view) {
       case "EDIT":
-        return "120px";
+        return "60px";
       case "USER":
         return "0px";
       default:

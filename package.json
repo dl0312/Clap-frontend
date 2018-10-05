@@ -123,7 +123,9 @@
     "build": "node scripts/build.js",
     "precodegen": "apollo schema:download --endpoint=http://localhost:4000/graphql",
     "codegen": "apollo codegen:generate src/types/api.d.ts --queries='src/**/!(*.local).ts' --addTypename --schema schema.json --target typescript --outputFlat",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
     "@types/antd": "^1.0.0",
@@ -153,9 +155,11 @@
     "@types/slate-react": "^0.12.3",
     "@types/webpack-env": "^1.13.6",
     "@types/ws": "^6.0.0",
+    "gh-pages": "^2.0.0",
     "styled-components": "^3.4.5",
     "typescript": "^3.0.1"
   },
+  "homepage": "https://dl0312.github.io/Clap-frontend",
   "description": "Frontend with ReactJS, TypeScript, styled-components",
   "main": "index.js",
   "repository": "https://github.com/dl0312/Clap-frontend",

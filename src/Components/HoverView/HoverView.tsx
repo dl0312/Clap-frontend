@@ -227,7 +227,7 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
                 >
                   <ClapImage
                     small={true}
-                    src={`http://localhost:4000/uploads/${representSrc}`}
+                    src={representSrc}
                     alt={"hover"}
                     selected={isSelected}
                     {...attributes}
@@ -240,7 +240,7 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
             case "NORMAL_IMG":
               return (
                 <ClapImage
-                  src={`http://localhost:4000/uploads/${representSrc}`}
+                  src={representSrc}
                   alt={"hover"}
                   selected={isSelected}
                   onMouseOver={() =>

@@ -53,13 +53,19 @@ const CategoryImg = styled.img`
   height: 100%;
   display: block;
   transition: transform 0.5s ease;
-  object-fit: scale-down;
+  object-fit: cover;
 `;
 
 const Table = styled.table`
   width: 100%;
   display: grid;
   margin-bottom: 20px;
+  tr:nth-child(2n) {
+    background-color: #444;
+    &:hover {
+      background-color: #555;
+    }
+  }
 `;
 
 const TableRow = styled.tr`
@@ -68,10 +74,12 @@ const TableRow = styled.tr`
   min-width: 400px;
   background-color: #222;
   transition: background-color 0.5s ease, box-shadow 0.5s ease;
+  position: relative;
+  z-index: 1;
   &:hover {
     z-index: 3;
     background-color: #333;
-    box-shadow: 0 0 5px black;
+    box-shadow: 0px 0px 10px 5px black;
     ${CategoryImg} {
       transform: scale(1.2);
     }
@@ -90,7 +98,6 @@ const Comment = styled.span`
   margin: 0 5px;
   display: flex;
   align-items: center;
-  transform: translateY(-2px);
 `;
 
 const Title = styled.div`

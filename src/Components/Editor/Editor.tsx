@@ -136,8 +136,7 @@ interface IEditorLeftContainerProps {
 const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   position: relative;
   width: 75%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   background-color: ${props =>
     `rgba(${props.bodyBackgroundColor.r}, ${props.bodyBackgroundColor.g}, ${
       props.bodyBackgroundColor.b
@@ -1274,7 +1273,7 @@ class Editor extends React.Component<IProps, IState> {
                 >
                   <ClapImage
                     small={true}
-                    src={`http://localhost:4000/uploads/${representSrc}`}
+                    src={representSrc}
                     alt={"hover"}
                     selected={isSelected}
                     {...attributes}
@@ -1287,7 +1286,7 @@ class Editor extends React.Component<IProps, IState> {
             case "NORMAL_IMG":
               return (
                 <ClapImage
-                  src={`http://localhost:4000/uploads/${representSrc}`}
+                  src={representSrc}
                   alt={"hover"}
                   selected={isSelected}
                   onMouseOver={() =>
