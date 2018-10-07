@@ -10,6 +10,8 @@ interface ITextContainerProps {
 
 const TextContainer = styled<ITextContainerProps, any>("div")`
   text-align: ${props => props.textAlign};
+  width: 100%;
+  cursor: auto;
   line-height: 140%;
   padding-top: 10px;
   padding-right: 10px;

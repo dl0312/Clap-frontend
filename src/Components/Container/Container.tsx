@@ -94,8 +94,13 @@ const plugins = [
   CleanPlugin(),
   CodePlugin(),
   CodeBlockPlugin(),
-  FontBgColorPlugin(),
-  FontColorPlugin(),
+  FontBgColorPlugin({
+    backgroundColor: (mark: any) =>
+      mark.data.get("color") && mark.data.get("color").color
+  }),
+  FontColorPlugin({
+    color: (mark: any) => mark.data.get("color") && mark.data.get("color").color
+  }),
   ItalicPlugin(),
   StrikeThroughPlugin(),
   UnderlinePlugin(),
