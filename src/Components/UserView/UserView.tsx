@@ -44,8 +44,8 @@ import { RedoPlugin } from "@canner/slate-icon-redo";
 import { VideoPlugin } from "@canner/slate-icon-video";
 
 // select
-import { FontSizePlugin } from "@canner/slate-select-fontsize";
-import { LetterSpacingPlugin } from "@canner/slate-select-letterspacing";
+// import { FontSizePlugin } from "@canner/slate-select-fontsize";
+// import { LetterSpacingPlugin } from "@canner/slate-select-letterspacing";
 
 // plugins
 import { DEFAULT as DEFAULTLIST } from "@canner/slate-helper-block-list";
@@ -85,8 +85,8 @@ const plugins = [
   ItalicPlugin(),
   StrikeThroughPlugin(),
   UnderlinePlugin(),
-  FontSizePlugin(),
-  LetterSpacingPlugin(),
+  // FontSizePlugin(),
+  // LetterSpacingPlugin(),
   TablePlugin(),
   // EmojiPlugin(),
   HeaderOnePlugin(),

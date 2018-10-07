@@ -108,8 +108,6 @@ const itemSource = {
         });
         break;
       case "TEXT":
-        item.textColor = EditorDefaults.TEXT_TEXT_COLOR;
-        item.backgroundColor = EditorDefaults.TEXT_BACKGROUND_COLOR;
         item.value = Value.fromJSON({
           object: "value",
           document: {

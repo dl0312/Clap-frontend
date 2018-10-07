@@ -16,7 +16,6 @@ import { Value } from "slate";
 import EmptyCard from "../EmptyCard";
 import Upload from "../Upload";
 import { RenderNodeProps, RenderMarkProps } from "slate-react";
-
 import {
   POST,
   POSTS,
@@ -28,16 +27,16 @@ import { Row, Col } from "antd";
 import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
 import Blockquote from "@canner/slate-icon-blockquote";
 import Bold from "@canner/slate-icon-bold";
-import Clean from "@canner/slate-icon-clean";
-import Code from "@canner/slate-icon-code";
-import CodeBlock from "@canner/slate-icon-codeblock";
+// import Clean from "@canner/slate-icon-clean";
+// import Code from "@canner/slate-icon-code";
+// import CodeBlock from "@canner/slate-icon-codeblock";
 // import Emoji, {EmojiPlugin} from '@canner/slate-icon-emoji';
 import FontBgColor from "@canner/slate-icon-fontbgcolor";
 import FontColor from "@canner/slate-icon-fontcolor";
 import { Header1, Header2 } from "@canner/slate-icon-header";
 import Hr from "@canner/slate-icon-hr";
-import Image from "@canner/slate-icon-image";
-import { Indent, Outdent } from "@canner/slate-icon-indent";
+// import Image from "@canner/slate-icon-image";
+// import { Indent, Outdent } from "@canner/slate-icon-indent";
 import Italic from "@canner/slate-icon-italic";
 import Table from "@canner/slate-icon-table";
 import Link from "@canner/slate-icon-link";
@@ -49,37 +48,34 @@ import Redo from "@canner/slate-icon-redo";
 import Video from "@canner/slate-icon-video";
 
 // select
-import FontSize from "@canner/slate-select-fontsize";
-import LetterSpacing from "@canner/slate-select-letterspacing";
-import LineHeight from "@canner/slate-select-lineheight";
+// import FontSize from "@canner/slate-select-fontsize";
+// import LetterSpacing from "@canner/slate-select-letterspacing";
+// import LineHeight from "@canner/slate-select-lineheight";
 
 // plugins
 import "prismjs/themes/prism.css";
 
-// rules
-import "github-markdown-css";
-
-const selectors = [FontSize, LetterSpacing, LineHeight];
+// const selectors = [FontSize, LetterSpacing, LineHeight];
 const icons = [
   AlignLeft,
   AlignCenter,
   AlignRight,
   Blockquote,
   Bold,
-  Clean,
-  Code,
-  CodeBlock,
+  Italic,
+  // Clean,
+  // Code,
+  // CodeBlock,
   // Emoji,
   FontBgColor,
   FontColor,
   Hr,
   Header1,
   Header2,
-  Image,
+  // Image,
   Video,
-  Indent,
-  Outdent,
-  Italic,
+  // Indent,
+  // Outdent,
   Link,
   OlList,
   UlList,
@@ -95,12 +91,6 @@ import { GetPos } from "../../Utility/GetPos";
 import { MutationFn } from "react-apollo";
 import { addPost, addPostVariables } from "../../types/api";
 
-const FlexBox = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 interface IEditorContainerProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
 }
@@ -113,6 +103,7 @@ const EditorContainer = styled<IEditorContainerProps, any>("div")`
       : null};
   display: flex;
   flex-direction: row;
+  justify-content: center;
   overflow: hidden;
   position: ${props =>
     props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
@@ -125,8 +116,15 @@ const EditorContainer = styled<IEditorContainerProps, any>("div")`
   bottom: 0px;
   right: 0;
   left: 0;
+`;
 
-  border-top: 2px solid #eee;
+const RealEditorContainer = styled.div`
+  width: 1200px;
+  padding: 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #555;
 `;
 
 interface IEditorLeftContainerProps {
@@ -135,26 +133,41 @@ interface IEditorLeftContainerProps {
 
 const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   position: relative;
-  width: 75%;
+  width: 700px;
   overflow: hidden;
+  outline: 0.05px solid rgb(172, 172, 172);
   background-color: ${props =>
     `rgba(${props.bodyBackgroundColor.r}, ${props.bodyBackgroundColor.g}, ${
       props.bodyBackgroundColor.b
     }, ${props.bodyBackgroundColor.a})`};
   border-right: 1px solid rgba(0, 0, 0, 0.2);
   transition: width 0.5s ease;
-  ${media.tablet`width: 100%;`};
-  ${media.phone`width: 100%;`};
 `;
 
 const EditorRightContainer = styled.div`
   background-color: white;
   outline: 0.05px solid rgb(172, 172, 172);
   transition: width 1s ease;
-  width: 25%;
-  min-width: 400px;
+  width: 400px;
   ${media.tablet`display: none;`};
   ${media.phone`display: none;`};
+`;
+
+const TextEditorButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px 2px 0 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 1px 1px rgba(0, 0, 0, 0.16);
+  line-height: 0px !important;
+  background-color: #fff;
+`;
+
+const TextEditorButton = styled.div`
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  &:hover {
+    background-color: #ebebeb;
+  }
 `;
 
 interface IClapImageProps {
@@ -1043,16 +1056,17 @@ class Editor extends React.Component<IProps, IState> {
           </React.Fragment>
         ) : null}
         <EditorContainer type={type}>
-          <EditorLeftContainer
-            view={view}
-            bodyBackgroundColor={this.state.bodyBackgroundColor}
-          >
-            {view === "EDIT" ? (
-              <React.Fragment>
-                <Row>
-                  <Col style={{ minHeight: "100vh" }}>
-                    <div className="toolbar">
-                      <FlexBox>
+          <RealEditorContainer>
+            <EditorLeftContainer
+              view={view}
+              bodyBackgroundColor={this.state.bodyBackgroundColor}
+            >
+              {view === "EDIT" ? (
+                <React.Fragment>
+                  <Row>
+                    <Col style={{ minHeight: "100vh" }}>
+                      <div className="toolbar">
+                        {/* <FlexBox>
                         {selectors.map((Type, i) => {
                           if (
                             this.state.selectedIndex !== null &&
@@ -1084,134 +1098,138 @@ class Editor extends React.Component<IProps, IState> {
                             return null;
                           }
                         })}
-                      </FlexBox>
-                      <FlexBox>
-                        {icons.map((Type, i) => {
-                          if (
-                            this.state.selectedIndex !== null &&
-                            Array.isArray(this.state.selectedIndex) &&
-                            this.state.selectedContent !== undefined &&
-                            (this.state.selectedContent.content === "TEXT" ||
-                              this.state.selectedContent.content === "BUTTON" ||
-                              this.state.selectedContent.content === "HTML")
-                          ) {
-                            const selected = this.state.selectedIndex;
-                            const onChange = ({ value }: any) => {
-                              this.handleOnChange(
-                                { value },
-                                selected,
-                                "TEXT",
-                                "TEXT_CHANGE"
+                      </FlexBox> */}
+                        <TextEditorButtonContainer>
+                          {icons.map((Type, i) => {
+                            if (
+                              this.state.selectedIndex !== null &&
+                              Array.isArray(this.state.selectedIndex) &&
+                              this.state.selectedContent !== undefined &&
+                              (this.state.selectedContent.content === "TEXT" ||
+                                this.state.selectedContent.content ===
+                                  "BUTTON" ||
+                                this.state.selectedContent.content === "HTML")
+                            ) {
+                              const selected = this.state.selectedIndex;
+                              const onChange = ({ value }: any) => {
+                                this.handleOnChange(
+                                  { value },
+                                  selected,
+                                  "TEXT",
+                                  "TEXT_CHANGE"
+                                );
+                              };
+                              const { value } = this.showSelected(selected);
+                              return (
+                                <TextEditorButton>
+                                  <Type
+                                    change={value.change()}
+                                    onChange={onChange}
+                                    key={i}
+                                    className="toolbar-item"
+                                    activeClassName="toolbar-item-active"
+                                    disableClassName="toolbar-item-disable"
+                                    activeStrokeClassName="ql-stroke-active"
+                                    activeFillClassName="ql-fill-active"
+                                    activeThinClassName="ql-thin-active"
+                                    activeEvenClassName="ql-even-active"
+                                  />
+                                </TextEditorButton>
                               );
-                            };
-                            const { value } = this.showSelected(selected);
-                            return (
-                              <Type
-                                change={value.change()}
-                                onChange={onChange}
-                                key={i}
-                                className="toolbar-item"
-                                activeClassName="toolbar-item-active"
-                                disableClassName="toolbar-item-disable"
-                                activeStrokeClassName="ql-stroke-active"
-                                activeFillClassName="ql-fill-active"
-                                activeThinClassName="ql-thin-active"
-                                activeEvenClassName="ql-even-active"
-                              />
-                            );
-                          } else {
-                            return null;
-                          }
-                        })}
-                      </FlexBox>
-                    </div>
-                  </Col>
-                </Row>
-                <EditorLeft
-                  bodyBackgroundColor={this.state.bodyBackgroundColor}
-                  contentWidth={this.state.contentWidth}
-                  font={this.state.font}
-                  view="EDIT"
-                >
-                  {cards.map((item, index) => {
-                    if (item.type === "columnList") {
-                      return (
-                        <Card
-                          cards={this.state.cards.length}
-                          key={index}
-                          index={index}
-                          moveCard={this.moveCard}
-                          handleDrop={this.handleDrop}
-                          onDrag={this.state.onDrag}
-                          callbackfromparent={this.buttonCallback}
-                          selectedIndex={selectedIndex}
-                          hoveredIndex={hoveredIndex}
-                          masterCallback={this.masterCallback}
-                        >
-                          <Column
-                            columnListArray={item.columnListArray}
-                            columnArray={item.content}
-                            index={[index, 0, 0]}
-                            callbackfromparent={this.buttonCallback}
-                            handleDrop={this.handleDrop}
+                            } else {
+                              return null;
+                            }
+                          })}
+                        </TextEditorButtonContainer>
+                      </div>
+                    </Col>
+                  </Row>
+                  <EditorLeft
+                    bodyBackgroundColor={this.state.bodyBackgroundColor}
+                    contentWidth={this.state.contentWidth}
+                    font={this.state.font}
+                    view="EDIT"
+                  >
+                    {cards.map((item, index) => {
+                      if (item.type === "columnList") {
+                        return (
+                          <Card
+                            cards={this.state.cards.length}
+                            key={index}
+                            index={index}
                             moveCard={this.moveCard}
-                            handleOnChange={this.handleOnChange}
-                            renderNode={this.renderNode}
-                            renderMark={this.renderMark}
-                            contentWidth={contentWidth}
+                            handleDrop={this.handleDrop}
+                            onDrag={this.state.onDrag}
+                            callbackfromparent={this.buttonCallback}
                             selectedIndex={selectedIndex}
                             hoveredIndex={hoveredIndex}
-                            onDrag={this.state.onDrag}
                             masterCallback={this.masterCallback}
-                          />
-                        </Card>
-                      );
-                    } else {
-                      return null;
-                    }
-                  })}
-                  {cards.length !== 0 ? null : (
-                    <EmptyCard
-                      index={0}
-                      masterCallback={this.masterCallback}
-                      moveCard={this.moveCard}
-                      handleDrop={this.handleDrop}
-                    />
-                  )}
-                </EditorLeft>
-              </React.Fragment>
-            ) : view === "USER" ? (
-              <UserView json={this.state} />
-            ) : view === "JSON" ? (
-              <JsonView json={this.state} />
-            ) : null}
-          </EditorLeftContainer>
-          <EditorRightContainer>
-            <EditorRight
-              masterCallback={
-                this.masterCallback // func
-              }
-              addIdToState={this.addIdToState}
-              deleteIdToState={this.deleteIdToState}
-              rightMenu={
-                this.state.rightMenu // values
-              }
-              cards={this.state.cards}
-              view={this.state.view}
-              title={this.state.title}
-              bodyBackgroundColor={this.state.bodyBackgroundColor}
-              contentWidth={this.state.contentWidth}
-              font={this.state.font}
-              category={this.state.category}
-            />
-            <BlockOptions
-              type={this.props.type}
-              handleOnChange={this.handleOnChange}
-              selectedIndex={selectedIndex}
-              selectedContent={this.showSelected(selectedIndex)}
-              OnChangeCards={this.OnChangeCards}
-            />
-          </EditorRightContainer>
+                          >
+                            <Column
+                              columnListArray={item.columnListArray}
+                              columnArray={item.content}
+                              index={[index, 0, 0]}
+                              callbackfromparent={this.buttonCallback}
+                              handleDrop={this.handleDrop}
+                              moveCard={this.moveCard}
+                              handleOnChange={this.handleOnChange}
+                              renderNode={this.renderNode}
+                              renderMark={this.renderMark}
+                              contentWidth={contentWidth}
+                              selectedIndex={selectedIndex}
+                              hoveredIndex={hoveredIndex}
+                              onDrag={this.state.onDrag}
+                              masterCallback={this.masterCallback}
+                            />
+                          </Card>
+                        );
+                      } else {
+                        return null;
+                      }
+                    })}
+                    {cards.length !== 0 ? null : (
+                      <EmptyCard
+                        index={0}
+                        masterCallback={this.masterCallback}
+                        moveCard={this.moveCard}
+                        handleDrop={this.handleDrop}
+                      />
+                    )}
+                  </EditorLeft>
+                </React.Fragment>
+              ) : view === "USER" ? (
+                <UserView json={this.state} />
+              ) : view === "JSON" ? (
+                <JsonView json={this.state} />
+              ) : null}
+            </EditorLeftContainer>
+            <EditorRightContainer>
+              <EditorRight
+                masterCallback={
+                  this.masterCallback // func
+                }
+                addIdToState={this.addIdToState}
+                deleteIdToState={this.deleteIdToState}
+                rightMenu={
+                  this.state.rightMenu // values
+                }
+                cards={this.state.cards}
+                view={this.state.view}
+                title={this.state.title}
+                bodyBackgroundColor={this.state.bodyBackgroundColor}
+                contentWidth={this.state.contentWidth}
+                font={this.state.font}
+                category={this.state.category}
+              />
+              <BlockOptions
+                type={this.props.type}
+                handleOnChange={this.handleOnChange}
+                selectedIndex={selectedIndex}
+                selectedContent={this.showSelected(selectedIndex)}
+                OnChangeCards={this.OnChangeCards}
+              />
+            </EditorRightContainer>
+          </RealEditorContainer>
         </EditorContainer>
         <ImagePopup
           pos={pos}

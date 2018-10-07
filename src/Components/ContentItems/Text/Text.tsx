@@ -2,7 +2,6 @@ import * as React from "react";
 import styled from "styled-components";
 import { Value } from "slate";
 import { RenderNodeProps, RenderMarkProps, Editor, Plugin } from "slate-react";
-import "github-markdown-css";
 
 interface ITextContainerProps {
   textColor: { r: string; g: string; b: string; a: string };
@@ -10,10 +9,6 @@ interface ITextContainerProps {
 }
 
 const TextContainer = styled<ITextContainerProps, any>("div")`
-  color: ${props =>
-    `rgba(${props.textColor.r}, ${props.textColor.g}, ${props.textColor.b}, ${
-      props.textColor.a
-    })`};
   text-align: ${props => props.textAlign};
   line-height: 140%;
   padding-top: 10px;
@@ -36,7 +31,6 @@ interface IProps {
     value?: any;
     align?: "left" | "center" | "right";
     textAlign?: "left" | "center" | "right";
-    textColor?: { r: string; g: string; b: string; a: string };
     backgroundColor?: { r: string; g: string; b: string; a: string };
     hoverColor?: { r: string; g: string; b: string; a: string };
   };
@@ -59,15 +53,12 @@ const Text: React.SFC<IProps> = ({
 }) => {
   return (
     <TextContainer
-      textColor={item.textColor}
       textAlign={item.textAlign ? item.textAlign : "left"}
       className="markdown-body"
     >
       {handleOnChange !== undefined ? (
         <Editor
           style={{
-            color: "rgba(0,0,0,1)",
-            fontFamily: "Nanum Gotic",
             wordBreak: "break-word"
           }}
           value={value}
@@ -84,8 +75,6 @@ const Text: React.SFC<IProps> = ({
       ) : (
         <Editor
           style={{
-            color: "rgba(0,0,0,1)",
-            fontFamily: "Nanum Gotic",
             wordBreak: "break-word"
           }}
           value={value}
