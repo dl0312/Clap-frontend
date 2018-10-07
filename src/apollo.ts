@@ -90,15 +90,26 @@ const localStateLink = withClientState({
   resolvers: {
     Mutation: {
       logUserIn: (_: any, { token }: any, { cache: appCache }: any) => {
-        localStorage.setItem("jwt", token);
-        appCache.writeData({
-          data: {
-            auth: {
-              __typename: "Auth",
-              isLoggedIn: true
+        if (token !== null) {
+          localStorage.setItem("jwt", token);
+          appCache.writeData({
+            data: {
+              auth: {
+                __typename: "Auth",
+                isLoggedIn: true
+              }
             }
-          }
-        });
+          });
+        } else {
+          appCache.writeData({
+            data: {
+              auth: {
+                __typename: "Auth",
+                isLoggedIn: false
+              }
+            }
+          });
+        }
         return null;
       },
       logUserOut: (_: any, __: any, { cache: appCache }: any) => {
