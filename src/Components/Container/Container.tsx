@@ -65,6 +65,7 @@ import { DEFAULT as DEFAULTBLOCKQUOTE } from "@canner/slate-helper-block-quote";
 import EditList from "slate-edit-list";
 import EditBlockquote from "slate-edit-blockquote";
 import { ParagraphPlugin } from "@canner/slate-icon-shared";
+import copyPastePlugin from "@canner/slate-paste-html-plugin";
 
 import EditPrism from "slate-prism";
 import EditCode from "slate-edit-code";
@@ -116,7 +117,8 @@ const plugins = [
   ImagePlugin(),
   LinkPlugin(),
   ListPlugin(),
-  VideoPlugin()
+  VideoPlugin(),
+  copyPastePlugin()
 ];
 
 const Handle = styled.div`
@@ -199,11 +201,11 @@ const Builder = styled<IBuilderProps, any>("div")`
 
 const cardSource = {
   beginDrag(props: IProps, monitor: DragSourceMonitor, component: Container) {
-    props.masterCallback("OnDrag", "content");
+    props.masterCallback("onDrag", "content");
     return { index: props.index };
   },
   endDrag(props: IProps, monitor: DragSourceMonitor, component?: Container) {
-    props.masterCallback("OnDrag", null);
+    props.masterCallback("onDrag", null);
     return { index: props.index };
   }
 };
@@ -563,11 +565,12 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
                   : "center",
               opacity,
               transition: "border 0.5s ease, opacity 0.5s ease",
-              border: active
-                ? "2px solid black"
-                : hover
-                  ? "2px solid grey"
-                  : "2px solid transparent"
+              borderRadius: "2px"
+              // border: active
+              //   ? "2px solid black"
+              //   : hover
+              //     ? "2px solid grey"
+              //     : "2px solid transparent"
             }}
             onMouseOver={this.handleOnMouseOver}
             onMouseDown={this.handleOnMouseDown}

@@ -190,11 +190,11 @@ const cardTarget = {
 
 const cardSource = {
   beginDrag(props: IProps, monitor: DragSourceMonitor, component: Card) {
-    props.masterCallback("OnDrag", "columnList");
+    props.masterCallback("onDrag", "columnList");
     return { index: props.index };
   },
   endDrag(props: IProps, monitor: DragSourceMonitor, component: Card) {
-    props.masterCallback("OnDrag", null);
+    props.masterCallback("onDrag", null);
     return { index: props.index };
   }
 };
@@ -320,11 +320,13 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
               justifyContent: "center",
               opacity,
               transition: "border 0.5s ease, opacity 0.5s ease",
-              border: active
-                ? "2px solid black"
-                : hover
-                  ? "2px solid grey"
-                  : "2px solid transparent"
+              borderRadius: "2px"
+
+              // border: active
+              //   ? "2px solid black"
+              //   : hover
+              //     ? "2px solid grey"
+              //     : "2px solid transparent"
             }}
             onMouseOver={this.handleOnMouseOver}
             onMouseDown={this.handleOnMouseDown}

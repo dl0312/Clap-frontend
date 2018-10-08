@@ -159,7 +159,8 @@ const BodyContainer = styled.div`
 
 const CommentsListContainer = styled.table`
   width: 100%;
-  border: 0.5px solid rgba(0, 0, 0, 0.2);
+  border-top: 4px solid white;
+  border-bottom: 0.5px solid white;
   margin: 10px 0;
   background-color: white;
 `;
@@ -172,12 +173,31 @@ const CommentUserTable = styled.div`
   vertical-align: inherit;
 `;
 
+interface IUserProfilePhotoProps {
+  url: string;
+}
+
+const UserProfilePhoto = styled<IUserProfilePhotoProps, any>("div")`
+  width: 15px;
+  height: 15px;
+  overflow: hidden;
+  position: relative;
+  transition: filter 0.5s ease;
+  margin-right: 5px;
+  background-image: url(${props => `${props.url}`});
+  background-size: auto 100%;
+  background-position: 50% 50%;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
+`;
+
 interface ICommentUserProps {
   hasIcon: boolean;
 }
 
 const CommentUser = styled<ICommentUserProps, any>("div")`
   position: relative;
+  display: flex;
+  align-self: center;
   padding: 5px 0;
   margin-left: ${props => (props.hasIcon ? "-18px" : null)};
 `;
@@ -205,15 +225,15 @@ const ReplyContainer = styled.button`
   display: inline-flex;
   border: none;
   background-color: transparent;
-  color: #9980fa;
+  color: #8ccaff;
   align-items: center;
   justify-content: center;
   opacity: 0.5;
-  transition: opacity 0.5s ease;
+  /* transition: opacity 0.5s ease; */
   cursor: pointer;
   margin-left: 5px;
   margin-right: -3px;
-  transform: translateY(-2.5px);
+  transform: translateY(-0.5px);
   &:hover {
     opacity: 1;
   }
@@ -239,6 +259,7 @@ const RereplyContainer = styled.div`
   justify-content: center;
   position: relative;
   height: 50px;
+  color: black;
 `;
 
 const RereplyInput = styled.textarea`
@@ -268,14 +289,14 @@ const CommentInfo = styled.td`
   padding: 0 15px;
   display: table-cell;
   vertical-align: inherit;
-  background-color: #fffce8;
-  border-left: 0.5px solid #f8efba;
+  background-color: #222;
+  border-left: 0.5px solid gray;
 `;
 
 const CommentDate = styled.div`
   margin-top: 10px;
   width: 80px;
-  text-align: right;
+  text-align: center;
   position: relative;
   float: right;
 `;
@@ -285,9 +306,10 @@ const CommentContainer = styled.tr`
   width: 100%;
   align-items: center;
   min-height: 60px;
-  border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
+  border-bottom: 0.5px solid gray;
   display: table-row;
   vertical-align: inherit;
+  background-color: #333;
 `;
 
 const CommentInputContainer = styled.div`
@@ -301,6 +323,7 @@ const CommentInputContainer = styled.div`
 
 const ReCommentIcon = styled.i`
   margin-right: 5px;
+  transform: rotate(180deg) translateX(9px) translateY(4px);
 `;
 
 const CommentInput = styled.textarea`
@@ -310,8 +333,9 @@ const CommentInput = styled.textarea`
   overflow-y: scroll;
   width: 100%;
   vertical-align: top;
-  resize: vertical;
+  resize: none;
   padding: 10px;
+  color: black;
 `;
 
 const CommentButton = styled.button`
@@ -329,14 +353,22 @@ const EditCommentButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-  color: darkgreen;
+  color: LawnGreen;
+  opacity: 0.5;
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 const DeleteCommentButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-  color: darkred;
+  color: Tomato;
+  opacity: 0.5;
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 const ClapContainer = styled.div`
@@ -354,12 +386,12 @@ const ButtonsContainer = styled.div`
 const PostButton = styled.div`
   padding: 5px 10px;
   margin: 5px;
-  border: 0.5px solid rgba(0, 0, 0, 0.5);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   width: 60px;
   text-align: center;
   text-transform: uppercase;
   cursor: pointer;
+  background-color: white;
+  color: black;
 `;
 
 // const ClapButton = styled.div`
@@ -369,18 +401,34 @@ const PostButton = styled.div`
 //   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 // `;
 
+const ClapImageContainer = styled.div`
+  margin-top: 15px;
+  border: 1px solid white;
+  background-color: white
+  border-radius: 4px;
+`;
+
 interface IClapImageProps {
   isClapped: boolean;
 }
 
-const ClapImage = styled<IClapImageProps, any>("i")`
-  margin-top: 15px;
+const ClapImage = styled<IClapImageProps, any>("div")`
+  margin: 10px 20px 5px 20px;
   font-size: 20px;
+  cursor: pointer;
   opacity: ${props => (props.isClapped ? "1" : "0.5")};
   transition: opacity 0.5s ease;
   &:hover {
     opacity: 0.75;
   }
+`;
+
+const ClapCount = styled.div`
+  text-align: center;
+  margin: 3px;
+  border-radius: 3px;
+  background-color: #999;
+  color: white;
 `;
 
 class PostQuery extends Query<getPostById, getPostByIdVariables> {}
@@ -542,24 +590,36 @@ class PostDetail extends React.Component<IProps, IState> {
                           onCompleted={data => this.sendClapConfirm(data)}
                         >
                           {SendClap => (
-                            <ClapImage
-                              onClick={(e: any) => {
-                                e.preventDefault();
-                                SendClap({
-                                  refetchQueries: [
-                                    {
-                                      query: POST,
-                                      variables: {
-                                        postId: this.props.match.params.postId
+                            <ClapImageContainer>
+                              <ClapImage
+                                onClick={(e: any) => {
+                                  e.preventDefault();
+                                  SendClap({
+                                    refetchQueries: [
+                                      {
+                                        query: POST,
+                                        variables: {
+                                          postId: this.props.match.params.postId
+                                        }
                                       }
-                                    }
-                                  ],
-                                  variables: { postId: post.id }
-                                });
-                              }}
-                              className="far fa-thumbs-up"
-                              isClapped={isClapped}
-                            />
+                                    ],
+                                    variables: { postId: post.id }
+                                  });
+                                }}
+                                isClapped={isClapped}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="red"
+                                >
+                                  <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" />
+                                </svg>
+                              </ClapImage>
+                              <ClapCount>1</ClapCount>
+                            </ClapImageContainer>
                           )}
                         </Mutation>
                       </ClapContainer>
@@ -602,9 +662,11 @@ class PostDetail extends React.Component<IProps, IState> {
                               <CommentUserTable>
                                 <CommentUser hasIcon={comment!.level > 1}>
                                   {comment!.level > 1 ? (
-                                    <ReCommentIcon className="fas fa-reply fa-rotate-180" />
+                                    <ReCommentIcon className="fas fa-reply" />
                                   ) : null}
-
+                                  <UserProfilePhoto
+                                    url={comment.user.profilePhoto}
+                                  />
                                   {comment.user.nickName}
                                 </CommentUser>
                               </CommentUserTable>
@@ -617,7 +679,7 @@ class PostDetail extends React.Component<IProps, IState> {
                                 }
                               >
                                 <ReplyIcon className="fas fa-level-up-alt fa-rotate-90" />
-                                <ReplyText>답글</ReplyText>
+                                <ReplyText>Reply</ReplyText>
                               </ReplyContainer>
                               <EditCommentButton>
                                 <i className="far fa-edit" />
@@ -668,7 +730,7 @@ class PostDetail extends React.Component<IProps, IState> {
                                     return (
                                       <RereplyContainer>
                                         <RereplyInput
-                                          placeholder="댓글은 당신을 비추는 얼굴입니다."
+                                          placeholder="Your comment is your face bro :)"
                                           value={this.state.reCommentBody}
                                           onChange={e =>
                                             this.setState({
@@ -703,7 +765,7 @@ class PostDetail extends React.Component<IProps, IState> {
                                             });
                                           }}
                                         >
-                                          등록
+                                          POST
                                         </RereplyButton>
                                       </RereplyContainer>
                                     );
@@ -722,7 +784,7 @@ class PostDetail extends React.Component<IProps, IState> {
                     </CommentsListContainer>
                     <CommentInputContainer>
                       <CommentInput
-                        placeholder="댓글은 당신을 비추는 얼굴입니다."
+                        placeholder="Your comment is your face bro :)"
                         value={this.state.commentBody}
                         onChange={e =>
                           this.setState({ commentBody: e.target.value })
@@ -758,7 +820,7 @@ class PostDetail extends React.Component<IProps, IState> {
                                 });
                               }}
                             >
-                              등록
+                              POST
                             </CommentButton>
                           );
                         }}

@@ -63,7 +63,7 @@ const InputIcon = styled<IInputIconProps, any>("i")`
 `;
 
 const ListContainer = styled.div`
-  height: 340px;
+  height: 100%;
   overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(5, 1fr);

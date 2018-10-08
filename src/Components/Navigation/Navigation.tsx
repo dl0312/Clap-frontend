@@ -131,7 +131,7 @@ class Navigation extends React.Component<IProps, IState> {
   public handleScrollHeader = () => {
     const scrollHeight = window.scrollY;
     console.log(scrollHeight);
-    if (scrollHeight > 300) {
+    if (scrollHeight > 100) {
       this.setState({ darken: true });
     } else {
       this.setState({ darken: false });

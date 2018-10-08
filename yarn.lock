@@ -9170,6 +9170,12 @@ slate-hotkeys@^0.1.2:
     is-hotkey "^0.1.1"
     slate-dev-environment "^0.1.4"
 
+slate-html-serializer@^0.7.7:
+  version "0.7.7"
+  resolved "https://registry.yarnpkg.com/slate-html-serializer/-/slate-html-serializer-0.7.7.tgz#f970baabb5eabcf2ed8636634531a902e08c1b13"
+  dependencies:
+    type-of "^2.0.1"
+
 slate-md-editor@^1.5.4:
   version "1.5.4"
   resolved "https://registry.yarnpkg.com/slate-md-editor/-/slate-md-editor-1.5.4.tgz#ce82153b97f5efad1d026d0f315ba85aa851bdb3"

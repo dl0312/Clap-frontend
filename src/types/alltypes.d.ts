@@ -27,7 +27,8 @@ declare module "@canner/slate-helper-block-list";
 declare module "@canner/slate-helper-block-quote";
 declare module "@canner/slate-icon-shared";
 declare module "@canner/slate-constant/lib/blocks";
-declare module "canner-slate-editor"
+declare module "@canner/slate-paste-html-plugin";
+declare module "canner-slate-editor";
 declare module "slate-edit-list";
 declare module "slate-edit-blockquote";
 declare module "slate-edit-table";

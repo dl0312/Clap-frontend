@@ -53,6 +53,7 @@ import { DEFAULT as DEFAULTBLOCKQUOTE } from "@canner/slate-helper-block-quote";
 import EditList from "slate-edit-list";
 import EditBlockquote from "slate-edit-blockquote";
 import { ParagraphPlugin } from "@canner/slate-icon-shared";
+import copyPastePlugin from "@canner/slate-paste-html-plugin";
 
 import EditPrism from "slate-prism";
 import EditCode from "slate-edit-code";
@@ -80,8 +81,13 @@ const plugins = [
   CleanPlugin(),
   CodePlugin(),
   CodeBlockPlugin(),
-  FontBgColorPlugin(),
-  FontColorPlugin(),
+  FontBgColorPlugin({
+    backgroundColor: (mark: any) =>
+      mark.data.get("color") && mark.data.get("color").color
+  }),
+  FontColorPlugin({
+    color: (mark: any) => mark.data.get("color") && mark.data.get("color").color
+  }),
   ItalicPlugin(),
   StrikeThroughPlugin(),
   UnderlinePlugin(),
@@ -97,7 +103,8 @@ const plugins = [
   ImagePlugin(),
   LinkPlugin(),
   ListPlugin(),
-  VideoPlugin()
+  VideoPlugin(),
+  copyPastePlugin()
 ];
 
 interface IClapImageProps {

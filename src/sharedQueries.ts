@@ -35,6 +35,7 @@ export const POST = gql`
           user {
             id
             nickName
+            profilePhoto
           }
           childrenComments {
             id

@@ -9,7 +9,7 @@ ${reset};
 @import url("https://www.w3schools.com/w3css/4/w3.css");
 @import url("https://use.fontawesome.com/releases/v5.0.13/css/all.css");
 @import url("https://fonts.googleapis.com/css?family=Maven+Pro|Roboto:300:400,700|Eczar|Oswald|Playfair+Display|Hanalei+Fill|Quicksand|Open+Sans|Raleway|Anton|Do+Hyeon|Kirang+Haerang|Nanum+Gothic|Nanum+Gothic+Coding|Nanum+Myeongjo|Nanum+Pen+Script|Sunflower:300");
-@import url("//cdn.jsdelivr.net/font-iropke-batang/1.2/font-iropke-batang.css");
+/* @import url("//cdn.jsdelivr.net/font-iropke-batang/1.2/font-iropke-batang.css"); */
   * {
       box-sizing: border-box;
   }
@@ -26,15 +26,35 @@ ${reset};
   input,
   button{&:focus,&:active{outline:none}
   }
-  h1,h2,h3,h4,h5,h6{
-      font-family:'Maven Pro', sans-serif;
+  strong{
+    font-weight: bolder;
   }
+  h1{
+    font-family:'Maven Pro', sans-serif;
+    font-size: 30px;
+      color:inherit;
+  }
+  h2{
+    font-family:'Maven Pro', sans-serif;
+    font-size: 21px;
+          color:inherit;
+
+  }
+  hr{
+    margin: 10px 0;
+  }
+.frame{
+    border: 2px solid transparent;
+}
+.container{
+    border: 2px solid transparent;
+}
   .blockHover {
   border: 2px solid gray;
 }
 
 .blockActive {
-  border: 2px solid black;
+  border: 2px solid white;
 }
 
 .ql-stroke {
