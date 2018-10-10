@@ -1193,6 +1193,7 @@ class Editor extends React.Component<IProps, IState> {
                       masterCallback={this.masterCallback}
                       moveCard={this.moveCard}
                       handleDrop={this.handleDrop}
+                      onDrag={this.state.onDrag}
                     />
                   )}
                 </EditorLeft>

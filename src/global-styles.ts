@@ -9,7 +9,7 @@ ${reset};
 @import url("https://www.w3schools.com/w3css/4/w3.css");
 @import url("https://use.fontawesome.com/releases/v5.0.13/css/all.css");
 @import url("https://fonts.googleapis.com/css?family=Maven+Pro|Roboto:300:400,700|Eczar|Oswald|Playfair+Display|Hanalei+Fill|Quicksand|Open+Sans|Raleway|Anton|Do+Hyeon|Kirang+Haerang|Nanum+Gothic|Nanum+Gothic+Coding|Nanum+Myeongjo|Nanum+Pen+Script|Sunflower:300");
-/* @import url("//cdn.jsdelivr.net/font-iropke-batang/1.2/font-iropke-batang.css"); */
+@import url("//cdn.jsdelivr.net/font-iropke-batang/1.2/font-iropke-batang.css");
   * {
       box-sizing: border-box;
   }
@@ -33,6 +33,7 @@ ${reset};
     font-family:'Maven Pro', sans-serif;
     font-size: 30px;
       color:inherit;
+      line-height: 25px;
   }
   h2{
     font-family:'Maven Pro', sans-serif;
@@ -148,6 +149,53 @@ ${reset};
 .toolbar-item-disable > * {
   stroke: #ccc;
   cursor: not-allowed;
+}
+
+.markdown-body table {
+    display: table;
+    width: 100%;
+    overflow: auto;
+    background-color: #777;
+}
+
+.markdown-body tbody {
+   width: 100%;
+}
+
+.markdown-body table, .markdown-body pre {
+    margin-top: 0;
+}
+
+.markdown-body table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.markdown-body * {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.markdown-body * {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.markdown-body table tr {
+    background-color: #222;
+    border-top: 1px solid #c6cbd1;
+}
+
+.markdown-body table tr:nth-child(2n) {
+    background-color: #333;
+}
+
+.markdown-body table th, .markdown-body table td {
+    padding: 6px 13px;
+    border: 1px solid #dfe2e5;
+}
+
+.markdown-body td {
+  min-width: 75px;
 }
 
 `;

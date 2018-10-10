@@ -60,7 +60,7 @@ interface ISlideTextProps {
 const SlideText = styled<ISlideTextProps, any>("div")`
   position: absolute;
   z-index: 2;
-  top: 55%;
+  top: 48%;
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: ${props => (props.isSelect ? "1" : "0")};

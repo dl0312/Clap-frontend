@@ -37,6 +37,7 @@ export interface getPostById_GetPostById_post_comments_user {
   __typename: "User";
   id: number;
   nickName: string;
+  profilePhoto: string | null;
 }
 
 export interface getPostById_GetPostById_post_comments_childrenComments_childrenComments_childrenComments_childrenComments {
@@ -100,6 +101,7 @@ export interface getPostById_GetPostById {
   error: string | null;
   post: getPostById_GetPostById_post | null;
   isClapped: boolean | null;
+  isMine: boolean | null;
 }
 
 export interface getPostById {

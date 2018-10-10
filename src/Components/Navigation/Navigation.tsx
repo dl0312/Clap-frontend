@@ -29,7 +29,7 @@ const Header = styled.header`
   position: fixed;
   right: 0px;
   left: 0px;
-  z-index: 1;
+  z-index: 3;
   /* background-color: rgba(5, 5, 5, 0.94); */
   transition: background-color 0.1s ease;
 `;

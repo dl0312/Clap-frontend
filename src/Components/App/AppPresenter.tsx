@@ -56,6 +56,23 @@ const MainContainer = styled.div`
   }
 `;
 
+function PrivateRoute({ component: Component, isLoggedIn, ...rest }: any) {
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        isLoggedIn === true ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{ pathname: "/login", state: { from: props.location } }}
+          />
+        )
+      }
+    />
+  );
+}
+
 const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
   <Router>
     <Route
@@ -144,12 +161,14 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
                 exact={true}
                 component={CategoryDetail}
               />
-              <Route
+              <PrivateRoute
+                isLoggedIn={isLoggedIn}
                 path="/category/add"
                 exact={true}
                 component={CategoryAdd}
               />
-              <Route
+              <PrivateRoute
+                isLoggedIn={isLoggedIn}
                 path="/category/edit/:categoryId"
                 exact={true}
                 component={CategoryEdit}
@@ -159,8 +178,15 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
                 exact={true}
                 component={PostDetail}
               />
-              <Route path="/post/add" exact={true} component={PostAdd} />
-              <Route
+              <PrivateRoute
+                isLoggedIn={isLoggedIn}
+                path="/post/add"
+                exact={true}
+                component={PostAdd}
+              />
+              {/* <Route path="/post/add" exact={true} component={PostAdd} /> */}
+              <PrivateRoute
+                isLoggedIn={isLoggedIn}
                 path="/post/edit/:postId"
                 exact={true}
                 component={PostEdit}
@@ -170,12 +196,14 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
                 exact={true}
                 component={WikiImageDetail}
               />
-              <Route
+              <PrivateRoute
+                isLoggedIn={isLoggedIn}
                 path="/category/:categoryId/wikiImage/add"
                 exact={true}
                 component={WikiImageAdd}
               />
-              <Route
+              <PrivateRoute
+                isLoggedIn={isLoggedIn}
                 path="/category/:categoryId/wikiImage/edit/:wikiImageId"
                 exact={true}
                 component={WikiImageEdit}

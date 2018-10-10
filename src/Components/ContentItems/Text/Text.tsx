@@ -68,6 +68,7 @@ const Text: React.SFC<IProps> = ({
           onChange={(change: any) => {
             handleOnChange(change, index, "TEXT", "TEXT_CHANGE");
           }}
+          placeholder={"Text"}
           renderNode={renderNode}
           renderMark={renderMark}
           autoCorrect={false}
@@ -80,7 +81,7 @@ const Text: React.SFC<IProps> = ({
             wordBreak: "break-word"
           }}
           value={value}
-          readOnly={false}
+          readOnly={true}
           renderNode={renderNode}
           renderMark={renderMark}
           autoCorrect={false}

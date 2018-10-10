@@ -70,9 +70,7 @@ class PostAdd extends React.Component<IProps, IState> {
     console.log(data);
     if (AddPost.ok) {
       toast.success("Post Add Success");
-      setTimeout(() => {
-        this.props.history.push(`/board`);
-      }, 2000);
+      this.props.history.push(`/board`);
     } else {
       toast.error(AddPost.error);
     }

@@ -29,6 +29,16 @@ const CategoryDetailContainer = styled.div`
   flex-direction: column;
 `;
 
+const CategoryDetailInner = styled.div`
+  width: 1000px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border: 1px solid white;
+`;
+
 const CategoryEditContainer = styled.div`
   width: 100%;
   display: flex;
@@ -166,43 +176,10 @@ class CategoryDetail extends React.Component<any, IState> {
                 <Helmet>
                   <title>{`Category ${category.name} | CLAP`}</title>
                 </Helmet>
-                <CategoryEditContainer>
-                  <Link to={`/category/edit/${category.id}`}>
-                    <EditButton>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        color="white"
-                      >
-                        <path d="M18.363 8.464l1.433 1.431-12.67 12.669-7.125 1.436 1.439-7.127 12.665-12.668 1.431 1.431-12.255 12.224-.726 3.584 3.584-.723 12.224-12.257zm-.056-8.464l-2.815 2.817 5.691 5.692 2.817-2.821-5.693-5.688zm-12.318 18.718l11.313-11.316-.705-.707-11.313 11.314.705.709z" />
-                      </svg>
-                    </EditButton>
-                  </Link>
-                  <Mutation
-                    mutation={DELETE_CATEGORY}
-                    onCompleted={data => this.confirm(data)}
-                  >
-                    {(DeleteCategory, { data }) => (
-                      <EditButton
-                        onClick={e => {
-                          e.preventDefault();
-                          DeleteCategory({
-                            refetchQueries: [
-                              {
-                                query: CATEGORIES_KEYWORD,
-                                variables: {
-                                  keyword: ""
-                                }
-                              }
-                            ],
-                            variables: {
-                              categoryId: category.id
-                            }
-                          });
-                        }}
-                      >
+                <CategoryDetailInner>
+                  <CategoryEditContainer>
+                    <Link to={`/category/edit/${category.id}`}>
+                      <EditButton>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="20"
@@ -210,73 +187,108 @@ class CategoryDetail extends React.Component<any, IState> {
                           viewBox="0 0 24 24"
                           color="white"
                         >
-                          <path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z" />
+                          <path d="M18.363 8.464l1.433 1.431-12.67 12.669-7.125 1.436 1.439-7.127 12.665-12.668 1.431 1.431-12.255 12.224-.726 3.584 3.584-.723 12.224-12.257zm-.056-8.464l-2.815 2.817 5.691 5.692 2.817-2.821-5.693-5.688zm-12.318 18.718l11.313-11.316-.705-.707-11.313 11.314.705.709z" />
                         </svg>
                       </EditButton>
-                    )}
-                  </Mutation>
-                </CategoryEditContainer>
-                <CategoryInfoContainer>
-                  <ParentOrChildrenContainer>
-                    <Subtitle>PARENT</Subtitle>
-                    <ParentOrChildrenListContainer>
-                      {category.parent.map((parent: any, index: number) => (
-                        <ItemCard key={index}>{parent.name}</ItemCard>
-                      ))}
-                    </ParentOrChildrenListContainer>
-                  </ParentOrChildrenContainer>
-                  <CurrentContainer>
-                    {category.wikiImages[0] ? (
-                      <React.Fragment>
-                        <CurrentImg
-                          src={category.wikiImages[0].shownImage}
-                          alt={category.name}
-                          onMouseOver={() =>
-                            this.setState({
-                              hoverImgJson: category.wikiImages[0].hoverImage,
-                              onImage: true
-                            })
-                          }
-                          onMouseMove={(
-                            e: React.MouseEvent<HTMLImageElement>
-                          ) => this.setState({ pos: GetPos(e) })}
-                          onMouseOut={() => {
-                            this.setState({ onImage: false });
+                    </Link>
+                    <Mutation
+                      mutation={DELETE_CATEGORY}
+                      onCompleted={data => this.confirm(data)}
+                    >
+                      {(DeleteCategory, { data }) => (
+                        <EditButton
+                          onClick={e => {
+                            e.preventDefault();
+                            DeleteCategory({
+                              refetchQueries: [
+                                {
+                                  query: CATEGORIES_KEYWORD,
+                                  variables: {
+                                    keyword: ""
+                                  }
+                                }
+                              ],
+                              variables: {
+                                categoryId: category.id
+                              }
+                            });
                           }}
-                        />
-                      </React.Fragment>
-                    ) : (
-                      <CurrentImg src={LOST_IMAGE_URL} />
-                    )}
-                    <CurrentName>{category.name}</CurrentName>
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            color="white"
+                          >
+                            <path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z" />
+                          </svg>
+                        </EditButton>
+                      )}
+                    </Mutation>
+                  </CategoryEditContainer>
+                  <CategoryInfoContainer>
+                    <ParentOrChildrenContainer>
+                      <Subtitle>PARENT</Subtitle>
+                      <ParentOrChildrenListContainer>
+                        {category.parent.map((parent: any, index: number) => (
+                          <ItemCard key={index}>{parent.name}</ItemCard>
+                        ))}
+                      </ParentOrChildrenListContainer>
+                    </ParentOrChildrenContainer>
+                    <CurrentContainer>
+                      {category.wikiImages[0] ? (
+                        <React.Fragment>
+                          <CurrentImg
+                            src={category.wikiImages[0].shownImage}
+                            alt={category.name}
+                            onMouseOver={() =>
+                              this.setState({
+                                hoverImgJson: category.wikiImages[0].hoverImage,
+                                onImage: true
+                              })
+                            }
+                            onMouseMove={(
+                              e: React.MouseEvent<HTMLImageElement>
+                            ) => this.setState({ pos: GetPos(e) })}
+                            onMouseOut={() => {
+                              this.setState({ onImage: false });
+                            }}
+                          />
+                        </React.Fragment>
+                      ) : (
+                        <CurrentImg src={LOST_IMAGE_URL} />
+                      )}
+                      <CurrentName>{category.name}</CurrentName>
 
-                    <ImagePopup
-                      pos={pos}
-                      json={hoverImgJson}
-                      onImage={onImage}
-                    />
-                  </CurrentContainer>
-                  <ParentOrChildrenContainer>
-                    <Subtitle>CHILDREN</Subtitle>
-                    <ParentOrChildrenListContainer>
-                      {category.children.map((child: any, index: number) => (
-                        <ItemCard>{child.name}</ItemCard>
-                      ))}
-                    </ParentOrChildrenListContainer>
-                  </ParentOrChildrenContainer>
-                </CategoryInfoContainer>
-                <CurrentHoverContainer>
-                  {category.wikiImages[0] !== undefined ? (
-                    <ImagePopup
-                      pos={pos}
-                      follow={false}
-                      json={category.wikiImages[0].hoverImage}
-                      onImage={true}
-                    />
-                  ) : (
-                    <div>no hover image</div>
-                  )}
-                </CurrentHoverContainer>
+                      <ImagePopup
+                        pos={pos}
+                        json={hoverImgJson}
+                        onImage={onImage}
+                      />
+                    </CurrentContainer>
+                    <ParentOrChildrenContainer>
+                      <Subtitle>CHILDREN</Subtitle>
+                      <ParentOrChildrenListContainer>
+                        {category.children.map((child: any, index: number) => (
+                          <ItemCard>{child.name}</ItemCard>
+                        ))}
+                      </ParentOrChildrenListContainer>
+                    </ParentOrChildrenContainer>
+                  </CategoryInfoContainer>
+                  <CurrentHoverContainer>
+                    {category.wikiImages[0] !== undefined ? (
+                      <ImagePopup
+                        pos={pos}
+                        follow={false}
+                        json={category.wikiImages[0].hoverImage}
+                        onImage={true}
+                      />
+                    ) : (
+                      <div>no hover image</div>
+                    )}
+                  </CurrentHoverContainer>
+                </CategoryDetailInner>
               </CategoryDetailContainer>
             );
           }}

@@ -14,8 +14,8 @@ export default {
 
   // Body
   VIEW: "EDIT",
-  BACKGROUND_COLOR: { r: 255, g: 255, b: 255, a: 1 },
-  WIDTH: 600,
+  BACKGROUND_COLOR: { r: 0, g: 0, b: 0, a: 1 },
+  WIDTH: 800,
   FONT: "Open Sans",
   BUILDER_ONDRAG_COLOR: "#c9abd8",
   BUILDER_ISOVER_COLOR: "#7158e2",

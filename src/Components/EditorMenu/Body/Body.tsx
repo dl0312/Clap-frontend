@@ -200,14 +200,14 @@ class Body extends React.Component<IProps, IState> {
 
   public handleOperatorOnClick = (operator: "-" | "+") => {
     if (operator === "-") {
-      if (this.props.contentWidth > 200) {
+      if (this.props.contentWidth > 600) {
         this.props.masterCallback(
           "contentWidth",
           this.props.contentWidth - INTERVAL
         );
       }
     } else if (operator === "+") {
-      if (this.props.contentWidth < 800) {
+      if (this.props.contentWidth < 950) {
         this.props.masterCallback(
           "contentWidth",
           this.props.contentWidth + INTERVAL

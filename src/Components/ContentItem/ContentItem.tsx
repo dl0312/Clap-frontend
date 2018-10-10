@@ -125,7 +125,7 @@ const itemSource = {
                     leaves: [
                       {
                         object: "leaf",
-                        text: "A line of text in a paragraph.",
+                        text: "",
                         marks: []
                       }
                     ]

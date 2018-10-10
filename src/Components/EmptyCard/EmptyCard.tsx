@@ -3,17 +3,17 @@ import styled from "styled-components";
 import ItemTypes from "../../ItemTypes";
 import { DropTarget, ConnectDropTarget, DropTargetMonitor } from "react-dnd";
 const InsertText = styled.div`
-  height: 300px;
   text-align: center;
+  height: 500px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 600;
   font-family: "Open Sans", sans-serif;
-  color: #2f3542;
-  outline: 0.5px dashed #2f3542;
+  color: #fff;
+  /* outline: 0.5px dashed #fff; */
 `;
 
 const cardTarget = {
@@ -36,10 +36,12 @@ interface IProps {
   masterCallback: any;
   moveCard: any;
   handleDrop: any;
+  onDrag: "content" | "columnList" | null;
 }
 
 interface IDnDProps {
   connectDropTarget: ConnectDropTarget;
+  isOverCurrent: boolean;
 }
 
 class EmptyCard extends React.Component<IProps & IDnDProps> {
@@ -49,12 +51,24 @@ class EmptyCard extends React.Component<IProps & IDnDProps> {
   }
 
   public render() {
-    const { connectDropTarget } = this.props;
+    const { connectDropTarget, isOverCurrent } = this.props;
     return (
       connectDropTarget &&
       connectDropTarget(
         <div style={{ width: "99%" }}>
-          <InsertText>INSERT COLUMN</InsertText>
+          <InsertText>
+            {this.props.onDrag === "columnList" ? (
+              isOverCurrent ? (
+                `DROP IT`
+              ) : (
+                `DROP HERE!`
+              )
+            ) : this.props.onDrag === "content" ? (
+              `YOU NEED TO INSERT ROW TO INSERT CONTENT`
+            ) : (
+              <div>INSERT ROW</div>
+            )}
+          </InsertText>
         </div>
       )
     );

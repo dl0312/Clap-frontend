@@ -514,6 +514,7 @@ class PostDetail extends React.Component<IProps, IState> {
           variables={{ postId: this.props.match.params.postId }}
           skip={!this.props.match.params.postId}
           notifyOnNetworkStatusChange={true}
+          fetchPolicy={"cache-and-network"}
         >
           {({ loading, data, error }) => {
             if (loading) {
@@ -525,16 +526,18 @@ class PostDetail extends React.Component<IProps, IState> {
             if (data === undefined) {
               return <div>something wrong</div>;
             }
+            console.log(data);
             const post = data.GetPostById.post;
             const isClapped = data.GetPostById.isClapped;
+            const isMine = data.GetPostById.isMine;
             if (post === null) {
-              return <div>have no post</div>;
+              return <div>have no post [post]</div>;
             }
             if (post.body === null) {
-              return <div>have no post</div>;
+              return <div>have no post [body]</div>;
             }
             if (post.category === null) {
-              return <div>have no post</div>;
+              return <div>have no post [category]</div>;
             }
             const body = JSON.parse(post.body);
             console.log(post.category.wikiImages!.length);
@@ -623,35 +626,37 @@ class PostDetail extends React.Component<IProps, IState> {
                           )}
                         </Mutation>
                       </ClapContainer>
-                      <ButtonsContainer>
-                        <Link
-                          to={`/post/edit/${post.id}`}
-                          style={{ textDecoration: "none" }}
-                        >
-                          <PostButton>Edit</PostButton>
-                        </Link>
-                        <DeletePostQuery
-                          mutation={DELETE_POST}
-                          onCompleted={data => this.deletePostConfirm(data)}
-                        >
-                          {(DeletePost, { data }) => (
-                            <PostButton
-                              onClick={e => {
-                                e.preventDefault();
-                                DeletePost({
-                                  refetchQueries: [
-                                    {
-                                      query: POSTS
-                                    }
-                                  ]
-                                });
-                              }}
-                            >
-                              Delete
-                            </PostButton>
-                          )}
-                        </DeletePostQuery>
-                      </ButtonsContainer>
+                      {isMine ? (
+                        <ButtonsContainer>
+                          <Link
+                            to={`/post/edit/${post.id}`}
+                            style={{ textDecoration: "none" }}
+                          >
+                            <PostButton>Edit</PostButton>
+                          </Link>
+                          <DeletePostQuery
+                            mutation={DELETE_POST}
+                            onCompleted={data => this.deletePostConfirm(data)}
+                          >
+                            {(DeletePost, { data }) => (
+                              <PostButton
+                                onClick={e => {
+                                  e.preventDefault();
+                                  DeletePost({
+                                    refetchQueries: [
+                                      {
+                                        query: POSTS
+                                      }
+                                    ]
+                                  });
+                                }}
+                              >
+                                Delete
+                              </PostButton>
+                            )}
+                          </DeletePostQuery>
+                        </ButtonsContainer>
+                      ) : null}
                     </BodyContainer>
 
                     <CommentsListContainer>

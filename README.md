@@ -4,11 +4,11 @@ Client for the CLAP, react-dnd, ReactJS, TypeScript, slate-react, styled-compone
 
 ## Navigation Menus:
 
-- [ ] **Home**
+- [x] **Home**
   - [x] _Slide Image_
-    - [ ] CSS
-  - [ ] _Featured Guide_
-    - [ ] CSS
+    - [x] CSS
+  - [x] _Featured Guide_
+    - [x] CSS
 - [ ] **Guide**
   - [ ] Create Post
   - [ ] Read Post
@@ -23,11 +23,11 @@ Client for the CLAP, react-dnd, ReactJS, TypeScript, slate-react, styled-compone
     - [x] Delete Category
     - [ ] CSS
   - [ ] _WikiImage_
-    - [ ] Create WikiImage
-    - [ ] Read WikiImage
-    - [ ] Update WikiImage
-    - [ ] Delete WikiImage
-    - [ ] CSS
+    - [x] Create WikiImage
+    - [x] Read WikiImage
+    - [x] Update WikiImage
+    - [x] Delete WikiImage
+    - [x] CSS
 - [ ] **Store**
 - [ ] **Editor**
   - [ ] _Editor Left_

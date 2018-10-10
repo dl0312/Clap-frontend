@@ -12,7 +12,7 @@ const InsertText = styled.div`
   font-size: 15px;
   font-weight: 600;
   font-family: "Open Sans", sans-serif;
-  color: #2f3542;
+  color: #fff;
   transition: content 0.5s ease;
 `;
 
@@ -70,7 +70,7 @@ class EmptyContainer extends React.Component<IProps & IDnDProps, IState> {
               isOverCurrent ? (
                 `DROP IT`
               ) : (
-                `DROP HERE`
+                `DROP HERE!`
               )
             ) : (
               <div>

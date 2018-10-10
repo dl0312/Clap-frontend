@@ -18,6 +18,9 @@ const HomeContainer = styled.div`
 `;
 
 const FeaturedContainer = styled.div`
+  z-index: 2;
+  position: relative;
+  margin-top: -200px;
   margin-bottom: 200px;
 `;
 

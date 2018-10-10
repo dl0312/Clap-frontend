@@ -64,6 +64,7 @@ export const POST = gql`
         createdAt
       }
       isClapped
+      isMine
     }
   }
 `;

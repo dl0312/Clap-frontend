@@ -253,6 +253,7 @@ class Board extends React.Component<IProps, IState> {
 
   public render() {
     const { pos, hoverImgJson, onImage } = this.state;
+    console.log(this.props);
     return (
       <PostsQuery
         query={POSTS}
@@ -261,6 +262,7 @@ class Board extends React.Component<IProps, IState> {
       >
         {({ loading, data, error }) => {
           if (loading) {
+            console.log(loading);
             return <div>Loading...</div>;
           }
           if (error) {
