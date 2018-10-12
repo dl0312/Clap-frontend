@@ -61,7 +61,7 @@ const CategoryName = styled.div`
 const WikiImage = styled.img`
   width: 50px;
   height: 50px;
-  object-fit: scale-down;
+  object-fit: fill;
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
 `;
 

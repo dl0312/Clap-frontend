@@ -79,7 +79,7 @@ const ListContainer = styled.div`
 `;
 
 const WikiImage = styled.img`
-  object-fit: scale-down;
+  object-fit: fill;
   width: 50px;
   height: 50px;
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));

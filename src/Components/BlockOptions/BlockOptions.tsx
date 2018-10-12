@@ -14,9 +14,7 @@ const BlockOptionContainer = styled<IBlockOptionContainerProps, any>("div")`
     props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
       ? null
       : "absolute"};
-  top: ${props => (props.isSelected ? "45px" : "900px")};
-  bottom: 0px;
-  right: 0px;
+  top: ${props => (props.isSelected ? "45px" : "45px")};
   width: 25%;
   min-width: 400px;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
@@ -24,6 +22,9 @@ const BlockOptionContainer = styled<IBlockOptionContainerProps, any>("div")`
   color: #505659;
   transition: top 0.5s ease, opacity 0.5s ease, height 0.5s ease;
   opacity: ${props => (props.isSelected ? "1" : "0")};
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 `;
 
 const Header = styled.div`

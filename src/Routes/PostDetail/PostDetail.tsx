@@ -154,7 +154,7 @@ const UserNickName = styled.div`
 const BodyContainer = styled.div`
   padding: 10px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  background-color: #333333;
+  background-color: #222;
 `;
 
 const CommentsListContainer = styled.table`
@@ -188,6 +188,11 @@ const UserProfilePhoto = styled<IUserProfilePhotoProps, any>("div")`
   background-size: auto 100%;
   background-position: 50% 50%;
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
+`;
+
+const UserViewContainer = styled.div`
+  border: 2px solid #444;
+  outline: 0.5px solid rgba(255, 255, 255, 0.5);
 `;
 
 interface ICommentUserProps {
@@ -586,7 +591,9 @@ class PostDetail extends React.Component<IProps, IState> {
                       </TitleInnerContainer>
                     </TitleContainer>
                     <BodyContainer>
-                      <UserView json={body} />
+                      <UserViewContainer>
+                        <UserView json={body} />
+                      </UserViewContainer>
                       <ClapContainer>
                         <Mutation
                           mutation={SEND_CLAP}

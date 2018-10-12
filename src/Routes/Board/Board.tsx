@@ -53,7 +53,7 @@ const CategoryImg = styled.img`
   height: 100%;
   display: block;
   transition: transform 0.5s ease;
-  object-fit: cover;
+  object-fit: fill;
 `;
 
 const Table = styled.table`

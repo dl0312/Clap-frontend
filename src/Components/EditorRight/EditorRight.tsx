@@ -7,7 +7,6 @@ import styled from "styled-components";
 
 const Container = styled.div`
   color: #505659;
-  position: relative;
 `;
 
 const MenuColumn = styled.ul`

@@ -58,8 +58,8 @@ const itemSource = {
 const RowItemContainer = styled.div`
   cursor: pointer;
   border-radius: 5px;
-  height: 65px;
-  padding: 10px;
+  height: 55px;
+  padding: 5px;
   background-color: #fff;
   border: 1px solid #cccccc;
   margin-bottom: 15px;

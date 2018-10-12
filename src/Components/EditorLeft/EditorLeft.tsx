@@ -37,7 +37,7 @@ const RealEditorContainer = styled<IRealEditorContainerProps, any>("div")`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: ${props => (props.view === "USER" ? null : "150px")};
+  margin-bottom: ${props => (props.view === "USER" ? null : "50px")};
   margin-top: ${props => (props.view === "USER" ? null : "10px")};
 `;
 

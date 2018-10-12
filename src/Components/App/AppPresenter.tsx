@@ -1,10 +1,5 @@
 import * as React from "react";
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch
-} from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
 import Board from "../../Routes/Board";
 import Home from "../../Routes/Home";
@@ -74,8 +69,35 @@ function PrivateRoute({ component: Component, isLoggedIn, ...rest }: any) {
 }
 
 const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
-  <Router>
+  <Switch>
+    <PrivateRoute
+      isLoggedIn={isLoggedIn}
+      path="/post/add"
+      exact={true}
+      component={PostAdd}
+    />
+    <PrivateRoute
+      isLoggedIn={isLoggedIn}
+      path="/post/edit/:postId"
+      exact={true}
+      component={PostEdit}
+    />
+    <PrivateRoute
+      isLoggedIn={isLoggedIn}
+      path="/category/add"
+      exact={true}
+      component={CategoryAdd}
+    />
+    <PrivateRoute
+      isLoggedIn={isLoggedIn}
+      path="/category/:categoryId/wikiImage/add"
+      exact={true}
+      component={WikiImageAdd}
+    />
+    <Route path="/login" exact={true} component={LogIn} />
     <Route
+      path={"*"}
+      exact={true}
       render={({ location }) => (
         <AppBox>
           <Navigation isLoggedIn={isLoggedIn} />
@@ -152,21 +174,26 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
                 exact={true}
                 component={SearchResult}
               />
-              <Route path="/login" exact={true} component={LogIn} />
+              {/* <Route path="/login" exact={true} component={LogIn} /> */}
               <Route path="/signup" exact={true} component={SignUp} />
-              <Route path="/profile" exact={true} component={Profile} />
+              <PrivateRoute
+                isLoggedIn={isLoggedIn}
+                path="/profile"
+                exact={true}
+                component={Profile}
+              />
 
               <Route
                 path="/category/read/:categoryId"
                 exact={true}
                 component={CategoryDetail}
               />
-              <PrivateRoute
+              {/* <PrivateRoute
                 isLoggedIn={isLoggedIn}
                 path="/category/add"
                 exact={true}
                 component={CategoryAdd}
-              />
+              /> */}
               <PrivateRoute
                 isLoggedIn={isLoggedIn}
                 path="/category/edit/:categoryId"
@@ -178,30 +205,24 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
                 exact={true}
                 component={PostDetail}
               />
-              <PrivateRoute
+              {/* <PrivateRoute
                 isLoggedIn={isLoggedIn}
                 path="/post/add"
                 exact={true}
                 component={PostAdd}
-              />
-              {/* <Route path="/post/add" exact={true} component={PostAdd} /> */}
-              <PrivateRoute
-                isLoggedIn={isLoggedIn}
-                path="/post/edit/:postId"
-                exact={true}
-                component={PostEdit}
-              />
+              /> */}
+
               <Route
                 path="/category/:categoryId/wikiImage/read/:wikiImageId"
                 exact={true}
                 component={WikiImageDetail}
               />
-              <PrivateRoute
+              {/* <PrivateRoute
                 isLoggedIn={isLoggedIn}
                 path="/category/:categoryId/wikiImage/add"
                 exact={true}
                 component={WikiImageAdd}
-              />
+              /> */}
               <PrivateRoute
                 isLoggedIn={isLoggedIn}
                 path="/category/:categoryId/wikiImage/edit/:wikiImageId"
@@ -217,7 +238,7 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
         </AppBox>
       )}
     />
-  </Router>
+  </Switch>
 );
 
 export default AppPresenter;

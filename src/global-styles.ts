@@ -1,6 +1,7 @@
 import reset from "styled-reset";
 import { injectGlobal } from "./typed-components";
 import { fontSize, color } from "./config/_mixin";
+import EditorDefaults from "./EditorDefaults";
 
 // tslint:disable-next-line
 injectGlobal`
@@ -51,11 +52,11 @@ ${reset};
     border: 2px solid transparent;
 }
   .blockHover {
-  border: 2px solid gray;
+  border: 2px solid ${EditorDefaults.BORDER_ISOVER_COLOR};
 }
 
 .blockActive {
-  border: 2px solid white;
+  border: 2px solid ${EditorDefaults.BORDER_SELECT_COLOR};
 }
 
 .ql-stroke {

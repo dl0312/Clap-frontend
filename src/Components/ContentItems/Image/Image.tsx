@@ -11,8 +11,7 @@ const ImageContainer = styled<IImageContainerProps, any>("div")`
   border-right: 0 solid transparent;
   border-left: 0 solid transparent;
   border-bottom: 0 solid transparent;
-  width: ${props => (props.fullWidth ? "100%" : null)};
-  width: ${props => (props.isEmpty ? "100%" : null)};
+  width: ${props => (props.isEmpty ? "100%" : "auto")};
 `;
 
 const EmptyImageContainer = styled.div`
@@ -37,10 +36,14 @@ const Image: React.SFC<IProps> = ({ fullWidth, src }) => {
     <ImageContainer
       className="content"
       fullWidth={fullWidth}
-      isEmpty={src !== null}
+      isEmpty={src === undefined}
     >
       {src ? (
-        <img style={{ width: "100%" }} src={src} alt="logo" />
+        <img
+          style={{ width: fullWidth ? "100%" : "auto" }}
+          src={src}
+          alt="logo"
+        />
       ) : (
         <EmptyImageContainer>
           <EmptyImageIcon className="far fa-image" />

@@ -2,6 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import { Value } from "slate";
 import { RenderNodeProps, RenderMarkProps, Editor, Plugin } from "slate-react";
+import EditorDefaults from "../../../EditorDefaults";
 
 interface ITextContainerProps {
   textColor: { r: string; g: string; b: string; a: string };
@@ -61,7 +62,9 @@ const Text: React.SFC<IProps> = ({
       {handleOnChange !== undefined ? (
         <Editor
           style={{
-            wordBreak: "break-word"
+            wordBreak: "break-word",
+            fontSize: "16px",
+            color: EditorDefaults.MAIN_TEXT_COLOR
           }}
           value={value}
           readOnly={false}
@@ -78,7 +81,9 @@ const Text: React.SFC<IProps> = ({
       ) : (
         <Editor
           style={{
-            wordBreak: "break-word"
+            wordBreak: "break-word",
+            fontSize: "16px",
+            color: EditorDefaults.MAIN_TEXT_COLOR
           }}
           value={value}
           readOnly={true}

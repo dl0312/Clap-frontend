@@ -4,6 +4,7 @@ import EmptyContainer from "../EmptyContainer";
 import Container from "../Container";
 import { Color } from "csstype";
 import { RenderNodeProps, RenderMarkProps } from "slate-react";
+import EditorDefaults from "../../EditorDefaults";
 
 interface IColumnProps {
   hasBlock: boolean;
@@ -17,7 +18,9 @@ const Column = styled<IColumnProps, any>("div")`
   align-items: center;
   justify-content: ${props => (props.hasBlock ? "flex-start" : "center")};
   outline: ${props =>
-    props.hasBlock ? "0px solid black" : "0.5px dashed #2f3542"};
+    props.hasBlock
+      ? `0px solid transparent`
+      : `1px dashed ${EditorDefaults.MAIN_TEXT_COLOR}`};
   background-color: ${props => props.bgc};
 `;
 

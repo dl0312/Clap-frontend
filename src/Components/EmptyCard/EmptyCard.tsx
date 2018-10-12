@@ -2,17 +2,34 @@ import React from "react";
 import styled from "styled-components";
 import ItemTypes from "../../ItemTypes";
 import { DropTarget, ConnectDropTarget, DropTargetMonitor } from "react-dnd";
-const InsertText = styled.div`
+import EditorDefaults from "../../EditorDefaults";
+
+interface IInsertText {
+  state: "ISOVER" | "ONDRAG" | "WRONG" | "NOTHING";
+}
+
+const InsertText = styled<IInsertText, any>("div")`
+  margin: 5px;
+  border-radius: 3px;
+  background-color: ${props =>
+    props.state === "ISOVER"
+      ? "rgba(184, 233, 148, 0.5)"
+      : props.state === "ONDRAG"
+        ? "#eee"
+        : props.state === "WRONG"
+          ? "rgba(240, 128, 128,0.5)"
+          : props.state === "NOTHING"
+            ? EditorDefaults.MAIN_BACKGROUND_COLOR
+            : null};
   text-align: center;
   height: 500px;
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   font-weight: 600;
   font-family: "Open Sans", sans-serif;
-  color: #fff;
+  color: ${EditorDefaults.MAIN_TEXT_COLOR};
   /* outline: 0.5px dashed #fff; */
 `;
 
@@ -52,22 +69,30 @@ class EmptyCard extends React.Component<IProps & IDnDProps> {
 
   public render() {
     const { connectDropTarget, isOverCurrent } = this.props;
+    const state =
+      this.props.onDrag === "columnList"
+        ? isOverCurrent
+          ? "ISOVER"
+          : "ONDRAG"
+        : this.props.onDrag === "content"
+          ? "WRONG"
+          : "NOTHING";
     return (
       connectDropTarget &&
       connectDropTarget(
         <div style={{ width: "99%" }}>
-          <InsertText>
-            {this.props.onDrag === "columnList" ? (
-              isOverCurrent ? (
-                `DROP IT`
-              ) : (
-                `DROP HERE!`
-              )
-            ) : this.props.onDrag === "content" ? (
+          <InsertText state={state}>
+            {state === "ISOVER" ? (
+              `DROP IT`
+            ) : state === "ONDRAG" ? (
+              `DROP HERE!`
+            ) : state === "WRONG" ? (
               `YOU NEED TO INSERT ROW TO INSERT CONTENT`
-            ) : (
-              <div>INSERT ROW</div>
-            )}
+            ) : state === "NOTHING" ? (
+              <div>
+                INSERT <br /> CONTENT
+              </div>
+            ) : null}
           </InsertText>
         </div>
       )

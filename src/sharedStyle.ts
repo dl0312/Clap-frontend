@@ -29,3 +29,12 @@ export const Item = styled.li`
   font-weight: 600;
   color: #8f9699;
 `;
+
+export const Button = styled.button`
+  background-color: white;
+  color: black;
+  border: 0.5px solid rgba(0, 0, 0, 0.2);
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+`;
