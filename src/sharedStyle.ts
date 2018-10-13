@@ -38,3 +38,8 @@ export const Button = styled.button`
   margin: 5px;
   cursor: pointer;
 `;
+
+export const Loading = styled.img`
+width: 100%,
+height: 100%
+`;

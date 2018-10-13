@@ -14,13 +14,14 @@ const BlockOptionContainer = styled<IBlockOptionContainerProps, any>("div")`
     props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
       ? null
       : "absolute"};
-  top: ${props => (props.isSelected ? "45px" : "45px")};
+  top: 0px;
   width: 25%;
   min-width: 400px;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
   background-color: #fff;
   color: #505659;
   transition: top 0.5s ease, opacity 0.5s ease, height 0.5s ease;
+  z-index: ${props => (props.isSelected ? "1" : "-1")};
   opacity: ${props => (props.isSelected ? "1" : "0")};
   display: flex;
   flex-direction: column;
@@ -247,6 +248,8 @@ interface IProps {
   handleOnChange: any;
   OnChangeCards: any;
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | "POST_ADD" | "POST_EDIT";
+  onBlockOptionDownClick: any;
+  buttonCallback: any;
 }
 
 class BlockOptions extends React.Component<IProps, any> {
@@ -706,7 +709,11 @@ class BlockOptions extends React.Component<IProps, any> {
   };
 
   public render() {
-    console.log(this.props);
+    const {
+      onBlockOptionDownClick,
+      buttonCallback,
+      selectedIndex
+    } = this.props;
     return (
       <BlockOptionContainer
         isSelected={
@@ -718,13 +725,13 @@ class BlockOptions extends React.Component<IProps, any> {
         <Header>
           <ButtonTitle>CONTENT</ButtonTitle>
           <ButtonColumn>
-            <Button>
+            <Button onClick={() => buttonCallback("delete", selectedIndex)}>
               <i className="fas fa-trash-alt" />
             </Button>
-            <Button>
+            <Button onClick={() => buttonCallback("duplicate", selectedIndex)}>
               <i className="fas fa-copy" />
             </Button>
-            <Button>
+            <Button onClick={() => onBlockOptionDownClick()}>
               <i className="fas fa-angle-down" />
             </Button>
           </ButtonColumn>

@@ -9,10 +9,12 @@ import {
 import { CATEGORIES_KEYWORD } from "../../sharedQueries";
 import { GetPos } from "../../Utility/GetPos";
 import { LOST_IMAGE_URL } from "../../constants";
+import { Loading } from "../../sharedStyle";
+import Input from "../Input";
 
 const ListContainer = styled.div`
+  width: 100%;
   background-color: white;
-  height: 250px;
   overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -34,18 +36,14 @@ const CategorySelectionContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   flex-direction: column;
-  padding: 5px;
+  padding: 5px 10px;
   color: black;
   background-color: white;
+  height: 100%;
 `;
 
-const SearchInput = styled.input`
+const SearchInput = styled(Input)`
   width: 100%;
-  margin-bottom: 5px;
-  padding: 0 10px;
-  height: 30px;
-  border: 1px solid #ced4da;
-  border-radius: 5px;
   &:focus {
     outline: none;
   }
@@ -99,6 +97,8 @@ const UpperContainer = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
 `;
 
 interface IProps {
@@ -148,13 +148,11 @@ class CategorySelection extends React.Component<IProps, IState> {
         <UpperContainer>
           <CategoryTitle>{type}</CategoryTitle>
           <SearchInput
-            type="text"
+            type={"text"}
             value={keyword}
-            onChange={e => {
-              e.preventDefault();
-              this.setState({ keyword: e.target.value });
-            }}
-            placeholder={`Search ${type} Name`}
+            onChange={this.onInputChange}
+            placeholder={`Search...`}
+            name={"keyword"}
           />
           <CategoriesByKeyword
             query={CATEGORIES_KEYWORD}
@@ -163,7 +161,7 @@ class CategorySelection extends React.Component<IProps, IState> {
             {({ loading, data, error }) => {
               if (loading) {
                 console.log("loading");
-                return <div>loading</div>;
+                return <Loading src={"https://i.stack.imgur.com/h6viz.gif"} />;
               }
               if (error) {
                 console.log("error");
@@ -234,6 +232,16 @@ class CategorySelection extends React.Component<IProps, IState> {
       </CategorySelectionContainer>
     );
   }
+  public onInputChange: React.ChangeEventHandler<
+    HTMLInputElement
+  > = async event => {
+    const {
+      target: { name, value }
+    } = event;
+    this.setState({
+      [name]: value
+    } as any);
+  };
 }
 
 export default CategorySelection;

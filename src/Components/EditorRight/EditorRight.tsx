@@ -37,12 +37,17 @@ const MenuTitle = styled.div`
   font-weight: 600;
 `;
 
+const menus = [
+  { icon: "fas fa-th-large", name: "CONTENT" },
+  { icon: "fas fa-bars", name: "ROW" },
+  { icon: "fas fa-columns", name: "BODY" }
+];
+
 interface IProps {
   // func
   masterCallback: any;
   addIdToState: any;
   deleteIdToState: any;
-
   rightMenu: number | null;
   cards: any[];
   view: "EDIT" | "USER" | "JSON";
@@ -146,66 +151,26 @@ class EditorRight extends Component<IProps, IState> {
       <Fragment>
         <Container>
           <MenuColumn>
-            <MenuItem
-              style={{ background: this.myColor(0), color: this.fontColor(0) }}
-              onClick={() => {
-                this.toggle(0);
-              }}
-              onMouseOver={() => {
-                this.hover(0);
-              }}
-              onMouseLeave={() => {
-                this.leave(0);
-              }}
-            >
-              <Icon className="fas fa-th-large" />
-              <MenuTitle>CONTENT</MenuTitle>
-            </MenuItem>
-            <MenuItem
-              style={{ background: this.myColor(1), color: this.fontColor(1) }}
-              onClick={() => {
-                this.toggle(1);
-              }}
-              onMouseOver={() => {
-                this.hover(1);
-              }}
-              onMouseLeave={() => {
-                this.leave(1);
-              }}
-            >
-              <Icon className="fas fa-bars" />
-              <MenuTitle>ROW</MenuTitle>
-            </MenuItem>
-            <MenuItem
-              style={{ background: this.myColor(2), color: this.fontColor(2) }}
-              onClick={() => {
-                this.toggle(2);
-              }}
-              onMouseOver={() => {
-                this.hover(2);
-              }}
-              onMouseLeave={() => {
-                this.leave(2);
-              }}
-            >
-              <Icon className="fas fa-columns" />
-              <MenuTitle>BODY</MenuTitle>
-            </MenuItem>
-            <MenuItem
-              style={{ background: this.myColor(3), color: this.fontColor(3) }}
-              onClick={() => {
-                this.toggle(3);
-              }}
-              onMouseOver={() => {
-                this.hover(3);
-              }}
-              onMouseLeave={() => {
-                this.leave(3);
-              }}
-            >
-              <Icon className="fas fa-feather" />
-              <MenuTitle>TITLE</MenuTitle>
-            </MenuItem>
+            {menus.map((menu, index) => (
+              <MenuItem
+                style={{
+                  background: this.myColor(index),
+                  color: this.fontColor(index)
+                }}
+                onClick={() => {
+                  this.toggle(index);
+                }}
+                onMouseOver={() => {
+                  this.hover(index);
+                }}
+                onMouseLeave={() => {
+                  this.leave(index);
+                }}
+              >
+                <Icon className={menu.icon} />
+                <MenuTitle>{menu.name}</MenuTitle>
+              </MenuItem>
+            ))}
           </MenuColumn>
           {this.showSection()}
         </Container>

@@ -90,7 +90,7 @@ class EmptyCard extends React.Component<IProps & IDnDProps> {
               `YOU NEED TO INSERT ROW TO INSERT CONTENT`
             ) : state === "NOTHING" ? (
               <div>
-                INSERT <br /> CONTENT
+                INSERT <br /> ROW
               </div>
             ) : null}
           </InsertText>

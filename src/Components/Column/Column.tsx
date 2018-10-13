@@ -42,7 +42,7 @@ class Column extends Component<IProps> {
             (columnRatio, index) =>
               (this.props.contentWidth * columnRatio) / totalRatio
           )
-          .join("px ") + "px"
+          .join("fr ") + "fr"
     };
     return (
       <div className="columnList" style={columnListStyle}>

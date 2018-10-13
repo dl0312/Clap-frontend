@@ -91,6 +91,9 @@ import { GetPos } from "../../Utility/GetPos";
 import { MutationFn } from "react-apollo";
 import { addPost, addPostVariables } from "../../types/api";
 import { Button } from "../../sharedStyle";
+import Textarea from "../Textarea";
+import Template from "../Template";
+import CategorySelection from "../CategorySelection";
 
 interface IEditorContainerProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
@@ -144,8 +147,19 @@ const DeviceSelectorContainer = styled.div`
   text-align: center;
 `;
 
-const Device = styled.svg`
+interface IDeviceProps {
+  selected: boolean;
+}
+
+const Device = styled<IDeviceProps, any>("svg")`
   margin: 0px 15px;
+  cursor: pointer;
+  fill: ${props => (props.selected ? "#7158e2" : "black")};
+  opacity: ${props => (props.selected ? "1" : "0.5")};
+  transition: opacity 0.2s ease, fill 0.2s ease;
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 const EditorButtonContainer = styled.div`
@@ -161,6 +175,7 @@ const SaveButton = Button.extend`
 const QestionButton = Button.extend`
   padding: 10px 13px;
   border-radius: 100%;
+  font-weight: bolder;
 `;
 
 const MoreOptionButton = styled.i`
@@ -236,22 +251,89 @@ const EditorContentContainer = styled.div`
 //   background-color: #555;
 // `;
 
+const EditorLeftOuterContainer = styled.div`
+  width: 75%;
+  display: flex;
+  justify-content: center;
+  background-color: #f7f7f7;
+  ${media.tablet`width: 100%;`};
+  ${media.phone`width: 100%;`};
+`;
+
 interface IEditorLeftContainerProps {
   bodyBackgroundColor: { r: number; g: number; b: number; a: number };
+  device: "PHONE" | "TABLET" | "DESKTOP";
 }
 
 const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   position: relative;
-  width: 75%;
-  overflow: hidden;
+  width: ${props =>
+    props.device === "PHONE"
+      ? "425px"
+      : props.device === "TABLET"
+        ? "767px"
+        : props.device === "DESKTOP"
+          ? "100%"
+          : "100%"};
+  /* overflow-y: hidden; */
   background-color: ${props =>
     `rgba(${props.bodyBackgroundColor.r}, ${props.bodyBackgroundColor.g}, ${
       props.bodyBackgroundColor.b
     }, ${props.bodyBackgroundColor.a})`};
-  border-right: 1px solid rgba(0, 0, 0, 0.2);
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  /* border-left: 1px solid rgba(0, 0, 0, 0.2);
+  border-right: 1px solid rgba(0, 0, 0, 0.2); */
   transition: width 0.5s ease;
-  ${media.tablet`width: 100%;`};
-  ${media.phone`width: 100%;`};
+`;
+
+const TitleContainer = styled.div`
+  max-width: 800px;
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+`;
+
+const TitleInput = styled(Textarea)`
+  width: 100%;
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+  word-wrap: break-word;
+  cursor: text;
+  overflow: hidden;
+  font-size: 32px;
+  line-height: 42px;
+  font-weight: 400;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
+  margin: 0 10px;
+`;
+
+const CategoryButton = styled.i`
+  position: absolute;
+  right: 20px;
+  top: 70px;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const CategorySelectionContainer = styled.div`
+  position: absolute;
+  z-index: 999;
+  width: 400px;
+  height: 500px;
+  right: 10px;
+  top: 100px;
+  background-color: transparent;
 `;
 
 const EditorRightContainer = styled.div`
@@ -259,6 +341,7 @@ const EditorRightContainer = styled.div`
   transition: width 1s ease;
   width: 25%;
   min-width: 400px;
+  border-left: 1px solid rgba(0, 0, 0, 0.2);
   ${media.tablet`width: 0%;  min-width: 0px;
 `};
   ${media.phone`width: 0%;`};
@@ -319,6 +402,8 @@ const PostButtonContainer = styled.div`
 
 const PostButton = Button.extend`
   border-radius: 100px;
+  background-color: #7158e2;
+  color: white;
 `;
 
 interface IProps {
@@ -336,6 +421,9 @@ interface IProps {
 interface IState {
   rightMenu: number | null;
   view: "EDIT" | "USER" | "JSON";
+  device: "PHONE" | "TABLET" | "DESKTOP";
+  templatePopUp: boolean;
+  categoryPopUp: boolean;
   bodyBackgroundColor: { r: number; g: number; b: number; a: number };
   contentWidth: number;
   font: string;
@@ -359,6 +447,9 @@ class Editor extends React.Component<IProps, IState> {
     this.state = {
       rightMenu: null,
       view: "EDIT",
+      device: "DESKTOP",
+      templatePopUp: false,
+      categoryPopUp: false,
       bodyBackgroundColor: EditorDefaults.BACKGROUND_COLOR,
       contentWidth: EditorDefaults.WIDTH,
       font: EditorDefaults.FONT,
@@ -375,9 +466,10 @@ class Editor extends React.Component<IProps, IState> {
       pos: { x: 0, y: 0 },
       title: "",
       category: [],
-      cards: []
+      cards: [],
+      ...props.state
     };
-    this.state = { ...props.state };
+    // this.state = { ...props.state };
   }
 
   public addIdToState = (
@@ -1168,9 +1260,11 @@ class Editor extends React.Component<IProps, IState> {
       hoveredIndex,
       contentWidth,
       view,
+      device,
       pos,
       hoverImgJson,
-      onImage
+      onImage,
+      categoryPopUp
     } = this.state;
     console.log(this.state);
     return (
@@ -1195,26 +1289,32 @@ class Editor extends React.Component<IProps, IState> {
             </LogoContainer>
             <DeviceSelectorContainer>
               <Device
+                onClick={() => this.handleDevice("PHONE")}
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
+                selected={device === "PHONE"}
               >
                 <path d="M17.5 2c.276 0 .5.224.5.5v19c0 .276-.224.5-.5.5h-11c-.276 0-.5-.224-.5-.5v-19c0-.276.224-.5.5-.5h11zm2.5 0c0-1.104-.896-2-2-2h-12c-1.104 0-2 .896-2 2v20c0 1.104.896 2 2 2h12c1.104 0 2-.896 2-2v-20zm-9.5 1h3c.276 0 .5.224.5.501 0 .275-.224.499-.5.499h-3c-.275 0-.5-.224-.5-.499 0-.277.225-.501.5-.501zm1.5 18c-.553 0-1-.448-1-1s.447-1 1-1c.552 0 .999.448.999 1s-.447 1-.999 1zm5-3h-10v-13h10v13z" />
               </Device>
               <Device
+                onClick={() => this.handleDevice("TABLET")}
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
+                selected={device === "TABLET"}
               >
                 <path d="M19 24c1.104 0 2-.896 2-2v-20c0-1.104-.896-2-2-2h-14c-1.104 0-2 .896-2 2v20c0 1.104.896 2 2 2h14zm-14-3v-18h14v18h-14zm6.5 1.5c0-.276.224-.5.5-.5s.5.224.5.5-.224.5-.5.5-.5-.224-.5-.5z" />
               </Device>
               <Device
+                onClick={() => this.handleDevice("DESKTOP")}
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
+                selected={device === "DESKTOP"}
               >
                 <path d="M2 0c-1.104 0-2 .896-2 2v15c0 1.104.896 2 2 2h20c1.104 0 2-.896 2-2v-15c0-1.104-.896-2-2-2h-20zm20 14h-20v-12h20v12zm-6.599 7c0 1.6 1.744 2.625 2.599 3h-12c.938-.333 2.599-1.317 2.599-3h6.802z" />
               </Device>
@@ -1228,22 +1328,38 @@ class Editor extends React.Component<IProps, IState> {
           </EditorNavOne>
           <EditorNavTwo>
             <div />
-            <EditorUtilButtonContainer>Util</EditorUtilButtonContainer>
+            <EditorUtilButtonContainer>UTIL</EditorUtilButtonContainer>
             <TemplateButtonContainer>
-              <TemplateButton>TEMPLATES</TemplateButton>
+              <TemplateButton
+                onClick={() =>
+                  this.setState({
+                    templatePopUp: !this.state.templatePopUp
+                  })
+                }
+              >
+                TEMPLATES
+              </TemplateButton>
+              {this.state.templatePopUp && (
+                <Template
+                  onTemplateClick={this.onTemplateClick}
+                  handleSetState={this.handleSetState}
+                />
+              )}
             </TemplateButtonContainer>
           </EditorNavTwo>
           <EditorContentContainer>
-            <EditorLeftContainer
-              view={view}
-              bodyBackgroundColor={this.state.bodyBackgroundColor}
-            >
-              {view === "EDIT" ? (
-                <React.Fragment>
-                  <Row>
-                    <Col style={{ minHeight: "100vh" }}>
-                      <div className="toolbar">
-                        {/* <FlexBox>
+            <EditorLeftOuterContainer>
+              <EditorLeftContainer
+                view={view}
+                device={device}
+                bodyBackgroundColor={this.state.bodyBackgroundColor}
+              >
+                {view === "EDIT" ? (
+                  <React.Fragment>
+                    <Row>
+                      <Col>
+                        <div className="toolbar">
+                          {/* <FlexBox>
                         {selectors.map((Type, i) => {
                           if (
                             this.state.selectedIndex !== null &&
@@ -1276,111 +1392,140 @@ class Editor extends React.Component<IProps, IState> {
                           }
                         })}
                       </FlexBox> */}
-                        <TextEditorButtonContainer>
-                          {icons.map((Type, i) => {
-                            if (
-                              this.state.selectedIndex !== null &&
-                              Array.isArray(this.state.selectedIndex) &&
-                              this.state.selectedContent !== undefined &&
-                              (this.state.selectedContent.content === "TEXT" ||
-                                this.state.selectedContent.content ===
-                                  "BUTTON" ||
-                                this.state.selectedContent.content === "HTML")
-                            ) {
-                              const selected = this.state.selectedIndex;
-                              const onChange = ({ value }: any) => {
-                                this.handleOnChange(
-                                  { value },
-                                  selected,
-                                  "TEXT",
-                                  "TEXT_CHANGE"
+                          <TextEditorButtonContainer>
+                            {icons.map((Type, i) => {
+                              if (
+                                this.state.selectedIndex !== null &&
+                                Array.isArray(this.state.selectedIndex) &&
+                                this.state.selectedContent !== undefined &&
+                                (this.state.selectedContent.content ===
+                                  "TEXT" ||
+                                  this.state.selectedContent.content ===
+                                    "BUTTON" ||
+                                  this.state.selectedContent.content === "HTML")
+                              ) {
+                                const selected = this.state.selectedIndex;
+                                const onChange = ({ value }: any) => {
+                                  this.handleOnChange(
+                                    { value },
+                                    selected,
+                                    "TEXT",
+                                    "TEXT_CHANGE"
+                                  );
+                                };
+                                const { value } = this.showSelected(selected);
+                                return (
+                                  <TextEditorButton>
+                                    <Type
+                                      change={value.change()}
+                                      onChange={onChange}
+                                      key={i}
+                                      className="toolbar-item"
+                                      activeClassName="toolbar-item-active"
+                                      disableClassName="toolbar-item-disable"
+                                      activeStrokeClassName="ql-stroke-active"
+                                      activeFillClassName="ql-fill-active"
+                                      activeThinClassName="ql-thin-active"
+                                      activeEvenClassName="ql-even-active"
+                                    />
+                                  </TextEditorButton>
                                 );
-                              };
-                              const { value } = this.showSelected(selected);
-                              return (
-                                <TextEditorButton>
-                                  <Type
-                                    change={value.change()}
-                                    onChange={onChange}
-                                    key={i}
-                                    className="toolbar-item"
-                                    activeClassName="toolbar-item-active"
-                                    disableClassName="toolbar-item-disable"
-                                    activeStrokeClassName="ql-stroke-active"
-                                    activeFillClassName="ql-fill-active"
-                                    activeThinClassName="ql-thin-active"
-                                    activeEvenClassName="ql-even-active"
-                                  />
-                                </TextEditorButton>
-                              );
-                            } else {
-                              return null;
-                            }
-                          })}
-                        </TextEditorButtonContainer>
-                      </div>
-                    </Col>
-                  </Row>
-                  <EditorLeft
-                    bodyBackgroundColor={this.state.bodyBackgroundColor}
-                    contentWidth={this.state.contentWidth}
-                    font={this.state.font}
-                    view="EDIT"
-                  >
-                    {cards.map((item, index) => {
-                      if (item.type === "columnList") {
-                        return (
-                          <Card
-                            cards={this.state.cards.length}
-                            key={index}
-                            index={index}
-                            moveCard={this.moveCard}
-                            handleDrop={this.handleDrop}
-                            onDrag={this.state.onDrag}
-                            callbackfromparent={this.buttonCallback}
-                            selectedIndex={selectedIndex}
-                            hoveredIndex={hoveredIndex}
-                            masterCallback={this.masterCallback}
-                          >
-                            <Column
-                              columnListArray={item.columnListArray}
-                              columnArray={item.content}
-                              index={[index, 0, 0]}
-                              callbackfromparent={this.buttonCallback}
-                              handleDrop={this.handleDrop}
+                              } else {
+                                return null;
+                              }
+                            })}
+                          </TextEditorButtonContainer>
+                        </div>
+                      </Col>
+                    </Row>
+                    <TitleContainer>
+                      <TitleInput
+                        type={"text"}
+                        value={this.state.title}
+                        onChange={this.onInputChange}
+                        placeholder="Title"
+                        name={"title"}
+                      />
+                      <CategoryButton
+                        className="fas fa-search fa-2x"
+                        onClick={() =>
+                          this.setState({
+                            categoryPopUp: !this.state.categoryPopUp
+                          })
+                        }
+                      />
+                      {categoryPopUp && (
+                        <CategorySelectionContainer>
+                          <CategorySelection
+                            type="CATEGORY"
+                            addIdToState={this.addIdToState}
+                            deleteIdToState={this.deleteIdToState}
+                            selectedCategories={this.state.category}
+                          />
+                        </CategorySelectionContainer>
+                      )}
+                    </TitleContainer>
+                    <EditorLeft
+                      bodyBackgroundColor={this.state.bodyBackgroundColor}
+                      font={this.state.font}
+                      view="EDIT"
+                    >
+                      {cards.map((item, index) => {
+                        if (item.type === "columnList") {
+                          return (
+                            <Card
+                              cards={this.state.cards.length}
+                              key={index}
+                              index={index}
                               moveCard={this.moveCard}
-                              handleOnChange={this.handleOnChange}
-                              renderNode={this.renderNode}
-                              renderMark={this.renderMark}
-                              contentWidth={contentWidth}
+                              handleDrop={this.handleDrop}
+                              onDrag={this.state.onDrag}
+                              callbackfromparent={this.buttonCallback}
                               selectedIndex={selectedIndex}
                               hoveredIndex={hoveredIndex}
-                              onDrag={this.state.onDrag}
                               masterCallback={this.masterCallback}
-                            />
-                          </Card>
-                        );
-                      } else {
-                        return null;
-                      }
-                    })}
-                    {cards.length !== 0 ? null : (
-                      <EmptyCard
-                        index={0}
-                        masterCallback={this.masterCallback}
-                        moveCard={this.moveCard}
-                        handleDrop={this.handleDrop}
-                        onDrag={this.state.onDrag}
-                      />
-                    )}
-                  </EditorLeft>
-                </React.Fragment>
-              ) : view === "USER" ? (
-                <UserView json={this.state} />
-              ) : view === "JSON" ? (
-                <JsonView json={this.state} />
-              ) : null}
-            </EditorLeftContainer>
+                            >
+                              <Column
+                                columnListArray={item.columnListArray}
+                                columnArray={item.content}
+                                index={[index, 0, 0]}
+                                callbackfromparent={this.buttonCallback}
+                                handleDrop={this.handleDrop}
+                                moveCard={this.moveCard}
+                                handleOnChange={this.handleOnChange}
+                                renderNode={this.renderNode}
+                                renderMark={this.renderMark}
+                                contentWidth={contentWidth}
+                                selectedIndex={selectedIndex}
+                                hoveredIndex={hoveredIndex}
+                                onDrag={this.state.onDrag}
+                                masterCallback={this.masterCallback}
+                              />
+                            </Card>
+                          );
+                        } else {
+                          return null;
+                        }
+                      })}
+                      {cards.length !== 0 ? null : (
+                        <EmptyCard
+                          index={0}
+                          masterCallback={this.masterCallback}
+                          moveCard={this.moveCard}
+                          handleDrop={this.handleDrop}
+                          onDrag={this.state.onDrag}
+                        />
+                      )}
+                    </EditorLeft>
+                  </React.Fragment>
+                ) : view === "USER" ? (
+                  <UserView json={this.state} />
+                ) : view === "JSON" ? (
+                  <JsonView json={this.state} />
+                ) : null}
+              </EditorLeftContainer>
+            </EditorLeftOuterContainer>
+
             <EditorRightContainer>
               <EditorRight
                 masterCallback={
@@ -1405,6 +1550,8 @@ class Editor extends React.Component<IProps, IState> {
                 selectedIndex={selectedIndex}
                 selectedContent={this.showSelected(selectedIndex)}
                 OnChangeCards={this.OnChangeCards}
+                onBlockOptionDownClick={this.onBlockOptionDownClick}
+                buttonCallback={this.buttonCallback}
               />
             </EditorRightContainer>
           </EditorContentContainer>
@@ -1520,6 +1667,43 @@ class Editor extends React.Component<IProps, IState> {
       default:
         return;
     }
+  };
+
+  public handleDevice = (device: "PHONE" | "TABLET" | "DESKTOP") => {
+    this.setState({ device });
+  };
+
+  public onInputChange: React.ChangeEventHandler<
+    HTMLInputElement
+  > = async event => {
+    const {
+      target: { name, value }
+    } = event;
+    this.setState({
+      [name]: value
+    } as any);
+  };
+
+  public onTemplateClick = (templateContent: any) => {
+    console.log(templateContent);
+    this.setState({
+      selectedIndex: null,
+      hoveredIndex: null,
+      selectedContent: null,
+      cards: templateContent
+    });
+  };
+
+  public handleSetState = (state: string, value: any) => {
+    this.setState({ [name]: value } as any);
+  };
+
+  public onBlockOptionDownClick = () => {
+    this.setState({
+      selectedIndex: null,
+      hoveredIndex: null,
+      selectedContent: null
+    });
   };
 }
 

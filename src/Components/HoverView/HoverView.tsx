@@ -334,7 +334,6 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
       <HoverBorder>
         <EditorLeft
           bodyBackgroundColor={json.bodyBackgroundColor}
-          contentWidth={json.contentWidth}
           font={json.font}
           view="USER"
         >

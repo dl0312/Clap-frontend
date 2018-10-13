@@ -293,7 +293,6 @@ class UserView extends React.Component<IUserViewProps, IState> {
     return (
       <EditorLeft
         bodyBackgroundColor={json.bodyBackgroundColor}
-        contentWidth={json.contentWidth}
         font={json.font}
         view="USER"
       >

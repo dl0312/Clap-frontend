@@ -6,22 +6,25 @@ interface IEditorLeftContainerProps {
 }
 
 const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
-  overflow-y: auto;
-  overflow-x: hidden;
-  position: ${props => (props.view === "USER" ? "block" : "absolute")};
+  /* overflow-y: auto; */
+  /* overflow-x: hidden; */
+  /* position: ${props => (props.view === "USER" ? "block" : "absolute")};
   bottom: 0px;
   right: 0px;
   left: 0px;
   top: ${props => {
     switch (props.view) {
       case "EDIT":
-        return "60px";
+        return null;
       case "USER":
         return "0px";
       default:
         return null;
     }
-  }};
+  }}; */
+  width: 100%;
+  overflow-y: auto;
+  height: 75vh;
 `;
 
 interface IRealEditorContainerProps {
@@ -37,13 +40,12 @@ const RealEditorContainer = styled<IRealEditorContainerProps, any>("div")`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: ${props => (props.view === "USER" ? null : "50px")};
+  margin-bottom: ${props => (props.view === "USER" ? null : null)};
   margin-top: ${props => (props.view === "USER" ? null : "10px")};
 `;
 
 interface IProps {
   view: "EDIT" | "USER" | "JSON";
-  contentWidth: number;
   font: string | null;
   bodyBackgroundColor: { r: number; g: number; b: number; a: number };
 }
