@@ -32,6 +32,11 @@ const AppBox = styled.div`
 
 const MainContainer = styled.div`
   margin-top: 70px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
   .fade-enter {
     opacity: 0;
   }

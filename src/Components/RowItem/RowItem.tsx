@@ -56,7 +56,7 @@ const itemSource = {
 };
 
 const RowItemContainer = styled.div`
-  cursor: pointer;
+  cursor: -webkit-grab;
   border-radius: 5px;
   height: 55px;
   padding: 5px;

@@ -15,6 +15,7 @@ import { Helmet } from "react-helmet";
 
 const HomeContainer = styled.div`
   margin-top: -70px;
+  width: 100%;
 `;
 
 const FeaturedContainer = styled.div`

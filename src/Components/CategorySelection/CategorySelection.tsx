@@ -36,7 +36,7 @@ const CategorySelectionContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   flex-direction: column;
-  padding: 5px 10px;
+  padding: 10px;
   color: black;
   background-color: white;
   height: 100%;
@@ -95,10 +95,16 @@ const SelectedListContainer = styled.div`
 const UpperContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   flex-direction: column;
   width: 100%;
   height: 100%;
+`;
+
+const UpperSelectorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 `;
 
 interface IProps {
@@ -146,76 +152,86 @@ class CategorySelection extends React.Component<IProps, IState> {
     return (
       <CategorySelectionContainer>
         <UpperContainer>
-          <CategoryTitle>{type}</CategoryTitle>
-          <SearchInput
-            type={"text"}
-            value={keyword}
-            onChange={this.onInputChange}
-            placeholder={`Search...`}
-            name={"keyword"}
-          />
-          <CategoriesByKeyword
-            query={CATEGORIES_KEYWORD}
-            variables={{ keyword }}
-          >
-            {({ loading, data, error }) => {
-              if (loading) {
-                console.log("loading");
-                return <Loading src={"https://i.stack.imgur.com/h6viz.gif"} />;
-              }
-              if (error) {
-                console.log("error");
-                return <div>{error.message}</div>;
-              }
-              if (data === undefined || data === null) {
-                console.log("undefined");
-                return <div>undefined data</div>;
-              }
-              console.log(data);
-              return (
-                <ListContainer>
-                  {data.GetCategoriesByKeyword.categories &&
-                    data.GetCategoriesByKeyword.categories.map(
-                      (category, index) => (
-                        <React.Fragment key={index}>
-                          <DataContainer
-                            onClick={e => {
-                              e.preventDefault();
-                              addIdToState(type, category);
-                            }}
-                          >
-                            {category!.wikiImages![0] ? (
-                              <WikiImage
-                                src={category!.wikiImages![0]!.shownImage}
-                                alt={category!.name}
-                                onMouseOver={() =>
-                                  this.setState({
-                                    hoverImgJson: category!.wikiImages![0]!
-                                      .hoverImage,
-                                    onImage: true
-                                  })
-                                }
-                                onMouseMove={(
-                                  e: React.MouseEvent<HTMLImageElement>
-                                ) => this.setState({ pos: GetPos(e) })}
-                                onMouseOut={() => {
-                                  this.setState({
-                                    onImage: false
-                                  });
-                                }}
-                              />
-                            ) : (
-                              <WikiImage src={LOST_IMAGE_URL} />
-                            )}
-                            <CategoryName>{category!.name}</CategoryName>
-                          </DataContainer>
-                        </React.Fragment>
-                      )
-                    )}
-                </ListContainer>
-              );
-            }}
-          </CategoriesByKeyword>
+          <UpperSelectorContainer>
+            <CategoryTitle>{type}</CategoryTitle>
+            <SearchInput
+              type={"text"}
+              value={keyword}
+              onChange={this.onInputChange}
+              placeholder={`Search...`}
+              name={"keyword"}
+            />
+            <CategoriesByKeyword
+              query={CATEGORIES_KEYWORD}
+              variables={{ keyword }}
+            >
+              {({ loading, data, error }) => {
+                if (loading) {
+                  console.log("loading");
+                  return (
+                    <Loading className="lds-ellipsis">
+                      <div />
+                      <div />
+                      <div />
+                      <div />
+                    </Loading>
+                  );
+                }
+                if (error) {
+                  console.log("error");
+                  return <div>{error.message}</div>;
+                }
+                if (data === undefined || data === null) {
+                  console.log("undefined");
+                  return <div>undefined data</div>;
+                }
+                console.log(data);
+                return (
+                  <ListContainer>
+                    {data.GetCategoriesByKeyword.categories &&
+                      data.GetCategoriesByKeyword.categories.map(
+                        (category, index) => (
+                          <React.Fragment key={index}>
+                            <DataContainer
+                              onClick={e => {
+                                e.preventDefault();
+                                addIdToState(type, category);
+                              }}
+                            >
+                              {category!.wikiImages![0] ? (
+                                <WikiImage
+                                  src={category!.wikiImages![0]!.shownImage}
+                                  alt={category!.name}
+                                  onMouseOver={() =>
+                                    this.setState({
+                                      hoverImgJson: category!.wikiImages![0]!
+                                        .hoverImage,
+                                      onImage: true
+                                    })
+                                  }
+                                  onMouseMove={(
+                                    e: React.MouseEvent<HTMLImageElement>
+                                  ) => this.setState({ pos: GetPos(e) })}
+                                  onMouseOut={() => {
+                                    this.setState({
+                                      onImage: false
+                                    });
+                                  }}
+                                />
+                              ) : (
+                                <WikiImage src={LOST_IMAGE_URL} />
+                              )}
+                              <CategoryName>{category!.name}</CategoryName>
+                            </DataContainer>
+                          </React.Fragment>
+                        )
+                      )}
+                  </ListContainer>
+                );
+              }}
+            </CategoriesByKeyword>
+          </UpperSelectorContainer>
+
           <SelectedListContainer>
             {selectedCategories.map((categoryId, index) => {
               return (
