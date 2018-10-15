@@ -38,8 +38,6 @@ const SlideImage = styled<ISlideImageProps, any>("div")`
   animation-name: animation;
   animation-iteration-count: infinite;
 
-  ${media.tablet`background-size: auto 100%`};
-  ${media.phone``};
   @keyframes animation {
     0% {
       transform: scale(1);
@@ -51,6 +49,8 @@ const SlideImage = styled<ISlideImageProps, any>("div")`
       transform: scale(1);
     }
   }
+  ${media.tablet`background-size: auto 100%;`};
+  ${media.phone``};
 `;
 
 interface ISlideTextProps {
@@ -95,33 +95,33 @@ const SlideButton = styled<ISlideButtonProps, any>("button")`
   }
 `;
 
-const DotIndex = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: absolute;
-  width: 100px;
-  z-index: 2;
-  bottom: 100px;
-`;
+// const DotIndex = styled.div`
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   position: absolute;
+//   width: 100px;
+//   z-index: 2;
+//   bottom: 100px;
+// `;
 
-interface IDotProps {
-  isSelect: boolean;
-}
+// interface IDotProps {
+//   isSelect: boolean;
+// }
 
-const Dot = styled<IDotProps, any>("button")`
-  border-radius: 100%;
-  width: 13px;
-  height: 13px;
-  border: 1px solid white;
-  transition: background-color 0.5s ease;
-  background-color: ${props => (props.isSelect ? "white" : "transparent")};
-  outline: none;
+// const Dot = styled<IDotProps, any>("button")`
+//   border-radius: 100%;
+//   width: 13px;
+//   height: 13px;
+//   border: 1px solid white;
+//   transition: background-color 0.5s ease;
+//   background-color: ${props => (props.isSelect ? "white" : "transparent")};
+//   outline: none;
 
-  &:hover {
-    background-color: white;
-  }
-`;
+//   &:hover {
+//     background-color: white;
+//   }
+// `;
 
 interface IState {
   slideNum: number;
@@ -213,7 +213,7 @@ class Slide extends React.Component<any, IState> {
           <SlideButton onClick={() => this.imgChange("arrow", 1)} dir="right">
             <i className="fas fa-chevron-circle-right" />
           </SlideButton>
-          <DotIndex className="w3-display-bottommiddle">
+          {/* <DotIndex className="w3-display-bottommiddle">
             {slides.map((slide, index) => {
               return (
                 <Dot
@@ -223,7 +223,7 @@ class Slide extends React.Component<any, IState> {
                 />
               );
             })}
-          </DotIndex>
+          </DotIndex> */}
         </SlideContainer>
       </React.Fragment>
     );

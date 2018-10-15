@@ -599,6 +599,12 @@
     "@types/history" "*"
     "@types/react" "*"
 
+"@types/react-textarea-autosize@^4.3.3":
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@types/react-textarea-autosize/-/react-textarea-autosize-4.3.3.tgz#85f542a4c582836d01b9751b3948dfad1642f0cb"
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-toastify@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@types/react-toastify/-/react-toastify-4.0.1.tgz#5eef518608a6d65a8b5dbaee81b55f0c0281b873"
@@ -8418,6 +8424,12 @@ react-slick@~0.23.1:
 react-textarea-autosize@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/react-textarea-autosize/-/react-textarea-autosize-6.1.0.tgz#df91387f8a8f22020b77e3833c09829d706a09a5"
+  dependencies:
+    prop-types "^15.6.0"
+
+react-textarea-autosize@^7.0.4:
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/react-textarea-autosize/-/react-textarea-autosize-7.0.4.tgz#4e4be649b544a88713e7b5043f76950f35d3d503"
   dependencies:
     prop-types "^15.6.0"
 

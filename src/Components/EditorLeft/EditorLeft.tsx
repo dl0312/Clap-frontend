@@ -24,7 +24,7 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   }}; */
   width: 100%;
   overflow-y: auto;
-  height: 75vh;
+  height: 91vh;
 `;
 
 interface IRealEditorContainerProps {

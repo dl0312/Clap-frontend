@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "../../typed-components";
+import TextareaAutosize from "react-textarea-autosize";
 
-const Container = styled.textarea`
+const Container = styled(TextareaAutosize)`
   border: none;
   border-bottom: 2px solid ${props => props.theme.greyColor};
   font-size: 15px;

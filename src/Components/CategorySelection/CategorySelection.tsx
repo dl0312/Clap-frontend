@@ -9,8 +9,8 @@ import {
 import { CATEGORIES_KEYWORD } from "../../sharedQueries";
 import { GetPos } from "../../Utility/GetPos";
 import { LOST_IMAGE_URL } from "../../constants";
-import { Loading } from "../../sharedStyle";
 import Input from "../Input";
+import Loading from "../Loading";
 
 const ListContainer = styled.div`
   width: 100%;
@@ -167,15 +167,7 @@ class CategorySelection extends React.Component<IProps, IState> {
             >
               {({ loading, data, error }) => {
                 if (loading) {
-                  console.log("loading");
-                  return (
-                    <Loading className="lds-ellipsis">
-                      <div />
-                      <div />
-                      <div />
-                      <div />
-                    </Loading>
-                  );
+                  return <Loading color="#000" />;
                 }
                 if (error) {
                   console.log("error");

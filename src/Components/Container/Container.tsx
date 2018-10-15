@@ -381,7 +381,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
     };
   }
 
-  public showInner = (active: boolean) => {
+  public showInner = (selected: boolean) => {
     switch (this.props.item.content) {
       case "BUTTON":
         let value = null;
@@ -456,6 +456,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
             index={this.props.index}
             item={this.props.item}
             plugins={plugins}
+            selected={selected}
             handleOnChange={this.props.handleOnChange}
             renderNode={this.props.renderNode}
             renderMark={this.props.renderMark}

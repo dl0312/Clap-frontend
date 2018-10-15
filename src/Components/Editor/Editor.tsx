@@ -23,69 +23,6 @@ import {
   CATEGORIES_KEYWORD
 } from "../../sharedQueries";
 
-import { Row, Col } from "antd";
-import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
-import Blockquote from "@canner/slate-icon-blockquote";
-import Bold from "@canner/slate-icon-bold";
-// import Clean from "@canner/slate-icon-clean";
-// import Code from "@canner/slate-icon-code";
-// import CodeBlock from "@canner/slate-icon-codeblock";
-// import Emoji, {EmojiPlugin} from '@canner/slate-icon-emoji';
-import FontBgColor from "@canner/slate-icon-fontbgcolor";
-import FontColor from "@canner/slate-icon-fontcolor";
-import { Header1, Header2 } from "@canner/slate-icon-header";
-import Hr from "@canner/slate-icon-hr";
-// import Image from "@canner/slate-icon-image";
-// import { Indent, Outdent } from "@canner/slate-icon-indent";
-import Italic from "@canner/slate-icon-italic";
-import Table from "@canner/slate-icon-table";
-import Link from "@canner/slate-icon-link";
-import { OlList, UlList } from "@canner/slate-icon-list";
-import StrikeThrough from "@canner/slate-icon-strikethrough";
-import Underline from "@canner/slate-icon-underline";
-import Undo from "@canner/slate-icon-undo";
-import Redo from "@canner/slate-icon-redo";
-import Video from "@canner/slate-icon-video";
-
-// select
-// import FontSize from "@canner/slate-select-fontsize";
-// import LetterSpacing from "@canner/slate-select-letterspacing";
-// import LineHeight from "@canner/slate-select-lineheight";
-
-// plugins
-import "prismjs/themes/prism.css";
-
-// const selectors = [FontSize, LetterSpacing, LineHeight];
-const icons = [
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Blockquote,
-  Bold,
-  Italic,
-  // Clean,
-  // Code,
-  // CodeBlock,
-  // Emoji,
-  FontBgColor,
-  FontColor,
-  Hr,
-  Header1,
-  Header2,
-  // Image,
-  Video,
-  // Indent,
-  // Outdent,
-  Link,
-  OlList,
-  UlList,
-  Table,
-  StrikeThrough,
-  Underline,
-  Undo,
-  Redo
-];
-
 import update from "immutability-helper";
 import { GetPos } from "../../Utility/GetPos";
 import { MutationFn } from "react-apollo";
@@ -284,7 +221,7 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   display: flex;
   align-items: center;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   /* border-left: 1px solid rgba(0, 0, 0, 0.2);
   border-right: 1px solid rgba(0, 0, 0, 0.2); */
   transition: width 0.5s ease;
@@ -318,7 +255,7 @@ const TitleInput = styled(Textarea)`
 const CategoryButton = styled.i`
   position: absolute;
   right: 20px;
-  top: 70px;
+  top: 25px;
   opacity: 0.5;
   transition: opacity 0.2s ease;
   &:hover {
@@ -332,7 +269,7 @@ const CategorySelectionContainer = styled.div`
   width: 400px;
   height: 500px;
   right: 10px;
-  top: 100px;
+  top: 60px;
   background-color: transparent;
 `;
 
@@ -345,22 +282,6 @@ const EditorRightContainer = styled.div`
   ${media.tablet`width: 0%;  min-width: 0px;
 `};
   ${media.phone`width: 0%;`};
-`;
-
-const TextEditorButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 2px 2px 0 0;
-  line-height: 0px !important;
-  background-color: #fff;
-`;
-
-const TextEditorButton = styled.div`
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  &:hover {
-    background-color: #ebebeb;
-  }
 `;
 
 interface IClapImageProps {
@@ -1356,120 +1277,38 @@ class Editor extends React.Component<IProps, IState> {
               >
                 {view === "EDIT" ? (
                   <React.Fragment>
-                    <Row>
-                      <Col>
-                        <div className="toolbar">
-                          {/* <FlexBox>
-                        {selectors.map((Type, i) => {
-                          if (
-                            this.state.selectedIndex !== null &&
-                            Array.isArray(this.state.selectedIndex) &&
-                            this.state.selectedContent !== undefined &&
-                            (this.state.selectedContent.content === "TEXT" ||
-                              this.state.selectedContent.content === "BUTTON" ||
-                              this.state.selectedContent.content === "HTML")
-                          ) {
-                            const selected = this.state.selectedIndex;
-                            const onChange = ({ value }: any) => {
-                              this.handleOnChange(
-                                { value },
-                                selected,
-                                "TEXT",
-                                "TEXT_CHANGE"
-                              );
-                            };
-                            const { value } = this.showSelected(selected);
-                            return (
-                              <Type
-                                change={value.change()}
-                                onChange={onChange}
-                                key={i}
-                                className="toolbar-select"
-                              />
-                            );
-                          } else {
-                            return null;
-                          }
-                        })}
-                      </FlexBox> */}
-                          <TextEditorButtonContainer>
-                            {icons.map((Type, i) => {
-                              if (
-                                this.state.selectedIndex !== null &&
-                                Array.isArray(this.state.selectedIndex) &&
-                                this.state.selectedContent !== undefined &&
-                                (this.state.selectedContent.content ===
-                                  "TEXT" ||
-                                  this.state.selectedContent.content ===
-                                    "BUTTON" ||
-                                  this.state.selectedContent.content === "HTML")
-                              ) {
-                                const selected = this.state.selectedIndex;
-                                const onChange = ({ value }: any) => {
-                                  this.handleOnChange(
-                                    { value },
-                                    selected,
-                                    "TEXT",
-                                    "TEXT_CHANGE"
-                                  );
-                                };
-                                const { value } = this.showSelected(selected);
-                                return (
-                                  <TextEditorButton>
-                                    <Type
-                                      change={value.change()}
-                                      onChange={onChange}
-                                      key={i}
-                                      className="toolbar-item"
-                                      activeClassName="toolbar-item-active"
-                                      disableClassName="toolbar-item-disable"
-                                      activeStrokeClassName="ql-stroke-active"
-                                      activeFillClassName="ql-fill-active"
-                                      activeThinClassName="ql-thin-active"
-                                      activeEvenClassName="ql-even-active"
-                                    />
-                                  </TextEditorButton>
-                                );
-                              } else {
-                                return null;
-                              }
-                            })}
-                          </TextEditorButtonContainer>
-                        </div>
-                      </Col>
-                    </Row>
-                    <TitleContainer>
-                      <TitleInput
-                        type={"text"}
-                        value={this.state.title}
-                        onChange={this.onInputChange}
-                        placeholder="Title"
-                        name={"title"}
-                      />
-                      <CategoryButton
-                        className="fas fa-search fa-2x"
-                        onClick={() =>
-                          this.setState({
-                            categoryPopUp: !this.state.categoryPopUp
-                          })
-                        }
-                      />
-                      {categoryPopUp && (
-                        <CategorySelectionContainer>
-                          <CategorySelection
-                            type="CATEGORY"
-                            addIdToState={this.addIdToState}
-                            deleteIdToState={this.deleteIdToState}
-                            selectedCategories={this.state.category}
-                          />
-                        </CategorySelectionContainer>
-                      )}
-                    </TitleContainer>
                     <EditorLeft
                       bodyBackgroundColor={this.state.bodyBackgroundColor}
                       font={this.state.font}
                       view="EDIT"
                     >
+                      <TitleContainer>
+                        <TitleInput
+                          type={"text"}
+                          value={this.state.title}
+                          onChange={this.onInputChange}
+                          placeholder="Title"
+                          name={"title"}
+                        />
+                        <CategoryButton
+                          className="fas fa-search fa-2x"
+                          onClick={() =>
+                            this.setState({
+                              categoryPopUp: !this.state.categoryPopUp
+                            })
+                          }
+                        />
+                        {categoryPopUp && (
+                          <CategorySelectionContainer>
+                            <CategorySelection
+                              type="CATEGORY"
+                              addIdToState={this.addIdToState}
+                              deleteIdToState={this.deleteIdToState}
+                              selectedCategories={this.state.category}
+                            />
+                          </CategorySelectionContainer>
+                        )}
+                      </TitleContainer>
                       {cards.map((item, index) => {
                         if (item.type === "columnList") {
                           return (

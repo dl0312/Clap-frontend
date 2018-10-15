@@ -8,7 +8,7 @@ import ImagePopup from "../../Components/ImagePopup";
 import { POSTS } from "../../sharedQueries";
 import { LOST_IMAGE_URL } from "../../constants";
 import FeaturedPostCards from "../../Components/FeaturedPostCards";
-import { Loading } from "src/sharedStyle";
+import Loading from "../../Components/Loading";
 
 const BoardContainer = styled.div`
   width: 100%;
@@ -264,25 +264,10 @@ class Board extends React.Component<IProps, IState> {
         {({ loading, data, error }) => {
           if (loading) {
             console.log(loading);
-            return (
-              <Loading className="lds-ellipsis">
-                <div />
-                <div />
-                <div />
-                <div />
-              </Loading>
-            );
+            return <Loading />;
           }
           if (error) {
-            return (
-              <div>
-                <Loading className="lds-ripple">
-                  <div />
-                  <div />
-                </Loading>
-                {error.message}
-              </div>
-            );
+            return <div>{error.message}</div>;
           }
           if (data === undefined) {
             return <div>data undefined</div>;

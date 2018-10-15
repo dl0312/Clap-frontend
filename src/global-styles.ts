@@ -126,15 +126,15 @@ ${reset};
 }
 
 .toolbar-item {
-  width: 25px;
-  height: 25px;
-  margin: 4px;
+  width: 15px;
+  height: 15px;
+  margin: 8px;
 }
 
 .toolbar-item-active {
-  width: 25px;
-  height: 25px;
-  margin: 4px;
+  width: 15px;
+  height: 15px;
+  margin: 8px;
 }
 
 .toolbar-select {

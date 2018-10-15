@@ -12,6 +12,7 @@ import {
 } from "../../types/api";
 import styled from "styled-components";
 import { Helmet } from "react-helmet";
+import Loading from "src/Components/Loading";
 
 const HomeContainer = styled.div`
   margin-top: -70px;
@@ -44,7 +45,7 @@ class Home extends React.Component {
           >
             {({ loading, data, error }) => {
               if (loading) {
-                return <div>Loading...</div>;
+                return <Loading />;
               }
               if (error) {
                 return <div>{error.message}</div>;
@@ -71,7 +72,7 @@ class Home extends React.Component {
           >
             {({ loading, data, error }) => {
               if (loading) {
-                return <div>Loading...</div>;
+                return <Loading />;
               }
               if (error) {
                 return <div>{error.message}</div>;
@@ -98,7 +99,7 @@ class Home extends React.Component {
           >
             {({ loading, data, error }) => {
               if (loading) {
-                return <div>Loading...</div>;
+                return <Loading />;
               }
               if (error) {
                 return <div>{error.message}</div>;
@@ -126,7 +127,7 @@ class Home extends React.Component {
           >
             {({ loading, data, error }) => {
               if (loading) {
-                return <div>Loading...</div>;
+                return <Loading />;
               }
               if (error) {
                 return <div>{error.message}</div>;
