@@ -52,8 +52,8 @@ interface IProps {
   cards: any[];
   view: "EDIT" | "USER" | "JSON";
   title: string;
-  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
-  contentWidth: number;
+  // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
+  // contentWidth: number;
   font: string;
   category: number[];
 }
@@ -125,8 +125,8 @@ class EditorRight extends Component<IProps, IState> {
           <Body
             masterCallback={this.props.masterCallback}
             view={this.props.view}
-            bodyBackgroundColor={this.props.bodyBackgroundColor}
-            contentWidth={this.props.contentWidth}
+            // bodyBackgroundColor={this.props.bodyBackgroundColor}
+            // contentWidth={this.props.contentWidth}
             font={this.props.font}
           />
         );

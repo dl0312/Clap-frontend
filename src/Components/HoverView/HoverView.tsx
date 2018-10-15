@@ -145,8 +145,8 @@ interface IHoverViewProps {
   json: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
-    bodyBackgroundColor: { r: number; g: number; b: number; a: number };
-    contentWidth: number;
+    // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
+    // contentWidth: number;
     font: string | null;
     onDrag: "content" | "columnList" | null;
     selectedIndex: number | number[] | null;
@@ -316,7 +316,7 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
                         index={[index, 0, 0]}
                         renderNode={this.renderNode}
                         renderMark={this.renderMark}
-                        contentWidth={json.contentWidth}
+                        // contentWidth={json.contentWidth}
                       />
                     </UserCard>
                   );
@@ -333,7 +333,7 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
     return (
       <HoverBorder>
         <EditorLeft
-          bodyBackgroundColor={json.bodyBackgroundColor}
+          // bodyBackgroundColor={json.bodyBackgroundColor}
           font={json.font}
           view="USER"
         >
@@ -347,7 +347,7 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
                     index={[index, 0, 0]}
                     renderNode={this.renderNode}
                     renderMark={this.renderMark}
-                    contentWidth={json.contentWidth}
+                    // contentWidth={json.contentWidth}
                   />
                 </UserCard>
               );
@@ -391,7 +391,7 @@ interface IUserColumnProps {
   renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
   renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
 
-  contentWidth: number;
+  // contentWidth: number;
 }
 
 class UserColumn extends React.Component<IUserColumnProps> {
@@ -404,15 +404,12 @@ class UserColumn extends React.Component<IUserColumnProps> {
     let totalRatio = 0;
     this.props.columnArray.map(column => (totalRatio += column));
     const columnListStyle = {
-      width: this.props.contentWidth,
+      width: "100%",
       display: "grid",
       gridGap: "0px", // gridTemplateColumns: this.props.columnArray.join("fr ") + "fr"
       gridTemplateColumns:
         this.props.columnArray
-          .map(
-            (columnRatio, index) =>
-              (this.props.contentWidth * columnRatio) / totalRatio
-          )
+          .map((columnRatio, index) => (100 * columnRatio) / totalRatio)
           .join("px ") + "px"
     };
     return (
@@ -424,7 +421,6 @@ class UserColumn extends React.Component<IUserColumnProps> {
             index={this.props.index.slice(0, 1).concat(index)}
             renderNode={this.props.renderNode}
             renderMark={this.props.renderMark}
-            contentWidth={this.props.contentWidth}
           />
         ))}
       </div>
@@ -446,7 +442,7 @@ interface IUserColumnItemProps {
   renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
   renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
 
-  contentWidth: number;
+  // contentWidth: number;
 }
 
 class UserColumnItem extends React.Component<IUserColumnItemProps> {
@@ -457,7 +453,7 @@ class UserColumnItem extends React.Component<IUserColumnItemProps> {
 
   public render() {
     // 기본상태의 에디터화면 id=container, id=body
-    const { contentWidth, cards } = this.props;
+    const { cards } = this.props;
 
     const compArray: any[] = [];
     cards.map((item, index) => {
@@ -468,7 +464,7 @@ class UserColumnItem extends React.Component<IUserColumnItemProps> {
               item={item}
               index={this.props.index.concat(index)}
               key={index}
-              contentWidth={contentWidth}
+              // contentWidth={contentWidth}
               renderNode={this.props.renderNode}
               renderMark={this.props.renderMark}
             />
@@ -518,7 +514,7 @@ interface IUserContainerProps {
     videoSrc?: string;
   };
   index: number[];
-  contentWidth: number;
+  // contentWidth: number;
   renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
   renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
 }

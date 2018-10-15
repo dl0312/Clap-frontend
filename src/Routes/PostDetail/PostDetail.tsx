@@ -27,6 +27,7 @@ import {
 import { toast } from "react-toastify";
 import { formatDate } from "../../Utility/FormatDate";
 import { LOST_IMAGE_URL } from "../../constants";
+import Loading from "src/Components/Loading";
 
 const DetailContainer = styled.div`
   width: 100%;
@@ -523,7 +524,7 @@ class PostDetail extends React.Component<IProps, IState> {
         >
           {({ loading, data, error }) => {
             if (loading) {
-              return <div>loading</div>;
+              return <Loading />;
             }
             if (error) {
               return <div>{error.message}</div>;

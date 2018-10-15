@@ -1,8 +1,8 @@
 import * as React from "react";
 import styled from "styled-components";
-import Sketch from "../../../Utility/Sketch";
+// import Sketch from "../../../Utility/Sketch";
 
-const INTERVAL = 50;
+// const INTERVAL = 50;
 
 const fontFamily = [
   "Roboto",
@@ -51,25 +51,25 @@ const Item = styled.li`
   color: #8f9699;
 `;
 
-const Indicator = styled.input`
-  height: 30px;
-  text-align: center;
-  width: 45px;
-  border: none;
-  border-top: 0.4px solid #d8d8d8;
-  border-bottom: 0.4px solid #d8d8d8;
-`;
+// const Indicator = styled.input`
+//   height: 30px;
+//   text-align: center;
+//   width: 45px;
+//   border: none;
+//   border-top: 0.4px solid #d8d8d8;
+//   border-bottom: 0.4px solid #d8d8d8;
+// `;
 
-const Operator = styled.button`
-  height: 30px;
-  width: 25px;
-  border: none;
-  background-color: #fff;
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
-  border: 0.5px solid #d8d8d8;
-  outline: none;
-`;
+// const Operator = styled.button`
+//   height: 30px;
+//   width: 25px;
+//   border: none;
+//   background-color: #fff;
+//   border-top-left-radius: 3px;
+//   border-bottom-left-radius: 3px;
+//   border: 0.5px solid #d8d8d8;
+//   outline: none;
+// `;
 
 const Swatch = styled.div`
   width: 150px;
@@ -144,10 +144,10 @@ const ViewIcon = styled<IViewIconProps, any>("i")`
 interface IProps {
   // callback func
   masterCallback: any;
-
-  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
   view: "EDIT" | "USER" | "JSON";
-  contentWidth: number;
+
+  // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
+  // contentWidth: number;
   font: string;
 }
 
@@ -155,9 +155,9 @@ interface IState {
   // display toggle
   displayFontFamily: boolean;
 
-  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
+  // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
   view: "EDIT" | "USER" | "JSON";
-  contentWidth: number;
+  // contentWidth: number;
   font: string;
 }
 
@@ -166,18 +166,18 @@ class Body extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       displayFontFamily: false,
-      bodyBackgroundColor: this.props.bodyBackgroundColor,
+      // bodyBackgroundColor: this.props.bodyBackgroundColor,
       view: this.props.view,
-      contentWidth: this.props.contentWidth,
+      // contentWidth: this.props.contentWidth,
       font: this.props.font
     };
   }
 
   static getDerivedStateFromProps = (nextProps: IProps, prevState: IState) => {
     console.log(nextProps);
-    if (nextProps.contentWidth !== prevState.contentWidth) {
-      return { contentWidth: nextProps.contentWidth };
-    }
+    // if (nextProps.contentWidth !== prevState.contentWidth) {
+    //   return { contentWidth: nextProps.contentWidth };
+    // }
     if (nextProps.font !== prevState.font) {
       return { font: nextProps.font };
     }
@@ -188,9 +188,9 @@ class Body extends React.Component<IProps, IState> {
     }
   };
 
-  public handleOnChange = () => {
-    this.props.masterCallback("contentWidth", this.props.contentWidth);
-  };
+  // public handleOnChange = () => {
+  //   this.props.masterCallback("contentWidth", this.props.contentWidth);
+  // };
 
   public handleOnClick = (type: "FontFamily" | "View") => {
     if (type === "FontFamily") {
@@ -198,23 +198,23 @@ class Body extends React.Component<IProps, IState> {
     }
   };
 
-  public handleOperatorOnClick = (operator: "-" | "+") => {
-    if (operator === "-") {
-      if (this.props.contentWidth > 600) {
-        this.props.masterCallback(
-          "contentWidth",
-          this.props.contentWidth - INTERVAL
-        );
-      }
-    } else if (operator === "+") {
-      if (this.props.contentWidth < 950) {
-        this.props.masterCallback(
-          "contentWidth",
-          this.props.contentWidth + INTERVAL
-        );
-      }
-    }
-  };
+  // public handleOperatorOnClick = (operator: "-" | "+") => {
+  //   if (operator === "-") {
+  //     if (this.props.contentWidth > 600) {
+  //       this.props.masterCallback(
+  //         "contentWidth",
+  //         this.props.contentWidth - INTERVAL
+  //       );
+  //     }
+  //   } else if (operator === "+") {
+  //     if (this.props.contentWidth < 950) {
+  //       this.props.masterCallback(
+  //         "contentWidth",
+  //         this.props.contentWidth + INTERVAL
+  //       );
+  //     }
+  //   }
+  // };
 
   public handleOnClickView = (view: "EDIT" | "USER" | "JSON") => {
     this.props.masterCallback("view", view);
@@ -226,7 +226,7 @@ class Body extends React.Component<IProps, IState> {
       <BodyContainer>
         <NavBar>GENERAL</NavBar>
         <BodyColumn>
-          <Item>
+          {/* <Item>
             Background Color
             <Sketch
               masterCallback={this.props.masterCallback}
@@ -245,7 +245,7 @@ class Body extends React.Component<IProps, IState> {
                 +
               </Operator>
             </div>
-          </Item>
+          </Item> */}
           <Item>
             Font Family
             <div className="func">

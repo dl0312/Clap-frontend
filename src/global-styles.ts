@@ -46,17 +46,17 @@ ${reset};
     margin: 10px 0;
   }
 .frame{
-    border: 2px solid transparent;
+    border: 1px solid transparent;
 }
 .container{
-    border: 2px solid transparent;
+    border: 1px solid transparent;
 }
   .blockHover {
-  border: 2px solid ${EditorDefaults.BORDER_ISOVER_COLOR};
+  border: 1px solid ${EditorDefaults.BORDER_ISOVER_COLOR};
 }
 
 .blockActive {
-  border: 2px solid ${EditorDefaults.BORDER_SELECT_COLOR};
+  border: 1px solid ${EditorDefaults.BORDER_SELECT_COLOR};
 }
 
 .ql-stroke {

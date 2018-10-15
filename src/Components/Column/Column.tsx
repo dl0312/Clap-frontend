@@ -4,7 +4,7 @@ import { RenderNodeProps, RenderMarkProps } from "slate-react";
 
 interface IProps {
   columnArray: number[];
-  contentWidth: number;
+  // contentWidth: number;
   columnListArray: any[];
   index: number[];
   callbackfromparent: (
@@ -32,16 +32,13 @@ class Column extends Component<IProps> {
     let totalRatio = 0;
     this.props.columnArray.map(column => (totalRatio += column));
     const columnListStyle = {
-      width: this.props.contentWidth,
+      width: "800px",
       display: "grid",
       gridGap: "0px",
       // gridTemplateColumns: this.props.columnArray.join("fr ") + "fr"
       gridTemplateColumns:
         this.props.columnArray
-          .map(
-            (columnRatio, index) =>
-              (this.props.contentWidth * columnRatio) / totalRatio
-          )
+          .map((columnRatio, index) => (30 * columnRatio) / totalRatio)
           .join("fr ") + "fr"
     };
     return (
@@ -59,7 +56,6 @@ class Column extends Component<IProps> {
             renderMark={this.props.renderMark}
             selectedIndex={this.props.selectedIndex}
             hoveredIndex={this.props.hoveredIndex}
-            contentWidth={this.props.contentWidth}
             onDrag={this.props.onDrag}
             masterCallback={this.props.masterCallback}
           />

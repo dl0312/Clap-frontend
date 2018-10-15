@@ -122,7 +122,7 @@ const plugins = [
 ];
 
 const Handle = styled.div`
-  background-color: #9c88ff;
+  background-color: ${EditorDefaults.HANDLE_COLOR};
   width: 2rem;
   height: 2rem;
   border-top-right-radius: 100%;
@@ -144,7 +144,7 @@ const Handle = styled.div`
 const ButtonOption = styled.button`
   border: none;
   outline: none;
-  background-color: #9c88ff;
+  background-color: ${EditorDefaults.HANDLE_COLOR};
   color: white;
   display: flex;
   align-items: center;
@@ -349,7 +349,7 @@ interface IProps {
     videoSrc?: string;
   };
   onDrag: "content" | "columnList";
-  contentWidth: number;
+  // contentWidth: number;
   renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
   renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
 }
@@ -552,7 +552,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
               display: "flex",
               alignItems: "center",
               position: "relative",
-              padding: "10px",
+              padding: "5px",
               width: "100%",
               justifyContent:
                 this.props.item.content === "TEXT" ||
@@ -613,7 +613,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
                         style={{
                           border: "none",
                           outline: "none",
-                          backgroundColor: "#9c88ff",
+                          backgroundColor: EditorDefaults.HANDLE_COLOR,
                           color: "white",
                           display: "flex",
                           alignItems: "center",

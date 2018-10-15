@@ -1,5 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
+import EditorDefaults from "src/EditorDefaults";
 
 interface IEditorLeftContainerProps {
   view: "EDIT" | "USER" | "JSON";
@@ -22,21 +23,19 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
         return null;
     }
   }}; */
+  background-color: ${EditorDefaults.MAIN_BACKGROUND_COLOR};
   width: 100%;
-  overflow-y: auto;
-  height: 91vh;
+  position: ${props => (props.view === "USER" ? "block" : "absolute")};
+  min-height: ${props => (props.view === "USER" ? "100%" : "90.5vh")};
+  /* overflow-y: ${props => (props.view === "USER" ? null : "auto")}; */
+
 `;
 
 interface IRealEditorContainerProps {
   view: "EDIT" | "USER" | "JSON";
-  backgroundColor: { r: string; g: string; b: string; a: string };
 }
 
 const RealEditorContainer = styled<IRealEditorContainerProps, any>("div")`
-  background-color: ${props =>
-    `rgba(${props.backgroundColor.r}, ${props.backgroundColor.g}, ${
-      props.backgroundColor.b
-    }, ${props.backgroundColor.a})`};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -47,7 +46,6 @@ const RealEditorContainer = styled<IRealEditorContainerProps, any>("div")`
 interface IProps {
   view: "EDIT" | "USER" | "JSON";
   font: string | null;
-  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
 }
 
 class EditorLeft extends React.Component<IProps> {
@@ -59,7 +57,6 @@ class EditorLeft extends React.Component<IProps> {
     return (
       <EditorLeftContainer view={this.props.view}>
         <RealEditorContainer
-          backgroundColor={this.props.bodyBackgroundColor}
           fontFamily={this.props.font}
           id="container"
           view={this.props.view}

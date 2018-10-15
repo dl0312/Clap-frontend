@@ -42,6 +42,7 @@ const Textarea: React.SFC<IProps> = ({
   className
 }) => (
   <Container
+    minRows={2}
     className={className}
     onChange={onChange}
     name={name}

@@ -3,6 +3,8 @@ import Editor from "../../Components/Editor";
 import { POST, EDIT_POST } from "../../sharedQueries";
 import { Query, Mutation } from "react-apollo";
 import { toast } from "react-toastify";
+import Loading from "src/Components/Loading";
+import Helmet from "react-helmet";
 
 interface IProps {
   match: { params: { postId: number } };
@@ -41,16 +43,28 @@ class PostEdit extends React.Component<IProps, any> {
                 mutation={EDIT_POST}
                 onCompleted={data => this.confirm(data)}
               >
-                {(EditPost, { data }) => (
-                  <React.Fragment>
-                    <Editor
-                      postId={this.props.match.params.postId}
-                      type="POST_EDIT"
-                      state={JSON.parse(post.body)}
-                      EditPost={EditPost}
-                    />
-                  </React.Fragment>
-                )}
+                {(EditPost, { loading, error, data }) => {
+                  if (loading) {
+                    return <Loading color="#000" />;
+                  }
+                  if (error) {
+                    console.log("error");
+                    return <div>{error.message}</div>;
+                  }
+                  return (
+                    <React.Fragment>
+                      <Helmet>
+                        <title>EDIT POST | CLAP</title>
+                      </Helmet>
+                      <Editor
+                        postId={this.props.match.params.postId}
+                        type="POST_EDIT"
+                        state={JSON.parse(post.body)}
+                        EditPost={EditPost}
+                      />
+                    </React.Fragment>
+                  );
+                }}
               </Mutation>
             );
           }}

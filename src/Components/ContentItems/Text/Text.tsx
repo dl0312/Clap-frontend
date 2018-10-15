@@ -82,7 +82,7 @@ const TextEditorButtonContainer = styled.div`
   z-index: 100;
   top: -38px;
   left: -3px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `;
 
@@ -112,7 +112,7 @@ const TextContainer = styled<ITextContainerProps, any>("div")`
   text-align: ${props => props.textAlign};
   width: 100%;
   cursor: auto;
-  line-height: 140%;
+  line-height: 1.9;
   padding-top: 10px;
   padding-right: 10px;
   padding-left: 10px;
@@ -162,19 +162,19 @@ const Text: React.SFC<IProps> = ({
     >
       {handleOnChange !== undefined ? (
         <React.Fragment>
-          {selected && (
-            <div className="toolbar">
-              <TextEditorButtonContainer>
-                {icons.map((Type, index) => {
-                  console.log(Type.name);
-                  return (
-                    <TextEditorButton key={index} index={index}>
+          <div className="toolbar">
+            <TextEditorButtonContainer>
+              {icons.map((Type, i) => {
+                console.log(Type.name);
+                return (
+                  selected && (
+                    <TextEditorButton key={i} index={i}>
                       <Type
                         change={value.change()}
                         onChange={(change: any) => {
                           handleOnChange(change, index, "TEXT", "TEXT_CHANGE");
                         }}
-                        key={index}
+                        key={i}
                         className="toolbar-item"
                         activeClassName="toolbar-item-active"
                         disableClassName="toolbar-item-disable"
@@ -184,11 +184,11 @@ const Text: React.SFC<IProps> = ({
                         activeEvenClassName="ql-even-active"
                       />
                     </TextEditorButton>
-                  );
-                })}
-              </TextEditorButtonContainer>
-            </div>
-          )}
+                  )
+                );
+              })}
+            </TextEditorButtonContainer>
+          </div>
           <Editor
             style={{
               wordBreak: "break-word",

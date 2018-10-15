@@ -189,16 +189,24 @@ const EditorContentContainer = styled.div`
 // `;
 
 const EditorLeftOuterContainer = styled.div`
-  width: 75%;
+  width: 80%;
   display: flex;
   justify-content: center;
   background-color: #f7f7f7;
   ${media.tablet`width: 100%;`};
   ${media.phone`width: 100%;`};
+
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 6px;
+    background-color: #e5e5e5;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #000000;
+  }
 `;
 
 interface IEditorLeftContainerProps {
-  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
   device: "PHONE" | "TABLET" | "DESKTOP";
 }
 
@@ -212,19 +220,11 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
         : props.device === "DESKTOP"
           ? "100%"
           : "100%"};
-  /* overflow-y: hidden; */
-  background-color: ${props =>
-    `rgba(${props.bodyBackgroundColor.r}, ${props.bodyBackgroundColor.g}, ${
-      props.bodyBackgroundColor.b
-    }, ${props.bodyBackgroundColor.a})`};
-
   display: flex;
   align-items: center;
   flex-direction: column;
   justify-content: flex-start;
-  /* border-left: 1px solid rgba(0, 0, 0, 0.2);
-  border-right: 1px solid rgba(0, 0, 0, 0.2); */
-  transition: width 0.5s ease;
+  transition: width 0.2s ease;
 `;
 
 const TitleContainer = styled.div`
@@ -237,7 +237,11 @@ const TitleContainer = styled.div`
   position: relative;
 `;
 
-const TitleInput = styled(Textarea)`
+interface ITitleInputProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
+}
+
+const TitleInput = styled<ITitleInputProps, any>(Textarea)`
   width: 100%;
   display: block;
   white-space: pre-wrap;
@@ -245,8 +249,8 @@ const TitleInput = styled(Textarea)`
   word-wrap: break-word;
   cursor: text;
   overflow: hidden;
-  font-size: 32px;
-  line-height: 42px;
+  font-size: ${props => (props.device === "PHONE" ? "26px" : "32px")};
+  line-height: ${props => (props.device === "PHONE" ? "36px" : "42px")};
   font-weight: 400;
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
   margin: 0 10px;
@@ -276,7 +280,7 @@ const CategorySelectionContainer = styled.div`
 const EditorRightContainer = styled.div`
   background-color: white;
   transition: width 1s ease;
-  width: 25%;
+  width: 20%;
   min-width: 400px;
   border-left: 1px solid rgba(0, 0, 0, 0.2);
   ${media.tablet`width: 0%;  min-width: 0px;
@@ -345,8 +349,8 @@ interface IState {
   device: "PHONE" | "TABLET" | "DESKTOP";
   templatePopUp: boolean;
   categoryPopUp: boolean;
-  bodyBackgroundColor: { r: number; g: number; b: number; a: number };
-  contentWidth: number;
+  // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
+  // contentWidth: number;
   font: string;
   onDrag: "content" | "columnList" | null;
   selectedIndex: number | number[] | null;
@@ -741,23 +745,12 @@ class Editor extends React.Component<IProps, IState> {
   };
 
   public masterCallback = (
-    type:
-      | "bodyBackgroundColor"
-      | "title"
-      | "contentWidth"
-      | "font"
-      | "view"
-      | "onDrag"
-      | "rightMenu",
+    type: "title" | "font" | "view" | "onDrag" | "rightMenu" | "shownImage",
     dataFromChild: any,
     secondDataFromChild?: any
   ) => {
-    if (type === "bodyBackgroundColor") {
-      this.setState({ bodyBackgroundColor: dataFromChild });
-    } else if (type === "title") {
+    if (type === "title") {
       this.setState({ title: dataFromChild });
-    } else if (type === "contentWidth") {
-      this.setState({ contentWidth: dataFromChild });
     } else if (type === "font") {
       this.setState({ font: dataFromChild });
     } else if (type === "view") {
@@ -1179,7 +1172,6 @@ class Editor extends React.Component<IProps, IState> {
       cards,
       selectedIndex,
       hoveredIndex,
-      contentWidth,
       view,
       device,
       pos,
@@ -1270,18 +1262,10 @@ class Editor extends React.Component<IProps, IState> {
           </EditorNavTwo>
           <EditorContentContainer>
             <EditorLeftOuterContainer>
-              <EditorLeftContainer
-                view={view}
-                device={device}
-                bodyBackgroundColor={this.state.bodyBackgroundColor}
-              >
+              <EditorLeftContainer view={view} device={device}>
                 {view === "EDIT" ? (
                   <React.Fragment>
-                    <EditorLeft
-                      bodyBackgroundColor={this.state.bodyBackgroundColor}
-                      font={this.state.font}
-                      view="EDIT"
-                    >
+                    <EditorLeft font={this.state.font} view="EDIT">
                       <TitleContainer>
                         <TitleInput
                           type={"text"}
@@ -1289,6 +1273,7 @@ class Editor extends React.Component<IProps, IState> {
                           onChange={this.onInputChange}
                           placeholder="Title"
                           name={"title"}
+                          device={device}
                         />
                         <CategoryButton
                           className="fas fa-search fa-2x"
@@ -1314,6 +1299,7 @@ class Editor extends React.Component<IProps, IState> {
                           return (
                             <Card
                               cards={this.state.cards.length}
+                              device={device}
                               key={index}
                               index={index}
                               moveCard={this.moveCard}
@@ -1334,7 +1320,6 @@ class Editor extends React.Component<IProps, IState> {
                                 handleOnChange={this.handleOnChange}
                                 renderNode={this.renderNode}
                                 renderMark={this.renderMark}
-                                contentWidth={contentWidth}
                                 selectedIndex={selectedIndex}
                                 hoveredIndex={hoveredIndex}
                                 onDrag={this.state.onDrag}
@@ -1378,8 +1363,8 @@ class Editor extends React.Component<IProps, IState> {
                 cards={this.state.cards}
                 view={this.state.view}
                 title={this.state.title}
-                bodyBackgroundColor={this.state.bodyBackgroundColor}
-                contentWidth={this.state.contentWidth}
+                // bodyBackgroundColor={this.state.bodyBackgroundColor}
+                // contentWidth={this.state.contentWidth}
                 font={this.state.font}
                 category={this.state.category}
               />

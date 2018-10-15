@@ -25,7 +25,7 @@ const Column = styled<IColumnProps, any>("div")`
 `;
 
 interface IProps {
-  contentWidth: number;
+  // contentWidth: number;
   cards: any[];
 
   callbackfromparent: (
@@ -51,7 +51,7 @@ class ColumnItem extends React.Component<IProps> {
 
   public render() {
     // 기본상태의 에디터화면 id=container, id=body
-    const { contentWidth, cards } = this.props;
+    const { cards } = this.props;
     const backgroundColor = cards.length === 1 ? "transparent" : "transparent";
     return (
       <Column hasBlock={cards.length !== 0} bgc={backgroundColor}>
@@ -71,7 +71,7 @@ class ColumnItem extends React.Component<IProps> {
               hoveredIndex={this.props.hoveredIndex}
               item={item}
               onDrag={this.props.onDrag}
-              contentWidth={contentWidth}
+              // contentWidth={contentWidth}
               renderNode={this.props.renderNode}
               renderMark={this.props.renderMark}
             />

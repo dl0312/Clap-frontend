@@ -6,6 +6,7 @@ import { ADD_POST } from "../../sharedQueries";
 import { Helmet } from "react-helmet";
 import Editor from "../../Components/Editor";
 import EditorDefaults from "../../EditorDefaults";
+import Loading from "src/Components/Loading";
 
 interface IProps {
   history: any;
@@ -15,8 +16,6 @@ interface IState {
   body: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
-    bodyBackgroundColor: { r: number; g: number; b: number; a: number };
-    contentWidth: number | null;
     font: string;
     selectedIndex: number | null;
     hoveredIndex: number | number[] | null;
@@ -24,7 +23,6 @@ interface IState {
     hoverImgJson: {
       cards: any[];
       color: { r: string; g: string; b: string; a: string };
-      contentWidth: number;
       font: string;
     };
     onImage: boolean;
@@ -44,8 +42,6 @@ class PostAdd extends React.Component<IProps, IState> {
       body: {
         rightMenu: null,
         view: "EDIT",
-        bodyBackgroundColor: EditorDefaults.BACKGROUND_COLOR,
-        contentWidth: EditorDefaults.WIDTH,
         font: EditorDefaults.FONT,
         selectedIndex: null,
         hoveredIndex: null,
@@ -53,7 +49,6 @@ class PostAdd extends React.Component<IProps, IState> {
         hoverImgJson: {
           cards: [],
           color: { r: "", g: "", b: "", a: "" },
-          contentWidth: 600,
           font: ""
         },
         onImage: false,
@@ -83,11 +78,18 @@ class PostAdd extends React.Component<IProps, IState> {
         mutation={ADD_POST}
         onCompleted={data => this.confirm(data)}
       >
-        {AddPost => {
+        {(AddPost, { loading, error, data }) => {
+          if (loading) {
+            return <Loading color="#000" />;
+          }
+          if (error) {
+            console.log("error");
+            return <div>{error.message}</div>;
+          }
           return (
             <React.Fragment>
               <Helmet>
-                <title>Add Post | CLAP</title>
+                <title>ADD POST | CLAP</title>
               </Helmet>
               <Editor state={body} type="POST_ADD" AddPost={AddPost} />
             </React.Fragment>

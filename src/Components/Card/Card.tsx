@@ -18,7 +18,7 @@ import { findDOMNode } from "react-dom";
 import flow from "lodash/flow";
 
 const Handle = styled.div`
-  background-color: #9c88ff;
+  background-color: ${EditorDefaults.HANDLE_COLOR};
   width: 2rem;
   height: 2rem;
   border-top-left-radius: 100%;
@@ -31,14 +31,15 @@ const Handle = styled.div`
   position: absolute;
   top: 50%;
   transform: translate(2px, -16px);
-  margin-left: -2px;
-  right: 0px;
+
+  margin-left: -34px;
+  left: 0px;
 `;
 
 const Button = styled.button`
   border: none;
   outline: none;
-  background-color: #9c88ff;
+  background-color: ${EditorDefaults.HANDLE_COLOR};
   color: white;
   display: flex;
   align-items: center;
@@ -59,8 +60,8 @@ const Tool = styled.div`
   color: white;
   top: 50%;
   transform: translate(12px, -16px);
-  margin-left: -2px;
-  right: 0px;
+  margin-left: -108px;
+  left: 0px;
 `;
 
 interface IBuilderProps {
@@ -202,6 +203,7 @@ const cardSource = {
 interface IProps {
   cards: number;
   index: number;
+  device: "PHONE" | "TABLET" | "DESKTOP";
 
   callbackfromparent: (
     type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
@@ -293,7 +295,8 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
       connectDragSource,
       connectDropTarget,
       connectDragPreview,
-      isOver
+      isOver,
+      device
     } = this.props;
     const opacity = isDragging ? 0.2 : 1;
     const hover = hoveredIndex === index;
@@ -312,14 +315,16 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
             )}
             style={{
               backgroundColor: "transparent",
-              width: "99%",
+              width: device === "DESKTOP" ? "100%" : "100%",
+              maxWidth: "800px",
               position: "relative",
-              padding: "0.1rem",
+              padding: "5px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               opacity,
-              transition: "border 0.5s ease, opacity 0.5s ease",
+              transition:
+                "border 0.5s ease, opacity 0.5s ease, width 0.2s ease",
               borderRadius: "2px"
 
               // border: active

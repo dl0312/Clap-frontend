@@ -15,7 +15,7 @@ const BlockOptionContainer = styled<IBlockOptionContainerProps, any>("div")`
       ? null
       : "absolute"};
   top: 0px;
-  width: 25%;
+  width: 20%;
   min-width: 400px;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
   background-color: #fff;
