@@ -165,7 +165,6 @@ const Text: React.SFC<IProps> = ({
           <div className="toolbar">
             <TextEditorButtonContainer>
               {icons.map((Type, i) => {
-                console.log(Type.name);
                 return (
                   selected && (
                     <TextEditorButton key={i} index={i}>

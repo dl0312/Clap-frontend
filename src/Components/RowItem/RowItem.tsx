@@ -31,27 +31,9 @@ const itemSource = {
       columnListArray
     };
   },
-  endDrag(
-    props: IProps,
-    monitor: DragSourceMonitor,
-    component: RowItem
-  ): {
-    type?: string;
-    onDrag?: "content" | "columnList";
-    content?: any[];
-    columnListArray: any[];
-  } {
-    const columnListArray: any[] = [];
+  endDrag(props: IProps, monitor: DragSourceMonitor, component: RowItem) {
     props.masterCallback("onDrag", null);
-    component.props.array.map(element => {
-      return columnListArray.push([]);
-    });
-    return {
-      type: "columnList",
-      onDrag: "columnList",
-      content: props.item.array,
-      columnListArray
-    };
+    props.masterCallback("targetIndex", null);
   }
 };
 

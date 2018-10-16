@@ -137,7 +137,7 @@ const ClapImageText = styled.span`
   color: ${props => props.color};
 `;
 
-interface IUserViewProps {
+interface IProps {
   json: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
@@ -164,8 +164,8 @@ interface IState {
   onImage: boolean;
 }
 
-class UserView extends React.Component<IUserViewProps, IState> {
-  constructor(props: IUserViewProps) {
+class UserView extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = { pos: { x: 0, y: 0 }, hoverImgJson: null, onImage: false };
   }
@@ -290,26 +290,21 @@ class UserView extends React.Component<IUserViewProps, IState> {
   public render() {
     const { json } = this.props;
     const { pos, hoverImgJson, onImage } = this.state;
+    console.log(json);
     return (
-      <EditorLeft
-        // bodyBackgroundColor={json.bodyBackgroundColor}
-        font={json.font}
-        view="USER"
-      >
-        {json.cards.map((item, index) => {
-          return (
-            <UserCard key={index}>
-              <UserColumn
-                columnArray={item.content}
-                columnListArray={item.columnListArray}
-                index={[index, 0, 0]}
-                renderNode={this.renderNode}
-                renderMark={this.renderMark}
-                // contentWidth={json.contentWidth}
-              />
-            </UserCard>
-          );
-        })}
+      <EditorLeft font={json.font} view="USER">
+        {json.cards.map((item, index) => (
+          <UserCard key={index}>
+            <UserColumn
+              columnArray={item.content}
+              columnListArray={item.columnListArray}
+              index={[index, 0, 0]}
+              renderNode={this.renderNode}
+              renderMark={this.renderMark}
+              // contentWidth={json.contentWidth}
+            />
+          </UserCard>
+        ))}
         <ImagePopup
           pos={pos}
           json={hoverImgJson ? hoverImgJson : null}

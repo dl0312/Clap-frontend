@@ -20,6 +20,8 @@ interface IProps {
   hoveredIndex: number | number[] | null;
   onDrag: any;
   masterCallback: any;
+  targetIndex: any;
+  setTargetIndex: any;
 }
 
 class Column extends Component<IProps> {
@@ -41,9 +43,10 @@ class Column extends Component<IProps> {
           .map((columnRatio, index) => (30 * columnRatio) / totalRatio)
           .join("fr ") + "fr"
     };
+    const { targetIndex, setTargetIndex } = this.props;
     return (
       <div className="columnList" style={columnListStyle}>
-        {this.props.columnListArray.map((columnList, index) => (
+        {this.props.columnListArray.map((columnList: any, index: any) => (
           <ColumnItem
             key={index}
             cards={columnList}
@@ -58,6 +61,8 @@ class Column extends Component<IProps> {
             hoveredIndex={this.props.hoveredIndex}
             onDrag={this.props.onDrag}
             masterCallback={this.props.masterCallback}
+            targetIndex={targetIndex}
+            setTargetIndex={setTargetIndex}
           />
         ))}
       </div>

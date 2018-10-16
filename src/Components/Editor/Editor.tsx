@@ -24,6 +24,8 @@ import {
 } from "../../sharedQueries";
 
 import update from "immutability-helper";
+import isEqual from "lodash.isequal";
+import cloneDeep from "lodash.clonedeep";
 import { GetPos } from "../../Utility/GetPos";
 import { MutationFn } from "react-apollo";
 import { addPost, addPostVariables } from "../../types/api";
@@ -31,6 +33,7 @@ import { Button } from "../../sharedStyle";
 import Textarea from "../Textarea";
 import Template from "../Template";
 import CategorySelection from "../CategorySelection";
+import Builder from "../Builder";
 
 interface IEditorContainerProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
@@ -363,6 +366,8 @@ interface IState {
   title: string;
   category: number[];
   cards: any[];
+  cardbuilderpositions: any[];
+  targetIndex: any;
 }
 
 class Editor extends React.Component<IProps, IState> {
@@ -392,6 +397,8 @@ class Editor extends React.Component<IProps, IState> {
       title: "",
       category: [],
       cards: [],
+      cardbuilderpositions: [],
+      targetIndex: [],
       ...props.state
     };
     // this.state = { ...props.state };
@@ -604,6 +611,7 @@ class Editor extends React.Component<IProps, IState> {
     dragIndex: number | number[],
     hoverIndex: number | number[]
   ) => {
+    console.log(dragIndex, hoverIndex);
     if (!Array.isArray(dragIndex) && !Array.isArray(hoverIndex)) {
       // frame => frame
       const { cards } = this.state;
@@ -612,18 +620,20 @@ class Editor extends React.Component<IProps, IState> {
       console.log(hoverIndex);
       this.setState({ selectedIndex: null, selectedContent: null });
       if (dragIndex < hoverIndex) {
-        this.setState(
-          update(this.state, {
-            cards: {
-              $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]]
-            }
-          })
-        );
+        if (dragIndex !== hoverIndex - 1) {
+          this.setState(
+            update(this.state, {
+              cards: {
+                $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]]
+              }
+            })
+          );
+        }
       } else if (dragIndex > hoverIndex) {
         this.setState(
           update(this.state, {
             cards: {
-              $splice: [[dragIndex, 1], [hoverIndex + 1, 0, dragCard]]
+              $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]]
             }
           })
         );
@@ -745,7 +755,14 @@ class Editor extends React.Component<IProps, IState> {
   };
 
   public masterCallback = (
-    type: "title" | "font" | "view" | "onDrag" | "rightMenu" | "shownImage",
+    type:
+      | "title"
+      | "font"
+      | "view"
+      | "onDrag"
+      | "rightMenu"
+      | "shownImage"
+      | "targetIndex",
     dataFromChild: any,
     secondDataFromChild?: any
   ) => {
@@ -757,6 +774,8 @@ class Editor extends React.Component<IProps, IState> {
       this.setState({ view: dataFromChild });
     } else if (type === "onDrag") {
       this.setState({ onDrag: dataFromChild });
+    } else if (type === "targetIndex") {
+      this.setState({ targetIndex: dataFromChild });
     } else if (type === "rightMenu") {
       this.setState({
         rightMenu: dataFromChild,
@@ -1177,9 +1196,11 @@ class Editor extends React.Component<IProps, IState> {
       pos,
       hoverImgJson,
       onImage,
-      categoryPopUp
+      categoryPopUp,
+      onDrag,
+      targetIndex
     } = this.state;
-    console.log(this.state);
+    // console.log(this.state.targetIndex);
     return (
       <React.Fragment>
         <EditorContainer type={type}>
@@ -1294,38 +1315,68 @@ class Editor extends React.Component<IProps, IState> {
                           </CategorySelectionContainer>
                         )}
                       </TitleContainer>
+                      <Builder
+                        state={
+                          onDrag === "columnList"
+                            ? 0 === targetIndex
+                              ? "ISOVER"
+                              : "ONDRAG"
+                            : "NOTHING"
+                        }
+                      />
                       {cards.map((item, index) => {
                         if (item.type === "columnList") {
                           return (
-                            <Card
-                              cards={this.state.cards.length}
-                              device={device}
-                              key={index}
-                              index={index}
-                              moveCard={this.moveCard}
-                              handleDrop={this.handleDrop}
-                              onDrag={this.state.onDrag}
-                              callbackfromparent={this.buttonCallback}
-                              selectedIndex={selectedIndex}
-                              hoveredIndex={hoveredIndex}
-                              masterCallback={this.masterCallback}
-                            >
-                              <Column
-                                columnListArray={item.columnListArray}
-                                columnArray={item.content}
-                                index={[index, 0, 0]}
-                                callbackfromparent={this.buttonCallback}
-                                handleDrop={this.handleDrop}
+                            <React.Fragment key={index}>
+                              <Card
+                                cards={this.state.cards.length}
+                                device={device}
+                                key={index}
+                                index={index}
                                 moveCard={this.moveCard}
-                                handleOnChange={this.handleOnChange}
-                                renderNode={this.renderNode}
-                                renderMark={this.renderMark}
+                                handleDrop={this.handleDrop}
+                                onDrag={onDrag}
+                                callbackfromparent={this.buttonCallback}
                                 selectedIndex={selectedIndex}
                                 hoveredIndex={hoveredIndex}
-                                onDrag={this.state.onDrag}
                                 masterCallback={this.masterCallback}
+                                handleSetState={this.handleSetState}
+                                pushPresentBlockToTargetIndex={
+                                  this.pushPresentBlockToTargetIndex
+                                }
+                                pushNewBlockToTargetIndex={
+                                  this.pushNewBlockToTargetIndex
+                                }
+                                setTargetIndex={this.setTargetIndex}
+                              >
+                                <Column
+                                  columnListArray={item.columnListArray}
+                                  columnArray={item.content}
+                                  index={[index, 0, 0]}
+                                  callbackfromparent={this.buttonCallback}
+                                  handleDrop={this.handleDrop}
+                                  moveCard={this.moveCard}
+                                  handleOnChange={this.handleOnChange}
+                                  renderNode={this.renderNode}
+                                  renderMark={this.renderMark}
+                                  selectedIndex={selectedIndex}
+                                  hoveredIndex={hoveredIndex}
+                                  onDrag={onDrag}
+                                  masterCallback={this.masterCallback}
+                                  targetIndex={targetIndex}
+                                  setTargetIndex={this.setTargetIndex}
+                                />
+                              </Card>
+                              <Builder
+                                state={
+                                  onDrag === "columnList"
+                                    ? index + 1 === targetIndex
+                                      ? "ISOVER"
+                                      : "ONDRAG"
+                                    : "NOTHING"
+                                }
                               />
-                            </Card>
+                            </React.Fragment>
                           );
                         } else {
                           return null;
@@ -1362,8 +1413,7 @@ class Editor extends React.Component<IProps, IState> {
                 }
                 cards={this.state.cards}
                 view={this.state.view}
-                title={this.state.title}
-                // bodyBackgroundColor={this.state.bodyBackgroundColor}
+                title={this.state.title} // bodyBackgroundColor={this.state.bodyBackgroundColor}
                 // contentWidth={this.state.contentWidth}
                 font={this.state.font}
                 category={this.state.category}
@@ -1485,7 +1535,6 @@ class Editor extends React.Component<IProps, IState> {
 
   public renderMark = (props: RenderMarkProps): JSX.Element | undefined => {
     const { mark } = props;
-    console.log(props);
 
     switch (mark.type) {
       default:
@@ -1509,7 +1558,6 @@ class Editor extends React.Component<IProps, IState> {
   };
 
   public onTemplateClick = (templateContent: any) => {
-    console.log(templateContent);
     this.setState({
       selectedIndex: null,
       hoveredIndex: null,
@@ -1518,7 +1566,7 @@ class Editor extends React.Component<IProps, IState> {
     });
   };
 
-  public handleSetState = (state: string, value: any) => {
+  public handleSetState = (name: string, value: any) => {
     this.setState({ [name]: value } as any);
   };
 
@@ -1528,6 +1576,55 @@ class Editor extends React.Component<IProps, IState> {
       hoveredIndex: null,
       selectedContent: null
     });
+  };
+
+  public setTargetIndex = (
+    onDrag: "content" | "columnList",
+    hoverIndex: any,
+    dropPosition: "over" | "under"
+  ) => {
+    if (onDrag === "columnList") {
+      if (dropPosition === "over") {
+        const targetIndex = hoverIndex;
+        if (targetIndex !== this.state.targetIndex) {
+          this.setState({ targetIndex });
+        }
+      } else if (dropPosition === "under") {
+        const targetIndex = hoverIndex + 1;
+        if (targetIndex !== this.state.targetIndex) {
+          this.setState({ targetIndex });
+        }
+      }
+    } else if (onDrag === "content") {
+      // console.log(hoverIndex, this.state.targetIndex);
+      if (dropPosition === "over") {
+        const targetIndex = hoverIndex;
+        if (!isEqual(targetIndex, this.state.targetIndex)) {
+          this.setState({ targetIndex });
+          console.log("over", targetIndex);
+        }
+      } else if (dropPosition === "under") {
+        const tempIndex = cloneDeep(hoverIndex);
+        tempIndex[2] += 1;
+        const targetIndex = tempIndex;
+        // console.log(targetIndex, this.state.targetIndex);
+        if (!isEqual(targetIndex, this.state.targetIndex)) {
+          this.setState({ targetIndex });
+          console.log("under", targetIndex);
+        }
+      }
+    }
+  };
+
+  public pushPresentBlockToTargetIndex = (dragIndex: any) => {
+    this.masterCallback("onDrag", null);
+    this.moveCard(dragIndex, this.state.targetIndex);
+  };
+
+  public pushNewBlockToTargetIndex = (dragItem: any) => {
+    console.log(this.state.targetIndex);
+    this.masterCallback("onDrag", null);
+    this.handleDrop(dragItem, this.state.targetIndex);
   };
 }
 

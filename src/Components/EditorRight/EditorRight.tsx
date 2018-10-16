@@ -146,13 +146,13 @@ class EditorRight extends Component<IProps, IState> {
   };
 
   public render() {
-    console.log(this.props);
     return (
       <Fragment>
         <Container>
           <MenuColumn>
             {menus.map((menu, index) => (
               <MenuItem
+                key={index}
                 style={{
                   background: this.myColor(index),
                   color: this.fontColor(index)

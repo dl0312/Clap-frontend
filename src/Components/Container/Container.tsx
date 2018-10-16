@@ -170,34 +170,34 @@ const Tool = styled.div`
   right: 0px;
 `;
 
-interface IBuilderProps {
-  state: "ISOVER" | "ONDRAG" | null;
-  position: "over" | "under";
-}
+// interface IBuilderProps {
+//   state: "ISOVER" | "ONDRAG" | null;
+//   position: "over" | "under";
+// }
 
-const Builder = styled<IBuilderProps, any>("div")`
-  position: absolute;
-  z-index: ${props => (props.state === "ISOVER" ? "999" : null)};
-  top: ${props => (props.position === "over" ? "-4px" : null)};
-  bottom: ${props => (props.position === "under" ? "-4px" : null)};
-  text-align: center;
-  color: white;
-  background-color: ${props => {
-    switch (props.state) {
-      case "ONDRAG":
-        return EditorDefaults.BUILDER_ONDRAG_COLOR;
-      case "ISOVER":
-        return EditorDefaults.BUILDER_ISOVER_COLOR;
-      default:
-        return "transparent";
-    }
-  }};
-  border-radius: 5px;
-  font-size: 12px;
-  padding: 2px 10px;
-  transition: background-color 0.5s ease;
-  width: 100%;
-`;
+// const Builder = styled<IBuilderProps, any>("div")`
+//   position: absolute;
+//   z-index: ${props => (props.state === "ISOVER" ? "999" : null)};
+//   top: ${props => (props.position === "over" ? "-4px" : null)};
+//   bottom: ${props => (props.position === "under" ? "-4px" : null)};
+//   text-align: center;
+//   color: white;
+//   background-color: ${props => {
+//     switch (props.state) {
+//       case "ONDRAG":
+//         return EditorDefaults.BUILDER_ONDRAG_COLOR;
+//       case "ISOVER":
+//         return EditorDefaults.BUILDER_ISOVER_COLOR;
+//       default:
+//         return "transparent";
+//     }
+//   }};
+//   border-radius: 5px;
+//   font-size: 12px;
+//   padding: 2px 10px;
+//   transition: background-color 0.5s ease;
+//   width: 100%;
+// `;
 
 const cardSource = {
   beginDrag(props: IProps, monitor: DragSourceMonitor, component: Container) {
@@ -213,48 +213,26 @@ const cardSource = {
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: Container) {
     const isJustOverThisOne = monitor.isOver({ shallow: true });
-    console.log("hover");
     if (isJustOverThisOne) {
       const dragIndex = monitor.getItem().index;
       const hoverIndex = props.index;
-
-      // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
         return;
       }
-
-      // Determine rectangle on screen
       const hoverBoundingRect = (findDOMNode(
         component
       )! as Element).getBoundingClientRect() as DOMRect;
-
-      console.log(hoverBoundingRect);
-      // Get vertical middle
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-      // Determine mouse position
       const clientOffset = monitor.getClientOffset();
-
-      // Get pixels to the top
-      const hoverpageY = clientOffset!.y - hoverBoundingRect.top;
-
       const position =
         clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-
       if (position === "over") {
         component.setState({ hoverPosition: "over" });
       } else if (position === "under") {
         component.setState({ hoverPosition: "under" });
       }
-
-      if (dragIndex < hoverIndex && hoverpageY < hoverMiddleY) {
-        return;
-      }
-
-      if (dragIndex > hoverIndex && hoverpageY > hoverMiddleY) {
-        return;
-      }
+      props.setTargetIndex(props.onDrag, props.index, position);
     }
   },
 
@@ -273,7 +251,7 @@ const cardTarget = {
 
     const dropPosition =
       clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-    console.log(clientOffset!.y < hoverBoundingRect.y + hoverMiddleY);
+    // console.log(clientOffset!.y < hoverBoundingRect.y + hoverMiddleY);
 
     const type = monitor.getItemType();
 
@@ -299,8 +277,6 @@ const cardTarget = {
 };
 
 interface IProps {
-  key: number;
-
   // Action to Parent Component
   callbackfromparent: (
     type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
@@ -352,13 +328,14 @@ interface IProps {
   // contentWidth: number;
   renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
   renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
+  setTargetIndex: any;
 }
 
 interface IState {
-  hoverPosition: "over" | "under" | null;
   hover: boolean;
   active: boolean;
   toolHover: boolean;
+  hoverPosition: "over" | "under" | null;
 }
 
 interface IDnDProps {
@@ -509,8 +486,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
       isDragging,
       connectDragSource,
       connectDragPreview,
-      connectDropTarget,
-      isOver
+      connectDropTarget
     } = this.props;
     const {
       index,
@@ -577,7 +553,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
             onMouseDown={this.handleOnMouseDown}
             onMouseLeave={this.handleOnMouseLeave}
           >
-            <Builder
+            {/* <Builder
               state={
                 this.props.onDrag === "content"
                   ? this.state.hoverPosition === "over" && isOver
@@ -586,16 +562,14 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
                   : "INVISIBLE"
               }
               position="over"
-            >
-              {/* BLOCK HERE */}
-            </Builder>
+            /> */}
             {hover || active ? (
               <div>
                 {this.state.toolHover ? (
                   <Tool onMouseLeave={this.handleOnMouseLeaveTool}>
                     <ButtonOption
                       onClick={() => {
-                        console.log(index);
+                        // console.log(index);
                         callbackfromparent("delete", index);
                       }}
                     >
@@ -638,7 +612,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
               </div>
             ) : null}
             {this.showInner(active)}
-            <Builder
+            {/* <Builder
               state={
                 this.props.onDrag === "content"
                   ? this.state.hoverPosition === "under" && isOver
@@ -647,9 +621,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
                   : "INVISIBLE"
               }
               position="under"
-            >
-              {/* BLOCK HERE */}
-            </Builder>
+            /> */}
           </div>
         )
       )

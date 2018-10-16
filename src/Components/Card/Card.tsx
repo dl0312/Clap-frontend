@@ -64,37 +64,38 @@ const Tool = styled.div`
   left: 0px;
 `;
 
-interface IBuilderProps {
-  state: "ISOVER" | "ONDRAG" | null;
-  position: "over" | "under";
-}
+// interface IBuilderProps {
+//   state: "ISOVER" | "ONDRAG" | null;
+//   position: "over" | "under";
+// }
 
-const Builder = styled<IBuilderProps, any>("div")`
-  position: absolute;
-  z-index: ${props => (props.state === "ISOVER" ? "999" : null)};
-  top: ${props => (props.position === "over" ? "-4px" : null)};
-  bottom: ${props => (props.position === "under" ? "-4px" : null)};
-  text-align: center;
-  color: white;
-  background-color: ${props => {
-    switch (props.state) {
-      case "ONDRAG":
-        return EditorDefaults.BUILDER_ONDRAG_COLOR;
-      case "ISOVER":
-        return EditorDefaults.BUILDER_ISOVER_COLOR;
-      default:
-        return "transparent";
-    }
-  }};
-  border-radius: 5px;
-  font-size: 12px;
-  padding: 2px 10px;
-  transition: background-color 0.5s ease;
-  width: 100%;
-`;
+// const Builder = styled<IBuilderProps, any>("div")`
+//   position: absolute;
+//   z-index: ${props => (props.state === "ISOVER" ? "999" : null)};
+//   top: ${props => (props.position === "over" ? "-4px" : null)};
+//   bottom: ${props => (props.position === "under" ? "-4px" : null)};
+//   text-align: center;
+//   color: white;
+//   background-color: ${props => {
+//     switch (props.state) {
+//       case "ONDRAG":
+//         return EditorDefaults.BUILDER_ONDRAG_COLOR;
+//       case "ISOVER":
+//         return EditorDefaults.BUILDER_ISOVER_COLOR;
+//       default:
+//         return "transparent";
+//     }
+//   }};
+//   border-radius: 5px;
+//   font-size: 12px;
+//   padding: 2px 10px;
+//   transition: background-color 0.5s ease;
+//   width: 100%;
+// `;
 
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: Card) {
+    const { setTargetIndex, onDrag, index } = props;
     const isJustOverThisOne = monitor.isOver({ shallow: true });
     if (isJustOverThisOne) {
       let dragIndex = monitor.getItem().index;
@@ -105,86 +106,65 @@ const cardTarget = {
         dragIndex = props.cards - 1;
       }
       const hoverIndex = props.index;
-
-      // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
         return;
       }
-
-      // Determine rectangle on screen
       const hoverBoundingRect = (findDOMNode(
         component
       )! as Element).getBoundingClientRect() as DOMRect;
-
-      // Get vertical middle
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-      // Determine mouse position
       const clientOffset = monitor.getClientOffset();
-
-      // Get pixels to the top
-      const hoverpageY = clientOffset!.y - hoverBoundingRect.top;
-
       const position =
         clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-
       if (position === "over") {
         component.setState({ hoverPosition: "over" });
       } else if (position === "under") {
         component.setState({ hoverPosition: "under" });
       }
-
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-      // Dragging downwards
-      if (dragIndex < hoverIndex && hoverpageY < hoverMiddleY) {
-        return;
-      }
-
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverpageY > hoverMiddleY) {
-        return;
-      }
+      setTargetIndex(onDrag, index, position);
     }
   },
 
   drop(props: IProps, monitor: DropTargetMonitor, component: Card) {
     component.setState({ hoverPosition: null });
     // Determine rectangle on screen
-    const hoverBoundingRect = (findDOMNode(
-      component
-    )! as Element).getBoundingClientRect() as DOMRect;
+    // const hoverBoundingRect = (findDOMNode(
+    //   component
+    // )! as Element).getBoundingClientRect() as DOMRect;
 
-    // Get vertical middle
-    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+    // // Get vertical middle
+    // const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
 
-    // Determine mouse position
-    const clientOffset = monitor.getClientOffset();
+    // // Determine mouse position
+    // const clientOffset = monitor.getClientOffset();
 
-    const dropPosition =
-      clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
+    // const dropPosition =
+    //   clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
 
     const type = monitor.getItemType();
 
-    props.masterCallback("OnDrag", null);
+    // props.masterCallback("OnDrag", null);
     if (type === ItemTypes.COLUMN) {
-      let index = props.index;
-      if (dropPosition === "over") {
-        index -= 1;
-        props.moveCard(monitor.getItem().index, index);
-      } else if (dropPosition === "under") {
-        props.moveCard(monitor.getItem().index, index);
-      }
+      props.pushPresentBlockToTargetIndex(monitor.getItem().index);
+
+      // let index = props.index;
+      // if (dropPosition === "over") {
+      //   index -= 1;
+      //   props.moveCard(monitor.getItem().index, index);
+      // } else if (dropPosition === "under") {
+      //   props.moveCard(monitor.getItem().index, index);
+      // }
     } else if (type === ItemTypes.ROW) {
-      let index = props.index;
-      if (dropPosition === "over") {
-        props.handleDrop(monitor.getItem(), index);
-      } else if (dropPosition === "under") {
-        index += 1;
-        props.handleDrop(monitor.getItem(), index);
-      }
+      props.pushNewBlockToTargetIndex(monitor.getItem());
+
+      // let index = props.index;
+      // if (dropPosition === "over") {
+      //   props.handleDrop(monitor.getItem(), index);
+      // } else if (dropPosition === "under") {
+      //   index += 1;
+      //   props.handleDrop(monitor.getItem(), index);
+      // }
     }
   }
 };
@@ -215,6 +195,10 @@ interface IProps {
   hoveredIndex: number[] | number | null;
   onDrag: any;
   masterCallback: any;
+  handleSetState: any;
+  pushPresentBlockToTargetIndex: any;
+  pushNewBlockToTargetIndex: any;
+  setTargetIndex: any;
 }
 
 interface IState {
@@ -225,6 +209,7 @@ interface IState {
 }
 
 interface IDnDProps {
+  // React-dnd props
   isDragging?: boolean;
   connectDragSource?: ConnectDragSource;
   connectDropTarget?: ConnectDropTarget;
@@ -290,12 +275,10 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
       callbackfromparent,
       selectedIndex,
       hoveredIndex,
-
       isDragging,
       connectDragSource,
       connectDropTarget,
       connectDragPreview,
-      isOver,
       device
     } = this.props;
     const opacity = isDragging ? 0.2 : 1;
@@ -337,7 +320,7 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
             onMouseDown={this.handleOnMouseDown}
             onMouseLeave={this.handleOnMouseLeave}
           >
-            <Builder
+            {/* <Builder
               // display={this.props.OnDrag === "columnList"}
               state={
                 this.props.onDrag === "columnList"
@@ -347,7 +330,7 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
                   : "INVISIBLE"
               }
               position="over"
-            />
+            /> */}
             {hover || active ? (
               <div>
                 {this.state.toolHover ? (
@@ -386,7 +369,7 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
               </div>
             ) : null}
             {this.props.children}
-            <Builder
+            {/* <Builder
               state={
                 this.props.onDrag === "columnList"
                   ? this.state.hoverPosition === "under" && isOver
@@ -395,7 +378,7 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
                   : "INVISIBLE"
               }
               position="under"
-            />
+            /> */}
           </div>
         )
       )
