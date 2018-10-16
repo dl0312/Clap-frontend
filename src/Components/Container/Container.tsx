@@ -543,26 +543,11 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
               opacity,
               transition: "border 0.5s ease, opacity 0.5s ease",
               borderRadius: "2px"
-              // border: active
-              //   ? "2px solid black"
-              //   : hover
-              //     ? "2px solid grey"
-              //     : "2px solid transparent"
             }}
             onMouseOver={this.handleOnMouseOver}
             onMouseDown={this.handleOnMouseDown}
             onMouseLeave={this.handleOnMouseLeave}
           >
-            {/* <Builder
-              state={
-                this.props.onDrag === "content"
-                  ? this.state.hoverPosition === "over" && isOver
-                    ? "ISOVER"
-                    : "ONDRAG"
-                  : "INVISIBLE"
-              }
-              position="over"
-            /> */}
             {hover || active ? (
               <div>
                 {this.state.toolHover ? (
@@ -612,16 +597,6 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
               </div>
             ) : null}
             {this.showInner(active)}
-            {/* <Builder
-              state={
-                this.props.onDrag === "content"
-                  ? this.state.hoverPosition === "under" && isOver
-                    ? "ISOVER"
-                    : "ONDRAG"
-                  : "INVISIBLE"
-              }
-              position="under"
-            /> */}
           </div>
         )
       )
