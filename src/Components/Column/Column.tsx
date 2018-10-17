@@ -22,6 +22,8 @@ interface IProps {
   masterCallback: any;
   targetIndex: any;
   setTargetIndex: any;
+  pushPresentBlockToTargetIndex: any;
+  pushNewBlockToTargetIndex: any;
 }
 
 class Column extends Component<IProps> {
@@ -63,6 +65,10 @@ class Column extends Component<IProps> {
             masterCallback={this.props.masterCallback}
             targetIndex={targetIndex}
             setTargetIndex={setTargetIndex}
+            pushPresentBlockToTargetIndex={
+              this.props.pushPresentBlockToTargetIndex
+            }
+            pushNewBlockToTargetIndex={this.props.pushNewBlockToTargetIndex}
           />
         ))}
       </div>

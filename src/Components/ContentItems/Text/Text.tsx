@@ -81,7 +81,7 @@ const TextEditorButtonContainer = styled.div`
   position: absolute;
   z-index: 100;
   top: -38px;
-  left: -3px;
+  left: -1.5px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `;

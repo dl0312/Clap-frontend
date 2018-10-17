@@ -12,10 +12,12 @@ import {
   DropTargetConnector,
   DragSourceConnector
 } from "react-dnd";
+
 import { Value, ValueJSON } from "slate";
 import styled from "styled-components";
 import flow from "lodash/flow";
 import EditorDefaults from "../../EditorDefaults";
+import ContentBox from "../ContentBox";
 
 import Button from "../ContentItems/Button";
 import Text from "../ContentItems/Text";
@@ -227,51 +229,16 @@ const cardTarget = {
       const clientOffset = monitor.getClientOffset();
       const position =
         clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-      if (position === "over") {
-        component.setState({ hoverPosition: "over" });
-      } else if (position === "under") {
-        component.setState({ hoverPosition: "under" });
-      }
       props.setTargetIndex(props.onDrag, props.index, position);
     }
   },
 
   drop(props: IProps, monitor: DropTargetMonitor, component: Container) {
-    component.setState({ hoverPosition: null });
-    // Determine rectangle on screen
-    const hoverBoundingRect = (findDOMNode(
-      component
-    )! as Element).getBoundingClientRect() as DOMRect;
-
-    // Get vertical middle
-    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-    // Determine mouse position
-    const clientOffset = monitor.getClientOffset();
-
-    const dropPosition =
-      clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-    // console.log(clientOffset!.y < hoverBoundingRect.y + hoverMiddleY);
-
     const type = monitor.getItemType();
-
-    props.masterCallback("OnDrag", null);
     if (type === ItemTypes.CARD) {
-      const index = props.index;
-      if (dropPosition === "over") {
-        props.moveCard(monitor.getItem().index, index);
-      } else if (dropPosition === "under") {
-        index[2] += 1;
-        props.moveCard(monitor.getItem().index, index);
-      }
+      props.pushPresentBlockToTargetIndex(monitor.getItem().index);
     } else if (type === ItemTypes.CONTENT) {
-      const index = props.index;
-      if (dropPosition === "over") {
-        props.handleDrop(monitor.getItem(), index);
-      } else if (dropPosition === "under") {
-        index[2] += 1;
-        props.handleDrop(monitor.getItem(), index);
-      }
+      props.pushNewBlockToTargetIndex(monitor.getItem());
     }
   }
 };
@@ -329,13 +296,14 @@ interface IProps {
   renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
   renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
   setTargetIndex: any;
+  pushPresentBlockToTargetIndex: any;
+  pushNewBlockToTargetIndex: any;
 }
 
 interface IState {
   hover: boolean;
   active: boolean;
   toolHover: boolean;
-  hoverPosition: "over" | "under" | null;
 }
 
 interface IDnDProps {
@@ -351,7 +319,6 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
   constructor(props: IProps & IDnDProps) {
     super(props);
     this.state = {
-      hoverPosition: null,
       hover: false,
       active: false,
       toolHover: false
@@ -597,6 +564,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
               </div>
             ) : null}
             {this.showInner(active)}
+            <ContentBox index={index} />
           </div>
         )
       )

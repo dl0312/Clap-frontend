@@ -299,7 +299,9 @@ class FeaturedPostCards extends React.Component<IProps, IState> {
                             <CategoryContainer>
                               {post.category.parent![0] !== undefined ? (
                                 <Category>
-                                  {`# ${post.category.parent![0]!.name}`}
+                                  {`# ${post.category.parent![0]!.name} ${
+                                    post.category.parent![0]!.id
+                                  }`}
                                 </Category>
                               ) : null}
                               <Category>{`# ${post.category.name}`}</Category>

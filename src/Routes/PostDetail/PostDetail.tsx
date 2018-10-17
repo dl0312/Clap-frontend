@@ -28,6 +28,7 @@ import { toast } from "react-toastify";
 import { formatDate } from "../../Utility/FormatDate";
 import { LOST_IMAGE_URL } from "../../constants";
 import Loading from "src/Components/Loading";
+import CategoryTag from "src/Components/CategoryTag";
 
 const DetailContainer = styled.div`
   width: 100%;
@@ -84,18 +85,6 @@ const CategoryContainer = styled.div`
   justify-content: flex-start;
   flex-direction: row;
   margin-left: 4px;
-`;
-
-const Category = styled.div`
-  padding: 2px 5px;
-  background-color: white;
-  color: black;
-  font-weight: bolder;
-  border-radius: 2px;
-  font-size: 10px;
-  margin-bottom: 5px;
-  margin-right: 5px;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 1);
 `;
 
 const CountContainer = styled.div`
@@ -546,6 +535,7 @@ class PostDetail extends React.Component<IProps, IState> {
               return <div>have no post [category]</div>;
             }
             const body = JSON.parse(post.body);
+            console.log(body);
             console.log(post.category.wikiImages!.length);
             return (
               <React.Fragment>
@@ -564,11 +554,15 @@ class PostDetail extends React.Component<IProps, IState> {
                       <TitleInnerContainer>
                         <CategoryContainer>
                           {post.category.parent![0] !== undefined ? (
-                            <Category>
-                              {`# ${post.category.parent![0]!.name}`}
-                            </Category>
+                            <CategoryTag
+                              id={post.category.parent![0]!.id}
+                              name={post.category.parent![0]!.name}
+                            />
                           ) : null}
-                          <Category>{`# ${post.category.name}`}</Category>
+                          <CategoryTag
+                            id={post.category.id}
+                            name={post.category.name}
+                          />
                         </CategoryContainer>
                         <Title>{post.title}</Title>
                         <CountContainer>

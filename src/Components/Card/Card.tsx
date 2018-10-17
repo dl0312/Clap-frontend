@@ -64,35 +64,6 @@ const Tool = styled.div`
   left: 0px;
 `;
 
-// interface IBuilderProps {
-//   state: "ISOVER" | "ONDRAG" | null;
-//   position: "over" | "under";
-// }
-
-// const Builder = styled<IBuilderProps, any>("div")`
-//   position: absolute;
-//   z-index: ${props => (props.state === "ISOVER" ? "999" : null)};
-//   top: ${props => (props.position === "over" ? "-4px" : null)};
-//   bottom: ${props => (props.position === "under" ? "-4px" : null)};
-//   text-align: center;
-//   color: white;
-//   background-color: ${props => {
-//     switch (props.state) {
-//       case "ONDRAG":
-//         return EditorDefaults.BUILDER_ONDRAG_COLOR;
-//       case "ISOVER":
-//         return EditorDefaults.BUILDER_ISOVER_COLOR;
-//       default:
-//         return "transparent";
-//     }
-//   }};
-//   border-radius: 5px;
-//   font-size: 12px;
-//   padding: 2px 10px;
-//   transition: background-color 0.5s ease;
-//   width: 100%;
-// `;
-
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: Card) {
     const { setTargetIndex, onDrag, index } = props;
@@ -117,54 +88,16 @@ const cardTarget = {
       const clientOffset = monitor.getClientOffset();
       const position =
         clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-      if (position === "over") {
-        component.setState({ hoverPosition: "over" });
-      } else if (position === "under") {
-        component.setState({ hoverPosition: "under" });
-      }
       setTargetIndex(onDrag, index, position);
     }
   },
 
   drop(props: IProps, monitor: DropTargetMonitor, component: Card) {
-    component.setState({ hoverPosition: null });
-    // Determine rectangle on screen
-    // const hoverBoundingRect = (findDOMNode(
-    //   component
-    // )! as Element).getBoundingClientRect() as DOMRect;
-
-    // // Get vertical middle
-    // const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-    // // Determine mouse position
-    // const clientOffset = monitor.getClientOffset();
-
-    // const dropPosition =
-    //   clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-
     const type = monitor.getItemType();
-
-    // props.masterCallback("OnDrag", null);
     if (type === ItemTypes.COLUMN) {
       props.pushPresentBlockToTargetIndex(monitor.getItem().index);
-
-      // let index = props.index;
-      // if (dropPosition === "over") {
-      //   index -= 1;
-      //   props.moveCard(monitor.getItem().index, index);
-      // } else if (dropPosition === "under") {
-      //   props.moveCard(monitor.getItem().index, index);
-      // }
     } else if (type === ItemTypes.ROW) {
       props.pushNewBlockToTargetIndex(monitor.getItem());
-
-      // let index = props.index;
-      // if (dropPosition === "over") {
-      //   props.handleDrop(monitor.getItem(), index);
-      // } else if (dropPosition === "under") {
-      //   index += 1;
-      //   props.handleDrop(monitor.getItem(), index);
-      // }
     }
   }
 };
@@ -205,7 +138,6 @@ interface IState {
   hover: boolean;
   active: boolean;
   toolHover: boolean;
-  hoverPosition: "over" | "under" | null;
 }
 
 interface IDnDProps {
@@ -223,8 +155,7 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
     this.state = {
       hover: false,
       active: false,
-      toolHover: false,
-      hoverPosition: null
+      toolHover: false
     };
   }
 
@@ -309,28 +240,11 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
               transition:
                 "border 0.5s ease, opacity 0.5s ease, width 0.2s ease",
               borderRadius: "2px"
-
-              // border: active
-              //   ? "2px solid black"
-              //   : hover
-              //     ? "2px solid grey"
-              //     : "2px solid transparent"
             }}
             onMouseOver={this.handleOnMouseOver}
             onMouseDown={this.handleOnMouseDown}
             onMouseLeave={this.handleOnMouseLeave}
           >
-            {/* <Builder
-              // display={this.props.OnDrag === "columnList"}
-              state={
-                this.props.onDrag === "columnList"
-                  ? this.state.hoverPosition === "over" && isOver
-                    ? "ISOVER"
-                    : "ONDRAG"
-                  : "INVISIBLE"
-              }
-              position="over"
-            /> */}
             {hover || active ? (
               <div>
                 {this.state.toolHover ? (
@@ -369,16 +283,6 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
               </div>
             ) : null}
             {this.props.children}
-            {/* <Builder
-              state={
-                this.props.onDrag === "columnList"
-                  ? this.state.hoverPosition === "under" && isOver
-                    ? "ISOVER"
-                    : "ONDRAG"
-                  : "INVISIBLE"
-              }
-              position="under"
-            /> */}
           </div>
         )
       )

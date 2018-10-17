@@ -323,9 +323,10 @@ class UserCard extends React.Component {
       <div
         style={{
           backgroundColor: "transparent",
-          width: "99%",
+          width: "100%",
+          maxWidth: "800px",
           position: "relative",
-          padding: "0.1rem",
+          padding: "5px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center"

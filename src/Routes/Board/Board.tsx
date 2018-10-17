@@ -9,6 +9,8 @@ import { POSTS } from "../../sharedQueries";
 import { LOST_IMAGE_URL } from "../../constants";
 import FeaturedPostCards from "../../Components/FeaturedPostCards";
 import Loading from "../../Components/Loading";
+import CategoryTag from "src/Components/CategoryTag";
+import UserTag from "src/Components/UserTag";
 
 const BoardContainer = styled.div`
   width: 100%;
@@ -24,17 +26,6 @@ const CategoryContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   padding-bottom: 5px;
-`;
-
-const Category = styled.div`
-  padding: 3px 5px;
-  background-color: white;
-  color: black;
-  font-weight: bolder;
-  border-radius: 2px;
-  font-size: 10px;
-  margin-right: 4px;
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.5);
 `;
 
 const TD = styled.td`
@@ -76,9 +67,7 @@ const TableRow = styled.tr`
   background-color: #222;
   transition: background-color 0.5s ease, box-shadow 0.5s ease;
   position: relative;
-  z-index: 1;
   &:hover {
-    z-index: 3;
     background-color: #333;
     box-shadow: 0px 0px 10px 5px black;
     ${CategoryImg} {
@@ -156,13 +145,6 @@ const PostsInfoContainer = styled.div`
   justify-content: space-between;
 `;
 
-const UserContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 5px;
-`;
-
 const CountContainer = styled.div`
   display: flex;
   align-items: center;
@@ -172,27 +154,6 @@ const CountContainer = styled.div`
 
 const CountIcon = styled.i`
   padding-right: 3px;
-`;
-
-interface IUserProfilePhotoProps {
-  url: string;
-}
-
-const UserProfilePhoto = styled<IUserProfilePhotoProps, any>("div")`
-  width: 15px;
-  height: 15px;
-  overflow: hidden;
-  position: relative;
-  transition: filter 0.5s ease;
-  margin-right: 5px;
-  background-image: url(${props => `${props.url}`});
-  background-size: auto 100%;
-  background-position: 50% 50%;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
-`;
-
-const UserNickName = styled.div`
-  font-weight: bolder;
 `;
 
 const PostButtonContainer = styled.div`
@@ -298,11 +259,15 @@ class Board extends React.Component<IProps, IState> {
                             <TitleRow>
                               <CategoryContainer>
                                 {post.category.parent![0] !== undefined ? (
-                                  <Category>
-                                    {`# ${post.category.parent![0]!.name}`}
-                                  </Category>
+                                  <CategoryTag
+                                    id={post.category.parent![0]!.id}
+                                    name={post.category.parent![0]!.name}
+                                  />
                                 ) : null}
-                                <Category>{`# ${post.category.name}`}</Category>
+                                <CategoryTag
+                                  id={post.category.id}
+                                  name={post.category.name}
+                                />
                               </CategoryContainer>
                               <Title>
                                 <Link
@@ -325,14 +290,10 @@ class Board extends React.Component<IProps, IState> {
 
                               <SubTitle>
                                 Guide by{" "}
-                                <UserContainer>
-                                  <UserProfilePhoto
-                                    url={post.user.profilePhoto}
-                                  />
-                                  <UserNickName>
-                                    {post.user.nickName}
-                                  </UserNickName>
-                                </UserContainer>{" "}
+                                <UserTag
+                                  profilePhoto={post.user.profilePhoto}
+                                  username={post.user.nickName}
+                                />{" "}
                                 Updated {post.createdAt}
                               </SubTitle>
                             </TitleRow>
@@ -356,10 +317,7 @@ class Board extends React.Component<IProps, IState> {
                       <span>
                         THE NUMBER OF POSTS IS{" "}
                         <span
-                          style={{
-                            color: "skyblue",
-                            fontWeight: "bolder"
-                          }}
+                          style={{ color: "skyblue", fontWeight: "bolder" }}
                         >
                           {posts.length}
                         </span>

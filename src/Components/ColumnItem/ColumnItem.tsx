@@ -46,6 +46,9 @@ interface IProps {
   onDrag: "content" | "columnList";
   targetIndex: any;
   setTargetIndex: any;
+
+  pushPresentBlockToTargetIndex: any;
+  pushNewBlockToTargetIndex: any;
 }
 
 class ColumnItem extends React.Component<IProps> {
@@ -89,6 +92,12 @@ class ColumnItem extends React.Component<IProps> {
                   renderNode={this.props.renderNode}
                   renderMark={this.props.renderMark}
                   setTargetIndex={setTargetIndex}
+                  pushPresentBlockToTargetIndex={
+                    this.props.pushPresentBlockToTargetIndex
+                  }
+                  pushNewBlockToTargetIndex={
+                    this.props.pushNewBlockToTargetIndex
+                  }
                 />
                 <Builder
                   state={

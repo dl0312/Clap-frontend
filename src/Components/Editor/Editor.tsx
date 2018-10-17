@@ -32,8 +32,9 @@ import { addPost, addPostVariables } from "../../types/api";
 import { Button } from "../../sharedStyle";
 import Textarea from "../Textarea";
 import Template from "../Template";
-import CategorySelection from "../CategorySelection";
 import Builder from "../Builder";
+import CategoryButton from "../CategoryButton";
+import { Link } from "react-router-dom";
 
 interface IEditorContainerProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
@@ -123,10 +124,6 @@ const MoreOptionButton = styled.i`
   margin: 0 5px;
 `;
 
-const TemplateButtonContainer = styled.div``;
-
-const TemplateButton = Button.extend``;
-
 const EditorUtilButtonContainer = styled.div`
   justify-self: auto;
   position: absolute;
@@ -158,38 +155,6 @@ const EditorContentContainer = styled.div`
   right: 0px;
   left: 0px;
 `;
-
-// const EditorContainer = styled<IEditorContainerProps, any>("div")`
-//   width: 100%;
-//   height: ${props =>
-//     props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
-//       ? "700px"
-//       : null};
-//   display: flex;
-//   flex-direction: row;
-//   justify-content: center;
-//   overflow: hidden;
-//   position: ${props =>
-//     props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
-//       ? null
-//       : "absolute"};
-//   top: ${props =>
-//     props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
-//       ? "80%"
-//       : "100px"};
-//   bottom: 0px;
-//   right: 0;
-//   left: 0;
-// `;
-
-// const RealEditorContainer = styled.div`
-//   width: 1200px;
-//   padding: 15px;
-//   display: flex;
-//   flex-direction: row;
-//   justify-content: space-between;
-//   background-color: #555;
-// `;
 
 const EditorLeftOuterContainer = styled.div`
   width: 80%;
@@ -257,27 +222,6 @@ const TitleInput = styled<ITitleInputProps, any>(Textarea)`
   font-weight: 400;
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
   margin: 0 10px;
-`;
-
-const CategoryButton = styled.i`
-  position: absolute;
-  right: 20px;
-  top: 25px;
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
-  &:hover {
-    opacity: 1;
-  }
-`;
-
-const CategorySelectionContainer = styled.div`
-  position: absolute;
-  z-index: 999;
-  width: 400px;
-  height: 500px;
-  right: 10px;
-  top: 60px;
-  background-color: transparent;
 `;
 
 const EditorRightContainer = styled.div`
@@ -374,6 +318,7 @@ class Editor extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.moveCard = this.moveCard.bind(this);
+    this.onUnload = this.onUnload.bind(this);
     this.state = {
       rightMenu: null,
       view: "EDIT",
@@ -401,7 +346,19 @@ class Editor extends React.Component<IProps, IState> {
       targetIndex: [],
       ...props.state
     };
-    // this.state = { ...props.state };
+  }
+
+  public onUnload = (event: any) => {
+    // the method that will be used for both add and remove event
+    event.returnValue = "Hellooww";
+  };
+
+  public componentDidMount() {
+    window.addEventListener("beforeunload", this.onUnload);
+  }
+
+  public componentWillUnmount() {
+    window.removeEventListener("beforeunload", this.onUnload);
   }
 
   public addIdToState = (
@@ -655,7 +612,70 @@ class Editor extends React.Component<IProps, IState> {
         ) {
           console.log("same index");
         } else {
-          if (dragIndex[2] < hoverIndex[2]) {
+          if (
+            dragIndex[0] === hoverIndex[0] &&
+            dragIndex[1] === hoverIndex[1] &&
+            dragIndex[2] !== hoverIndex[2]
+          ) {
+            if (dragIndex[2] < hoverIndex[2]) {
+              this.setState(
+                update(this.state, {
+                  cards: {
+                    [dragIndex[0]]: {
+                      columnListArray: {
+                        [dragIndex[1]]: {
+                          $splice: [[dragIndex[2], 1]]
+                        }
+                      }
+                    }
+                  }
+                })
+              );
+              this.setState(
+                update(this.state, {
+                  cards: {
+                    [hoverIndex[0]]: {
+                      columnListArray: {
+                        [hoverIndex[1]]: {
+                          $splice: [[hoverIndex[2] - 1, 0, dragCard]]
+                        }
+                      }
+                    }
+                  }
+                })
+              );
+            } else {
+              this.setState(
+                update(this.state, {
+                  cards: {
+                    [dragIndex[0]]: {
+                      columnListArray: {
+                        [dragIndex[1]]: {
+                          $splice: [[dragIndex[2], 1]]
+                        }
+                      }
+                    }
+                  }
+                })
+              );
+              this.setState(
+                update(this.state, {
+                  cards: {
+                    [hoverIndex[0]]: {
+                      columnListArray: {
+                        [hoverIndex[1]]: {
+                          $splice: [[hoverIndex[2], 0, dragCard]]
+                        }
+                      }
+                    }
+                  }
+                })
+              );
+            }
+          } else if (
+            dragIndex[0] !== hoverIndex[0] ||
+            dragIndex[1] !== hoverIndex[1]
+          ) {
             this.setState(
               update(this.state, {
                 cards: {
@@ -675,34 +695,7 @@ class Editor extends React.Component<IProps, IState> {
                   [hoverIndex[0]]: {
                     columnListArray: {
                       [hoverIndex[1]]: {
-                        $splice: [[hoverIndex[2] - 1, 0, dragCard]]
-                      }
-                    }
-                  }
-                }
-              })
-            );
-          } else {
-            this.setState(
-              update(this.state, {
-                cards: {
-                  [dragIndex[0]]: {
-                    columnListArray: {
-                      [dragIndex[1]]: {
-                        $splice: [[dragIndex[2], 1]]
-                      }
-                    }
-                  }
-                }
-              })
-            );
-            this.setState(
-              update(this.state, {
-                cards: {
-                  [hoverIndex[0]]: {
-                    columnListArray: {
-                      [hoverIndex[1]]: {
-                        $splice: [[hoverIndex[2] + 1, 0, dragCard]]
+                        $splice: [[hoverIndex[2], 0, dragCard]]
                       }
                     }
                   }
@@ -1196,7 +1189,6 @@ class Editor extends React.Component<IProps, IState> {
       pos,
       hoverImgJson,
       onImage,
-      categoryPopUp,
       onDrag,
       targetIndex
     } = this.state;
@@ -1205,22 +1197,24 @@ class Editor extends React.Component<IProps, IState> {
       <React.Fragment>
         <EditorContainer type={type}>
           <EditorNavOne>
-            <LogoContainer>
-              <Logo>
-                CLAP
-                <div
-                  role="img"
-                  aria-label="Game"
-                  style={{
-                    fontFamily: "Open Sans",
-                    fontSize: "5px",
-                    letterSpacing: "2px"
-                  }}
-                >
-                  🕹️POWERED BY GAMERS🕹️
-                </div>
-              </Logo>
-            </LogoContainer>
+            <Link to={"/"}>
+              <LogoContainer>
+                <Logo>
+                  CLAP
+                  <div
+                    role="img"
+                    aria-label="Game"
+                    style={{
+                      fontFamily: "Open Sans",
+                      fontSize: "5px",
+                      letterSpacing: "2px"
+                    }}
+                  >
+                    🕹️POWERED BY GAMERS🕹️
+                  </div>
+                </Logo>
+              </LogoContainer>
+            </Link>
             <DeviceSelectorContainer>
               <Device
                 onClick={() => this.handleDevice("PHONE")}
@@ -1263,23 +1257,10 @@ class Editor extends React.Component<IProps, IState> {
           <EditorNavTwo>
             <div />
             <EditorUtilButtonContainer>UTIL</EditorUtilButtonContainer>
-            <TemplateButtonContainer>
-              <TemplateButton
-                onClick={() =>
-                  this.setState({
-                    templatePopUp: !this.state.templatePopUp
-                  })
-                }
-              >
-                TEMPLATES
-              </TemplateButton>
-              {this.state.templatePopUp && (
-                <Template
-                  onTemplateClick={this.onTemplateClick}
-                  handleSetState={this.handleSetState}
-                />
-              )}
-            </TemplateButtonContainer>
+            <Template
+              onTemplateClick={this.onTemplateClick}
+              handleSetState={this.handleSetState}
+            />
           </EditorNavTwo>
           <EditorContentContainer>
             <EditorLeftOuterContainer>
@@ -1297,23 +1278,10 @@ class Editor extends React.Component<IProps, IState> {
                           device={device}
                         />
                         <CategoryButton
-                          className="fas fa-search fa-2x"
-                          onClick={() =>
-                            this.setState({
-                              categoryPopUp: !this.state.categoryPopUp
-                            })
-                          }
+                          addIdToState={this.addIdToState}
+                          deleteIdToState={this.deleteIdToState}
+                          selectedCategories={this.state.category}
                         />
-                        {categoryPopUp && (
-                          <CategorySelectionContainer>
-                            <CategorySelection
-                              type="CATEGORY"
-                              addIdToState={this.addIdToState}
-                              deleteIdToState={this.deleteIdToState}
-                              selectedCategories={this.state.category}
-                            />
-                          </CategorySelectionContainer>
-                        )}
                       </TitleContainer>
                       <Builder
                         state={
@@ -1365,6 +1333,12 @@ class Editor extends React.Component<IProps, IState> {
                                   masterCallback={this.masterCallback}
                                   targetIndex={targetIndex}
                                   setTargetIndex={this.setTargetIndex}
+                                  pushPresentBlockToTargetIndex={
+                                    this.pushPresentBlockToTargetIndex
+                                  }
+                                  pushNewBlockToTargetIndex={
+                                    this.pushNewBlockToTargetIndex
+                                  }
                                 />
                               </Card>
                               <Builder
@@ -1413,8 +1387,7 @@ class Editor extends React.Component<IProps, IState> {
                 }
                 cards={this.state.cards}
                 view={this.state.view}
-                title={this.state.title} // bodyBackgroundColor={this.state.bodyBackgroundColor}
-                // contentWidth={this.state.contentWidth}
+                title={this.state.title}
                 font={this.state.font}
                 category={this.state.category}
               />

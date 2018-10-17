@@ -13,6 +13,7 @@ export const POST = gql`
           id
           name
           parent {
+            id
             name
           }
           wikiImages {
@@ -155,6 +156,7 @@ export const POSTS = gql`
           id
           name
           parent {
+            id
             name
           }
           wikiImages {

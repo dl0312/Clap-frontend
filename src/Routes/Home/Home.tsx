@@ -53,6 +53,7 @@ class Home extends React.Component {
               if (data === undefined) {
                 return <div>data undefined</div>;
               }
+              console.log(data);
               const posts = data.GetAllPosts.posts;
               if (posts) {
                 return (
@@ -65,7 +66,7 @@ class Home extends React.Component {
               }
             }}
           </PostsQuery>
-          <PostsQuery
+          {/* <PostsQuery
             query={POSTS}
             fetchPolicy={"cache-and-network"}
             variables={{ limit: 25, type: "updatedAt" }}
@@ -80,6 +81,7 @@ class Home extends React.Component {
               if (data === undefined) {
                 return <div>data undefined</div>;
               }
+              console.log(data);
               const posts = data.GetAllPosts.posts;
               if (posts) {
                 return (
@@ -91,7 +93,7 @@ class Home extends React.Component {
                 return null;
               }
             }}
-          </PostsQuery>
+          </PostsQuery> */}
           <WikiImagesQuery
             query={WIKIIMAGES}
             fetchPolicy={"cache-and-network"}

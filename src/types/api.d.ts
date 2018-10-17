@@ -7,6 +7,7 @@
 
 export interface getPostById_GetPostById_post_category_parent {
   __typename: "Category";
+  id: number;
   name: string;
 }
 
@@ -255,6 +256,7 @@ export interface getAllPosts_GetAllPosts_posts_user {
 
 export interface getAllPosts_GetAllPosts_posts_category_parent {
   __typename: "Category";
+  id: number;
   name: string;
 }
 

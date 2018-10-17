@@ -1,5 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+import onClickOutside from "react-onclickoutside";
+import { Button } from "src/sharedStyle";
+
+const TemplateButtonContainer = styled.div``;
+
+const TemplateButton = Button.extend``;
 
 const TemplateCompContainer = styled.div`
   position: absolute;
@@ -130,36 +136,54 @@ const templates = [
   }
 ] as any;
 
-class Template extends React.Component<any, any> {
+interface IState {
+  isOpen: boolean;
+}
+
+class Template extends React.Component<any, IState> {
   constructor(props: any) {
     super(props);
-    this.state = {};
+    this.state = {
+      isOpen: false
+    };
   }
+
+  public handleClickOutside = () => {
+    this.setState({ isOpen: false });
+  };
 
   public render() {
     const { onTemplateClick } = this.props;
+    const { isOpen } = this.state;
     return (
-      <TemplateCompContainer>
-        <TemplateMainTitleContainer>
-          <TemplateMainTitle>RECOMMANDED</TemplateMainTitle>
-          {/* <TemplateMainTitle>MY</TemplateMainTitle> */}
-        </TemplateMainTitleContainer>
-        <TemplateSubTitle>Total {templates.length}</TemplateSubTitle>
-        <TemplateListContainer>
-          {templates.map((template: any) => (
-            <TemplateContainer
-              onClick={() => {
-                onTemplateClick(template.content);
-              }}
-            >
-              <TemplateImage src={template.img} />
-              <TemplateTitle>{template.title}</TemplateTitle>
-            </TemplateContainer>
-          ))}
-        </TemplateListContainer>
-      </TemplateCompContainer>
+      <TemplateButtonContainer>
+        <TemplateButton onClick={() => this.setState({ isOpen: !isOpen })}>
+          TEMPLATES
+        </TemplateButton>
+        {isOpen && (
+          <TemplateCompContainer>
+            <TemplateMainTitleContainer>
+              <TemplateMainTitle>RECOMMANDED</TemplateMainTitle>
+              {/* <TemplateMainTitle>MY</TemplateMainTitle> */}
+            </TemplateMainTitleContainer>
+            <TemplateSubTitle>Total {templates.length}</TemplateSubTitle>
+            <TemplateListContainer>
+              {templates.map((template: any) => (
+                <TemplateContainer
+                  onClick={() => {
+                    onTemplateClick(template.content);
+                  }}
+                >
+                  <TemplateImage src={template.img} />
+                  <TemplateTitle>{template.title}</TemplateTitle>
+                </TemplateContainer>
+              ))}
+            </TemplateListContainer>
+          </TemplateCompContainer>
+        )}
+      </TemplateButtonContainer>
     );
   }
 }
 
-export default Template;
+export default onClickOutside(Template);
