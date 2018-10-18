@@ -17,7 +17,7 @@ import { Value, ValueJSON } from "slate";
 import styled from "styled-components";
 import flow from "lodash/flow";
 import EditorDefaults from "../../EditorDefaults";
-import ContentBox from "../ContentBox";
+// import ContentBox from "../ContentBox";
 
 import Button from "../ContentItems/Button";
 import Text from "../ContentItems/Text";
@@ -140,7 +140,7 @@ const Handle = styled.div`
   right: 0px;
   margin-left: -2px;
   z-index: 100;
-  transform: translate(44px, -16px);
+  transform: translate(45px, -16px);
 `;
 
 const ButtonOption = styled.button`
@@ -564,7 +564,7 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
               </div>
             ) : null}
             {this.showInner(active)}
-            <ContentBox index={index} />
+            {/* {(hover || active) && <ContentBox index={index} />} */}
           </div>
         )
       )

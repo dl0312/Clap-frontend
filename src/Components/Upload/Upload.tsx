@@ -20,22 +20,23 @@ const PreviewImg = styled.img`
   object-fit: contain;
 `;
 
-const PreviewContainer = styled.div`
-  margin: 5px 0;
-`;
+// const PreviewContainer = styled.div`
+//   margin: 5px 0;
+// `;
 
-const PreviewTitle = styled.div`
-  text-transform: uppercase;
-  font-size: 15px;
-  font-weight: bolder;
-  margin: 3px;
-`;
+// const PreviewTitle = styled.div`
+//   text-transform: uppercase;
+//   font-size: 15px;
+//   font-weight: bolder;
+//   margin: 3px;
+// `;
 
 const DropInnerText = FlexBox.extend`
   padding: 10px;
   width: 100%;
   height: 100%;
   text-align: center;
+  text-transform: uppercase;
 `;
 
 class UploadQuery extends Mutation<
@@ -56,6 +57,12 @@ interface IState {
   file: File | null;
   uploading: boolean;
 }
+
+const dropzoneStyle = {
+  width: "100px",
+  height: "100px",
+  outline: "1px dashed black"
+};
 
 class Upload extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -82,12 +89,11 @@ class Upload extends React.Component<IProps, IState> {
           >
             {uploadShownImage => (
               <Dropzone
+                style={dropzoneStyle}
                 accept="image/*"
                 multiple={false}
                 onDrop={async ([file]) => {
-                  this.setState({
-                    uploading: true
-                  });
+                  this.setState({ uploading: true });
                   const formData = new FormData();
                   formData.append("file", file);
                   formData.append("api_key", "641929979264519");
@@ -126,9 +132,7 @@ class Upload extends React.Component<IProps, IState> {
                         public_id
                       );
                     }
-                    this.setState({
-                      uploading: false
-                    });
+                    this.setState({ uploading: false });
                   }
                   this.setState({ file });
                 }}
@@ -138,8 +142,9 @@ class Upload extends React.Component<IProps, IState> {
                     <PreviewImg src={this.props.exShownImg.url} alt="preview" />
                   ) : (
                     <DropInnerText>
-                      Try dropping some files here, or click to select files to
-                      upload.
+                      Drop Image
+                      <br />
+                      Click Here
                     </DropInnerText>
                   )
                 ) : this.props.type === "PROFILE" ? (
@@ -147,8 +152,9 @@ class Upload extends React.Component<IProps, IState> {
                     <PreviewImg src={this.props.exShownImg.url} alt="preview" />
                   ) : (
                     <DropInnerText>
-                      Try dropping some files here, or click to select files to
-                      upload.
+                      Drop Image
+                      <br />
+                      Click Here
                     </DropInnerText>
                   )
                 ) : this.props.type === "WIKIIMAGE_ADD" ||
@@ -157,22 +163,23 @@ class Upload extends React.Component<IProps, IState> {
                     <PreviewImg src={this.props.exShownImg.url} alt="preview" />
                   ) : (
                     <DropInnerText>
-                      Try dropping some files here, or click to select files to
-                      upload.
+                      Drop Image
+                      <br />
+                      Click Here
                     </DropInnerText>
                   )
                 ) : null}
               </Dropzone>
             )}
           </UploadQuery>
-          <PreviewTitle>Dropped file</PreviewTitle>
+          {/* <PreviewTitle>Dropped file</PreviewTitle>
           {this.state.file ? (
             <PreviewContainer>
               <div>
                 {this.state.file.name} - {this.state.file.size} bytes
               </div>
             </PreviewContainer>
-          ) : null}
+          ) : null} */}
         </FlexBox>
       </div>
     );

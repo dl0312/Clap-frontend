@@ -755,7 +755,9 @@ class Editor extends React.Component<IProps, IState> {
       | "onDrag"
       | "rightMenu"
       | "shownImage"
-      | "targetIndex",
+      | "targetIndex"
+      | "selectedIndex"
+      | "hoveredIndex",
     dataFromChild: any,
     secondDataFromChild?: any
   ) => {
@@ -769,6 +771,10 @@ class Editor extends React.Component<IProps, IState> {
       this.setState({ onDrag: dataFromChild });
     } else if (type === "targetIndex") {
       this.setState({ targetIndex: dataFromChild });
+    } else if (type === "selectedIndex") {
+      this.setState({ selectedIndex: dataFromChild });
+    } else if (type === "hoveredIndex") {
+      this.setState({ hoveredIndex: dataFromChild });
     } else if (type === "rightMenu") {
       this.setState({
         rightMenu: dataFromChild,
@@ -1051,6 +1057,8 @@ class Editor extends React.Component<IProps, IState> {
               filteredState.onImage = false;
               filteredState.view = "EDIT";
               filteredState.hoveredIndex = null;
+              filteredState.targetIndex = null;
+
               this.props.EditPost({
                 refetchQueries: [
                   {
@@ -1284,6 +1292,7 @@ class Editor extends React.Component<IProps, IState> {
                         />
                       </TitleContainer>
                       <Builder
+                        type={"columnList"}
                         state={
                           onDrag === "columnList"
                             ? 0 === targetIndex
@@ -1342,6 +1351,7 @@ class Editor extends React.Component<IProps, IState> {
                                 />
                               </Card>
                               <Builder
+                                type={"columnList"}
                                 state={
                                   onDrag === "columnList"
                                     ? index + 1 === targetIndex

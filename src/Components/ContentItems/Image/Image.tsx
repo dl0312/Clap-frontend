@@ -17,8 +17,8 @@ const ImageContainer = styled<IImageContainerProps, any>("div")`
 
 const EmptyImageContainer = styled.div`
   width: 100%;
-  padding: 30px;
-  border: 0.5px solid rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  /* border: 0.5px solid rgba(0, 0, 0, 0.5); */
 `;
 
 const EmptyImageIcon = styled.i`

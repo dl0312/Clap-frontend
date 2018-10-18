@@ -9,7 +9,6 @@ interface IInsertProps {
 }
 
 const InsertText = styled<IInsertProps, any>("div")`
-  margin: 5px;
   border-radius: 3px;
   background-color: ${props =>
     props.state === "ISOVER"
@@ -19,11 +18,12 @@ const InsertText = styled<IInsertProps, any>("div")`
         : props.state === "NOTHING"
           ? EditorDefaults.MAIN_BACKGROUND_COLOR
           : null};
-  height: 100px;
+  height: 100%;
+  min-height: 75px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 600;
   font-family: "Open Sans", sans-serif;
   color: ${EditorDefaults.MAIN_TEXT_COLOR};
@@ -77,7 +77,7 @@ class EmptyContainer extends React.Component<IProps & IDnDProps, any> {
     return (
       connectDropTarget &&
       connectDropTarget(
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "100%", height: "100%" }}>
           <InsertText state={state}>
             {state === "ISOVER" ? (
               `DROP IT`

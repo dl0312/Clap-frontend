@@ -21,6 +21,7 @@ export default {
   BACKGROUND_COLOR: { r: 255, g: 255, b: 255, a: 1 },
   WIDTH: 800,
   FONT: "Open Sans",
+  BUILDER_NOTHING: "rgba(0,0,0,0.1)",
   BUILDER_ONDRAG_COLOR: "#c9abd8",
   BUILDER_ISOVER_COLOR: "#7158e2",
   BORDER_SELECT_COLOR: "#000",

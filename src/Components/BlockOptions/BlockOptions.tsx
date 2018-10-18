@@ -508,8 +508,8 @@ class BlockOptions extends React.Component<IProps, any> {
                   </MinimizeButton>
                 </OptionHeader>
                 <FeatureColumn>
-                  <FunctionColumn dir={"column"}>
-                    <FunctionTitleContainer>
+                  <FunctionColumn>
+                    <FunctionTitleContainer style={{ width: "100%" }}>
                       <FunctionTitle>Image Upload</FunctionTitle>
                     </FunctionTitleContainer>
                     <UrlColumn>
@@ -586,7 +586,7 @@ class BlockOptions extends React.Component<IProps, any> {
                       </ToggleContainer>
                     </ActionColumn>
                   </FunctionColumn>
-                  <FunctionColumn dir={"column"}>
+                  {/* <FunctionColumn dir={"column"}>
                     <FunctionTitleContainer>
                       <FunctionTitle>Alternate Text</FunctionTitle>
                     </FunctionTitleContainer>
@@ -606,13 +606,12 @@ class BlockOptions extends React.Component<IProps, any> {
                         }
                       />
                     </UrlColumn>
-                  </FunctionColumn>
-                  <FunctionColumn dir={"column"} isLast={"true"}>
+                  </FunctionColumn> */}
+                  {/* <FunctionColumn dir={"column"} isLast={"true"}>
                     <FunctionTitleContainer>
                       <FunctionTitle>Image Link</FunctionTitle>
                     </FunctionTitleContainer>
                     <UrlColumn>
-                      {/* <button className={styles.btn}>URL</button> */}
                       <UrlColumnInput
                         type="text"
                         value={selectedContent.link}
@@ -623,6 +622,25 @@ class BlockOptions extends React.Component<IProps, any> {
                             selectedIndex,
                             "IMAGE",
                             "LINK"
+                          )
+                        }
+                      />
+                    </UrlColumn>
+                  </FunctionColumn> */}
+                  <FunctionColumn dir={"column"} isLast={"true"}>
+                    <FunctionTitleContainer>
+                      <FunctionTitle>History</FunctionTitle>
+                    </FunctionTitleContainer>
+                    <UrlColumn>
+                      <ImageSrc
+                        type="text"
+                        value={selectedContent.imageSrc}
+                        onChange={e =>
+                          handleOnChange(
+                            e.target.value,
+                            selectedIndex,
+                            "IMAGE",
+                            "URL"
                           )
                         }
                       />

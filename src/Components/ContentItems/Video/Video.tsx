@@ -18,8 +18,8 @@ const VideoContainer = styled<IVideoContainerProps, any>("div")`
 
 const EmptyVideoContainer = styled.div`
   width: 100%;
-  padding: 30px;
-  border: 0.5px solid rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  /* border: 0.5px solid rgba(0, 0, 0, 0.5); */
 `;
 
 const EmptyVideoIcon = styled.i`

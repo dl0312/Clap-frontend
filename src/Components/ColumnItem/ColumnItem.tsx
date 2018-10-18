@@ -18,10 +18,10 @@ const Column = styled<IColumnProps, any>("div")`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: ${props => (props.hasBlock ? "flex-start" : "center")};
-  outline: ${props =>
+  justify-content: ${props => (props.hasBlock ? "flex-start" : "flex-start")};
+  border: ${props =>
     props.hasBlock
-      ? `0px solid transparent`
+      ? `1px solid transparent`
       : `1px dashed ${EditorDefaults.MAIN_TEXT_COLOR}`};
   background-color: ${props => props.bgc};
 `;
@@ -62,18 +62,19 @@ class ColumnItem extends React.Component<IProps> {
     const backgroundColor = cards.length === 1 ? "transparent" : "transparent";
     return (
       <Column hasBlock={cards.length !== 0} bgc={backgroundColor}>
-        <Builder
-          state={
-            onDrag === "content"
-              ? isEqual(this.props.index.concat(0), targetIndex)
-                ? "ISOVER"
-                : "ONDRAG"
-              : "NOTHING"
-          }
-        />
-        {cards.map((item, i) => {
-          if (item.type === "content") {
-            return (
+        {cards.length !== 0 ? (
+          <React.Fragment>
+            <Builder
+              type={"content"}
+              state={
+                onDrag === "content"
+                  ? isEqual(this.props.index.concat(0), targetIndex)
+                    ? "ISOVER"
+                    : "ONDRAG"
+                  : "NOTHING"
+              }
+            />
+            {cards.map((item, i) => (
               <React.Fragment key={i}>
                 <Container
                   /* Action to Parent Component */ key={i}
@@ -100,6 +101,7 @@ class ColumnItem extends React.Component<IProps> {
                   }
                 />
                 <Builder
+                  type={"content"}
                   state={
                     onDrag === "content"
                       ? isEqual(this.props.index.concat(i + 1), targetIndex)
@@ -109,12 +111,9 @@ class ColumnItem extends React.Component<IProps> {
                   }
                 />
               </React.Fragment>
-            );
-          } else {
-            return null;
-          }
-        })}
-        {cards.length !== 0 ? null : (
+            ))}
+          </React.Fragment>
+        ) : (
           <EmptyContainer
             index={this.props.index}
             masterCallback={this.props.masterCallback}

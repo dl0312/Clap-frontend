@@ -173,6 +173,7 @@ const itemSource = {
   },
   endDrag(props: IProps, monitor: DragSourceMonitor, component: ContentItem) {
     props.masterCallback("onDrag", null);
+    props.masterCallback("targetIndex", null);
     const item = {
       type: "content",
       onDrag: "content",
