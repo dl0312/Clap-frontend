@@ -3,6 +3,7 @@ import Downshift from "downshift";
 import styled from "styled-components";
 import { Query } from "react-apollo";
 import { CATEGORIES_KEYWORD } from "../../sharedQueries";
+import { media } from "src/config/_mixin";
 
 // // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 // function escapeRegexCharacters(str: string) {
@@ -43,6 +44,9 @@ const SuggestInput = styled.input`
   border: 1px solid #aaa;
   border-radius: 4px;
   color: black;
+
+  ${media.tablet`margin-top: 10px;width: 100px;height: 15px; font-size: 8px;`};
+  ${media.phone``};
 `;
 
 const SuggestList = styled.ul`
@@ -58,6 +62,9 @@ const SuggestList = styled.ul`
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
   z-index: 2;
+
+  ${media.tablet`width: 100px; font-size: 8px;`};
+  ${media.phone``};
 `;
 
 const SuggestListItem = styled.div`
