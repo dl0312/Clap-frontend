@@ -11,7 +11,7 @@ export interface getPostById_GetPostById_post_category_parent {
   name: string;
 }
 
-export interface getPostById_GetPostById_post_category_wikiImages {
+export interface getPostById_GetPostById_post_category_topWikiImage {
   __typename: "WikiImage";
   id: number;
   name: string | null;
@@ -24,7 +24,7 @@ export interface getPostById_GetPostById_post_category {
   id: number;
   name: string;
   parent: (getPostById_GetPostById_post_category_parent | null)[] | null;
-  wikiImages: (getPostById_GetPostById_post_category_wikiImages | null)[] | null;
+  topWikiImage: getPostById_GetPostById_post_category_topWikiImage | null;
 }
 
 export interface getPostById_GetPostById_post_user {
@@ -86,6 +86,8 @@ export interface getPostById_GetPostById_post {
   __typename: "Post";
   id: number;
   title: string;
+  titleImg: string | null;
+  titleImgPos: number | null;
   body: string | null;
   category: getPostById_GetPostById_post_category | null;
   view: number;
@@ -132,6 +134,8 @@ export interface addPost {
 
 export interface addPostVariables {
   title: string;
+  titleImg?: string | null;
+  titleImgPos?: number | null;
   categoryId: number;
   body: string;
 }
@@ -156,6 +160,8 @@ export interface editPost {
 export interface editPostVariables {
   postId: number;
   title?: string | null;
+  titleImg?: string | null;
+  titleImgPos?: number | null;
   categoryId?: number | null;
   body?: string | null;
 }
@@ -256,11 +262,10 @@ export interface getAllPosts_GetAllPosts_posts_user {
 
 export interface getAllPosts_GetAllPosts_posts_category_parent {
   __typename: "Category";
-  id: number;
   name: string;
 }
 
-export interface getAllPosts_GetAllPosts_posts_category_wikiImages {
+export interface getAllPosts_GetAllPosts_posts_category_topWikiImage {
   __typename: "WikiImage";
   id: number;
   shownImage: string;
@@ -272,13 +277,15 @@ export interface getAllPosts_GetAllPosts_posts_category {
   id: number;
   name: string;
   parent: (getAllPosts_GetAllPosts_posts_category_parent | null)[] | null;
-  wikiImages: (getAllPosts_GetAllPosts_posts_category_wikiImages | null)[] | null;
+  topWikiImage: getAllPosts_GetAllPosts_posts_category_topWikiImage | null;
 }
 
 export interface getAllPosts_GetAllPosts_posts {
   __typename: "Post";
   id: number;
   title: string;
+  titleImg: string | null;
+  titleImgPos: number | null;
   user: getAllPosts_GetAllPosts_posts_user;
   category: getAllPosts_GetAllPosts_posts_category | null;
   commentsCount: number | null;
@@ -477,6 +484,12 @@ export interface getCategoriesByKeywordVariables {
 // GraphQL query operation: getCategoryById
 // ====================================================
 
+export interface getCategoryById_GetCategoryById_category_topWikiImage {
+  __typename: "WikiImage";
+  shownImage: string;
+  hoverImage: string;
+}
+
 export interface getCategoryById_GetCategoryById_category_wikiImages {
   __typename: "WikiImage";
   shownImage: string;
@@ -499,6 +512,7 @@ export interface getCategoryById_GetCategoryById_category {
   __typename: "Category";
   id: number;
   name: string;
+  topWikiImage: getCategoryById_GetCategoryById_category_topWikiImage | null;
   wikiImages: (getCategoryById_GetCategoryById_category_wikiImages | null)[] | null;
   parent: (getCategoryById_GetCategoryById_category_parent | null)[] | null;
   children: (getCategoryById_GetCategoryById_category_children | null)[] | null;
@@ -793,7 +807,8 @@ export interface sendClap {
 }
 
 export interface sendClapVariables {
-  postId: number;
+  postId?: number | null;
+  wikiImageId?: number | null;
 }
 
 /* tslint:disable */

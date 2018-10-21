@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Sketch from "../../Utility/Sketch";
 import MiniWiki from "../MiniWiki";
 import Upload from "../Upload";
+// import onClickOutside from "react-onclickoutside";
 
 interface IBlockOptionContainerProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | "POST_ADD" | "POST_EDIT";
@@ -15,8 +16,7 @@ const BlockOptionContainer = styled<IBlockOptionContainerProps, any>("div")`
       ? null
       : "absolute"};
   top: 0px;
-  width: 20%;
-  min-width: 400px;
+  min-width: 250px;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
   background-color: #fff;
   color: #505659;

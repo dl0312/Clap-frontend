@@ -1,3 +1,3 @@
 export const AUTH_TOKEN = "jwt";
 export const LOST_IMAGE_URL =
-  "https://cdn.iconscout.com/public/images/icon/free/png-512/face-tired-unhappy-sad-emoji-34426cb4d7a9d9ef-512x512.png";
+  "https://www.rockstargames.com/reddeadredemption2/dist/img/global/social/ea95b42f4d8029ac2510571cc8dbdae4.jpg";

@@ -237,14 +237,14 @@ class CategoryDetail extends React.Component<any, IState> {
                       </ParentOrChildrenListContainer>
                     </ParentOrChildrenContainer>
                     <CurrentContainer>
-                      {category.wikiImages[0] ? (
+                      {category.topWikiImage ? (
                         <React.Fragment>
                           <CurrentImg
-                            src={category.wikiImages[0].shownImage}
+                            src={category.topWikiImage.shownImage}
                             alt={category.name}
                             onMouseOver={() =>
                               this.setState({
-                                hoverImgJson: category.wikiImages[0].hoverImage,
+                                hoverImgJson: category.topWikiImage.hoverImage,
                                 onImage: true
                               })
                             }
@@ -277,11 +277,11 @@ class CategoryDetail extends React.Component<any, IState> {
                     </ParentOrChildrenContainer>
                   </CategoryInfoContainer>
                   <CurrentHoverContainer>
-                    {category.wikiImages[0] !== undefined ? (
+                    {category.topWikiImage !== null ? (
                       <ImagePopup
                         pos={pos}
                         follow={false}
-                        json={category.wikiImages[0].hoverImage}
+                        json={category.topWikiImage.hoverImage}
                         onImage={true}
                       />
                     ) : (

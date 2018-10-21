@@ -7,11 +7,52 @@ import { uploadShownImage, uploadShownImageVariables } from "../../types/api";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 
-const FlexBox = styled.div`
+interface IUploadContainerProps {
+  type: "POST_IMAGE" | "WIKIIMAGE" | "PROFILE";
+}
+
+const UploadContainer = styled<IUploadContainerProps, any>("div")`
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  width: ${props => {
+    switch (props.type) {
+      case "POST_IMAGE":
+        return "100px";
+      case "WIKIIMAGE":
+        return "200px";
+      case "PROFILE":
+        return "100px";
+      default:
+        return;
+    }
+  }};
+  height: ${props => {
+    switch (props.type) {
+      case "POST_IMAGE":
+        return "100px";
+      case "WIKIIMAGE":
+        return "200px";
+      case "PROFILE":
+        return "100px";
+      default:
+        return;
+    }
+  }};
+  outline: ${props => {
+    switch (props.type) {
+      case "POST_IMAGE":
+        return "1px dashed black";
+      case "WIKIIMAGE":
+        return "1px dashed white";
+      case "PROFILE":
+        return "1px dashed black";
+      default:
+        return;
+    }
+  }};
+  background-color: white;
 `;
 
 const PreviewImg = styled.img`
@@ -31,7 +72,10 @@ const PreviewImg = styled.img`
 //   margin: 3px;
 // `;
 
-const DropInnerText = FlexBox.extend`
+const DropInnerText = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px;
   width: 100%;
   height: 100%;
@@ -45,7 +89,7 @@ class UploadQuery extends Mutation<
 > {}
 
 interface IProps {
-  type: "POST_IMAGE" | "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | "PROFILE";
+  type: "POST_IMAGE" | "WIKIIMAGE" | "PROFILE";
   exShownImg: { url: string };
   handleOnChange?: any;
   masterCallback?: any;
@@ -59,9 +103,8 @@ interface IState {
 }
 
 const dropzoneStyle = {
-  width: "100px",
-  height: "100px",
-  outline: "1px dashed black"
+  width: "100%",
+  height: "100%"
 };
 
 class Upload extends React.Component<IProps, IState> {
@@ -80,9 +123,11 @@ class Upload extends React.Component<IProps, IState> {
   };
 
   public render() {
+    const { type } = this.props;
+    console.log(this.props);
     return (
       <div>
-        <FlexBox>
+        <UploadContainer type={type}>
           <UploadQuery
             mutation={UPLOAD_SHOWNIMAGE}
             onCompleted={data => this.confirm(data)}
@@ -92,6 +137,7 @@ class Upload extends React.Component<IProps, IState> {
                 style={dropzoneStyle}
                 accept="image/*"
                 multiple={false}
+                maxSize={5242880}
                 onDrop={async ([file]) => {
                   this.setState({ uploading: true });
                   const formData = new FormData();
@@ -125,7 +171,7 @@ class Upload extends React.Component<IProps, IState> {
                           profilePhoto: secure_url
                         }
                       });
-                    } else {
+                    } else if (this.props.type === "WIKIIMAGE") {
                       this.props.masterCallback(
                         "shownImage",
                         secure_url,
@@ -157,9 +203,8 @@ class Upload extends React.Component<IProps, IState> {
                       Click Here
                     </DropInnerText>
                   )
-                ) : this.props.type === "WIKIIMAGE_ADD" ||
-                this.props.type === "WIKIIMAGE_EDIT" ? (
-                  this.props.exShownImg !== undefined ? (
+                ) : this.props.type === "WIKIIMAGE" ? (
+                  this.props.exShownImg.url !== null ? (
                     <PreviewImg src={this.props.exShownImg.url} alt="preview" />
                   ) : (
                     <DropInnerText>
@@ -180,42 +225,10 @@ class Upload extends React.Component<IProps, IState> {
               </div>
             </PreviewContainer>
           ) : null} */}
-        </FlexBox>
+        </UploadContainer>
       </div>
     );
   }
-
-  public onInputChange: React.ChangeEventHandler<
-    HTMLInputElement
-  > = async event => {
-    const {
-      target: { name, value, files }
-    } = event;
-    if (files) {
-      this.setState({
-        uploading: true
-      });
-      const formData = new FormData();
-      formData.append("file", files[0]);
-      formData.append("api_key", "641929979264519");
-      formData.append("upload_preset", "clap_image_manager");
-      formData.append("timestamp", String(Date.now() / 1000));
-      const {
-        data: { secure_url }
-      } = await axios.post(
-        "https://api.cloudinary.com/v1_1/clap_image_manager/image/upload",
-        formData
-      );
-      if (secure_url) {
-        this.setState({
-          uploading: false
-        });
-      }
-    }
-    this.setState({
-      [name]: value
-    } as any);
-  };
 }
 
 export default Upload;

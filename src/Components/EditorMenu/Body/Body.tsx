@@ -72,7 +72,7 @@ const Item = styled.li`
 // `;
 
 const Swatch = styled.div`
-  width: 150px;
+  width: 120px;
   padding: 5px;
   background-color: #fff;
   border-radius: 1px;

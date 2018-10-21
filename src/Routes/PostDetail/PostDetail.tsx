@@ -45,6 +45,7 @@ const PostContainer = styled.div`
 
 interface ITitleContainerProps {
   src: string;
+  pos: number;
 }
 
 const TitleContainer = styled<ITitleContainerProps, any>("div")`
@@ -54,13 +55,12 @@ const TitleContainer = styled<ITitleContainerProps, any>("div")`
   padding: 40px 40px;
   border: 1px solid black;
   background-color: black;
-  background-image: linear-gradient(to left, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 1)),
+  background-image: linear-gradient( rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
     url("${props => props.src}");
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  background-size: 60%;
-  background-position: right center;
-      background-repeat: no-repeat;
-
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: 50% ${props => (props.pos ? props.pos : 50)}%;
   color: white;
 `;
 
@@ -535,8 +535,6 @@ class PostDetail extends React.Component<IProps, IState> {
               return <div>have no post [category]</div>;
             }
             const body = JSON.parse(post.body);
-            console.log(body);
-            console.log(post.category.wikiImages!.length);
             return (
               <React.Fragment>
                 <Helmet>
@@ -546,20 +544,25 @@ class PostDetail extends React.Component<IProps, IState> {
                   <PostContainer>
                     <TitleContainer
                       src={
-                        post.category.wikiImages!.length !== 0
-                          ? post.category.wikiImages![0]!.shownImage
-                          : LOST_IMAGE_URL
+                        post.titleImg
+                          ? post.titleImg
+                          : post.category.topWikiImage !== null
+                            ? post.category.topWikiImage.shownImage
+                            : LOST_IMAGE_URL
                       }
+                      pos={post.titleImgPos}
                     >
                       <TitleInnerContainer>
                         <CategoryContainer>
                           {post.category.parent![0] !== undefined ? (
                             <CategoryTag
+                              size={"MEDIUM"}
                               id={post.category.parent![0]!.id}
                               name={post.category.parent![0]!.name}
                             />
                           ) : null}
                           <CategoryTag
+                            size={"MEDIUM"}
                             id={post.category.id}
                             name={post.category.name}
                           />

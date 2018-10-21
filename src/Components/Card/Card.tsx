@@ -16,7 +16,6 @@ import styled from "styled-components";
 import EditorDefaults from "../../EditorDefaults";
 import { findDOMNode } from "react-dom";
 import flow from "lodash/flow";
-import onClickOutside from "react-onclickoutside";
 
 const Handle = styled.div`
   background-color: ${EditorDefaults.HANDLE_COLOR};
@@ -201,12 +200,6 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
     });
   };
 
-  public handleClickOutside = () => {
-    console.log(`you're out!`);
-    this.props.masterCallback("selectedIndex", null);
-    this.props.masterCallback("hoveredIndex", null);
-  };
-
   public render() {
     const {
       index,
@@ -315,4 +308,4 @@ export default flow(
       isDragging: monitor.isDragging()
     })
   )
-)(onClickOutside(Card));
+)(Card);

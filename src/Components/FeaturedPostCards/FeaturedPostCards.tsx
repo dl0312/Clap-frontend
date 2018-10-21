@@ -84,13 +84,15 @@ const FeaturedCardCounter = styled<IFeaturedCardCounterProps, any>("div")`
 
 interface ICardImageProps {
   url: string;
+  pos: number;
 }
 
 const CardImage = styled<ICardImageProps, any>("div")`
   background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)),
     url(${props => `${props.url}`});
-  background-size: 130%;
-  background-position: 50% 50%;
+  background-size: ${props => (props.pos ? "100%" : "100%")};
+  background-position: ${props =>
+    !props.pos ? `50% 50%` : `50% ${props.pos}%`};
   height: 130px;
   width: 100%;
   /* position: relative; */
@@ -99,8 +101,9 @@ const CardImage = styled<ICardImageProps, any>("div")`
   /* margin: 5px; */
   /* border-bottom: 0.5px solid #efefef;
   border-right: 0.5px solid #efefef; */
-
   /* filter: brightness(0.5); */
+  ${media.tablet`height: 100px;`};
+  ${media.phone`height: 50px;`};
 `;
 
 const CardContainer = styled.div`
@@ -110,11 +113,11 @@ const CardContainer = styled.div`
   transition: width 0.5s ease;
   ${media.tablet`width: 25%;`};
   ${media.phone`width: 50%;`};
-  &:hover {
+  /* &:hover {
     ${CardImage} {
       background-size: 150%;
     }
-  }
+  } */
 `;
 
 const Slider = styled.div`
@@ -290,11 +293,14 @@ class FeaturedPostCards extends React.Component<IProps, IState> {
                         <CardContainer>
                           <CardImage
                             url={
-                              post.category.wikiImages[0] !== undefined
-                                ? post.category.wikiImages[0].shownImage
-                                : LOST_IMAGE_URL
+                              post.titleImg
+                                ? post.titleImg
+                                : post.category.topWikiImage !== null
+                                  ? post.category.topWikiImage.shownImage
+                                  : LOST_IMAGE_URL
                             }
                             alt={post.category.name}
+                            pos={post.titleImgPos}
                           >
                             <CategoryContainer>
                               {post.category.parent![0] !== undefined ? (

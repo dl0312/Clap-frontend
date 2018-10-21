@@ -12,7 +12,7 @@ const ContentBoxContainer = styled<IContentBoxContainerProps, any>("div")`
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: ${props => (props.isOpen ? "35px" : "0px")};
+  height: 100%;
   transition: height 0.2s ease;
 `;
 
@@ -20,6 +20,7 @@ interface IExpandButtonProps {
   state: "ISOVER" | "ONDRAG" | "NOTHING";
   type: "content" | "columnList";
   isOpen: boolean;
+  setStateBuilder: any;
 }
 
 const ExpandButton = styled<IExpandButtonProps, any>("div")`
@@ -110,18 +111,13 @@ interface IProps {
   index: any;
   state: "ISOVER" | "ONDRAG" | "NOTHING";
   type: "content" | "columnList";
-}
-
-interface IState {
+  setStateBuilder: any;
   isOpen: boolean;
 }
 
-class ContentBox extends React.Component<IProps, IState> {
+class ContentBox extends React.Component<IProps, any> {
   constructor(props: IProps) {
     super(props);
-    this.state = {
-      isOpen: false
-    };
   }
 
   public handleClickOutside = () => {
@@ -129,12 +125,11 @@ class ContentBox extends React.Component<IProps, IState> {
   };
 
   public handleOnClick = () => {
-    this.setState({ isOpen: !this.state.isOpen });
+    this.props.setStateBuilder("isOpen", !this.props.isOpen);
   };
 
   public render() {
-    const { state, type } = this.props;
-    const { isOpen } = this.state;
+    const { state, type, isOpen } = this.props;
     return (
       <ContentBoxContainer isOpen={isOpen}>
         <ExpandButton state={state} type={type} isOpen={isOpen}>

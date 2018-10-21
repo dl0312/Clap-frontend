@@ -18,7 +18,7 @@ const Item = styled<IItemProps, any>("li")`
   cursor: -webkit-grab;
   border: 0.5px solid #d8d8d8;
   border-radius: 5px;
-  height: 115px;
+  height: 70px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -33,14 +33,14 @@ const Item = styled<IItemProps, any>("li")`
   }
 `;
 
-const Icon = styled.div`
-  font-size: 40px;
-  margin-bottom: 10px;
+const Icon = styled.i`
+  font-size: 25px;
+  margin-bottom: 3px;
 `;
 
 const Title = styled.div`
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 100;
 `;
 
 const itemSource = {

@@ -7,6 +7,7 @@ import EditorDefaults from "src/EditorDefaults";
 interface IBuilderContainerProps {
   state: "ISOVER" | "ONDRAG" | "NOTHING";
   type: "content" | "columnList";
+  isOpen: boolean;
 }
 
 const BuilderContainer = styled<IBuilderContainerProps, any>("div")`
@@ -31,30 +32,47 @@ const BuilderContainer = styled<IBuilderContainerProps, any>("div")`
       case "ISOVER":
         return "4px";
       default:
-        return null;
+        return props.isOpen ? "35px" : "0px";
     }
   }};
-  transition: background-color 0.2s ease, height 0.2s ease;
+  transition: background-color 0.2s ease, height 0.1s ease;
   width: 100%;
   position: relative;
 `;
 
-class Builder extends React.Component<any, any> {
-  public componentDidMount() {
-    // const n = (ReactDOM.findDOMNode(
-    //   this
-    // )! as Element).getBoundingClientRect() as DOMRect;
+interface IState {
+  isOpen: boolean;
+}
+
+class Builder extends React.Component<any, IState> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      isOpen: false
+    };
   }
+
   render() {
     const { state, type } = this.props;
+    const { isOpen } = this.state;
     return (
-      <BuilderContainer className={"Builder"} state={state}>
+      <BuilderContainer className={"Builder"} state={state} isOpen={isOpen}>
         {type === "columnList" && (
-          <ContentBox state={state} index={0} type={type} />
+          <ContentBox
+            state={state}
+            index={0}
+            type={type}
+            setStateBuilder={this.setStateBuilder}
+            isOpen={isOpen}
+          />
         )}
       </BuilderContainer>
     );
   }
+
+  public setStateBuilder = (name: string, value: any) => {
+    this.setState({ [name]: value } as any);
+  };
 }
 
 export default Builder;

@@ -2,8 +2,24 @@ import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-const CategoryTagContainer = styled.div`
-  padding: 3px 5px;
+interface ICategoryTagContainerProps {
+  size: "LARGE" | "MEDIUM" | "SMALL";
+}
+
+const CategoryTagContainer = styled<ICategoryTagContainerProps, any>("div")`
+  padding: ${props => {
+    switch (props.size) {
+      case "LARGE":
+        return "3px 5px";
+      case "MEDIUM":
+        return "5px 10px";
+      case "SMALL":
+        return "3px 5px";
+      default:
+        return null;
+        break;
+    }
+  }};
   background-color: white;
   color: black;
   font-weight: bolder;
@@ -16,17 +32,13 @@ const CategoryTagContainer = styled.div`
 interface IProps {
   id: number;
   name: string;
+  size: "LARGE" | "MEDIUM" | "SMALL";
 }
 
-class CategoryTag extends React.Component<IProps, any> {
-  public render() {
-    const { id, name } = this.props;
-    return (
-      <Link to={`/category/read/${id}`} style={{ textDecoration: "none" }}>
-        <CategoryTagContainer># {name}</CategoryTagContainer>
-      </Link>
-    );
-  }
-}
+const CategoryTag: React.SFC<IProps> = ({ id, name, size }) => (
+  <Link to={`/category/read/${id}`} style={{ textDecoration: "none" }}>
+    <CategoryTagContainer size={size}>{name}</CategoryTagContainer>
+  </Link>
+);
 
 export default CategoryTag;

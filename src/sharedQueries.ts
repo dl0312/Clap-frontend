@@ -8,6 +8,8 @@ export const POST = gql`
       post {
         id
         title
+        titleImg
+        titleImgPos
         body
         category {
           id
@@ -16,7 +18,7 @@ export const POST = gql`
             id
             name
           }
-          wikiImages {
+          topWikiImage {
             id
             name
             shownImage
@@ -71,8 +73,20 @@ export const POST = gql`
 `;
 
 export const ADD_POST = gql`
-  mutation addPost($title: String!, $categoryId: Int!, $body: String!) {
-    AddPost(title: $title, categoryId: $categoryId, body: $body) {
+  mutation addPost(
+    $title: String!
+    $titleImg: String
+    $titleImgPos: Float
+    $categoryId: Int!
+    $body: String!
+  ) {
+    AddPost(
+      title: $title
+      titleImg: $titleImg
+      titleImgPos: $titleImgPos
+      categoryId: $categoryId
+      body: $body
+    ) {
       ok
       error
     }
@@ -83,12 +97,16 @@ export const EDIT_POST = gql`
   mutation editPost(
     $postId: Int!
     $title: String
+    $titleImg: String
+    $titleImgPos: Float
     $categoryId: Int
     $body: String
   ) {
     EditPost(
       postId: $postId
       title: $title
+      titleImg: $titleImg
+      titleImgPos: $titleImgPos
       categoryId: $categoryId
       body: $body
     ) {
@@ -147,6 +165,8 @@ export const POSTS = gql`
       posts {
         id
         title
+        titleImg
+        titleImgPos
         user {
           id
           nickName
@@ -156,10 +176,9 @@ export const POSTS = gql`
           id
           name
           parent {
-            id
             name
           }
-          wikiImages {
+          topWikiImage {
             id
             shownImage
             hoverImage
@@ -273,6 +292,10 @@ export const CATEGORY = gql`
       category {
         id
         name
+        topWikiImage {
+          shownImage
+          hoverImage
+        }
         wikiImages {
           shownImage
           hoverImage
@@ -436,8 +459,8 @@ export const WIKIIMAGE = gql`
 // export const CLAP_TO_WIKIIMAGE = gql``;
 
 export const SEND_CLAP = gql`
-  mutation sendClap($postId: Int!) {
-    SendClap(postId: $postId) {
+  mutation sendClap($postId: Int, $wikiImageId: Int) {
+    SendClap(postId: $postId, wikiImageId: $wikiImageId) {
       ok
       error
     }

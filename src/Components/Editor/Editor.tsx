@@ -14,14 +14,8 @@ import { media } from "../../config/_mixin";
 import ImagePopup from "../ImagePopup";
 import { Value } from "slate";
 import EmptyCard from "../EmptyCard";
-import Upload from "../Upload";
 import { RenderNodeProps, RenderMarkProps } from "slate-react";
-import {
-  POST,
-  POSTS,
-  WIKIIMAGE,
-  CATEGORIES_KEYWORD
-} from "../../sharedQueries";
+import { POST, POSTS } from "../../sharedQueries";
 
 import update from "immutability-helper";
 import isEqual from "lodash.isequal";
@@ -34,7 +28,9 @@ import Textarea from "../Textarea";
 import Template from "../Template";
 import Builder from "../Builder";
 import CategoryButton from "../CategoryButton";
+import ImageButton from "../ImageButton";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 interface IEditorContainerProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
@@ -44,7 +40,7 @@ const EditorContainer = styled<IEditorContainerProps, any>("div")`
   width: 100%;
   height: ${props =>
     props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
-      ? "700px"
+      ? null
       : null};
   display: flex;
   flex-direction: column;
@@ -195,14 +191,48 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   transition: width 0.2s ease;
 `;
 
-const TitleContainer = styled.div`
+interface ITitleContainer {
+  titleImg: string;
+  titleImgUploading: boolean;
+  titleImgPos: number;
+}
+
+const TitleContainer = styled<ITitleContainer, any>("div")`
   max-width: 800px;
   width: 100%;
   padding-top: 50px;
   padding-bottom: 20px;
+  margin-bottom: 30px;
   display: flex;
   justify-content: center;
   position: relative;
+  background-image: ${props =>
+    props.titleImg &&
+    `linear-gradient(
+    rgba(20, 20, 20, 0.3),
+    rgba(20, 20, 20, 0.3)
+  ),
+ url(${props.titleImg});`};
+  background-position: ${props => `50% ${props.titleImgPos}%`};
+  background-size: 100% auto;
+
+  color: ${props => (props.titleImg ? "white" : null)};
+`;
+
+const TitleImgPosInput = styled.input`
+  position: absolute;
+  color: black;
+  right: 25px;
+  top: 50%;
+  padding-left: 10px;
+  margin-top: -5px;
+  width: 50px;
+  border: none;
+  border-radius: 3px;
+  border: bolder;
+  ::-webkit-inner-spin-button {
+    opacity: 1;
+  }
 `;
 
 interface ITitleInputProps {
@@ -222,13 +252,14 @@ const TitleInput = styled<ITitleInputProps, any>(Textarea)`
   font-weight: 400;
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
   margin: 0 10px;
+  background-color: transparent;
 `;
 
 const EditorRightContainer = styled.div`
   background-color: white;
   transition: width 1s ease;
   width: 20%;
-  min-width: 400px;
+  min-width: 250px;
   border-left: 1px solid rgba(0, 0, 0, 0.2);
   ${media.tablet`width: 0%;  min-width: 0px;
 `};
@@ -312,6 +343,9 @@ interface IState {
   cards: any[];
   cardbuilderpositions: any[];
   targetIndex: any;
+  titleImg: string;
+  titleImgUploading: boolean;
+  titleImgPos: number;
 }
 
 class Editor extends React.Component<IProps, IState> {
@@ -344,6 +378,9 @@ class Editor extends React.Component<IProps, IState> {
       cards: [],
       cardbuilderpositions: [],
       targetIndex: [],
+      titleImg: null,
+      titleImgUploading: false,
+      titleImgPos: 50,
       ...props.state
     };
   }
@@ -1007,38 +1044,43 @@ class Editor extends React.Component<IProps, IState> {
     if (type === "POST_ADD") {
       return (
         <PostButtonContainer>
-          <PostButton
-            onClick={e => {
-              e.preventDefault();
-              const filteredState: IState = this.state;
-              filteredState.rightMenu = null;
-              filteredState.selectedContent = null;
-              filteredState.selectedIndex = null;
-              filteredState.onDrag = null;
-              filteredState.hoverImgJson = null;
-              filteredState.pos = { x: 0, y: 0 };
-              filteredState.onImage = false;
-              filteredState.view = "EDIT";
-              this.props.AddPost!({
-                refetchQueries: [
-                  {
-                    query: POSTS,
+          {this.state.category.length !== 0 &&
+            this.state.title && (
+              <PostButton
+                onClick={e => {
+                  e.preventDefault();
+                  const filteredState: IState = this.state;
+                  filteredState.rightMenu = null;
+                  filteredState.selectedContent = null;
+                  filteredState.selectedIndex = null;
+                  filteredState.onDrag = null;
+                  filteredState.hoverImgJson = null;
+                  filteredState.pos = { x: 0, y: 0 };
+                  filteredState.onImage = false;
+                  filteredState.view = "EDIT";
+                  this.props.AddPost!({
+                    refetchQueries: [
+                      {
+                        query: POSTS,
+                        variables: {
+                          limit: 20,
+                          type: "createdAt"
+                        }
+                      }
+                    ],
                     variables: {
-                      limit: 20,
-                      type: "createdAt"
+                      title: this.state.title,
+                      titleImg: this.state.titleImg,
+                      titleImgPos: this.state.titleImgPos,
+                      categoryId: this.state.category[0],
+                      body: JSON.stringify(filteredState)
                     }
-                  }
-                ],
-                variables: {
-                  title: this.state.title,
-                  categoryId: this.state.category[0],
-                  body: JSON.stringify(filteredState)
-                }
-              });
-            }}
-          >
-            SEND
-          </PostButton>
+                  });
+                }}
+              >
+                SEND
+              </PostButton>
+            )}
         </PostButtonContainer>
       );
     } else if (type === "POST_EDIT") {
@@ -1071,6 +1113,8 @@ class Editor extends React.Component<IProps, IState> {
                 variables: {
                   postId: this.props.postId,
                   title: this.state.title,
+                  titleImg: this.state.titleImg,
+                  titleImgPos: this.state.titleImgPos,
                   categoryId: this.state.category[0],
                   body: JSON.stringify(filteredState)
                 }
@@ -1080,106 +1124,6 @@ class Editor extends React.Component<IProps, IState> {
             SEND
           </PostButton>
         </PostButtonContainer>
-      );
-    } else if (type === "WIKIIMAGE_ADD") {
-      return (
-        <React.Fragment>
-          <Upload
-            type={"WIKIIMAGE_ADD"}
-            exShownImg={this.state.exShownImg}
-            masterCallback={this.masterCallback}
-          />
-          <ImagePopup
-            pos={pos}
-            follow={false}
-            json={JSON.stringify(this.state)}
-            onImage={true}
-          />
-          <PostButton
-            onClick={e => {
-              e.preventDefault();
-              const filteredState: IState = this.state;
-              filteredState.rightMenu = null;
-              filteredState.selectedContent = null;
-              filteredState.selectedIndex = null;
-              filteredState.onDrag = null;
-              filteredState.hoverImgJson = null;
-              filteredState.pos = { x: 0, y: 0 };
-              filteredState.onImage = false;
-              filteredState.view = "EDIT";
-              console.log(this.state.exShownImg);
-              this.props.AddWikiImage({
-                refetchQueries: [
-                  {
-                    query: CATEGORIES_KEYWORD,
-                    variables: {
-                      keyword: ""
-                    }
-                  }
-                ],
-                variables: {
-                  categoryId: this.props.categoryId,
-                  name: this.state.title,
-                  shownImage: this.state.exShownImg.url,
-                  hoverImage: JSON.stringify(filteredState)
-                }
-              });
-            }}
-          >
-            SEND
-          </PostButton>
-        </React.Fragment>
-      );
-    } else if (type === "WIKIIMAGE_EDIT") {
-      return (
-        <React.Fragment>
-          <Upload
-            type={"WIKIIMAGE_EDIT"}
-            exShownImg={this.state.exShownImg}
-            masterCallback={this.masterCallback}
-          />
-          <ImagePopup
-            pos={pos}
-            follow={false}
-            json={JSON.stringify(this.state)}
-            onImage={true}
-          />
-          <PostButton
-            onClick={e => {
-              e.preventDefault();
-              const filteredState: IState = this.state;
-              filteredState.rightMenu = null;
-              filteredState.selectedContent = null;
-              filteredState.selectedIndex = null;
-              filteredState.onDrag = null;
-              filteredState.hoverImgJson = null;
-              filteredState.pos = { x: 0, y: 0 };
-              filteredState.onImage = false;
-              filteredState.view = "EDIT";
-              console.log("wikiimageedit");
-              console.log(filteredState);
-              this.props.EditWikiImage({
-                refetchQueries: [
-                  {
-                    query: WIKIIMAGE,
-                    variables: {
-                      wikiImageId: this.props.wikiImage.id
-                    }
-                  }
-                ],
-                variables: {
-                  wikiImageId: this.props.wikiImage.id,
-                  categoryId: this.props.categoryId,
-                  name: this.state.title,
-                  shownImageId: this.state.exShownImg.id,
-                  hoverImage: JSON.stringify(filteredState)
-                }
-              });
-            }}
-          >
-            SEND
-          </PostButton>
-        </React.Fragment>
       );
     } else {
       return null;
@@ -1198,7 +1142,10 @@ class Editor extends React.Component<IProps, IState> {
       hoverImgJson,
       onImage,
       onDrag,
-      targetIndex
+      targetIndex,
+      titleImg,
+      titleImgUploading,
+      titleImgPos
     } = this.state;
     // console.log(this.state.targetIndex);
     return (
@@ -1276,7 +1223,11 @@ class Editor extends React.Component<IProps, IState> {
                 {view === "EDIT" ? (
                   <React.Fragment>
                     <EditorLeft font={this.state.font} view="EDIT">
-                      <TitleContainer>
+                      <TitleContainer
+                        titleImg={titleImg}
+                        titleImgUploading={titleImgUploading}
+                        titleImgPos={titleImgPos}
+                      >
                         <TitleInput
                           type={"text"}
                           value={this.state.title}
@@ -1285,6 +1236,17 @@ class Editor extends React.Component<IProps, IState> {
                           name={"title"}
                           device={device}
                         />
+                        <ImageButton onChange={this.onInputImageChange} />
+                        {titleImg && (
+                          <TitleImgPosInput
+                            type={"number"}
+                            value={titleImgPos}
+                            onChange={this.onInputChange}
+                            name={"titleImgPos"}
+                            min="0"
+                            max="100"
+                          />
+                        )}
                         <CategoryButton
                           addIdToState={this.addIdToState}
                           deleteIdToState={this.deleteIdToState}
@@ -1608,6 +1570,39 @@ class Editor extends React.Component<IProps, IState> {
     console.log(this.state.targetIndex);
     this.masterCallback("onDrag", null);
     this.handleDrop(dragItem, this.state.targetIndex);
+  };
+
+  public onInputImageChange: React.ChangeEventHandler<
+    HTMLInputElement
+  > = async event => {
+    const {
+      target: { name, value, files }
+    } = event;
+    if (files) {
+      this.setState({
+        titleImgUploading: true
+      });
+      const formData = new FormData();
+      formData.append("file", files[0]);
+      formData.append("api_key", "811881451928618");
+      formData.append("upload_preset", "tqecb16q");
+      formData.append("timestamp", String(Date.now() / 1000));
+      const {
+        data: { secure_url }
+      } = await axios.post(
+        "https://api.cloudinary.com/v1_1/djjpx4ror/image/upload",
+        formData
+      );
+      if (secure_url) {
+        this.setState({
+          titleImg: secure_url,
+          titleImgUploading: false
+        });
+      }
+    }
+    this.setState({
+      [name]: value
+    } as any);
   };
 }
 

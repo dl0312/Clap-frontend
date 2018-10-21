@@ -9,7 +9,7 @@ const Button = styled.i`
   position: absolute;
   right: 20px;
   top: 25px;
-  opacity: 0.5;
+  opacity: 0.2;
   transition: opacity 0.2s ease;
   &:hover {
     opacity: 1;

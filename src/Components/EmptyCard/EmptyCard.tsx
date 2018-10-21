@@ -80,7 +80,7 @@ class EmptyCard extends React.Component<IProps & IDnDProps> {
     return (
       connectDropTarget &&
       connectDropTarget(
-        <div style={{ width: "99%" }}>
+        <div style={{ width: "99%", maxWidth: "800px" }}>
           <InsertText state={state}>
             {state === "ISOVER" ? (
               `DROP IT`

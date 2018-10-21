@@ -40,12 +40,19 @@ const BoardBox = styled.div`
   max-width: 960px;
 `;
 
-const CategoryImg = styled.img`
+interface ICategoryImgProps {
+  url: string;
+}
+
+const CategoryImg = styled<ICategoryImgProps, any>("div")`
   width: 100%;
   height: 100%;
   display: block;
-  transition: transform 0.5s ease;
-  object-fit: fill;
+  transition: background-size 0.2s;
+  background-image: url(${props => props.url});
+  background-position: 50% 50%;
+  background-size: 100%;
+  background-repeat: no-repeat;
 `;
 
 const Table = styled.table`
@@ -65,13 +72,13 @@ const TableRow = styled.tr`
   grid-template-columns: 80px auto 120px;
   min-width: 400px;
   background-color: #222;
-  transition: background-color 0.5s ease, box-shadow 0.5s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
   position: relative;
   &:hover {
     background-color: #333;
     box-shadow: 0px 0px 10px 5px black;
     ${CategoryImg} {
-      transform: scale(1.2);
+      background-size: 150%;
     }
   }
 `;
@@ -248,9 +255,9 @@ class Board extends React.Component<IProps, IState> {
                           <TableRow key={index}>
                             <CategoryData>
                               <CategoryImg
-                                src={
-                                  post.category.wikiImages[0] !== undefined
-                                    ? post.category.wikiImages[0].shownImage
+                                url={
+                                  post.category.topWikiImage !== null
+                                    ? post.category.topWikiImage.shownImage
                                     : LOST_IMAGE_URL
                                 }
                                 alt={post.category.name}
@@ -260,11 +267,13 @@ class Board extends React.Component<IProps, IState> {
                               <CategoryContainer>
                                 {post.category.parent![0] !== undefined ? (
                                   <CategoryTag
+                                    size={"SMALL"}
                                     id={post.category.parent![0]!.id}
                                     name={post.category.parent![0]!.name}
                                   />
                                 ) : null}
                                 <CategoryTag
+                                  size={"SMALL"}
                                   id={post.category.id}
                                   name={post.category.name}
                                 />
@@ -317,7 +326,10 @@ class Board extends React.Component<IProps, IState> {
                       <span>
                         THE NUMBER OF POSTS IS{" "}
                         <span
-                          style={{ color: "skyblue", fontWeight: "bolder" }}
+                          style={{
+                            color: "skyblue",
+                            fontWeight: "bolder"
+                          }}
                         >
                           {posts.length}
                         </span>

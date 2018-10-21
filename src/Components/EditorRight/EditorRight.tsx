@@ -28,7 +28,7 @@ const MenuItem = styled.li`
 `;
 
 const Icon = styled.i`
-  font-size: 15px;
+  font-size: 12px;
 `;
 
 const MenuTitle = styled.div`

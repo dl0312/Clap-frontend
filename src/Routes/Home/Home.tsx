@@ -41,6 +41,7 @@ class Home extends React.Component {
           <PostsQuery
             query={POSTS}
             fetchPolicy={"cache-and-network"}
+            errorPolicy="all"
             variables={{ limit: 25, type: "createdAt" }}
           >
             {({ loading, data, error }) => {
@@ -50,25 +51,21 @@ class Home extends React.Component {
               if (error) {
                 return <div>{error.message}</div>;
               }
-              if (data === undefined) {
-                return <div>data undefined</div>;
-              }
               console.log(data);
-              const posts = data.GetAllPosts.posts;
-              if (posts) {
-                return (
+              const posts = data!.GetAllPosts.posts;
+              return (
+                posts && (
                   <React.Fragment>
                     <FeaturedPostCards posts={posts} type="New Guides" />
                   </React.Fragment>
-                );
-              } else {
-                return null;
-              }
+                )
+              );
             }}
           </PostsQuery>
-          {/* <PostsQuery
+          <PostsQuery
             query={POSTS}
             fetchPolicy={"cache-and-network"}
+            errorPolicy="all"
             variables={{ limit: 25, type: "updatedAt" }}
           >
             {({ loading, data, error }) => {
@@ -78,22 +75,17 @@ class Home extends React.Component {
               if (error) {
                 return <div>{error.message}</div>;
               }
-              if (data === undefined) {
-                return <div>data undefined</div>;
-              }
               console.log(data);
-              const posts = data.GetAllPosts.posts;
-              if (posts) {
-                return (
+              const posts = data!.GetAllPosts.posts;
+              return (
+                posts && (
                   <React.Fragment>
                     <FeaturedPostCards posts={posts} type="Updated Guides" />
                   </React.Fragment>
-                );
-              } else {
-                return null;
-              }
+                )
+              );
             }}
-          </PostsQuery> */}
+          </PostsQuery>
           <WikiImagesQuery
             query={WIKIIMAGES}
             fetchPolicy={"cache-and-network"}

@@ -1,14 +1,16 @@
 import React from "react";
 import { Mutation } from "react-apollo";
 import styled from "styled-components";
-import Editor from "../../Components/Editor";
+// import WikiImageEditor from "../../Components/WikiImageEditor";
 import { ADD_WIKIIMAGE } from "../../sharedQueries";
 import EditorDefaults from "../../EditorDefaults";
 import { toast } from "react-toastify";
+// import Upload from "src/Components/Upload";
+import WikiImageEditor from "src/Components/WikiImageEditor";
+// import ImagePopup from "src/Components/ImagePopup";
 
 const WikiImageAddContainer = styled.div`
   width: 100%;
-  padding: 30px;
 `;
 
 const HoverImageContainer = styled.div`
@@ -24,8 +26,7 @@ interface IProps {
 }
 
 interface IState {
-  imgSrc: string;
-  selectedFile: any;
+  shownImage: string;
   hoverJson: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
@@ -53,8 +54,7 @@ class WikiImageAdd extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      imgSrc: "",
-      selectedFile: null,
+      shownImage: "",
       hoverJson: {
         rightMenu: null,
         view: "EDIT",
@@ -92,6 +92,10 @@ class WikiImageAdd extends React.Component<IProps, IState> {
     }
   };
 
+  public setStateWikiImageAdd = (name: string, value: any) => {
+    this.setState({ [name]: value } as any);
+  };
+
   public render() {
     return (
       <React.Fragment>
@@ -104,7 +108,18 @@ class WikiImageAdd extends React.Component<IProps, IState> {
           >
             {(AddWikiImage, { data }) => (
               <HoverImageContainer>
-                <Editor
+                {/* <Upload
+                  type={"WIKIIMAGE"}
+                  exShownImg={{ url: this.state.shownImage }}
+                  setStateWikiImageAdd={this.setStateWikiImageAdd}
+                /> */}
+                {/* <ImagePopup
+                  pos={pos}
+                  follow={false}
+                  json={JSON.stringify(this.state)}
+                  onImage={true}
+                /> */}
+                <WikiImageEditor
                   state={this.state.hoverJson}
                   type="WIKIIMAGE_ADD"
                   AddWikiImage={AddWikiImage}
