@@ -766,12 +766,18 @@ export interface deleteWikiImageVariables {
 // GraphQL query operation: getWikiImageById
 // ====================================================
 
+export interface getWikiImageById_GetWikiImageById_wikiImage_category {
+  __typename: "Category";
+  name: string;
+}
+
 export interface getWikiImageById_GetWikiImageById_wikiImage {
   __typename: "WikiImage";
   id: number;
   name: string | null;
   shownImage: string;
   hoverImage: string;
+  category: getWikiImageById_GetWikiImageById_wikiImage_category;
 }
 
 export interface getWikiImageById_GetWikiImageById {
@@ -779,6 +785,8 @@ export interface getWikiImageById_GetWikiImageById {
   ok: boolean;
   error: string | null;
   wikiImage: getWikiImageById_GetWikiImageById_wikiImage | null;
+  isClapped: boolean | null;
+  isMine: boolean | null;
 }
 
 export interface getWikiImageById {

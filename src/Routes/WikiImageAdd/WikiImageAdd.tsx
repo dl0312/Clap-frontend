@@ -1,13 +1,10 @@
 import React from "react";
-import { Mutation } from "react-apollo";
 import styled from "styled-components";
-// import WikiImageEditor from "../../Components/WikiImageEditor";
-import { ADD_WIKIIMAGE } from "../../sharedQueries";
-import EditorDefaults from "../../EditorDefaults";
 import { toast } from "react-toastify";
-// import Upload from "src/Components/Upload";
+import { Mutation } from "react-apollo";
+import { ADD_WIKIIMAGE } from "../../sharedQueries";
 import WikiImageEditor from "src/Components/WikiImageEditor";
-// import ImagePopup from "src/Components/ImagePopup";
+import EditorDefaults from "../../EditorDefaults";
 
 const WikiImageAddContainer = styled.div`
   width: 100%;
@@ -108,17 +105,6 @@ class WikiImageAdd extends React.Component<IProps, IState> {
           >
             {(AddWikiImage, { data }) => (
               <HoverImageContainer>
-                {/* <Upload
-                  type={"WIKIIMAGE"}
-                  exShownImg={{ url: this.state.shownImage }}
-                  setStateWikiImageAdd={this.setStateWikiImageAdd}
-                /> */}
-                {/* <ImagePopup
-                  pos={pos}
-                  follow={false}
-                  json={JSON.stringify(this.state)}
-                  onImage={true}
-                /> */}
                 <WikiImageEditor
                   state={this.state.hoverJson}
                   type="WIKIIMAGE_ADD"

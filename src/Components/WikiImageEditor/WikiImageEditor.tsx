@@ -164,9 +164,6 @@ const EditorLeftOuterContainer = styled.div`
   display: flex;
   justify-content: center;
   background-color: #f7f7f7;
-  ${media.tablet`width: 100%;`};
-  ${media.phone`width: 100%;`};
-
   overflow-y: auto;
   ::-webkit-scrollbar {
     width: 6px;
@@ -175,21 +172,24 @@ const EditorLeftOuterContainer = styled.div`
   ::-webkit-scrollbar-thumb {
     background-color: #000000;
   }
+
+  ${media.tablet`width: 100%;`};
+  ${media.phone`width: 100%;`};
 `;
 
 interface IEditorLeftContainerProps {
-  device: "PHONE" | "TABLET" | "DESKTOP";
+  size: "SMALL" | "MEDIUM" | "LARGE";
 }
 
 const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   position: relative;
   width: ${props =>
-    props.device === "PHONE"
-      ? "425px"
-      : props.device === "TABLET"
-        ? "767px"
-        : props.device === "DESKTOP"
-          ? "100%"
+    props.size === "SMALL"
+      ? "200px"
+      : props.size === "MEDIUM"
+        ? "300px"
+        : props.size === "LARGE"
+          ? "400px"
           : "100%"};
   display: flex;
   align-items: center;
@@ -267,7 +267,7 @@ interface IProps {
 interface IState {
   rightMenu: number | null;
   view: "EDIT" | "USER" | "JSON";
-  device: "PHONE" | "TABLET" | "DESKTOP";
+  size: "SMALL" | "MEDIUM" | "LARGE";
   templatePopUp: boolean;
   categoryPopUp: boolean;
   // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
@@ -299,7 +299,7 @@ class WikiImageEditor extends React.Component<IProps, IState> {
     this.state = {
       rightMenu: null,
       view: "EDIT",
-      device: "DESKTOP",
+      device: "LARGE",
       templatePopUp: false,
       categoryPopUp: false,
       bodyBackgroundColor: EditorDefaults.BACKGROUND_COLOR,
@@ -1069,7 +1069,7 @@ class WikiImageEditor extends React.Component<IProps, IState> {
       selectedIndex,
       hoveredIndex,
       view,
-      device,
+      size,
       pos,
       hoverImgJson,
       onImage,
@@ -1100,34 +1100,37 @@ class WikiImageEditor extends React.Component<IProps, IState> {
             </Link>
             <DeviceSelectorContainer>
               <Device
-                onClick={() => this.handleDevice("PHONE")}
+                width="16"
+                height="16"
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                selected={device === "PHONE"}
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                onClick={() => this.handleDevice("SMALL")}
+                selected={size === "SMALL"}
               >
-                <path d="M17.5 2c.276 0 .5.224.5.5v19c0 .276-.224.5-.5.5h-11c-.276 0-.5-.224-.5-.5v-19c0-.276.224-.5.5-.5h11zm2.5 0c0-1.104-.896-2-2-2h-12c-1.104 0-2 .896-2 2v20c0 1.104.896 2 2 2h12c1.104 0 2-.896 2-2v-20zm-9.5 1h3c.276 0 .5.224.5.501 0 .275-.224.499-.5.499h-3c-.275 0-.5-.224-.5-.499 0-.277.225-.501.5-.501zm1.5 18c-.553 0-1-.448-1-1s.447-1 1-1c.552 0 .999.448.999 1s-.447 1-.999 1zm5-3h-10v-13h10v13z" />
+                <path d="M24 22h-24v-20h24v20zm-1-19h-22v18h22v-18zm-1 16h-19l4-7.492 3 3.048 5.013-7.556 6.987 12zm-11.848-2.865l-2.91-2.956-2.574 4.821h15.593l-5.303-9.108-4.806 7.243zm-4.652-11.135c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5zm0 1c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5-1.5-.672-1.5-1.5.672-1.5 1.5-1.5z" />
               </Device>
               <Device
-                onClick={() => this.handleDevice("TABLET")}
+                width="20"
+                height="20"
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                selected={device === "TABLET"}
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                onClick={() => this.handleDevice("MEDIUM")}
+                selected={size === "MEDIUM"}
               >
-                <path d="M19 24c1.104 0 2-.896 2-2v-20c0-1.104-.896-2-2-2h-14c-1.104 0-2 .896-2 2v20c0 1.104.896 2 2 2h14zm-14-3v-18h14v18h-14zm6.5 1.5c0-.276.224-.5.5-.5s.5.224.5.5-.224.5-.5.5-.5-.224-.5-.5z" />
-              </Device>
+                <path d="M24 22h-24v-20h24v20zm-1-19h-22v18h22v-18zm-1 16h-19l4-7.492 3 3.048 5.013-7.556 6.987 12zm-11.848-2.865l-2.91-2.956-2.574 4.821h15.593l-5.303-9.108-4.806 7.243zm-4.652-11.135c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5zm0 1c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5-1.5-.672-1.5-1.5.672-1.5 1.5-1.5z" />
+              </Device>{" "}
               <Device
-                onClick={() => this.handleDevice("DESKTOP")}
-                xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
-                viewBox="0 0 24 24"
-                selected={device === "DESKTOP"}
+                xmlns="http://www.w3.org/2000/svg"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                onClick={() => this.handleDevice("LARGE")}
+                selected={size === "LARGE"}
               >
-                <path d="M2 0c-1.104 0-2 .896-2 2v15c0 1.104.896 2 2 2h20c1.104 0 2-.896 2-2v-15c0-1.104-.896-2-2-2h-20zm20 14h-20v-12h20v12zm-6.599 7c0 1.6 1.744 2.625 2.599 3h-12c.938-.333 2.599-1.317 2.599-3h6.802z" />
+                <path d="M24 22h-24v-20h24v20zm-1-19h-22v18h22v-18zm-1 16h-19l4-7.492 3 3.048 5.013-7.556 6.987 12zm-11.848-2.865l-2.91-2.956-2.574 4.821h15.593l-5.303-9.108-4.806 7.243zm-4.652-11.135c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5zm0 1c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5-1.5-.672-1.5-1.5.672-1.5 1.5-1.5z" />
               </Device>
             </DeviceSelectorContainer>
             <EditorButtonContainer>
@@ -1163,7 +1166,7 @@ class WikiImageEditor extends React.Component<IProps, IState> {
               />
             </WikiImageContainer>
             <EditorLeftOuterContainer>
-              <EditorLeftContainer view={view} device={device}>
+              <EditorLeftContainer view={view} size={size}>
                 {view === "EDIT" ? (
                   <React.Fragment>
                     <WikiImageEditorLeft font={this.state.font} view="EDIT">
@@ -1183,7 +1186,6 @@ class WikiImageEditor extends React.Component<IProps, IState> {
                             <React.Fragment key={index}>
                               <Card
                                 cards={this.state.cards.length}
-                                device={device}
                                 key={index}
                                 index={index}
                                 moveCard={this.moveCard}
@@ -1401,8 +1403,8 @@ class WikiImageEditor extends React.Component<IProps, IState> {
     }
   };
 
-  public handleDevice = (device: "PHONE" | "TABLET" | "DESKTOP") => {
-    this.setState({ device });
+  public handleDevice = (size: "SMALL" | "MEDIUM" | "LARGE") => {
+    this.setState({ size });
   };
 
   public onInputChange: React.ChangeEventHandler<

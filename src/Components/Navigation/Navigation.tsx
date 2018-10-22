@@ -26,7 +26,7 @@ const NavContainer = styled.div`
 const Header = styled.header`
   display: flex;
   justify-content: center;
-  color: white;
+  color: {EditorDe};
   position: fixed;
   right: 0px;
   left: 0px;

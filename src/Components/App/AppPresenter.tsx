@@ -95,9 +95,21 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
     />
     <PrivateRoute
       isLoggedIn={isLoggedIn}
+      path="/category/edit/:categoryId"
+      exact={true}
+      component={CategoryEdit}
+    />
+    <PrivateRoute
+      isLoggedIn={isLoggedIn}
       path="/category/:categoryId/wikiImage/add"
       exact={true}
       component={WikiImageAdd}
+    />
+    <PrivateRoute
+      isLoggedIn={isLoggedIn}
+      path="/category/:categoryId/wikiImage/edit/:wikiImageId"
+      exact={true}
+      component={WikiImageEdit}
     />
     <Route path="/login" exact={true} component={LogIn} />
     <Route
@@ -179,7 +191,6 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
                 exact={true}
                 component={SearchResult}
               />
-              {/* <Route path="/login" exact={true} component={LogIn} /> */}
               <Route path="/signup" exact={true} component={SignUp} />
               <PrivateRoute
                 isLoggedIn={isLoggedIn}
@@ -193,46 +204,15 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
                 exact={true}
                 component={CategoryDetail}
               />
-              {/* <PrivateRoute
-                isLoggedIn={isLoggedIn}
-                path="/category/add"
-                exact={true}
-                component={CategoryAdd}
-              /> */}
-              <PrivateRoute
-                isLoggedIn={isLoggedIn}
-                path="/category/edit/:categoryId"
-                exact={true}
-                component={CategoryEdit}
-              />
               <Route
                 path="/post/read/:postId"
                 exact={true}
                 component={PostDetail}
               />
-              {/* <PrivateRoute
-                isLoggedIn={isLoggedIn}
-                path="/post/add"
-                exact={true}
-                component={PostAdd}
-              /> */}
-
               <Route
                 path="/category/:categoryId/wikiImage/read/:wikiImageId"
                 exact={true}
                 component={WikiImageDetail}
-              />
-              {/* <PrivateRoute
-                isLoggedIn={isLoggedIn}
-                path="/category/:categoryId/wikiImage/add"
-                exact={true}
-                component={WikiImageAdd}
-              /> */}
-              <PrivateRoute
-                isLoggedIn={isLoggedIn}
-                path="/category/:categoryId/wikiImage/edit/:wikiImageId"
-                exact={true}
-                component={WikiImageEdit}
               />
               <Route path={"/wiki"} exact={true} component={Wiki} />
               <Route path={"/board"} exact={true} component={Board} />

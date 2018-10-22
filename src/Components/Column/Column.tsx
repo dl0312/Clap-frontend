@@ -4,7 +4,6 @@ import { RenderNodeProps, RenderMarkProps } from "slate-react";
 
 interface IProps {
   columnArray: number[];
-  // contentWidth: number;
   columnListArray: any[];
   index: number[];
   callbackfromparent: (
@@ -36,7 +35,7 @@ class Column extends Component<IProps> {
     let totalRatio = 0;
     this.props.columnArray.map(column => (totalRatio += column));
     const columnListStyle = {
-      width: "800px",
+      width: "100%",
       display: "grid",
       gridGap: "0px",
       // gridTemplateColumns: this.props.columnArray.join("fr ") + "fr"

@@ -300,6 +300,7 @@ class Board extends React.Component<IProps, IState> {
                               <SubTitle>
                                 Guide by{" "}
                                 <UserTag
+                                  size={"SMALL"}
                                   profilePhoto={post.user.profilePhoto}
                                   username={post.user.nickName}
                                 />{" "}

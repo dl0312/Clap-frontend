@@ -16,18 +16,18 @@ import ImagePopup from "../../Components/ImagePopup";
 import { GetPos } from "../../Utility/GetPos";
 import { toast } from "react-toastify";
 import { LOST_IMAGE_URL } from "../../constants";
+import UserTag from "src/Components/UserTag";
 
 const WikiImageDetailContainer = styled.div`
   width: 100%;
   padding: 20px;
-
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
 const WikiImageDetailInner = styled.div`
-  width: 1000px;
+  width: 100%;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -49,10 +49,49 @@ const WikiImageInfoContainer = styled.div`
   flex-direction: column;
 `;
 
-const EditButton = styled.button`
+const CategoryTitle = styled.div`
+  outline: 1px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bolder;
+  text-transform: uppercase;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+`;
+
+const UserContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+`;
+
+const CountContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  outline: 1px solid white;
+  font-size: 12px;
+`;
+
+const CountIcon = styled.i`
+  margin: 5px;
+`;
+
+const CountItem = styled.div``;
+
+interface IEditButtonProps {
+  isClapped: boolean;
+}
+
+const EditButton = styled<IEditButtonProps, any>("button")`
   border: none;
   background-color: transparent;
   cursor: pointer;
+  opacity: ${props => (props.isClapped ? "1" : "0.5")};
   & svg {
     fill: white;
     transition: fill 0.5s ease;
@@ -66,15 +105,15 @@ const EditButton = styled.button`
 
 const CurrentImg = styled.img`
   width: 200px;
-  margin: 5px;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+  outline: 1px solid white;
 `;
 
-const CurrentName = styled.div`
-  margin: 5px;
-`;
+const CurrentName = styled.div``;
 
-const CurrentHoverContainer = styled.div``;
+const CurrentHoverContainer = styled.div`
+  outline: 1px solid white;
+`;
 
 interface IProps {
   history: any;
@@ -133,13 +172,14 @@ class WikiImageDetail extends React.Component<IProps, IState> {
       <React.Fragment>
         <Query
           query={WIKIIMAGE}
+          fetchPolicy={"cache-and-network"}
           variables={{ wikiImageId: this.props.match.params.wikiImageId }}
         >
           {({ loading, data, error }) => {
             if (loading) return "Loading...";
             if (error) return `${error.message}`;
             console.log(data);
-            const { wikiImage } = data.GetWikiImageById;
+            const { wikiImage, isClapped, isMine } = data.GetWikiImageById;
             return (
               <WikiImageDetailContainer>
                 <Helmet>
@@ -170,6 +210,7 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                               }
                             });
                           }}
+                          isClapped={isClapped}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -182,61 +223,65 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                         </EditButton>
                       )}
                     </Mutation>
-                    <Link
-                      to={`/category/${
-                        this.props.match.params.categoryId
-                      }/wikiImage/edit/${wikiImage.id}`}
-                    >
-                      <EditButton>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          color="white"
+                    {isMine ? (
+                      <React.Fragment>
+                        <Link
+                          to={`/category/${
+                            this.props.match.params.categoryId
+                          }/wikiImage/edit/${wikiImage.id}`}
                         >
-                          <path d="M18.363 8.464l1.433 1.431-12.67 12.669-7.125 1.436 1.439-7.127 12.665-12.668 1.431 1.431-12.255 12.224-.726 3.584 3.584-.723 12.224-12.257zm-.056-8.464l-2.815 2.817 5.691 5.692 2.817-2.821-5.693-5.688zm-12.318 18.718l11.313-11.316-.705-.707-11.313 11.314.705.709z" />
-                        </svg>
-                      </EditButton>
-                    </Link>
-                    <WikiImageDeleteQuery
-                      mutation={DELETE_WIKIIMAGE}
-                      onCompleted={data => this.confirm(data)}
-                    >
-                      {DeleteWikiImage => (
-                        <EditButton
-                          onClick={e => {
-                            e.preventDefault();
-                            DeleteWikiImage({
-                              refetchQueries: [
-                                {
-                                  query: CATEGORIES_KEYWORD,
+                          <EditButton>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              color="white"
+                            >
+                              <path d="M18.363 8.464l1.433 1.431-12.67 12.669-7.125 1.436 1.439-7.127 12.665-12.668 1.431 1.431-12.255 12.224-.726 3.584 3.584-.723 12.224-12.257zm-.056-8.464l-2.815 2.817 5.691 5.692 2.817-2.821-5.693-5.688zm-12.318 18.718l11.313-11.316-.705-.707-11.313 11.314.705.709z" />
+                            </svg>
+                          </EditButton>
+                        </Link>
+                        <WikiImageDeleteQuery
+                          mutation={DELETE_WIKIIMAGE}
+                          onCompleted={data => this.confirm(data)}
+                        >
+                          {DeleteWikiImage => (
+                            <EditButton
+                              onClick={(e: any) => {
+                                e.preventDefault();
+                                DeleteWikiImage({
+                                  refetchQueries: [
+                                    {
+                                      query: CATEGORIES_KEYWORD,
+                                      variables: {
+                                        keyword: ""
+                                      }
+                                    }
+                                  ],
                                   variables: {
-                                    keyword: ""
+                                    wikiImageId: wikiImage.id
                                   }
-                                }
-                              ],
-                              variables: {
-                                wikiImageId: wikiImage.id
-                              }
-                            });
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            color="white"
-                          >
-                            <path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z" />
-                          </svg>
-                        </EditButton>
-                      )}
-                    </WikiImageDeleteQuery>
+                                });
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                color="white"
+                              >
+                                <path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z" />
+                              </svg>
+                            </EditButton>
+                          )}
+                        </WikiImageDeleteQuery>
+                      </React.Fragment>
+                    ) : null}
                   </WikiImageEditContainer>
-
                   <WikiImageInfoContainer>
+                    <CategoryTitle>{wikiImage.category.name}</CategoryTitle>
                     {wikiImage ? (
                       <React.Fragment>
                         <CurrentImg
@@ -259,25 +304,43 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                     ) : (
                       <CurrentImg src={LOST_IMAGE_URL} />
                     )}
+                    <CountContainer>
+                      <CountItem>
+                        <CountIcon className="fas fa-heart" />
+                        {wikiImage.clapsCount}
+                      </CountItem>
+                      <CountItem>
+                        <CountIcon className="fas fa-pencil-alt" />
+                        {wikiImage.postsCount}
+                      </CountItem>
+                    </CountContainer>
                     <CurrentName>{wikiImage.name}</CurrentName>
-                    <CurrentHoverContainer>
-                      {wikiImage !== undefined ? (
-                        <ImagePopup
-                          pos={pos}
-                          follow={false}
-                          json={wikiImage.hoverImage}
-                          onImage={true}
-                        />
-                      ) : (
-                        <div>no hover image</div>
-                      )}
-                    </CurrentHoverContainer>
+                    <UserContainer>
+                      <UserTag
+                        size={"SMALL"}
+                        profilePhoto={wikiImage.user.profilePhoto}
+                        username={wikiImage.user.nickName}
+                      />
+                    </UserContainer>
+
                     <ImagePopup
                       pos={pos}
                       json={hoverImgJson}
                       onImage={onImage}
                     />
                   </WikiImageInfoContainer>
+                  <CurrentHoverContainer>
+                    {wikiImage !== undefined ? (
+                      <ImagePopup
+                        pos={pos}
+                        follow={false}
+                        json={wikiImage.hoverImage}
+                        onImage={true}
+                      />
+                    ) : (
+                      <div>no hover image</div>
+                    )}
+                  </CurrentHoverContainer>
                 </WikiImageDetailInner>
               </WikiImageDetailContainer>
             );

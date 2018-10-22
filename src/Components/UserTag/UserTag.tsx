@@ -16,11 +16,36 @@ const UserContainer = styled.div`
 
 interface IUserProfilePhotoProps {
   url: string;
+  size: "LARGE" | "MEDIUM" | "SMALL";
+  isRound: boolean;
 }
 
 const UserProfilePhoto = styled<IUserProfilePhotoProps, any>("div")`
-  width: 15px;
-  height: 15px;
+  width: ${props => {
+    switch (props.size) {
+      case "LARGE":
+        return "25px";
+      case "MEDIUM":
+        return "20px";
+      case "SMALL":
+        return "15px";
+      default:
+        return null;
+    }
+  }};
+  height: ${props => {
+    switch (props.size) {
+      case "LARGE":
+        return "25px";
+      case "MEDIUM":
+        return "20px";
+      case "SMALL":
+        return "15px";
+      default:
+        return null;
+    }
+  }};
+  border-radius: ${props => (props.isRound ? "100%" : null)};
   overflow: hidden;
   position: relative;
   transition: filter 0.5s ease;
@@ -31,8 +56,24 @@ const UserProfilePhoto = styled<IUserProfilePhotoProps, any>("div")`
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
 `;
 
-const UserName = styled.div`
+interface IUserNameProps {
+  size: "LARGE" | "MEDIUM" | "SMALL";
+}
+
+const UserName = styled<IUserNameProps, any>("div")`
   font-weight: bolder;
+  font-size: ${props => {
+    switch (props.size) {
+      case "LARGE":
+        return "21px";
+      case "MEDIUM":
+        return "15px";
+      case "SMALL":
+        return "12px";
+      default:
+        return null;
+    }
+  }};
 `;
 
 const UserTagOptionsConatiner = styled.div`
@@ -58,8 +99,10 @@ const UserTagOption = styled.div`
 `;
 
 interface IProps {
-  profilePhoto: string;
+  profilePhoto?: string;
   username: string;
+  size: "LARGE" | "MEDIUM" | "SMALL";
+  isRound?: boolean;
 }
 
 interface IState {
@@ -80,16 +123,20 @@ class UserTag extends React.Component<IProps, IState> {
   };
 
   public render() {
-    const { profilePhoto, username } = this.props;
+    const { profilePhoto, username, isRound, size } = this.props;
     const { isOpen } = this.state;
 
     return (
       <UserTagContainer>
         <UserContainer
-          onClick={() => this.setState({ isOpen: !this.state.isOpen })}
+          onClick={() =>
+            this.setState({
+              isOpen: !this.state.isOpen
+            })
+          }
         >
-          <UserProfilePhoto url={profilePhoto} />
-          <UserName>{username}</UserName>
+          <UserProfilePhoto url={profilePhoto} isRound={isRound} size={size} />
+          <UserName size={size}>{username}</UserName>
         </UserContainer>
 
         {isOpen && (

@@ -1,14 +1,13 @@
 import React from "react";
 import { Mutation, Query } from "react-apollo";
 import styled from "styled-components";
-import Editor from "../../Components/Editor";
 import { WIKIIMAGE, EDIT_WIKIIMAGE } from "../../sharedQueries";
 import EditorDefaults from "../../EditorDefaults";
 import { toast } from "react-toastify";
+import WikiImageEditor from "src/Components/WikiImageEditor";
 
 const WikiImageAddContainer = styled.div`
   width: 100%;
-  padding: 30px;
 `;
 
 const HoverImageContainer = styled.div`
@@ -24,8 +23,7 @@ interface IProps {
 }
 
 interface IState {
-  imgSrc: string;
-  selectedFile: any;
+  shownImage: string;
   hoverJson: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
@@ -53,8 +51,7 @@ class WikiImageEdit extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      imgSrc: "",
-      selectedFile: null,
+      shownImage: "",
       hoverJson: {
         rightMenu: null,
         view: "EDIT",
@@ -111,7 +108,7 @@ class WikiImageEdit extends React.Component<IProps, IState> {
                 >
                   {(EditWikiImage, { data }) => (
                     <HoverImageContainer>
-                      <Editor
+                      <WikiImageEditor
                         wikiImage={wikiImage}
                         state={JSON.parse(wikiImage.hoverImage)}
                         type="WIKIIMAGE_EDIT"

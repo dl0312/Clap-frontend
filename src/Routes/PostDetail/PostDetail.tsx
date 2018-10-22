@@ -522,9 +522,7 @@ class PostDetail extends React.Component<IProps, IState> {
               return <div>something wrong</div>;
             }
             console.log(data);
-            const post = data.GetPostById.post;
-            const isClapped = data.GetPostById.isClapped;
-            const isMine = data.GetPostById.isMine;
+            const { post, isClapped, isMine } = data.GetPostById;
             if (post === null) {
               return <div>have no post [post]</div>;
             }

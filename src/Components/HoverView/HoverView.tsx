@@ -1,5 +1,4 @@
 import React from "react";
-import EditorLeft from "../EditorLeft";
 import styled from "styled-components";
 import { Value, ValueJSON } from "slate";
 import EditorDefaults from "../../EditorDefaults";
@@ -59,6 +58,7 @@ import EditCode from "slate-edit-code";
 import TrailingBlock from "slate-trailing-block";
 import EditTable from "slate-edit-table";
 import { RenderMarkProps, RenderNodeProps } from "slate-react";
+import WikiImageEditorLeft from "../WikiImageEditorLeft";
 const plugins = [
   EditPrism({
     onlyIn: (node: any) => node.type === "code_block",
@@ -136,7 +136,33 @@ const ClapImageText = styled.span`
   color: ${props => props.color};
 `;
 
-const HoverBorder = styled.div`
+interface ISingleJsonContainerProps {
+  size: "SMALL" | "MEDIUM" | "LARGE";
+}
+const SingleJsonContainer = styled<ISingleJsonContainerProps, any>("div")`
+  width: ${props =>
+    props.size === "SMALL"
+      ? "200px"
+      : props.size === "MEDIUM"
+        ? "300px"
+        : props.size === "LARGE"
+          ? "400px"
+          : "100%"};
+`;
+
+interface IHoverBorderProps {
+  size: "SMALL" | "MEDIUM" | "LARGE";
+}
+
+const HoverBorder = styled<IHoverBorderProps, any>("div")`
+  width: ${props =>
+    props.size === "SMALL"
+      ? "200px"
+      : props.size === "MEDIUM"
+        ? "300px"
+        : props.size === "LARGE"
+          ? "400px"
+          : "100%"};
   border: 4px solid rgba(0, 0, 0, 0.5);
   outline: 0.5px solid black;
 `;
@@ -145,8 +171,7 @@ interface IHoverViewProps {
   json: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
-    // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
-    // contentWidth: number;
+    size: "SMALL" | "MEDIUM" | "LARGE";
     font: string | null;
     onDrag: "content" | "columnList" | null;
     selectedIndex: number | number[] | null;
@@ -305,7 +330,7 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
           json.cards[0].columnListArray[0][0].content === "VIDEO"
         ) {
           return (
-            <React.Fragment>
+            <SingleJsonContainer size={json.size}>
               {json.cards.map((item, index) => {
                 if (item.type === "columnList") {
                   return (
@@ -316,7 +341,6 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
                         index={[index, 0, 0]}
                         renderNode={this.renderNode}
                         renderMark={this.renderMark}
-                        // contentWidth={json.contentWidth}
                       />
                     </UserCard>
                   );
@@ -324,19 +348,15 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
                   return null;
                 }
               })}
-            </React.Fragment>
+            </SingleJsonContainer>
           );
         }
       }
     }
     console.log(json);
     return (
-      <HoverBorder>
-        <EditorLeft
-          // bodyBackgroundColor={json.bodyBackgroundColor}
-          font={json.font}
-          view="USER"
-        >
+      <HoverBorder size={json.size}>
+        <WikiImageEditorLeft font={json.font} view="USER">
           {json.cards.map((item, index) => {
             if (item.type === "columnList") {
               return (
@@ -347,7 +367,6 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
                     index={[index, 0, 0]}
                     renderNode={this.renderNode}
                     renderMark={this.renderMark}
-                    // contentWidth={json.contentWidth}
                   />
                 </UserCard>
               );
@@ -355,7 +374,7 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
               return null;
             }
           })}
-        </EditorLeft>
+        </WikiImageEditorLeft>
       </HoverBorder>
     );
   }
@@ -409,8 +428,8 @@ class UserColumn extends React.Component<IUserColumnProps> {
       gridGap: "0px", // gridTemplateColumns: this.props.columnArray.join("fr ") + "fr"
       gridTemplateColumns:
         this.props.columnArray
-          .map((columnRatio, index) => (100 * columnRatio) / totalRatio)
-          .join("px ") + "px"
+          .map((columnRatio, index) => (30 * columnRatio) / totalRatio)
+          .join("fr ") + "fr"
     };
     return (
       <div className="columnList" style={columnListStyle}>

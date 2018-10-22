@@ -1269,7 +1269,6 @@ class Editor extends React.Component<IProps, IState> {
                             <React.Fragment key={index}>
                               <Card
                                 cards={this.state.cards.length}
-                                device={device}
                                 key={index}
                                 index={index}
                                 moveCard={this.moveCard}

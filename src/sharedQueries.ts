@@ -451,7 +451,20 @@ export const WIKIIMAGE = gql`
         name
         shownImage
         hoverImage
+        category {
+          id
+          name
+        }
+        user {
+          id
+          nickName
+          profilePhoto
+        }
+        clapsCount
+        postsCount
       }
+      isClapped
+      isMine
     }
   }
 `;

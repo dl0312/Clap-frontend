@@ -116,7 +116,6 @@ const cardSource = {
 interface IProps {
   cards: number;
   index: number;
-  device: "PHONE" | "TABLET" | "DESKTOP";
 
   callbackfromparent: (
     type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
@@ -209,8 +208,7 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
       isDragging,
       connectDragSource,
       connectDropTarget,
-      connectDragPreview,
-      device
+      connectDragPreview
     } = this.props;
     const opacity = isDragging ? 0.2 : 1;
     const hover = hoveredIndex === index;
@@ -229,8 +227,8 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
             )}
             style={{
               backgroundColor: "transparent",
-              width: device === "DESKTOP" ? "100%" : "100%",
               maxWidth: "800px",
+              width: "100%",
               position: "relative",
               padding: "5px",
               display: "flex",
