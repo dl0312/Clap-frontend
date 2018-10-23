@@ -65,6 +65,7 @@ class ColumnItem extends React.Component<IProps> {
         {cards.length !== 0 ? (
           <React.Fragment>
             <Builder
+              index={this.props.index.concat(0)}
               type={"content"}
               state={
                 onDrag === "content"
@@ -101,6 +102,7 @@ class ColumnItem extends React.Component<IProps> {
                   }
                 />
                 <Builder
+                  index={this.props.index.concat(i + 1)}
                   type={"content"}
                   state={
                     onDrag === "content"

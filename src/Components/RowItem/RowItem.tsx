@@ -24,6 +24,12 @@ const itemSource = {
     component.props.array.map(element => {
       return columnListArray.push([]);
     });
+    console.log({
+      type: "columnList",
+      onDrag: "columnList",
+      content: props.item.array,
+      columnListArray
+    });
     return {
       type: "columnList",
       onDrag: "columnList",

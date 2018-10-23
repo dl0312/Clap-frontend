@@ -92,7 +92,7 @@ const CardImage = styled<ICardImageProps, any>("div")`
     url(${props => `${props.url}`});
   background-size: ${props => (props.pos ? "100%" : "100%")};
   background-position: ${props =>
-    !props.pos ? `50% 50%` : `50% ${props.pos}%`};
+    props.pos === null ? `50% 50%` : `50% ${props.pos}%`};
   height: 130px;
   width: 100%;
   /* position: relative; */
@@ -282,47 +282,56 @@ class FeaturedPostCards extends React.Component<IProps, IState> {
                     <SlideIcon className="fas fa-angle-left" />
                   </SlideHandle>
                   <FeaturedCardContainer newGuideCounter={this.state.counter}>
-                    {posts.map((post: any, index: number) => (
-                      <Link
-                        to={`/post/read/${post.id}`}
-                        style={{
-                          textDecoration: "none"
-                        }}
-                        key={index}
-                      >
-                        <CardContainer>
-                          <CardImage
-                            url={
-                              post.titleImg
-                                ? post.titleImg
-                                : post.category.topWikiImage !== null
-                                  ? post.category.topWikiImage.shownImage
-                                  : LOST_IMAGE_URL
-                            }
-                            alt={post.category.name}
-                            pos={post.titleImgPos}
+                    {posts.map(
+                      (post: any, index: number) => (
+                        console.log(post.titleImgPos),
+                        (
+                          <Link
+                            to={`/post/read/${post.id}`}
+                            style={{
+                              textDecoration: "none"
+                            }}
+                            key={index}
                           >
-                            <CategoryContainer>
-                              {post.category.parent![0] !== undefined ? (
-                                <Category>
-                                  {`# ${post.category.parent![0]!.name} ${
-                                    post.category.parent![0]!.id
-                                  }`}
-                                </Category>
-                              ) : null}
-                              <Category>{`# ${post.category.name}`}</Category>
-                            </CategoryContainer>
-                            <CardTextContainer>
-                              <CardTitle>{post.title}</CardTitle>
-                              <CardSubTitle>
-                                <CardUserImage url={post.user.profilePhoto} />
-                                <div>{post.user.nickName}</div>
-                              </CardSubTitle>
-                            </CardTextContainer>
-                          </CardImage>
-                        </CardContainer>
-                      </Link>
-                    ))}
+                            <CardContainer>
+                              <CardImage
+                                url={
+                                  post.titleImg
+                                    ? post.titleImg
+                                    : post.category.topWikiImage !== null
+                                      ? post.category.topWikiImage.shownImage
+                                      : LOST_IMAGE_URL
+                                }
+                                alt={post.category.name}
+                                pos={post.titleImgPos}
+                              >
+                                <CategoryContainer>
+                                  {post.category.parent![0] !== undefined ? (
+                                    <Category>
+                                      {`# ${post.category.parent![0]!.name} ${
+                                        post.category.parent![0]!.id
+                                      }`}
+                                    </Category>
+                                  ) : null}
+                                  <Category>{`# ${
+                                    post.category.name
+                                  }`}</Category>
+                                </CategoryContainer>
+                                <CardTextContainer>
+                                  <CardTitle>{post.title}</CardTitle>
+                                  <CardSubTitle>
+                                    <CardUserImage
+                                      url={post.user.profilePhoto}
+                                    />
+                                    <div>{post.user.nickName}</div>
+                                  </CardSubTitle>
+                                </CardTextContainer>
+                              </CardImage>
+                            </CardContainer>
+                          </Link>
+                        )
+                      )
+                    )}
                   </FeaturedCardContainer>
                   <SlideHandle
                     className="handle handlePrev active"

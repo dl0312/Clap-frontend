@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import onClickOutside from "react-onclickoutside";
 import EditorDefaults from "src/EditorDefaults";
+import { Value } from "slate";
+import Plain from "slate-plain-serializer";
 
 interface IContentBoxContainerProps {
   isOpen: boolean;
@@ -71,11 +73,9 @@ interface IContentContainerProps {
 const ContentContainer = styled<IContentContainerProps, any>("div")`
   position: absolute;
   z-index: 2;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   height: ${props => (props.isOpen ? "30px" : "0px")};
   overflow: hidden;
   border-radius: 2px 2px 0 0;
@@ -91,6 +91,7 @@ const Content = styled.div`
   align-items: center;
   justify-content: center;
   background-color: #fff;
+  cursor: pointer;
 `;
 
 const Icon = styled.i``;
@@ -113,6 +114,7 @@ interface IProps {
   type: "content" | "columnList";
   setStateBuilder: any;
   isOpen: boolean;
+  pushNewBlockToTargetIndex: any;
 }
 
 class ContentBox extends React.Component<IProps, any> {
@@ -121,15 +123,75 @@ class ContentBox extends React.Component<IProps, any> {
   }
 
   public handleClickOutside = () => {
-    this.setState({ isOpen: false });
+    this.props.setStateBuilder("isOpen", false);
   };
 
   public handleOnClick = () => {
     this.props.setStateBuilder("isOpen", !this.props.isOpen);
   };
 
+  public contentItem = (name: any) => {
+    switch (name) {
+      case "IMAGE":
+        return {
+          fullWidth: false,
+          alt: "Image"
+        };
+      case "VIDEO":
+        return null;
+      case "BUTTON":
+        return {
+          textColor: EditorDefaults.BUTTON_TEXT_COLOR,
+          backgroundColor: EditorDefaults.BUTTON_BACKGROUND_COLOR,
+          hoverColor: EditorDefaults.BUTTON_HOVER_COLOR,
+          link: "http://localhost:3000",
+          value: Value.fromJSON({
+            object: "value",
+            document: {
+              object: "document",
+              data: {},
+              nodes: [
+                {
+                  object: "block",
+                  type: "paragraph",
+                  isVoid: false,
+                  data: {},
+                  nodes: [
+                    {
+                      object: "text",
+                      leaves: [
+                        {
+                          object: "leaf",
+                          text: "BUTTON",
+                          marks: []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          })
+        };
+      case "TEXT":
+        return { value: Plain.deserialize("") };
+      case "HTML":
+        return {
+          value: Plain.deserialize("html code")
+        };
+      default:
+        return null;
+    }
+  };
+
   public render() {
-    const { state, type, isOpen } = this.props;
+    const {
+      index,
+      state,
+      type,
+      isOpen,
+      pushNewBlockToTargetIndex
+    } = this.props;
     return (
       <ContentBoxContainer isOpen={isOpen}>
         <ExpandButton state={state} type={type} isOpen={isOpen}>
@@ -140,8 +202,30 @@ class ContentBox extends React.Component<IProps, any> {
           />
         </ExpandButton>
         <ContentContainer isOpen={isOpen}>
-          {contentItems.map((item, index) => (
-            <Content key={index}>
+          {contentItems.map((item, i) => (
+            <Content
+              onClick={() => {
+                pushNewBlockToTargetIndex(
+                  {
+                    type: "columnList",
+                    onDrag: "columnList",
+                    content: [1],
+                    columnListArray: [
+                      [
+                        {
+                          type: "content",
+                          onDrag: "content",
+                          content: item.name,
+                          ...this.contentItem(item.name)
+                        }
+                      ]
+                    ]
+                  },
+                  index
+                );
+              }}
+              key={i}
+            >
               <Icon className={item.icon} />
             </Content>
           ))}

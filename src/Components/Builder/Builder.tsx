@@ -40,11 +40,18 @@ const BuilderContainer = styled<IBuilderContainerProps, any>("div")`
   position: relative;
 `;
 
+interface IProps {
+  index: any;
+  state: "ISOVER" | "ONDRAG" | "NOTHING";
+  type: "content" | "columnList";
+  pushNewBlockToTargetIndex?: any;
+}
+
 interface IState {
   isOpen: boolean;
 }
 
-class Builder extends React.Component<any, IState> {
+class Builder extends React.Component<IProps, IState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -53,17 +60,18 @@ class Builder extends React.Component<any, IState> {
   }
 
   render() {
-    const { state, type } = this.props;
+    const { index, state, type, pushNewBlockToTargetIndex } = this.props;
     const { isOpen } = this.state;
     return (
       <BuilderContainer className={"Builder"} state={state} isOpen={isOpen}>
         {type === "columnList" && (
           <ContentBox
             state={state}
-            index={0}
+            index={index}
             type={type}
             setStateBuilder={this.setStateBuilder}
             isOpen={isOpen}
+            pushNewBlockToTargetIndex={pushNewBlockToTargetIndex}
           />
         )}
       </BuilderContainer>

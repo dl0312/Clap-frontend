@@ -1254,6 +1254,7 @@ class Editor extends React.Component<IProps, IState> {
                         />
                       </TitleContainer>
                       <Builder
+                        index={0}
                         type={"columnList"}
                         state={
                           onDrag === "columnList"
@@ -1261,6 +1262,9 @@ class Editor extends React.Component<IProps, IState> {
                               ? "ISOVER"
                               : "ONDRAG"
                             : "NOTHING"
+                        }
+                        pushNewBlockToTargetIndex={
+                          this.pushNewBlockToTargetIndex
                         }
                       />
                       {cards.map((item, index) => {
@@ -1312,6 +1316,7 @@ class Editor extends React.Component<IProps, IState> {
                                 />
                               </Card>
                               <Builder
+                                index={index + 1}
                                 type={"columnList"}
                                 state={
                                   onDrag === "columnList"
@@ -1319,6 +1324,9 @@ class Editor extends React.Component<IProps, IState> {
                                       ? "ISOVER"
                                       : "ONDRAG"
                                     : "NOTHING"
+                                }
+                                pushNewBlockToTargetIndex={
+                                  this.pushNewBlockToTargetIndex
                                 }
                               />
                             </React.Fragment>

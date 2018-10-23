@@ -666,6 +666,12 @@
     "@types/glob" "*"
     "@types/node" "*"
 
+"@types/slate-plain-serializer@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@types/slate-plain-serializer/-/slate-plain-serializer-0.6.0.tgz#67a52846ecbdd2070c2acd4ff47e3e04d8c7355a"
+  dependencies:
+    "@types/slate" "*"
+
 "@types/slate-react@^0.12.3":
   version "0.12.3"
   resolved "https://registry.yarnpkg.com/@types/slate-react/-/slate-react-0.12.3.tgz#6a5f0b2d85cbe2ad5602428df285601e32066486"
@@ -9259,6 +9265,10 @@ slate-plain-serializer@^0.5.17:
   resolved "https://registry.yarnpkg.com/slate-plain-serializer/-/slate-plain-serializer-0.5.41.tgz#dc2d219602c2cb8dc710ac660e108f3b3cc4dc80"
   dependencies:
     slate-dev-logger "^0.1.43"
+
+slate-plain-serializer@^0.6.12:
+  version "0.6.12"
+  resolved "https://registry.yarnpkg.com/slate-plain-serializer/-/slate-plain-serializer-0.6.12.tgz#cfca849e6fac09d48e61a9d3876e71b9f5a557b1"
 
 slate-prism@^0.4.0:
   version "0.4.0"

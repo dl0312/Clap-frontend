@@ -1171,6 +1171,7 @@ class WikiImageEditor extends React.Component<IProps, IState> {
                   <React.Fragment>
                     <WikiImageEditorLeft font={this.state.font} view="EDIT">
                       <Builder
+                        index={0}
                         type={"columnList"}
                         state={
                           onDrag === "columnList"
@@ -1229,6 +1230,7 @@ class WikiImageEditor extends React.Component<IProps, IState> {
                                 />
                               </Card>
                               <Builder
+                                index={index + 1}
                                 type={"columnList"}
                                 state={
                                   onDrag === "columnList"

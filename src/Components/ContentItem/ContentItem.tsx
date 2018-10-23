@@ -9,6 +9,7 @@ import {
 } from "react-dnd";
 import { Value } from "slate";
 import styled from "styled-components";
+import Plain from "slate-plain-serializer";
 
 interface IItemProps {
   opacity: number;
@@ -108,33 +109,7 @@ const itemSource = {
         });
         break;
       case "TEXT":
-        item.value = Value.fromJSON({
-          object: "value",
-          document: {
-            object: "document",
-            data: {},
-            nodes: [
-              {
-                object: "block",
-                type: "paragraph",
-                isVoid: false,
-                data: {},
-                nodes: [
-                  {
-                    object: "text",
-                    leaves: [
-                      {
-                        object: "leaf",
-                        text: "",
-                        marks: []
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        });
+        item.value = Plain.deserialize("");
         break;
       case "HTML":
         item.value = Value.fromJSON({
