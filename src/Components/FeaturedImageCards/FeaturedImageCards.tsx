@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { media } from "../../config/_mixin";
 import { LOST_IMAGE_URL } from "../../constants";
+import CategoryTag from "../CategoryTag";
 
 const BoardContainer = styled.div`
   width: 100%;
@@ -91,31 +92,21 @@ const CardImage = styled<ICardImageProps, any>("div")`
     url(${props => `${props.url}`});
   background-size: 100%;
   background-position: 50% 50%;
-  height: 130px;
+  height: 10em;
   width: 100%;
-  /* position: relative; */
   box-shadow: 0px 0px 2px rgba(0, 0, 0, 1);
   transition: background-size 0.2s ease;
-  /* margin: 5px; */
-  /* border-bottom: 0.5px solid #efefef;
-  border-right: 0.5px solid #efefef; */
-  /* filter: brightness(0.5); */
-  ${media.tablet`height: 100px;`};
-  ${media.phone`height: 50px;`};
 `;
 
 const CardContainer = styled.div`
-  width: 20%;
+  width: 16.66%;
   padding: 0 2px;
-  display: inline-block;
+  display: inline-flex;
   transition: width 0.5s ease;
-  ${media.tablet`width: 25%;`};
-  ${media.phone`width: 50%;`};
-  &:hover {
-    ${CardImage} {
-      background-size: 150%;
-    }
-  }
+  ${media.giant`width: 25%;`}
+  ${media.desktop`width: 33.33%;`}
+  ${media.tablet`width: 50%;`};
+  ${media.phone`width: 100%;`};
 `;
 
 const Slider = styled.div`
@@ -137,6 +128,7 @@ const SlideHandle = styled.button`
   display: flex;
   background-color: transparent;
   border: none;
+  background-color: rgba(0, 0, 0, 0.5);
 `;
 
 const SlideIcon = styled.i`
@@ -155,18 +147,6 @@ const CategoryContainer = styled.div`
   position: relative;
   top: 5px;
   left: 5px;
-`;
-
-const Category = styled.div`
-  padding: 3px 5px;
-  background-color: white;
-  color: black;
-  font-weight: bolder;
-  border-radius: 2px;
-  font-size: 10px;
-  margin-left: 2px;
-  margin-right: 2px;
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.5);
 `;
 
 const CardTextContainer = styled.div`
@@ -299,11 +279,17 @@ class FeaturedImageCards extends React.Component<IProps, IState> {
                           >
                             <CategoryContainer>
                               {image.category.parent![0] !== undefined ? (
-                                <Category>
-                                  {`# ${image.category.parent![0]!.name}`}
-                                </Category>
+                                <CategoryTag
+                                  size={"SMALL"}
+                                  id={image.category.parent![0]!.id}
+                                  name={image.category.parent![0]!.name}
+                                />
                               ) : null}
-                              <Category>{`# ${image.category.name}`}</Category>
+                              <CategoryTag
+                                size={"SMALL"}
+                                id={image.category.id}
+                                name={image.category.name}
+                              />
                             </CategoryContainer>
                             <CardTextContainer>
                               <CardTitle>{image.title}</CardTitle>

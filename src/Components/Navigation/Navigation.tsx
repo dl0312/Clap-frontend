@@ -16,6 +16,7 @@ import { FACEBOOK_CONNECT, GOOGLE_CONNECT } from "../../sharedQueries";
 import AutoSuggestInput from "../AutoSuggestInput";
 import { Route } from "react-router-dom";
 import { media } from "src/config/_mixin";
+// import EditorDefaults from "../../EditorDefaults";
 
 const NavContainer = styled.div`
   width: 100%;
@@ -26,7 +27,7 @@ const NavContainer = styled.div`
 const Header = styled.header`
   display: flex;
   justify-content: center;
-  color: {EditorDe};
+  color: white;
   position: fixed;
   right: 0px;
   left: 0px;
@@ -50,7 +51,7 @@ const MenuList = styled<IMenuListProps, any>("ul")`
   box-shadow: ${props =>
     props.darken ? "0px 0.5px 2px rgba(0, 0, 0, 0.3)" : null};
 
-  ${media.tablet`display: none;`};
+  ${media.desktop`display: none;`};
   ${media.phone``};
 `;
 
@@ -115,7 +116,7 @@ const PhoneMenuList = styled<IPhoneMenuListProps, any>("div")`
   box-shadow: ${props =>
     props.darken ? "0px 0.5px 2px rgba(0, 0, 0, 0.3)" : null};
 
-  ${media.tablet`display: flex;`};
+  ${media.desktop`display: flex;`};
   ${media.phone``};
 `;
 
@@ -133,7 +134,7 @@ interface ISideNavProps {
 
 const SideNav = styled<ISideNavProps, any>("div")`
   height: 100%;
-  width: ${props => (props.isSideBarOpen ? "150px" : 0)};
+  width: ${props => (props.isSideBarOpen ? "20%" : 0)};
   position: fixed;
   z-index: 15;
   top: 0;

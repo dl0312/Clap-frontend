@@ -27,6 +27,7 @@ interface IState {
   hoverJson: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
+    size: "SMALL" | "MEDIUM" | "LARGE";
     bodyBackgroundColor: { r: number; g: number; b: number; a: number };
     contentWidth: number | null;
     font: string;
@@ -55,6 +56,7 @@ class WikiImageAdd extends React.Component<IProps, IState> {
       hoverJson: {
         rightMenu: null,
         view: "EDIT",
+        size: "LARGE",
         bodyBackgroundColor: EditorDefaults.BACKGROUND_COLOR,
         contentWidth: EditorDefaults.WIDTH,
         font: EditorDefaults.FONT,

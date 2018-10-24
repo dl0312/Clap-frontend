@@ -176,6 +176,7 @@ export const POSTS = gql`
           id
           name
           parent {
+            id
             name
           }
           topWikiImage {
@@ -209,6 +210,7 @@ export const WIKIIMAGES = gql`
           id
           name
           parent {
+            id
             name
           }
         }
@@ -293,20 +295,22 @@ export const CATEGORY = gql`
         id
         name
         topWikiImage {
+          id
           shownImage
           hoverImage
         }
         wikiImages {
+          id
           shownImage
           hoverImage
         }
         parent {
-          name
           id
+          name
         }
         children {
-          name
           id
+          name
         }
       }
     }

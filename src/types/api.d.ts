@@ -262,6 +262,7 @@ export interface getAllPosts_GetAllPosts_posts_user {
 
 export interface getAllPosts_GetAllPosts_posts_category_parent {
   __typename: "Category";
+  id: number;
   name: string;
 }
 
@@ -498,14 +499,14 @@ export interface getCategoryById_GetCategoryById_category_wikiImages {
 
 export interface getCategoryById_GetCategoryById_category_parent {
   __typename: "Category";
-  name: string;
   id: number;
+  name: string;
 }
 
 export interface getCategoryById_GetCategoryById_category_children {
   __typename: "Category";
-  name: string;
   id: number;
+  name: string;
 }
 
 export interface getCategoryById_GetCategoryById_category {
@@ -768,7 +769,15 @@ export interface deleteWikiImageVariables {
 
 export interface getWikiImageById_GetWikiImageById_wikiImage_category {
   __typename: "Category";
+  id: number;
   name: string;
+}
+
+export interface getWikiImageById_GetWikiImageById_wikiImage_user {
+  __typename: "User";
+  id: number;
+  nickName: string;
+  profilePhoto: string | null;
 }
 
 export interface getWikiImageById_GetWikiImageById_wikiImage {
@@ -778,6 +787,9 @@ export interface getWikiImageById_GetWikiImageById_wikiImage {
   shownImage: string;
   hoverImage: string;
   category: getWikiImageById_GetWikiImageById_wikiImage_category;
+  user: getWikiImageById_GetWikiImageById_wikiImage_user;
+  clapsCount: number;
+  postsCount: number;
 }
 
 export interface getWikiImageById_GetWikiImageById {

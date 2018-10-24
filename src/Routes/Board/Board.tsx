@@ -265,13 +265,18 @@ class Board extends React.Component<IProps, IState> {
                             </CategoryData>
                             <TitleRow>
                               <CategoryContainer>
-                                {post.category.parent![0] !== undefined ? (
-                                  <CategoryTag
-                                    size={"SMALL"}
-                                    id={post.category.parent![0]!.id}
-                                    name={post.category.parent![0]!.name}
-                                  />
-                                ) : null}
+                                {post.category.parent.map(
+                                  (item: any, index: number) => {
+                                    return (
+                                      <CategoryTag
+                                        key={index}
+                                        size={"SMALL"}
+                                        id={item.id}
+                                        name={item.name}
+                                      />
+                                    );
+                                  }
+                                )}
                                 <CategoryTag
                                   size={"SMALL"}
                                   id={post.category.id}
@@ -359,19 +364,14 @@ class Board extends React.Component<IProps, IState> {
                   if (error) {
                     return <div>{error.message}</div>;
                   }
-                  if (data === undefined) {
-                    return <div>data undefined</div>;
-                  }
-                  const posts = data.GetAllPosts.posts;
-                  if (posts) {
-                    return (
+                  const posts = data!.GetAllPosts.posts;
+                  return (
+                    posts && (
                       <React.Fragment>
                         <FeaturedPostCards posts={posts} type="새로운 공략" />
                       </React.Fragment>
-                    );
-                  } else {
-                    return null;
-                  }
+                    )
+                  );
                 }}
               </PostsQuery>
               <PostsQuery

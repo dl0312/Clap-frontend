@@ -44,7 +44,7 @@ interface IProps {
   index: any;
   state: "ISOVER" | "ONDRAG" | "NOTHING";
   type: "content" | "columnList";
-  pushNewBlockToTargetIndex?: any;
+  handleDrop?: any;
 }
 
 interface IState {
@@ -60,7 +60,7 @@ class Builder extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { index, state, type, pushNewBlockToTargetIndex } = this.props;
+    const { index, state, type, handleDrop } = this.props;
     const { isOpen } = this.state;
     return (
       <BuilderContainer className={"Builder"} state={state} isOpen={isOpen}>
@@ -71,7 +71,7 @@ class Builder extends React.Component<IProps, IState> {
             type={type}
             setStateBuilder={this.setStateBuilder}
             isOpen={isOpen}
-            pushNewBlockToTargetIndex={pushNewBlockToTargetIndex}
+            handleDrop={handleDrop}
           />
         )}
       </BuilderContainer>

@@ -27,7 +27,6 @@ import { Button } from "../../sharedStyle";
 import Template from "../Template";
 import Builder from "../Builder";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import Upload from "../Upload";
 
 interface IEditorContainerProps {
@@ -70,24 +69,29 @@ const Logo = styled.div`
 const DeviceSelectorContainer = styled.div`
   justify-self: auto;
   position: absolute;
-  top: 10px;
+  top: 5px;
   left: 50%;
   height: 34px;
   width: 200px;
   margin-left: -136px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 interface IDeviceProps {
   selected: boolean;
 }
 
-const Device = styled<IDeviceProps, any>("svg")`
+const Size = styled<IDeviceProps, any>("div")`
   margin: 0px 15px;
   cursor: pointer;
   fill: ${props => (props.selected ? "#7158e2" : "black")};
   opacity: ${props => (props.selected ? "1" : "0.5")};
   transition: opacity 0.2s ease, fill 0.2s ease;
+  font-size: 21px;
+  font-weight: bolder;
   &:hover {
     opacity: 1;
   }
@@ -117,12 +121,15 @@ const MoreOptionButton = styled.i`
 const EditorUtilButtonContainer = styled.div`
   justify-self: auto;
   position: absolute;
-  top: 60px;
+  top: 49px;
   left: 50%;
   height: 34px;
   width: 200px;
   margin-left: -136px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const EditorNavTwo = styled.div`
@@ -252,6 +259,22 @@ const PostButton = Button.extend`
   color: white;
 `;
 
+interface IViewIconProps {
+  isSelected: boolean;
+}
+
+const ViewIcon = styled<IViewIconProps, any>("i")`
+  font-size: 18px;
+  width: 25px;
+  transition: opacity 0.5s ease;
+  opacity: ${props => (props.isSelected ? "1" : "0.2")};
+  color: black;
+  margin: 0 13px;
+  &:hover {
+    opacity: ${props => (props.isSelected ? null : "0.5")};
+  }
+`;
+
 interface IProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
   postId?: number;
@@ -269,9 +292,6 @@ interface IState {
   view: "EDIT" | "USER" | "JSON";
   size: "SMALL" | "MEDIUM" | "LARGE";
   templatePopUp: boolean;
-  categoryPopUp: boolean;
-  // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
-  // contentWidth: number;
   font: string;
   onDrag: "content" | "columnList" | null;
   selectedIndex: number | number[] | null;
@@ -286,9 +306,6 @@ interface IState {
   cards: any[];
   cardbuilderpositions: any[];
   targetIndex: any;
-  titleImg: string;
-  titleImgUploading: boolean;
-  titleImgPos: number;
 }
 
 class WikiImageEditor extends React.Component<IProps, IState> {
@@ -984,77 +1001,81 @@ class WikiImageEditor extends React.Component<IProps, IState> {
     if (type === "WIKIIMAGE_ADD") {
       return (
         <PostButtonContainer>
-          <PostButton
-            onClick={e => {
-              e.preventDefault();
-              const filteredState: IState = this.state;
-              filteredState.rightMenu = null;
-              filteredState.selectedContent = null;
-              filteredState.selectedIndex = null;
-              filteredState.onDrag = null;
-              filteredState.hoverImgJson = null;
-              filteredState.pos = { x: 0, y: 0 };
-              filteredState.onImage = false;
-              filteredState.view = "EDIT";
-              console.log(this.state.exShownImg);
-              this.props.AddWikiImage({
-                refetchQueries: [
-                  {
-                    query: CATEGORIES_KEYWORD,
-                    variables: {
-                      keyword: ""
+          {this.state.exShownImg.url ? (
+            <PostButton
+              onClick={e => {
+                e.preventDefault();
+                const filteredState: IState = this.state;
+                filteredState.rightMenu = null;
+                filteredState.selectedContent = null;
+                filteredState.selectedIndex = null;
+                filteredState.onDrag = null;
+                filteredState.hoverImgJson = null;
+                filteredState.pos = { x: 0, y: 0 };
+                filteredState.onImage = false;
+                filteredState.view = "EDIT";
+                console.log(this.state.exShownImg);
+                this.props.AddWikiImage({
+                  refetchQueries: [
+                    {
+                      query: CATEGORIES_KEYWORD,
+                      variables: {
+                        keyword: ""
+                      }
                     }
+                  ],
+                  variables: {
+                    categoryId: this.props.categoryId,
+                    name: this.state.title,
+                    shownImage: this.state.exShownImg.url,
+                    hoverImage: JSON.stringify(filteredState)
                   }
-                ],
-                variables: {
-                  categoryId: this.props.categoryId,
-                  name: this.state.title,
-                  shownImage: this.state.exShownImg.url,
-                  hoverImage: JSON.stringify(filteredState)
-                }
-              });
-            }}
-          >
-            SEND
-          </PostButton>
+                });
+              }}
+            >
+              SEND
+            </PostButton>
+          ) : null}
         </PostButtonContainer>
       );
     } else if (type === "WIKIIMAGE_EDIT") {
       return (
         <PostButtonContainer>
-          <PostButton
-            onClick={e => {
-              e.preventDefault();
-              const filteredState: IState = this.state;
-              filteredState.rightMenu = null;
-              filteredState.selectedContent = null;
-              filteredState.selectedIndex = null;
-              filteredState.onDrag = null;
-              filteredState.hoverImgJson = null;
-              filteredState.pos = { x: 0, y: 0 };
-              filteredState.onImage = false;
-              filteredState.view = "EDIT";
-              this.props.EditWikiImage({
-                refetchQueries: [
-                  {
-                    query: WIKIIMAGE,
-                    variables: {
-                      wikiImageId: this.props.wikiImage.id
+          {this.state.exShownImg.url ? (
+            <PostButton
+              onClick={e => {
+                e.preventDefault();
+                const filteredState: IState = this.state;
+                filteredState.rightMenu = null;
+                filteredState.selectedContent = null;
+                filteredState.selectedIndex = null;
+                filteredState.onDrag = null;
+                filteredState.hoverImgJson = null;
+                filteredState.pos = { x: 0, y: 0 };
+                filteredState.onImage = false;
+                filteredState.view = "EDIT";
+                this.props.EditWikiImage({
+                  refetchQueries: [
+                    {
+                      query: WIKIIMAGE,
+                      variables: {
+                        wikiImageId: this.props.wikiImage.id
+                      }
                     }
+                  ],
+                  variables: {
+                    wikiImageId: this.props.wikiImage.id,
+                    categoryId: this.props.categoryId,
+                    name: this.state.title,
+                    shownImageId: this.state.exShownImg.id,
+                    hoverImage: JSON.stringify(filteredState)
                   }
-                ],
-                variables: {
-                  wikiImageId: this.props.wikiImage.id,
-                  categoryId: this.props.categoryId,
-                  name: this.state.title,
-                  shownImageId: this.state.exShownImg.id,
-                  hoverImage: JSON.stringify(filteredState)
-                }
-              });
-            }}
-          >
-            SEND
-          </PostButton>
+                });
+              }}
+            >
+              SEND
+            </PostButton>
+          ) : null}
         </PostButtonContainer>
       );
     } else {
@@ -1099,39 +1120,24 @@ class WikiImageEditor extends React.Component<IProps, IState> {
               </LogoContainer>
             </Link>
             <DeviceSelectorContainer>
-              <Device
-                width="16"
-                height="16"
-                xmlns="http://www.w3.org/2000/svg"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+              <Size
                 onClick={() => this.handleDevice("SMALL")}
                 selected={size === "SMALL"}
               >
-                <path d="M24 22h-24v-20h24v20zm-1-19h-22v18h22v-18zm-1 16h-19l4-7.492 3 3.048 5.013-7.556 6.987 12zm-11.848-2.865l-2.91-2.956-2.574 4.821h15.593l-5.303-9.108-4.806 7.243zm-4.652-11.135c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5zm0 1c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5-1.5-.672-1.5-1.5.672-1.5 1.5-1.5z" />
-              </Device>
-              <Device
-                width="20"
-                height="20"
-                xmlns="http://www.w3.org/2000/svg"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                S
+              </Size>
+              <Size
                 onClick={() => this.handleDevice("MEDIUM")}
                 selected={size === "MEDIUM"}
               >
-                <path d="M24 22h-24v-20h24v20zm-1-19h-22v18h22v-18zm-1 16h-19l4-7.492 3 3.048 5.013-7.556 6.987 12zm-11.848-2.865l-2.91-2.956-2.574 4.821h15.593l-5.303-9.108-4.806 7.243zm-4.652-11.135c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5zm0 1c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5-1.5-.672-1.5-1.5.672-1.5 1.5-1.5z" />
-              </Device>{" "}
-              <Device
-                width="24"
-                height="24"
-                xmlns="http://www.w3.org/2000/svg"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                M
+              </Size>
+              <Size
                 onClick={() => this.handleDevice("LARGE")}
                 selected={size === "LARGE"}
               >
-                <path d="M24 22h-24v-20h24v20zm-1-19h-22v18h22v-18zm-1 16h-19l4-7.492 3 3.048 5.013-7.556 6.987 12zm-11.848-2.865l-2.91-2.956-2.574 4.821h15.593l-5.303-9.108-4.806 7.243zm-4.652-11.135c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5zm0 1c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5-1.5-.672-1.5-1.5.672-1.5 1.5-1.5z" />
-              </Device>
+                L
+              </Size>
             </DeviceSelectorContainer>
             <EditorButtonContainer>
               <SaveButton>SAVE</SaveButton>
@@ -1142,7 +1148,23 @@ class WikiImageEditor extends React.Component<IProps, IState> {
           </EditorNavOne>
           <EditorNavTwo>
             <div />
-            <EditorUtilButtonContainer>UTIL</EditorUtilButtonContainer>
+            <EditorUtilButtonContainer>
+              <ViewIcon
+                onClick={() => this.setState({ view: "EDIT" })}
+                isSelected={view === "EDIT"}
+                className="fas fa-edit"
+              />
+              <ViewIcon
+                onClick={() => this.setState({ view: "USER" })}
+                isSelected={view === "USER"}
+                className="fas fa-eye"
+              />
+              <ViewIcon
+                onClick={() => this.setState({ view: "JSON" })}
+                isSelected={view === "JSON"}
+                className="fas fa-file-alt"
+              />
+            </EditorUtilButtonContainer>
             <Template
               onTemplateClick={this.onTemplateClick}
               handleSetState={this.handleSetState}
@@ -1170,83 +1192,86 @@ class WikiImageEditor extends React.Component<IProps, IState> {
                 {view === "EDIT" ? (
                   <React.Fragment>
                     <WikiImageEditorLeft font={this.state.font} view="EDIT">
-                      <Builder
-                        index={0}
-                        type={"columnList"}
-                        state={
-                          onDrag === "columnList"
-                            ? 0 === targetIndex
-                              ? "ISOVER"
-                              : "ONDRAG"
-                            : "NOTHING"
-                        }
-                      />
-                      {cards.map((item, index) => {
-                        if (item.type === "columnList") {
-                          return (
-                            <React.Fragment key={index}>
-                              <Card
-                                cards={this.state.cards.length}
-                                key={index}
-                                index={index}
-                                moveCard={this.moveCard}
-                                handleDrop={this.handleDrop}
-                                onDrag={onDrag}
-                                callbackfromparent={this.buttonCallback}
-                                selectedIndex={selectedIndex}
-                                hoveredIndex={hoveredIndex}
-                                masterCallback={this.masterCallback}
-                                handleSetState={this.handleSetState}
-                                pushPresentBlockToTargetIndex={
-                                  this.pushPresentBlockToTargetIndex
-                                }
-                                pushNewBlockToTargetIndex={
-                                  this.pushNewBlockToTargetIndex
-                                }
-                                setTargetIndex={this.setTargetIndex}
-                              >
-                                <Column
-                                  columnListArray={item.columnListArray}
-                                  columnArray={item.content}
-                                  index={[index, 0, 0]}
-                                  callbackfromparent={this.buttonCallback}
-                                  handleDrop={this.handleDrop}
-                                  moveCard={this.moveCard}
-                                  handleOnChange={this.handleOnChange}
-                                  renderNode={this.renderNode}
-                                  renderMark={this.renderMark}
-                                  selectedIndex={selectedIndex}
-                                  hoveredIndex={hoveredIndex}
-                                  onDrag={onDrag}
-                                  masterCallback={this.masterCallback}
-                                  targetIndex={targetIndex}
-                                  setTargetIndex={this.setTargetIndex}
-                                  pushPresentBlockToTargetIndex={
-                                    this.pushPresentBlockToTargetIndex
-                                  }
-                                  pushNewBlockToTargetIndex={
-                                    this.pushNewBlockToTargetIndex
-                                  }
-                                />
-                              </Card>
-                              <Builder
-                                index={index + 1}
-                                type={"columnList"}
-                                state={
-                                  onDrag === "columnList"
-                                    ? index + 1 === targetIndex
-                                      ? "ISOVER"
-                                      : "ONDRAG"
-                                    : "NOTHING"
-                                }
-                              />
-                            </React.Fragment>
-                          );
-                        } else {
-                          return null;
-                        }
-                      })}
-                      {cards.length !== 0 ? null : (
+                      {cards.length !== 0 ? (
+                        <React.Fragment>
+                          <Builder
+                            index={0}
+                            type={"columnList"}
+                            state={
+                              onDrag === "columnList"
+                                ? 0 === targetIndex
+                                  ? "ISOVER"
+                                  : "ONDRAG"
+                                : "NOTHING"
+                            }
+                          />
+                          {cards.map((item, index) => {
+                            if (item.type === "columnList") {
+                              return (
+                                <React.Fragment key={index}>
+                                  <Card
+                                    cards={this.state.cards.length}
+                                    key={index}
+                                    index={index}
+                                    moveCard={this.moveCard}
+                                    handleDrop={this.handleDrop}
+                                    onDrag={onDrag}
+                                    callbackfromparent={this.buttonCallback}
+                                    selectedIndex={selectedIndex}
+                                    hoveredIndex={hoveredIndex}
+                                    masterCallback={this.masterCallback}
+                                    handleSetState={this.handleSetState}
+                                    pushPresentBlockToTargetIndex={
+                                      this.pushPresentBlockToTargetIndex
+                                    }
+                                    pushNewBlockToTargetIndex={
+                                      this.pushNewBlockToTargetIndex
+                                    }
+                                    setTargetIndex={this.setTargetIndex}
+                                  >
+                                    <Column
+                                      columnListArray={item.columnListArray}
+                                      columnArray={item.content}
+                                      index={[index, 0, 0]}
+                                      callbackfromparent={this.buttonCallback}
+                                      handleDrop={this.handleDrop}
+                                      moveCard={this.moveCard}
+                                      handleOnChange={this.handleOnChange}
+                                      renderNode={this.renderNode}
+                                      renderMark={this.renderMark}
+                                      selectedIndex={selectedIndex}
+                                      hoveredIndex={hoveredIndex}
+                                      onDrag={onDrag}
+                                      masterCallback={this.masterCallback}
+                                      targetIndex={targetIndex}
+                                      setTargetIndex={this.setTargetIndex}
+                                      pushPresentBlockToTargetIndex={
+                                        this.pushPresentBlockToTargetIndex
+                                      }
+                                      pushNewBlockToTargetIndex={
+                                        this.pushNewBlockToTargetIndex
+                                      }
+                                    />
+                                  </Card>
+                                  <Builder
+                                    index={index + 1}
+                                    type={"columnList"}
+                                    state={
+                                      onDrag === "columnList"
+                                        ? index + 1 === targetIndex
+                                          ? "ISOVER"
+                                          : "ONDRAG"
+                                        : "NOTHING"
+                                    }
+                                  />
+                                </React.Fragment>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })}
+                        </React.Fragment>
+                      ) : (
                         <EmptyCard
                           index={0}
                           masterCallback={this.masterCallback}
@@ -1488,39 +1513,6 @@ class WikiImageEditor extends React.Component<IProps, IState> {
     console.log(this.state.targetIndex);
     this.masterCallback("onDrag", null);
     this.handleDrop(dragItem, this.state.targetIndex);
-  };
-
-  public onInputImageChange: React.ChangeEventHandler<
-    HTMLInputElement
-  > = async event => {
-    const {
-      target: { name, value, files }
-    } = event;
-    if (files) {
-      this.setState({
-        titleImgUploading: true
-      });
-      const formData = new FormData();
-      formData.append("file", files[0]);
-      formData.append("api_key", "811881451928618");
-      formData.append("upload_preset", "tqecb16q");
-      formData.append("timestamp", String(Date.now() / 1000));
-      const {
-        data: { secure_url }
-      } = await axios.post(
-        "https://api.cloudinary.com/v1_1/djjpx4ror/image/upload",
-        formData
-      );
-      if (secure_url) {
-        this.setState({
-          titleImg: secure_url,
-          titleImgUploading: false
-        });
-      }
-    }
-    this.setState({
-      [name]: value
-    } as any);
   };
 }
 

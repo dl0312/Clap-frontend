@@ -123,12 +123,15 @@ const MoreOptionButton = styled.i`
 const EditorUtilButtonContainer = styled.div`
   justify-self: auto;
   position: absolute;
-  top: 60px;
+  top: 49px;
   left: 50%;
   height: 34px;
   width: 200px;
   margin-left: -136px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const EditorNavTwo = styled.div`
@@ -307,6 +310,22 @@ const PostButton = Button.extend`
   border-radius: 100px;
   background-color: #7158e2;
   color: white;
+`;
+
+interface IViewIconProps {
+  isSelected: boolean;
+}
+
+const ViewIcon = styled<IViewIconProps, any>("i")`
+  font-size: 18px;
+  width: 25px;
+  transition: opacity 0.5s ease;
+  opacity: ${props => (props.isSelected ? "1" : "0.2")};
+  color: black;
+  margin: 0 13px;
+  &:hover {
+    opacity: ${props => (props.isSelected ? null : "0.5")};
+  }
 `;
 
 interface IProps {
@@ -1147,7 +1166,7 @@ class Editor extends React.Component<IProps, IState> {
       titleImgUploading,
       titleImgPos
     } = this.state;
-    // console.log(this.state.targetIndex);
+    console.log(view);
     return (
       <React.Fragment>
         <EditorContainer type={type}>
@@ -1211,7 +1230,23 @@ class Editor extends React.Component<IProps, IState> {
           </EditorNavOne>
           <EditorNavTwo>
             <div />
-            <EditorUtilButtonContainer>UTIL</EditorUtilButtonContainer>
+            <EditorUtilButtonContainer>
+              <ViewIcon
+                onClick={() => this.setState({ view: "EDIT" })}
+                isSelected={view === "EDIT"}
+                className="fas fa-edit"
+              />
+              <ViewIcon
+                onClick={() => this.setState({ view: "USER" })}
+                isSelected={view === "USER"}
+                className="fas fa-eye"
+              />
+              <ViewIcon
+                onClick={() => this.setState({ view: "JSON" })}
+                isSelected={view === "JSON"}
+                className="fas fa-file-alt"
+              />
+            </EditorUtilButtonContainer>
             <Template
               onTemplateClick={this.onTemplateClick}
               handleSetState={this.handleSetState}
@@ -1253,89 +1288,89 @@ class Editor extends React.Component<IProps, IState> {
                           selectedCategories={this.state.category}
                         />
                       </TitleContainer>
-                      <Builder
-                        index={0}
-                        type={"columnList"}
-                        state={
-                          onDrag === "columnList"
-                            ? 0 === targetIndex
-                              ? "ISOVER"
-                              : "ONDRAG"
-                            : "NOTHING"
-                        }
-                        pushNewBlockToTargetIndex={
-                          this.pushNewBlockToTargetIndex
-                        }
-                      />
-                      {cards.map((item, index) => {
-                        if (item.type === "columnList") {
-                          return (
-                            <React.Fragment key={index}>
-                              <Card
-                                cards={this.state.cards.length}
-                                key={index}
-                                index={index}
-                                moveCard={this.moveCard}
-                                handleDrop={this.handleDrop}
-                                onDrag={onDrag}
-                                callbackfromparent={this.buttonCallback}
-                                selectedIndex={selectedIndex}
-                                hoveredIndex={hoveredIndex}
-                                masterCallback={this.masterCallback}
-                                handleSetState={this.handleSetState}
-                                pushPresentBlockToTargetIndex={
-                                  this.pushPresentBlockToTargetIndex
-                                }
-                                pushNewBlockToTargetIndex={
-                                  this.pushNewBlockToTargetIndex
-                                }
-                                setTargetIndex={this.setTargetIndex}
-                              >
-                                <Column
-                                  columnListArray={item.columnListArray}
-                                  columnArray={item.content}
-                                  index={[index, 0, 0]}
-                                  callbackfromparent={this.buttonCallback}
-                                  handleDrop={this.handleDrop}
-                                  moveCard={this.moveCard}
-                                  handleOnChange={this.handleOnChange}
-                                  renderNode={this.renderNode}
-                                  renderMark={this.renderMark}
-                                  selectedIndex={selectedIndex}
-                                  hoveredIndex={hoveredIndex}
-                                  onDrag={onDrag}
-                                  masterCallback={this.masterCallback}
-                                  targetIndex={targetIndex}
-                                  setTargetIndex={this.setTargetIndex}
-                                  pushPresentBlockToTargetIndex={
-                                    this.pushPresentBlockToTargetIndex
-                                  }
-                                  pushNewBlockToTargetIndex={
-                                    this.pushNewBlockToTargetIndex
-                                  }
-                                />
-                              </Card>
-                              <Builder
-                                index={index + 1}
-                                type={"columnList"}
-                                state={
-                                  onDrag === "columnList"
-                                    ? index + 1 === targetIndex
-                                      ? "ISOVER"
-                                      : "ONDRAG"
-                                    : "NOTHING"
-                                }
-                                pushNewBlockToTargetIndex={
-                                  this.pushNewBlockToTargetIndex
-                                }
-                              />
-                            </React.Fragment>
-                          );
-                        } else {
-                          return null;
-                        }
-                      })}
-                      {cards.length !== 0 ? null : (
+
+                      {cards.length !== 0 ? (
+                        <React.Fragment>
+                          <Builder
+                            index={0}
+                            type={"columnList"}
+                            state={
+                              onDrag === "columnList"
+                                ? 0 === targetIndex
+                                  ? "ISOVER"
+                                  : "ONDRAG"
+                                : "NOTHING"
+                            }
+                            handleDrop={this.handleDrop}
+                          />
+                          {cards.map((item, index) => {
+                            if (item.type === "columnList") {
+                              return (
+                                <React.Fragment key={index}>
+                                  <Card
+                                    cards={this.state.cards.length}
+                                    key={index}
+                                    index={index}
+                                    moveCard={this.moveCard}
+                                    handleDrop={this.handleDrop}
+                                    onDrag={onDrag}
+                                    callbackfromparent={this.buttonCallback}
+                                    selectedIndex={selectedIndex}
+                                    hoveredIndex={hoveredIndex}
+                                    masterCallback={this.masterCallback}
+                                    handleSetState={this.handleSetState}
+                                    pushPresentBlockToTargetIndex={
+                                      this.pushPresentBlockToTargetIndex
+                                    }
+                                    pushNewBlockToTargetIndex={
+                                      this.pushNewBlockToTargetIndex
+                                    }
+                                    setTargetIndex={this.setTargetIndex}
+                                  >
+                                    <Column
+                                      columnListArray={item.columnListArray}
+                                      columnArray={item.content}
+                                      index={[index, 0, 0]}
+                                      callbackfromparent={this.buttonCallback}
+                                      handleDrop={this.handleDrop}
+                                      moveCard={this.moveCard}
+                                      handleOnChange={this.handleOnChange}
+                                      renderNode={this.renderNode}
+                                      renderMark={this.renderMark}
+                                      selectedIndex={selectedIndex}
+                                      hoveredIndex={hoveredIndex}
+                                      onDrag={onDrag}
+                                      masterCallback={this.masterCallback}
+                                      targetIndex={targetIndex}
+                                      setTargetIndex={this.setTargetIndex}
+                                      pushPresentBlockToTargetIndex={
+                                        this.pushPresentBlockToTargetIndex
+                                      }
+                                      pushNewBlockToTargetIndex={
+                                        this.pushNewBlockToTargetIndex
+                                      }
+                                    />
+                                  </Card>
+                                  <Builder
+                                    index={index + 1}
+                                    type={"columnList"}
+                                    state={
+                                      onDrag === "columnList"
+                                        ? index + 1 === targetIndex
+                                          ? "ISOVER"
+                                          : "ONDRAG"
+                                        : "NOTHING"
+                                    }
+                                    handleDrop={this.handleDrop}
+                                  />
+                                </React.Fragment>
+                              );
+                            } else {
+                              return null;
+                            }
+                          })}
+                        </React.Fragment>
+                      ) : (
                         <EmptyCard
                           index={0}
                           masterCallback={this.masterCallback}
@@ -1355,30 +1390,33 @@ class Editor extends React.Component<IProps, IState> {
             </EditorLeftOuterContainer>
 
             <EditorRightContainer>
-              <EditorRight
-                masterCallback={
-                  this.masterCallback // func
-                }
-                addIdToState={this.addIdToState}
-                deleteIdToState={this.deleteIdToState}
-                rightMenu={
-                  this.state.rightMenu // values
-                }
-                cards={this.state.cards}
-                view={this.state.view}
-                title={this.state.title}
-                font={this.state.font}
-                category={this.state.category}
-              />
-              <BlockOptions
-                type={this.props.type}
-                handleOnChange={this.handleOnChange}
-                selectedIndex={selectedIndex}
-                selectedContent={this.showSelected(selectedIndex)}
-                OnChangeCards={this.OnChangeCards}
-                onBlockOptionDownClick={this.onBlockOptionDownClick}
-                buttonCallback={this.buttonCallback}
-              />
+              {!this.state.selectedContent ? (
+                <EditorRight
+                  masterCallback={
+                    this.masterCallback // func
+                  }
+                  addIdToState={this.addIdToState}
+                  deleteIdToState={this.deleteIdToState}
+                  rightMenu={
+                    this.state.rightMenu // values
+                  }
+                  cards={this.state.cards}
+                  view={this.state.view}
+                  title={this.state.title}
+                  font={this.state.font}
+                  category={this.state.category}
+                />
+              ) : (
+                <BlockOptions
+                  type={this.props.type}
+                  handleOnChange={this.handleOnChange}
+                  selectedIndex={selectedIndex}
+                  selectedContent={this.showSelected(selectedIndex)}
+                  OnChangeCards={this.OnChangeCards}
+                  onBlockOptionDownClick={this.onBlockOptionDownClick}
+                  buttonCallback={this.buttonCallback}
+                />
+              )}
             </EditorRightContainer>
           </EditorContentContainer>
         </EditorContainer>
@@ -1574,7 +1612,7 @@ class Editor extends React.Component<IProps, IState> {
   };
 
   public pushNewBlockToTargetIndex = (dragItem: any) => {
-    console.log(this.state.targetIndex);
+    console.log(dragItem, this.state.targetIndex);
     this.masterCallback("onDrag", null);
     this.handleDrop(dragItem, this.state.targetIndex);
   };

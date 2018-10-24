@@ -13,6 +13,7 @@ import ImagePopup from "../../Components/ImagePopup";
 import { GetPos } from "../../Utility/GetPos";
 import { toast } from "react-toastify";
 import { LOST_IMAGE_URL } from "../../constants";
+import CategoryTag from "src/Components/CategoryTag";
 
 const Subtitle = styled.div`
   font-size: 15px;
@@ -30,7 +31,7 @@ const CategoryDetailContainer = styled.div`
 `;
 
 const CategoryDetailInner = styled.div`
-  width: 1000px;
+  width: 800px;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -82,19 +83,8 @@ const ParentOrChildrenContainer = styled.div`
   padding: 15px;
   border: 0.5px solid white;
   align-self: flex-start;
-  width: 300px;
+  width: 250px;
   min-height: 250px;
-`;
-
-const ItemCard = styled.div`
-  border-radius: 5px;
-  padding: 5px 10px;
-  margin: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: darkgoldenrod;
-  background-color: white;
 `;
 
 const CurrentContainer = styled.div`
@@ -108,7 +98,7 @@ const CurrentContainer = styled.div`
 
 const CurrentImg = styled.img`
   width: 200px;
-  margin: 5px;
+  border: 1px solid white;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
 `;
 
@@ -231,8 +221,14 @@ class CategoryDetail extends React.Component<any, IState> {
                     <ParentOrChildrenContainer>
                       <Subtitle>PARENT</Subtitle>
                       <ParentOrChildrenListContainer>
-                        {category.parent.map((parent: any, index: number) => (
-                          <ItemCard key={index}>{parent.name}</ItemCard>
+                        {category.parent.map((item: any, index: number) => (
+                          <CategoryTag
+                            key={index}
+                            size={"MEDIUM"}
+                            id={item.id}
+                            name={item.name}
+                            isMargin={true}
+                          />
                         ))}
                       </ParentOrChildrenListContainer>
                     </ParentOrChildrenContainer>
@@ -270,8 +266,14 @@ class CategoryDetail extends React.Component<any, IState> {
                     <ParentOrChildrenContainer>
                       <Subtitle>CHILDREN</Subtitle>
                       <ParentOrChildrenListContainer>
-                        {category.children.map((child: any, index: number) => (
-                          <ItemCard>{child.name}</ItemCard>
+                        {category.children.map((item: any, index: number) => (
+                          <CategoryTag
+                            key={index}
+                            size={"MEDIUM"}
+                            id={item.id}
+                            name={item.name}
+                            isMargin={true}
+                          />
                         ))}
                       </ParentOrChildrenListContainer>
                     </ParentOrChildrenContainer>

@@ -63,10 +63,13 @@ const InputIcon = styled<IInputIconProps, any>("i")`
 `;
 
 const ListContainer = styled.div`
-  height: 100%;
+  height: 300px;
+  border: 0.5px solid rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  padding: 10px 0px;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   grid-auto-rows: 75px;
   grid-gap: 5px;
   ::-webkit-scrollbar {

@@ -28,6 +28,7 @@ const WikiImageDetailContainer = styled.div`
 
 const WikiImageDetailInner = styled.div`
   width: 100%;
+  min-width: 450px;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -54,7 +55,7 @@ const CategoryTitle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: bolder;
   text-transform: uppercase;
   width: 100%;
@@ -111,9 +112,7 @@ const CurrentImg = styled.img`
 
 const CurrentName = styled.div``;
 
-const CurrentHoverContainer = styled.div`
-  outline: 1px solid white;
-`;
+const CurrentHoverContainer = styled.div``;
 
 interface IProps {
   history: any;

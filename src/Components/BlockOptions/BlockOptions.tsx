@@ -11,18 +11,12 @@ interface IBlockOptionContainerProps {
 }
 
 const BlockOptionContainer = styled<IBlockOptionContainerProps, any>("div")`
-  position: ${props =>
-    props.type === "WIKIIMAGE_ADD" || props.type === "WIKIIMAGE_EDIT"
-      ? null
-      : "absolute"};
-  top: 0px;
-  width: 20%;
+  width: 100%;
   min-width: 250px;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
   background-color: #fff;
   color: #505659;
   transition: top 0.5s ease, opacity 0.5s ease, height 0.5s ease;
-  z-index: ${props => (props.isSelected ? "1" : "-1")};
   opacity: ${props => (props.isSelected ? "1" : "0")};
   display: flex;
   flex-direction: column;

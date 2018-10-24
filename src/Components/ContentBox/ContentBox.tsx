@@ -114,7 +114,7 @@ interface IProps {
   type: "content" | "columnList";
   setStateBuilder: any;
   isOpen: boolean;
-  pushNewBlockToTargetIndex: any;
+  handleDrop: any;
 }
 
 class ContentBox extends React.Component<IProps, any> {
@@ -185,13 +185,7 @@ class ContentBox extends React.Component<IProps, any> {
   };
 
   public render() {
-    const {
-      index,
-      state,
-      type,
-      isOpen,
-      pushNewBlockToTargetIndex
-    } = this.props;
+    const { index, state, type, isOpen, handleDrop } = this.props;
     return (
       <ContentBoxContainer isOpen={isOpen}>
         <ExpandButton state={state} type={type} isOpen={isOpen}>
@@ -205,7 +199,7 @@ class ContentBox extends React.Component<IProps, any> {
           {contentItems.map((item, i) => (
             <Content
               onClick={() => {
-                pushNewBlockToTargetIndex(
+                handleDrop(
                   {
                     type: "columnList",
                     onDrag: "columnList",
