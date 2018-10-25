@@ -7,6 +7,7 @@ import ImagePopup from "../../Components/ImagePopup";
 import { GetPos } from "../../Utility/GetPos";
 import { CATEGORIES_KEYWORD } from "../../sharedQueries";
 import { media } from "../../config/_mixin";
+import Loading from "src/Components/Loading";
 
 const FlexBox = styled.div`
   display: flex;
@@ -248,7 +249,7 @@ class Wiki extends React.Component<any, IState> {
             variables={{ keyword: this.state.keyword }}
           >
             {({ loading, data, error }) => {
-              if (loading) return "loading";
+              if (loading) return <Loading color="#FFF" />;
               if (error) return `${error.message}`;
               return (
                 <React.Fragment>
