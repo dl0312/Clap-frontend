@@ -63,10 +63,6 @@ const InputIcon = styled<IInputIconProps, any>("i")`
 `;
 
 const ListContainer = styled.div`
-  height: 300px;
-  border: 0.5px solid rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  padding: 10px 0px;
   overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -155,61 +151,61 @@ class MiniWiki extends React.Component<IProps, IState> {
   public render() {
     const { inputType, pos, hoverImgJson, onImage } = this.state;
     return (
-      <GetCategoriesByKeywordQuery
-        query={CATEGORIES_KEYWORD}
-        variables={{ keyword: this.state.keyword }}
-      >
-        {({ loading, data, error }) => {
-          if (loading) {
-            return <div>loading</div>;
-          }
-          if (error) {
-            return <div>{error.message}</div>;
-          }
-          return (
-            <React.Fragment>
-              <Helmet>
-                <title>Wiki</title>
-              </Helmet>
-              <WikiContainer>
-                <InputContainer>
-                  <SearchInput
-                    type="text"
-                    onChange={e => {
-                      this.setState({ keyword: e.target.value });
-                    }}
-                    placeholder="Category name"
-                  />
-                  <InputTypeContainer>
-                    <InputIcon
-                      onClick={() =>
-                        this.setState({
-                          inputType: "TEXT"
-                        })
-                      }
-                      isSelected={inputType === "TEXT"}
-                      className="fas fa-font"
-                    />
-                    <InputIcon
-                      onClick={() =>
-                        this.setState({
-                          inputType: "MINI_IMG"
-                        })
-                      }
-                      isSelected={inputType === "MINI_IMG"}
-                      className="fas fa-user-circle"
-                    />
-                    <InputIcon
-                      onClick={() =>
-                        this.setState({
-                          inputType: "NORMAL_IMG"
-                        })
-                      }
-                      isSelected={inputType === "NORMAL_IMG"}
-                      className="fas fa-image"
-                    />
-                  </InputTypeContainer>
-                </InputContainer>
+      <React.Fragment>
+        <Helmet>
+          <title>Wiki</title>
+        </Helmet>
+        <WikiContainer>
+          <InputContainer>
+            <SearchInput
+              type="text"
+              onChange={e => {
+                this.setState({ keyword: e.target.value });
+              }}
+              placeholder="Category name"
+            />
+            <InputTypeContainer>
+              <InputIcon
+                onClick={() =>
+                  this.setState({
+                    inputType: "TEXT"
+                  })
+                }
+                isSelected={inputType === "TEXT"}
+                className="fas fa-font"
+              />
+              <InputIcon
+                onClick={() =>
+                  this.setState({
+                    inputType: "MINI_IMG"
+                  })
+                }
+                isSelected={inputType === "MINI_IMG"}
+                className="fas fa-user-circle"
+              />
+              <InputIcon
+                onClick={() =>
+                  this.setState({
+                    inputType: "NORMAL_IMG"
+                  })
+                }
+                isSelected={inputType === "NORMAL_IMG"}
+                className="fas fa-image"
+              />
+            </InputTypeContainer>
+          </InputContainer>
+          <GetCategoriesByKeywordQuery
+            query={CATEGORIES_KEYWORD}
+            variables={{ keyword: this.state.keyword }}
+          >
+            {({ loading, data, error }) => {
+              if (loading) {
+                return <div>loading</div>;
+              }
+              if (error) {
+                return <div>{error.message}</div>;
+              }
+              return (
                 <ListContainer>
                   {data!.GetCategoriesByKeyword.categories!.map(
                     (category: any, index: number) => (
@@ -265,12 +261,12 @@ class MiniWiki extends React.Component<IProps, IState> {
                     )
                   )}
                 </ListContainer>
-                <ImagePopup pos={pos} json={hoverImgJson} onImage={onImage} />
-              </WikiContainer>
-            </React.Fragment>
-          );
-        }}
-      </GetCategoriesByKeywordQuery>
+              );
+            }}
+          </GetCategoriesByKeywordQuery>
+          <ImagePopup pos={pos} json={hoverImgJson} onImage={onImage} />
+        </WikiContainer>
+      </React.Fragment>
     );
   }
 }

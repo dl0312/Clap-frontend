@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { Query, Mutation } from "react-apollo";
 import { PROFILE, EDIT_PROFILE } from "../../sharedQueries";
 import { sizes } from "../../config/_mixin";
-import Upload from "../../Components/Upload";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -56,27 +56,14 @@ const ProfileSubTitleData = styled.div`
   align-items: center;
 `;
 
-const ProfilePhotoHoverContainer = styled.div`
-  font-size: 20px;
-  z-index: 2;
+const EditIcon = styled.i`
+  margin: 0 5px;
+  font-size: 30px;
   position: absolute;
-  display: flex;
   top: 41%;
-  left: 43%;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  transition: opacity 0.5s ease;
+  left: 40%;
   opacity: 0;
-`;
-
-const ProfileImgContainer = styled.div`
-  position: relative;
-  &:hover {
-    ${ProfilePhotoHoverContainer} {
-      opacity: 1;
-    }
-  }
+  transition: opacity 0.2s ease;
 `;
 
 interface IProfileImgProps {
@@ -93,9 +80,32 @@ const ProfileImg = styled<IProfileImgProps, any>("div")`
   background-image: url(${props => `${props.url}`});
   background-size: auto 100%;
   background-position: 50% 50%;
+`;
+
+const ProfilePhotoHoverContainer = styled.label`
+  font-size: 20px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: opacity 0.5s ease;
+  position: relative;
   &:hover {
-    filter: brightness(0.5);
+    ${ProfileImg} {
+      filter: brightness(0.5);
+    }
+    ${EditIcon} {
+      opacity: 1;
+    }
   }
+`;
+
+const ProfileImgInput = styled.input`
+  color: white;
+  opacity: 0;
+  width: 0px;
+  height: 0px;
 `;
 
 const EditContainer = styled.button`
@@ -109,11 +119,6 @@ const EditContainer = styled.button`
   }
   border: none;
   background-color: transparent;
-`;
-
-const EditIcon = styled.i`
-  font-size: 15px;
-  margin: 0 5px;
 `;
 
 const EditInput = styled.input`
@@ -205,28 +210,18 @@ class Profile extends React.Component<any, any> {
                   >
                     {(UpdateMyProfile, { data }) => (
                       <React.Fragment>
-                        {this.state.editProfilePhoto ? (
-                          <Upload
-                            type={"PROFILE"}
-                            exShownImg={{ url: user.profilePhoto }}
-                            UpdateMyProfile={UpdateMyProfile}
-                          />
-                        ) : (
-                          <ProfileImgContainer
-                            onClick={() =>
-                              this.setState({ editProfilePhoto: true })
-                            }
-                          >
-                            <ProfilePhotoHoverContainer>
-                              <EditIcon
-                                style={{ fontSize: "30px" }}
-                                className="fas fa-edit"
-                              />
-                            </ProfilePhotoHoverContainer>
-                            <ProfileImg url={user.profilePhoto} />
-                          </ProfileImgContainer>
-                        )}
-
+                        <ProfileImgInput
+                          id={"photo"}
+                          type="file"
+                          accept="image/*"
+                          onChange={event =>
+                            this.onInputImageChange(event, UpdateMyProfile)
+                          }
+                        />
+                        <ProfilePhotoHoverContainer htmlFor="photo">
+                          <ProfileImg url={user.profilePhoto} />
+                          <EditIcon className="fas fa-edit" />
+                        </ProfilePhotoHoverContainer>
                         <ProfileTextInfoContainer>
                           <ProfileSubTitle>
                             <span>이메일</span>
@@ -404,5 +399,44 @@ class Profile extends React.Component<any, any> {
       </Query>
     );
   }
+  public onInputImageChange = async (event: any, UpdateMyProfile: any) => {
+    const {
+      target: { name, value, files }
+    } = event;
+    if (files) {
+      this.setState({
+        Uploading: true
+      });
+      const formData = new FormData();
+      formData.append("file", files[0]);
+      formData.append("api_key", "811881451928618");
+      formData.append("upload_preset", "tqecb16q");
+      formData.append("timestamp", String(Date.now() / 1000));
+      const {
+        data: { secure_url }
+      } = await axios.post(
+        "https://api.cloudinary.com/v1_1/djjpx4ror/image/upload",
+        formData
+      );
+      if (secure_url) {
+        UpdateMyProfile({
+          refetchQueries: [
+            {
+              query: PROFILE
+            }
+          ],
+          variables: {
+            profilePhoto: secure_url
+          }
+        });
+        this.setState({
+          Uploading: false
+        });
+      }
+    }
+    this.setState({
+      [name]: value
+    } as any);
+  };
 }
 export default Profile;

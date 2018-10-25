@@ -46,11 +46,11 @@ const itemSource = {
 const RowItemContainer = styled.div`
   cursor: -webkit-grab;
   border-radius: 5px;
-  height: 55px;
+  height: 50px;
   padding: 5px;
   background-color: #fff;
   border: 1px solid #cccccc;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   display: grid;
   transition: box-shadow 0.2s ease;
   color: transparent;

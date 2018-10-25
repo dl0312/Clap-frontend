@@ -99,7 +99,7 @@ const CardImage = styled<ICardImageProps, any>("div")`
 `;
 
 const CardContainer = styled.div`
-  width: 16.66%;
+  width: 20%;
   padding: 0 2px;
   display: inline-flex;
   transition: width 0.5s ease;

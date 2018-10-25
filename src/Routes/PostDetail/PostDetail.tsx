@@ -84,7 +84,6 @@ const CategoryContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex-direction: row;
-  margin-left: 4px;
 `;
 
 const CountContainer = styled.div`

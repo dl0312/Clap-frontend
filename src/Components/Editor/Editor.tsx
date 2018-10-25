@@ -261,9 +261,18 @@ const TitleInput = styled<ITitleInputProps, any>(Textarea)`
 const EditorRightContainer = styled.div`
   background-color: white;
   transition: width 1s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
   width: 20%;
-  min-width: 250px;
+  min-width: 300px;
   border-left: 1px solid rgba(0, 0, 0, 0.2);
+  ::-webkit-scrollbar {
+    width: 6px;
+    background-color: #e5e5e5;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #000000;
+  }
   ${media.tablet`width: 0%;  min-width: 0px;
 `};
   ${media.phone`width: 0%;`};
