@@ -16,7 +16,6 @@ import { FACEBOOK_CONNECT, GOOGLE_CONNECT } from "../../sharedQueries";
 import AutoSuggestInput from "../AutoSuggestInput";
 import { Route } from "react-router-dom";
 import { media } from "src/config/_mixin";
-// import EditorDefaults from "../../EditorDefaults";
 
 const NavContainer = styled.div`
   width: 100%;

@@ -19,6 +19,7 @@ const WikiContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 `;
 
 const InputContainer = styled.div`
@@ -65,7 +66,7 @@ const InputIcon = styled<IInputIconProps, any>("i")`
 const ListContainer = styled.div`
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: 75px;
   grid-gap: 5px;
   ::-webkit-scrollbar {
@@ -211,18 +212,23 @@ class MiniWiki extends React.Component<IProps, IState> {
                     (category: any, index: number) => (
                       <React.Fragment key={index}>
                         <DataContainer>
-                          {category.wikiImages[0] ? (
+                          {category.topWikiImage ? (
                             <WikiImage
-                              src={category.wikiImages[0].shownImage}
+                              src={category.topWikiImage.shownImage}
                               alt={category.name}
-                              onMouseOver={() =>
+                              onMouseOver={(e: any) => {
                                 this.setState({
                                   hoverImgJson:
-                                    category.wikiImages[0].hoverImage,
-                                  onImage: true
+                                    category.topWikiImage.hoverImage,
+                                  onImage: true,
+                                  pos: GetPos(e)
+                                });
+                              }}
+                              onMouseMove={e =>
+                                this.setState({
+                                  pos: GetPos(e)
                                 })
                               }
-                              onMouseMove={GetPos}
                               onMouseOut={() => {
                                 this.setState({
                                   onImage: false
@@ -230,8 +236,8 @@ class MiniWiki extends React.Component<IProps, IState> {
                               }}
                               onClick={() => {
                                 const represent =
-                                  category.wikiImages[0].shownImage;
-                                const hover = category.wikiImages[0].hoverImage;
+                                  category.topWikiImage.shownImage;
+                                const hover = category.topWikiImage.hoverImage;
                                 console.log(this.props);
                                 const change = this.props.selectedContent.value
                                   .change()

@@ -353,7 +353,6 @@ class HoverView extends React.Component<IHoverViewProps, IState> {
         }
       }
     }
-    console.log(json);
     return (
       <HoverBorder size={json.size}>
         <WikiImageEditorLeft font={json.font} view="USER">

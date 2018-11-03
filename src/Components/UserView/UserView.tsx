@@ -191,10 +191,11 @@ class UserView extends React.Component<IProps, IState> {
             case "TEXT":
               return (
                 <ClapImageContainer
-                  onMouseOver={() =>
+                  onMouseOver={(e: any) =>
                     this.setState({
                       hoverImgJson: hoverSrc,
-                      onImage: true
+                      onImage: true,
+                      pos: GetPos(e)
                     })
                   }
                   onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
@@ -213,18 +214,20 @@ class UserView extends React.Component<IProps, IState> {
             case "MINI_IMG":
               return (
                 <ClapImageContainer
-                  onMouseOver={() =>
+                  onMouseOut={(e: React.MouseEvent<HTMLImageElement>) => {
+                    console.log("leave");
+                    this.setState({ onImage: false });
+                  }}
+                  onMouseEnter={(e: React.MouseEvent<HTMLImageElement>) =>
                     this.setState({
                       hoverImgJson: hoverSrc,
-                      onImage: true
+                      onImage: true,
+                      pos: GetPos(e)
                     })
                   }
                   onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
                     this.setState({ pos: GetPos(e) })
                   }
-                  onMouseOut={() => {
-                    this.setState({ onImage: false });
-                  }}
                   small={true}
                 >
                   <ClapImage
@@ -245,10 +248,11 @@ class UserView extends React.Component<IProps, IState> {
                   src={representSrc}
                   alt={"hover"}
                   selected={isSelected}
-                  onMouseOver={() =>
+                  onMouseOver={(e: any) =>
                     this.setState({
                       hoverImgJson: hoverSrc,
-                      onImage: true
+                      onImage: true,
+                      pos: GetPos(e)
                     })
                   }
                   onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
@@ -290,7 +294,7 @@ class UserView extends React.Component<IProps, IState> {
   public render() {
     const { json } = this.props;
     const { pos, hoverImgJson, onImage } = this.state;
-    console.log(json);
+    console.log(this.state);
     return (
       <EditorLeft font={json.font} view="USER">
         {json.cards.map((item, index) => (

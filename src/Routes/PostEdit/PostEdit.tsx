@@ -38,6 +38,9 @@ class PostEdit extends React.Component<IProps, any> {
             if (loading) return "Loading...";
             if (error) return `${error.message}`;
             const { post } = data.GetPostById;
+            const body = JSON.parse(post.body);
+            body.titleImg = post.titleImg;
+            body.titleImgPos = post.titleImgPos;
             return (
               <Mutation
                 mutation={EDIT_POST}
@@ -59,7 +62,7 @@ class PostEdit extends React.Component<IProps, any> {
                       <Editor
                         postId={this.props.match.params.postId}
                         type="POST_EDIT"
-                        state={JSON.parse(post.body)}
+                        state={body}
                         EditPost={EditPost}
                       />
                     </React.Fragment>

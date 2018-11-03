@@ -309,7 +309,8 @@ class Board extends React.Component<IProps, IState> {
                                   profilePhoto={post.user.profilePhoto}
                                   username={post.user.nickName}
                                 />{" "}
-                                Updated {post.createdAt}
+                                Updated{" "}
+                                {new Date(post.createdAt).toLocaleDateString()}
                               </SubTitle>
                             </TitleRow>
                             <CountRow>

@@ -274,6 +274,11 @@ export const CATEGORIES_KEYWORD = gql`
           id
           name
         }
+        topWikiImage {
+          id
+          shownImage
+          hoverImage
+        }
         wikiImages {
           id
           shownImage

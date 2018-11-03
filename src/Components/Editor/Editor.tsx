@@ -148,6 +148,7 @@ const EditorContentContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
+  overflow: hidden;
   position: absolute;
   top: 88px;
   bottom: 0px;
@@ -261,11 +262,11 @@ const TitleInput = styled<ITitleInputProps, any>(Textarea)`
 const EditorRightContainer = styled.div`
   background-color: white;
   transition: width 1s ease;
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
   width: 20%;
   min-width: 300px;
-  border-left: 1px solid rgba(0, 0, 0, 0.2);
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
   ::-webkit-scrollbar {
     width: 6px;
     background-color: #e5e5e5;
@@ -1262,6 +1263,35 @@ class Editor extends React.Component<IProps, IState> {
             />
           </EditorNavTwo>
           <EditorContentContainer>
+            <EditorRightContainer>
+              {!this.state.selectedContent ? (
+                <EditorRight
+                  masterCallback={
+                    this.masterCallback // func
+                  }
+                  addIdToState={this.addIdToState}
+                  deleteIdToState={this.deleteIdToState}
+                  rightMenu={
+                    this.state.rightMenu // values
+                  }
+                  cards={this.state.cards}
+                  view={this.state.view}
+                  title={this.state.title}
+                  font={this.state.font}
+                  category={this.state.category}
+                />
+              ) : (
+                <BlockOptions
+                  type={this.props.type}
+                  handleOnChange={this.handleOnChange}
+                  selectedIndex={selectedIndex}
+                  selectedContent={this.showSelected(selectedIndex)}
+                  OnChangeCards={this.OnChangeCards}
+                  onBlockOptionDownClick={this.onBlockOptionDownClick}
+                  buttonCallback={this.buttonCallback}
+                />
+              )}
+            </EditorRightContainer>
             <EditorLeftOuterContainer>
               <EditorLeftContainer view={view} device={device}>
                 {view === "EDIT" ? (
@@ -1397,51 +1427,30 @@ class Editor extends React.Component<IProps, IState> {
                 ) : null}
               </EditorLeftContainer>
             </EditorLeftOuterContainer>
-
-            <EditorRightContainer>
-              {!this.state.selectedContent ? (
-                <EditorRight
-                  masterCallback={
-                    this.masterCallback // func
-                  }
-                  addIdToState={this.addIdToState}
-                  deleteIdToState={this.deleteIdToState}
-                  rightMenu={
-                    this.state.rightMenu // values
-                  }
-                  cards={this.state.cards}
-                  view={this.state.view}
-                  title={this.state.title}
-                  font={this.state.font}
-                  category={this.state.category}
-                />
-              ) : (
-                <BlockOptions
-                  type={this.props.type}
-                  handleOnChange={this.handleOnChange}
-                  selectedIndex={selectedIndex}
-                  selectedContent={this.showSelected(selectedIndex)}
-                  OnChangeCards={this.OnChangeCards}
-                  onBlockOptionDownClick={this.onBlockOptionDownClick}
-                  buttonCallback={this.buttonCallback}
-                />
-              )}
-            </EditorRightContainer>
           </EditorContentContainer>
+          <ImagePopup
+            pos={pos}
+            json={hoverImgJson ? hoverImgJson : null}
+            onImage={onImage}
+          />
         </EditorContainer>
-        <ImagePopup
-          pos={pos}
-          json={hoverImgJson ? hoverImgJson : null}
-          onImage={onImage}
-        />
       </React.Fragment>
     );
   }
 
   public renderNode = (props: RenderNodeProps): JSX.Element | undefined => {
-    const { attributes, node, isSelected } = props;
+    const { attributes, children, node, isSelected } = props;
+
     if (node.object === "block" || node.object === "inline") {
       switch (node.type) {
+        case "block-quote":
+          return <blockquote {...attributes}>{children}</blockquote>;
+        case "bulleted-list":
+          return <ul {...attributes}>{children}</ul>;
+        case "list-item":
+          return <li {...attributes}>{children}</li>;
+        case "numbered-list":
+          return <ol {...attributes}>{children}</ol>;
         case "clap-image": {
           const representSrc = node.data.get("represent");
           const hoverSrc = node.data.get("hover");
@@ -1451,10 +1460,11 @@ class Editor extends React.Component<IProps, IState> {
             case "TEXT":
               return (
                 <ClapImageContainer
-                  onMouseOver={() =>
+                  onMouseOver={(e: any) =>
                     this.setState({
                       hoverImgJson: hoverSrc,
-                      onImage: true
+                      onImage: true,
+                      pos: GetPos(e)
                     })
                   }
                   onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
@@ -1473,18 +1483,20 @@ class Editor extends React.Component<IProps, IState> {
             case "MINI_IMG":
               return (
                 <ClapImageContainer
-                  onMouseOver={() =>
+                  onMouseOut={(e: React.MouseEvent<HTMLImageElement>) => {
+                    console.log("leave");
+                    this.setState({ onImage: false });
+                  }}
+                  onMouseEnter={(e: React.MouseEvent<HTMLImageElement>) =>
                     this.setState({
                       hoverImgJson: hoverSrc,
-                      onImage: true
+                      onImage: true,
+                      pos: GetPos(e)
                     })
                   }
                   onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
                     this.setState({ pos: GetPos(e) })
                   }
-                  onMouseOut={() => {
-                    this.setState({ onImage: false });
-                  }}
                   small={true}
                 >
                   <ClapImage
@@ -1505,10 +1517,11 @@ class Editor extends React.Component<IProps, IState> {
                   src={representSrc}
                   alt={"hover"}
                   selected={isSelected}
-                  onMouseOver={() =>
+                  onMouseOver={(e: any) =>
                     this.setState({
                       hoverImgJson: hoverSrc,
-                      onImage: true
+                      onImage: true,
+                      pos: GetPos(e)
                     })
                   }
                   onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>

@@ -17,7 +17,7 @@ const ListContainer = styled.div`
   background-color: white;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
   grid-gap: 5px;
   margin: 5px 0;
   ::-webkit-scrollbar {

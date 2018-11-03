@@ -28,6 +28,8 @@ interface IState {
     onImage: boolean;
     pos: { x: number; y: number };
     title: string;
+    titleImg: string | null;
+    titleImgPos: number | null;
     category: number[];
     cards: any[];
   };
@@ -54,6 +56,8 @@ class PostAdd extends React.Component<IProps, IState> {
         onImage: false,
         pos: { x: 0, y: 0 },
         title: "",
+        titleImg: null,
+        titleImgPos: null,
         category: [],
         cards: []
       }
