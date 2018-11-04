@@ -15,6 +15,7 @@ import CategoryDetail from "../../Routes/CategoryDetail";
 import CategoryAdd from "../../Routes/CategoryAdd";
 import CategoryEdit from "../../Routes/CategoryEdit";
 import LogIn from "../../Routes/LogIn";
+import Register from "../../Routes/Register";
 import SignUp from "../../Routes/SignUp";
 import Profile from "../../Routes/Profile";
 import SearchResult from "../../Routes/SearchResult";
@@ -112,6 +113,8 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
       component={WikiImageEdit}
     />
     <Route path="/login" exact={true} component={LogIn} />
+    <Route path="/register" exact={true} component={Register} />
+
     <Route
       path={"*"}
       exact={true}

@@ -504,13 +504,24 @@ export const UPLOAD_SHOWNIMAGE = gql`
 
 export const SIGNUP_MUTATION = gql`
   mutation emailSignUp(
-    $nickName: String!
     $email: String!
     $password: String!
+    $phoneNumber: String!
+    $nickName: String!
+    $gender: String!
+    $birthday: String!
   ) {
-    EmailSignUp(nickName: $nickName, email: $email, password: $password) {
+    EmailSignUp(
+      email: $email
+      password: $password
+      phoneNumber: $phoneNumber
+      nickName: $nickName
+      gender: $gender
+      birthday: $birthday
+    ) {
       ok
       error
+      token
     }
   }
 `;
@@ -525,7 +536,7 @@ export const PROFILE = gql`
         email
         fullName
         nickName
-        age
+        birthday
         gender
         password
         profilePhoto

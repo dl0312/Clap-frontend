@@ -327,6 +327,7 @@ export interface getWikiImages_GetWikiImages_wikiImages_user {
 
 export interface getWikiImages_GetWikiImages_wikiImages_category_parent {
   __typename: "Category";
+  id: number;
   name: string;
 }
 
@@ -446,6 +447,13 @@ export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_parent
   name: string;
 }
 
+export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_topWikiImage {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: string;
+  hoverImage: string;
+}
+
 export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_wikiImages {
   __typename: "WikiImage";
   id: number;
@@ -460,6 +468,7 @@ export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories {
   id: number;
   name: string;
   parent: (getCategoriesByKeyword_GetCategoriesByKeyword_categories_parent | null)[] | null;
+  topWikiImage: getCategoriesByKeyword_GetCategoriesByKeyword_categories_topWikiImage | null;
   wikiImages: (getCategoriesByKeyword_GetCategoriesByKeyword_categories_wikiImages | null)[] | null;
 }
 
@@ -487,12 +496,14 @@ export interface getCategoriesByKeywordVariables {
 
 export interface getCategoryById_GetCategoryById_category_topWikiImage {
   __typename: "WikiImage";
+  id: number;
   shownImage: string;
   hoverImage: string;
 }
 
 export interface getCategoryById_GetCategoryById_category_wikiImages {
   __typename: "WikiImage";
+  id: number;
   shownImage: string;
   hoverImage: string;
 }
@@ -870,6 +881,7 @@ export interface emailSignUp_EmailSignUp {
   __typename: "EmailSignUpResponse";
   ok: boolean;
   error: string | null;
+  token: string | null;
 }
 
 export interface emailSignUp {
@@ -877,9 +889,12 @@ export interface emailSignUp {
 }
 
 export interface emailSignUpVariables {
-  nickName: string;
   email: string;
   password: string;
+  phoneNumber: string;
+  nickName: string;
+  gender: string;
+  birthday: string;
 }
 
 /* tslint:disable */
@@ -909,7 +924,7 @@ export interface getMyProfile_GetMyProfile_user {
   email: string | null;
   fullName: string | null;
   nickName: string;
-  age: number | null;
+  birthday: string | null;
   gender: string | null;
   password: string | null;
   profilePhoto: string | null;

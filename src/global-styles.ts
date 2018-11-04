@@ -6,7 +6,7 @@ import EditorDefaults from "./EditorDefaults";
 // tslint:disable-next-line
 injectGlobal`
 ${reset};
-@import url("https://cdnjs.cloudflare.com/ajax/libs/antd/3.6.6/antd.min.css");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/antd/3.10.4/antd.min.css");
 @import url("https://www.w3schools.com/w3css/4/w3.css");
 @import url("https://use.fontawesome.com/releases/v5.0.13/css/all.css");
 @import url("https://fonts.googleapis.com/css?family=Maven+Pro|Roboto:300:400,700|Eczar|Oswald|Playfair+Display|Hanalei+Fill|Quicksand|Open+Sans|Raleway|Anton|Do+Hyeon|Kirang+Haerang|Nanum+Gothic|Nanum+Gothic+Coding|Nanum+Myeongjo|Nanum+Pen+Script|Sunflower:300");
@@ -58,6 +58,7 @@ ${reset};
 .blockActive {
   border: 1px solid ${EditorDefaults.BORDER_SELECT_COLOR};
 }
+
 
 .ql-stroke {
   stroke: #777;
@@ -255,6 +256,5 @@ ${reset};
     transform: translate(19px, 0);
   }
 }
-
 
 `;
