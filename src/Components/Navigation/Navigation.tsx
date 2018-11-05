@@ -49,7 +49,7 @@ const MenuList = styled<IMenuListProps, any>("ul")`
   transition: background-color 0.3s ease, box-shadow 0.5s ease;
   box-shadow: ${props =>
     props.darken ? "0px 0.5px 2px rgba(0, 0, 0, 0.3)" : null};
-
+  padding: 0 50px;
   ${media.desktop`display: none;`};
   ${media.phone``};
 `;
@@ -78,7 +78,7 @@ const ProfileContainer = styled<IProfileContainerProps, any>("div")`
   background-color: ${props =>
     props.darken ? "rgba(10, 10, 10, 0.94)" : "transparent"};
   transition: background-color 0.3s ease;
-  padding-right: 50px;
+  padding: 0 100px;
 `;
 
 const ProfileItemContainer = styled.div`
@@ -231,20 +231,23 @@ class Navigation extends React.Component<IProps, IState> {
                       </ProfileItemContainer>
                     </NavLink>
                   ) : (
-                    <NavLink to="/login" style={{ textDecoration: "none" }}>
-                      <ProfileItemContainer>
-                        LOG IN / JOIN US
-                      </ProfileItemContainer>
-                    </NavLink>
+                    <>
+                      <NavLink to="/login" style={{ textDecoration: "none" }}>
+                        <ProfileItemContainer>LOG IN</ProfileItemContainer>
+                      </NavLink>
+                      /
+                      <NavLink
+                        to="/register"
+                        style={{ textDecoration: "none" }}
+                      >
+                        <ProfileItemContainer>JOIN US</ProfileItemContainer>
+                      </NavLink>
+                    </>
                   )}
                   {!this.props.isLoggedIn && (
                     <Mutation mutation={LOG_USER_IN}>
                       {logUserIn => (
-                        <React.Fragment>
-                          <ProfileItemContainer>
-                            SOCIAL LOGIN{" "}
-                          </ProfileItemContainer>
-
+                        <>
                           <FacebookConnectMutation
                             mutation={FACEBOOK_CONNECT}
                             onCompleted={data => {
@@ -346,7 +349,7 @@ class Navigation extends React.Component<IProps, IState> {
                             src="https://cdn.iconscout.com/public/images/icon/free/png-512/kakaotalk-logo-social-media-3790821a3904b250-512x512.png"
                             size="16px"
                           />
-                        </React.Fragment>
+                        </>
                       )}
                     </Mutation>
                   )}
@@ -365,7 +368,7 @@ class Navigation extends React.Component<IProps, IState> {
                       textDecoration: "none"
                     }}
                   >
-                    <MenuItem>
+                    <MenuItem style={{ minWidth: "240px" }}>
                       CLAP
                       <div
                         role="img"

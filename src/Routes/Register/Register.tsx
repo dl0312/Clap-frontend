@@ -27,9 +27,21 @@ const LoginContainer = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: white;
+  background-color: #fafafa;
+  color: black;
+`;
+
+const Logo = styled.div`
+  text-align: center;
+  padding: 0 30px 30px;
+  text-decoration: none;
+  font-family: "Raleway";
+  font-weight: 100;
+  letter-spacing: 10px;
+  font-size: 20px;
 `;
 
 interface IProps {
@@ -125,6 +137,14 @@ class Register extends React.Component<IProps, IState> {
     this.setState({ autoCompleteResult });
   };
 
+  public handleAgreement = (rule: any, value: boolean, callback: any) => {
+    if (value === false) {
+      callback("If you uncheck agreement, you can't register");
+    } else {
+      callback();
+    }
+  };
+
   public render() {
     const { getFieldDecorator } = this.props.form;
 
@@ -181,24 +201,38 @@ class Register extends React.Component<IProps, IState> {
           >
             {mutation => (
               <LoginContainer>
+                <Logo style={{ minWidth: "240px" }}>
+                  CLAP
+                  <div
+                    role="img"
+                    aria-label="Game"
+                    style={{
+                      fontFamily: "Open Sans",
+                      fontSize: "5px",
+                      letterSpacing: "2px"
+                    }}
+                  >
+                    🕹️POWERED BY GAMERS🕹️
+                  </div>
+                </Logo>
                 <Form
                   style={{ minWidth: "500px" }}
                   onSubmit={e => {
                     e.preventDefault();
                     this.props.form.validateFields((err: any, values: any) => {
-                      mutation({
-                        variables: {
-                          email: values.email,
-                          password: values.password,
-                          phoneNumber: values.prefix + values.phoneNumber,
-                          nickName: values.nickName,
-                          gender: values.gender,
-                          birthday: values.birthday._d
-                        }
-                      });
-                      if (!err) {
-                        console.log(new Date(values.birthday._d));
+                      console.log(values);
+                      if (!err && this.state.isVerified) {
                         console.log("Received values of form: ", values);
+                        mutation({
+                          variables: {
+                            email: values.email,
+                            password: values.password,
+                            phoneNumber: values.prefix + values.phoneNumber,
+                            nickName: values.nickName,
+                            gender: values.gender,
+                            birthday: values.birthday._d
+                          }
+                        });
                       }
                     });
                   }}
@@ -308,18 +342,29 @@ class Register extends React.Component<IProps, IState> {
                   </FormItem>
                   <FormItem
                     {...formItemLayout}
-                    label="Captcha"
+                    label="CAPTCHA"
                     extra="We must make sure that your are a human."
                   >
-                    <Recaptcha
-                      sitekey="6LekqngUAAAAALuE3_XnMU2VW2dfedk14mdwFuEQ"
-                      render="explicit"
-                      onloadCallback={this.recaptchaLoaded}
-                    />
+                    {getFieldDecorator("verify", {
+                      rules: [
+                        {
+                          required: true,
+                          message: "You should check this box"
+                        }
+                      ]
+                    })(<Captcha />)}
                   </FormItem>
                   <FormItem {...tailFormItemLayout}>
                     {getFieldDecorator("agreement", {
-                      valuePropName: "checked"
+                      rules: [
+                        {
+                          required: true,
+                          message: "You should check, if you want to register"
+                        },
+                        {
+                          validator: this.handleAgreement
+                        }
+                      ]
                     })(
                       <Checkbox>
                         I have read the <a href="">agreement</a>
@@ -349,6 +394,27 @@ class Register extends React.Component<IProps, IState> {
       this.setState({ isVerified: true });
     }
   };
+}
+
+class Captcha extends React.Component<any, any> {
+  constructor(props: any) {
+    super(props);
+    this.verifyCallback = this.verifyCallback.bind(this);
+  }
+  public verifyCallback(result: any) {
+    console.log("verifyCallback", result);
+    this.props.onChange(result); // notify the form after verified
+  }
+  render() {
+    return (
+      <Recaptcha
+        sitekey="6LekqngUAAAAALuE3_XnMU2VW2dfedk14mdwFuEQ"
+        render="explicit"
+        onloadCallback={() => console.log("captcha is loaded")}
+        verifyCallback={this.verifyCallback}
+      />
+    );
+  }
 }
 
 export default Form.create()(Register);
