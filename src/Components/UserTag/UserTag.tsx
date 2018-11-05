@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import onClickOutside from "react-onclickoutside";
+import { Avatar } from "antd";
 
 const UserTagContainer = styled.div`
   position: relative;
@@ -14,64 +15,23 @@ const UserContainer = styled.div`
   cursor: pointer;
 `;
 
-interface IUserProfilePhotoProps {
-  url: string;
-  size: "LARGE" | "MEDIUM" | "SMALL";
-  isRound: boolean;
-}
-
-const UserProfilePhoto = styled<IUserProfilePhotoProps, any>("div")`
-  width: ${props => {
-    switch (props.size) {
-      case "LARGE":
-        return "25px";
-      case "MEDIUM":
-        return "20px";
-      case "SMALL":
-        return "15px";
-      default:
-        return null;
-    }
-  }};
-  height: ${props => {
-    switch (props.size) {
-      case "LARGE":
-        return "25px";
-      case "MEDIUM":
-        return "20px";
-      case "SMALL":
-        return "15px";
-      default:
-        return null;
-    }
-  }};
-  border-radius: ${props => (props.isRound ? "100%" : null)};
-  overflow: hidden;
-  position: relative;
-  transition: filter 0.5s ease;
-  margin-right: 5px;
-  background-image: url(${props => `${props.url}`});
-  background-size: auto 100%;
-  background-position: 50% 50%;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
-`;
-
 interface IUserNameProps {
-  size: "LARGE" | "MEDIUM" | "SMALL";
+  size?: number | "large" | "small" | "default";
 }
 
 const UserName = styled<IUserNameProps, any>("div")`
   font-weight: bolder;
+  margin-left: 5px;
   font-size: ${props => {
     switch (props.size) {
-      case "LARGE":
-        return "21px";
-      case "MEDIUM":
-        return "15px";
-      case "SMALL":
+      case "small":
         return "12px";
+      case "default":
+        return "15px";
+      case "large":
+        return "21px";
       default:
-        return null;
+        return "15px";
     }
   }};
 `;
@@ -99,10 +59,9 @@ const UserTagOption = styled.div`
 `;
 
 interface IProps {
-  profilePhoto?: string;
+  profilePhoto?: string | null;
   username: string;
-  size: "LARGE" | "MEDIUM" | "SMALL";
-  isRound?: boolean;
+  size?: number | "large" | "small" | "default";
 }
 
 interface IState {
@@ -123,7 +82,7 @@ class UserTag extends React.Component<IProps, IState> {
   };
 
   public render() {
-    const { profilePhoto, username, isRound, size } = this.props;
+    const { profilePhoto, username, size } = this.props;
     const { isOpen } = this.state;
 
     return (
@@ -135,7 +94,16 @@ class UserTag extends React.Component<IProps, IState> {
             })
           }
         >
-          <UserProfilePhoto url={profilePhoto} isRound={isRound} size={size} />
+          {profilePhoto !== null ? (
+            <Avatar
+              size={size !== undefined ? size : "default"}
+              src={profilePhoto}
+            />
+          ) : (
+            <Avatar size={size !== undefined ? size : "default"}>
+              {username}
+            </Avatar>
+          )}
           <UserName size={size}>{username}</UserName>
         </UserContainer>
 

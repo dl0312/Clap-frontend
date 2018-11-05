@@ -30,6 +30,9 @@ ${reset};
   strong{
     font-weight: bolder;
   }
+  h1,h2,h3,h4,h5,h6{
+    all: unset;
+  }
   h1{
     font-family:'Maven Pro', sans-serif;
     font-size: 30px;
@@ -42,6 +45,10 @@ ${reset};
           color:inherit;
 
   }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Maven Pro', sans-serif;
+    font-weight: 400;
+}
   hr{
     margin: 10px 0;
   }

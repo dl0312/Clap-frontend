@@ -25,7 +25,6 @@ const CategoryContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding-bottom: 5px;
 `;
 
 const TD = styled.td`
@@ -106,7 +105,6 @@ const Title = styled.div`
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  padding-bottom: 5px;
   display: flex;
   justify-content: flex-start;
 `;
@@ -305,7 +303,7 @@ class Board extends React.Component<IProps, IState> {
                               <SubTitle>
                                 Guide by{" "}
                                 <UserTag
-                                  size={"SMALL"}
+                                  size={"small"}
                                   profilePhoto={post.user.profilePhoto}
                                   username={post.user.nickName}
                                 />{" "}
