@@ -15,7 +15,7 @@ import { POSTS, CLAPPEDPOSTS, RISINGPOSTS } from "../../sharedQueries";
 import Loading from "../../Components/Loading";
 // import CategoryTag from "src/Components/CategoryTag";
 // import UserTag from "src/Components/UserTag";
-import { Table, Tabs } from "antd";
+import { Table, Tabs, Button, Icon } from "antd";
 import CategoryTag from "src/Components/CategoryTag";
 import UserTag from "src/Components/UserTag";
 const TabPane = Tabs.TabPane;
@@ -203,6 +203,7 @@ const columns = [
     title: "Title",
     dataIndex: "title",
     key: "title",
+    width: 300,
     render: (post: any) => (
       <Link
         to={`/post/read/${post.id}`}
@@ -269,6 +270,13 @@ const columns = [
 //   }
 // ];
 
+const pagenationConfig = {
+  pagination: {
+    defaultPageSize: 20,
+    hideOnSinglePage: true
+  }
+};
+
 interface IProps extends RouteComponentProps<any> {}
 
 interface IState {
@@ -325,7 +333,19 @@ class Board extends React.Component<IProps, IState> {
             tabPosition={"left"}
             style={{ height: "100%" }}
           >
-            <TabPane tab="Recent" key="1">
+            <TabPane
+              tab={
+                <>
+                  <Icon
+                    type="clock-circle"
+                    theme="twoTone"
+                    twoToneColor="LightGreen"
+                  />
+                  Recent
+                </>
+              }
+              key="1"
+            >
               <PostsQuery
                 query={POSTS}
                 fetchPolicy={"cache-and-network"}
@@ -349,6 +369,7 @@ class Board extends React.Component<IProps, IState> {
                       {posts && (
                         <Table
                           size={"small"}
+                          {...pagenationConfig}
                           // style={{ backgroundColor: "white" }}
                           columns={columns}
                           dataSource={posts.map(post => {
@@ -362,6 +383,28 @@ class Board extends React.Component<IProps, IState> {
                               date: post!.createdAt
                             };
                           })}
+                          footer={() => (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-end"
+                              }}
+                            >
+                              <Link
+                                to={`/post/add`}
+                                style={{ textDecoration: "none" }}
+                              >
+                                <Button
+                                  type="primary"
+                                  size="small"
+                                  style={{ marginRight: "10px" }}
+                                >
+                                  NEW POST
+                                </Button>
+                              </Link>
+                              <Button size="small">LIST</Button>
+                            </div>
+                          )}
                           bordered={true}
                         />
                       )}
@@ -375,7 +418,15 @@ class Board extends React.Component<IProps, IState> {
                 }}
               </PostsQuery>
             </TabPane>
-            <TabPane tab="Clapped" key="2">
+            <TabPane
+              tab={
+                <>
+                  <Icon type="star" theme="twoTone" twoToneColor="GoldenRod" />
+                  Clapped
+                </>
+              }
+              key="2"
+            >
               <ClappedPostsQuery
                 query={CLAPPEDPOSTS}
                 fetchPolicy={"cache-and-network"}
@@ -398,6 +449,7 @@ class Board extends React.Component<IProps, IState> {
                       {posts && (
                         <Table
                           size={"small"}
+                          {...pagenationConfig}
                           // style={{ backgroundColor: "white" }}
                           columns={columns}
                           dataSource={posts.map((post: any) => {
@@ -411,6 +463,28 @@ class Board extends React.Component<IProps, IState> {
                               date: post!.createdAt
                             };
                           })}
+                          footer={() => (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-end"
+                              }}
+                            >
+                              <Link
+                                to={`/post/add`}
+                                style={{ textDecoration: "none" }}
+                              >
+                                <Button
+                                  type="primary"
+                                  size="small"
+                                  style={{ marginRight: "10px" }}
+                                >
+                                  NEW POST
+                                </Button>
+                              </Link>
+                              <Button size="small">LIST</Button>
+                            </div>
+                          )}
                           bordered={true}
                         />
                       )}
@@ -424,7 +498,15 @@ class Board extends React.Component<IProps, IState> {
                 }}
               </ClappedPostsQuery>
             </TabPane>
-            <TabPane tab="Rising" key="3">
+            <TabPane
+              tab={
+                <>
+                  <Icon type="fire" theme="twoTone" twoToneColor="red" />
+                  Rising
+                </>
+              }
+              key="3"
+            >
               <RisingPostsQuery
                 query={RISINGPOSTS}
                 fetchPolicy={"cache-and-network"}
@@ -448,6 +530,7 @@ class Board extends React.Component<IProps, IState> {
                       {posts && (
                         <Table
                           size={"small"}
+                          {...pagenationConfig}
                           // style={{ backgroundColor: "white" }}
                           columns={columns}
                           dataSource={posts.map(post => {
@@ -462,6 +545,28 @@ class Board extends React.Component<IProps, IState> {
                             };
                           })}
                           bordered={true}
+                          footer={() => (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-end"
+                              }}
+                            >
+                              <Link
+                                to={`/post/add`}
+                                style={{ textDecoration: "none" }}
+                              >
+                                <Button
+                                  type="primary"
+                                  size="small"
+                                  style={{ marginRight: "10px" }}
+                                >
+                                  NEW POST
+                                </Button>
+                              </Link>
+                              <Button size="small">LIST</Button>
+                            </div>
+                          )}
                         />
                       )}
                       <ImagePopup
