@@ -533,73 +533,281 @@ class PostDetail extends React.Component<IProps, IState> {
             }
             const body = JSON.parse(post.body);
             return (
-              <React.Fragment>
-                <Helmet>
-                  <title>{`${post.title} | CLAP`}</title>
-                </Helmet>
-                <DetailContainer>
-                  <PostContainer>
-                    <TitleContainer
-                      src={
-                        post.titleImg
-                          ? post.titleImg
-                          : post.category.topWikiImage !== null
-                            ? post.category.topWikiImage.shownImage
-                            : LOST_IMAGE_URL
-                      }
-                      pos={post.titleImgPos}
-                    >
-                      <TitleInnerContainer>
-                        <CategoryContainer>
-                          {post.category.parent![0] !== undefined ? (
+              post && (
+                <React.Fragment>
+                  <Helmet>
+                    <title>{`${post.title} | CLAP`}</title>
+                  </Helmet>
+                  <DetailContainer>
+                    <PostContainer>
+                      <TitleContainer
+                        src={
+                          post.titleImg
+                            ? post.titleImg
+                            : post.category.topWikiImage !== null
+                              ? post.category.topWikiImage.shownImage
+                              : LOST_IMAGE_URL
+                        }
+                        pos={post.titleImgPos}
+                      >
+                        <TitleInnerContainer>
+                          <CategoryContainer>
                             <CategoryTag
-                              size={"MEDIUM"}
-                              id={post.category.parent![0]!.id}
-                              name={post.category.parent![0]!.name}
+                              category={post.category}
+                              display={"both"}
                             />
-                          ) : null}
-                          <CategoryTag
-                            size={"MEDIUM"}
-                            id={post.category.id}
-                            name={post.category.name}
-                          />
-                        </CategoryContainer>
-                        <Title>{post.title}</Title>
-                        <CountContainer>
-                          <CountItem style={{ marginLeft: "0px" }}>
-                            <CountIcon className="far fa-eye" />
-                            <CountText>{post.view}</CountText>
-                          </CountItem>
-                          <CountItem>
-                            <CountIcon className="far fa-comments" />
-                            <CountText>{post.commentsCount}</CountText>
-                          </CountItem>
-                          <CountItem>
-                            <CountIcon className="fas fa-heart" />
-                            <CountText>{post.clapsCount}</CountText>
-                          </CountItem>
-                        </CountContainer>
-                        <UserContainer>
-                          <UserImg url={post.user.profilePhoto!} />
-                          <UserNickName>{`${post.user.nickName}`}</UserNickName>
-                        </UserContainer>
-                      </TitleInnerContainer>
-                    </TitleContainer>
-                    <BodyContainer>
-                      <UserViewContainer>
-                        <UserView json={body} />
-                      </UserViewContainer>
-                      <ClapContainer>
-                        <Mutation
-                          mutation={SEND_CLAP}
-                          onCompleted={data => this.sendClapConfirm(data)}
+                          </CategoryContainer>
+                          <Title>{post.title}</Title>
+                          <CountContainer>
+                            <CountItem style={{ marginLeft: "0px" }}>
+                              <CountIcon className="far fa-eye" />
+                              <CountText>{post.view}</CountText>
+                            </CountItem>
+                            <CountItem>
+                              <CountIcon className="far fa-comments" />
+                              <CountText>{post.commentsCount}</CountText>
+                            </CountItem>
+                            <CountItem>
+                              <CountIcon className="fas fa-heart" />
+                              <CountText>{post.clapsCount}</CountText>
+                            </CountItem>
+                          </CountContainer>
+                          <UserContainer>
+                            <UserImg url={post.user.profilePhoto!} />
+                            <UserNickName>{`${
+                              post.user.nickName
+                            }`}</UserNickName>
+                          </UserContainer>
+                        </TitleInnerContainer>
+                      </TitleContainer>
+                      <BodyContainer>
+                        <UserViewContainer>
+                          <UserView json={body} />
+                        </UserViewContainer>
+                        <ClapContainer>
+                          <Mutation
+                            mutation={SEND_CLAP}
+                            onCompleted={data => this.sendClapConfirm(data)}
+                          >
+                            {SendClap => (
+                              <ClapImageContainer>
+                                <ClapImage
+                                  onClick={(e: any) => {
+                                    e.preventDefault();
+                                    SendClap({
+                                      refetchQueries: [
+                                        {
+                                          query: POST,
+                                          variables: {
+                                            postId: this.props.match.params
+                                              .postId
+                                          }
+                                        }
+                                      ],
+                                      variables: { postId: post.id }
+                                    });
+                                  }}
+                                  isClapped={isClapped}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="red"
+                                  >
+                                    <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" />
+                                  </svg>
+                                </ClapImage>
+                                <ClapCount>1</ClapCount>
+                              </ClapImageContainer>
+                            )}
+                          </Mutation>
+                        </ClapContainer>
+                        {isMine ? (
+                          <ButtonsContainer>
+                            <Link
+                              to={`/post/edit/${post.id}`}
+                              style={{ textDecoration: "none" }}
+                            >
+                              <PostButton>Edit</PostButton>
+                            </Link>
+                            <DeletePostQuery
+                              mutation={DELETE_POST}
+                              onCompleted={data => this.deletePostConfirm(data)}
+                            >
+                              {(DeletePost, { data }) => (
+                                <PostButton
+                                  onClick={e => {
+                                    e.preventDefault();
+                                    DeletePost({
+                                      refetchQueries: [
+                                        {
+                                          query: POSTS
+                                        }
+                                      ]
+                                    });
+                                  }}
+                                >
+                                  Delete
+                                </PostButton>
+                              )}
+                            </DeletePostQuery>
+                          </ButtonsContainer>
+                        ) : null}
+                      </BodyContainer>
+
+                      <CommentsListContainer>
+                        <tbody>
+                          {post.comments!.map((comment: any, index: number) => (
+                            <CommentContainer key={index}>
+                              <CommentBodyContainer level={comment!.level}>
+                                <CommentUserTable>
+                                  <CommentUser hasIcon={comment!.level > 1}>
+                                    {comment!.level > 1 ? (
+                                      <ReCommentIcon className="fas fa-reply" />
+                                    ) : null}
+                                    <UserProfilePhoto
+                                      url={comment.user.profilePhoto}
+                                    />
+                                    {comment.user.nickName}
+                                  </CommentUser>
+                                </CommentUserTable>
+                                <CommentBody>{comment.body}</CommentBody>
+                                <ReplyContainer
+                                  onClick={() =>
+                                    this.setState({
+                                      parentCommentId: comment.id
+                                    })
+                                  }
+                                >
+                                  <ReplyIcon className="fas fa-level-up-alt fa-rotate-90" />
+                                  <ReplyText>Reply</ReplyText>
+                                </ReplyContainer>
+                                <EditCommentButton>
+                                  <i className="far fa-edit" />
+                                </EditCommentButton>
+                                <DeleteCommentQuery
+                                  mutation={DELETE_COMMENT}
+                                  onCompleted={data =>
+                                    this.deleteCommentConfirm(data)
+                                  }
+                                >
+                                  {(DeleteComment, { error }) => {
+                                    if (error)
+                                      return <div>{error.message}</div>;
+                                    return (
+                                      <DeleteCommentButton
+                                        onClick={() => {
+                                          DeleteComment({
+                                            refetchQueries: [
+                                              {
+                                                query: POST,
+                                                variables: {
+                                                  postId: this.props.match
+                                                    .params.postId
+                                                }
+                                              }
+                                            ],
+                                            variables: {
+                                              commentId: comment.id
+                                            }
+                                          });
+                                        }}
+                                      >
+                                        <i className="fas fa-times" />
+                                      </DeleteCommentButton>
+                                    );
+                                  }}
+                                </DeleteCommentQuery>
+                                {this.state.parentCommentId === comment.id ? (
+                                  <AddCommentQuery
+                                    mutation={ADD_COMMENT}
+                                    onCompleted={data =>
+                                      this.addCommentConfirm(data)
+                                    }
+                                  >
+                                    {(AddComment, { error }) => {
+                                      // if (loading) return "Loading...";
+                                      if (error)
+                                        return <div>{error.message}</div>;
+                                      return (
+                                        <RereplyContainer>
+                                          <RereplyInput
+                                            placeholder="Your comment is your face bro :)"
+                                            value={this.state.reCommentBody}
+                                            onChange={e =>
+                                              this.setState({
+                                                reCommentBody: e.target.value
+                                              })
+                                            }
+                                          />
+                                          <RereplyButton
+                                            onClick={e => {
+                                              e.preventDefault();
+                                              this.setState({
+                                                reCommentBody: "",
+                                                parentCommentId: null
+                                              });
+                                              AddComment({
+                                                refetchQueries: [
+                                                  {
+                                                    query: POST,
+                                                    variables: {
+                                                      postId: this.props.match
+                                                        .params.postId
+                                                    }
+                                                  }
+                                                ],
+                                                variables: {
+                                                  postId: this.props.match
+                                                    .params.postId,
+                                                  parentCommentId: comment.id,
+                                                  body: this.state
+                                                    .reCommentBody,
+                                                  level: comment.level + 1
+                                                }
+                                              });
+                                            }}
+                                          >
+                                            POST
+                                          </RereplyButton>
+                                        </RereplyContainer>
+                                      );
+                                    }}
+                                  </AddCommentQuery>
+                                ) : null}
+                              </CommentBodyContainer>
+                              <CommentInfo>
+                                <CommentDate>
+                                  {formatDate(comment.createdAt)}
+                                </CommentDate>
+                              </CommentInfo>
+                            </CommentContainer>
+                          ))}
+                        </tbody>
+                      </CommentsListContainer>
+                      <CommentInputContainer>
+                        <CommentInput
+                          placeholder="Your comment is your face bro :)"
+                          value={this.state.commentBody}
+                          onChange={e =>
+                            this.setState({ commentBody: e.target.value })
+                          }
+                        />
+                        <AddCommentQuery
+                          mutation={ADD_COMMENT}
+                          onCompleted={data => this.addCommentConfirm(data)}
                         >
-                          {SendClap => (
-                            <ClapImageContainer>
-                              <ClapImage
-                                onClick={(e: any) => {
+                          {(AddComment, { error }) => {
+                            // if (loading) return "Loading...";
+                            if (error) return <div>{error.message}</div>;
+                            return (
+                              <CommentButton
+                                onClick={e => {
                                   e.preventDefault();
-                                  SendClap({
+                                  this.setState({ commentBody: "" });
+                                  AddComment({
                                     refetchQueries: [
                                       {
                                         query: POST,
@@ -608,234 +816,25 @@ class PostDetail extends React.Component<IProps, IState> {
                                         }
                                       }
                                     ],
-                                    variables: { postId: post.id }
-                                  });
-                                }}
-                                isClapped={isClapped}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  viewBox="0 0 24 24"
-                                  fill="red"
-                                >
-                                  <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" />
-                                </svg>
-                              </ClapImage>
-                              <ClapCount>1</ClapCount>
-                            </ClapImageContainer>
-                          )}
-                        </Mutation>
-                      </ClapContainer>
-                      {isMine ? (
-                        <ButtonsContainer>
-                          <Link
-                            to={`/post/edit/${post.id}`}
-                            style={{ textDecoration: "none" }}
-                          >
-                            <PostButton>Edit</PostButton>
-                          </Link>
-                          <DeletePostQuery
-                            mutation={DELETE_POST}
-                            onCompleted={data => this.deletePostConfirm(data)}
-                          >
-                            {(DeletePost, { data }) => (
-                              <PostButton
-                                onClick={e => {
-                                  e.preventDefault();
-                                  DeletePost({
-                                    refetchQueries: [
-                                      {
-                                        query: POSTS
-                                      }
-                                    ]
-                                  });
-                                }}
-                              >
-                                Delete
-                              </PostButton>
-                            )}
-                          </DeletePostQuery>
-                        </ButtonsContainer>
-                      ) : null}
-                    </BodyContainer>
-
-                    <CommentsListContainer>
-                      <tbody>
-                        {post.comments!.map((comment: any, index: number) => (
-                          <CommentContainer key={index}>
-                            <CommentBodyContainer level={comment!.level}>
-                              <CommentUserTable>
-                                <CommentUser hasIcon={comment!.level > 1}>
-                                  {comment!.level > 1 ? (
-                                    <ReCommentIcon className="fas fa-reply" />
-                                  ) : null}
-                                  <UserProfilePhoto
-                                    url={comment.user.profilePhoto}
-                                  />
-                                  {comment.user.nickName}
-                                </CommentUser>
-                              </CommentUserTable>
-                              <CommentBody>{comment.body}</CommentBody>
-                              <ReplyContainer
-                                onClick={() =>
-                                  this.setState({
-                                    parentCommentId: comment.id
-                                  })
-                                }
-                              >
-                                <ReplyIcon className="fas fa-level-up-alt fa-rotate-90" />
-                                <ReplyText>Reply</ReplyText>
-                              </ReplyContainer>
-                              <EditCommentButton>
-                                <i className="far fa-edit" />
-                              </EditCommentButton>
-                              <DeleteCommentQuery
-                                mutation={DELETE_COMMENT}
-                                onCompleted={data =>
-                                  this.deleteCommentConfirm(data)
-                                }
-                              >
-                                {(DeleteComment, { error }) => {
-                                  if (error) return <div>{error.message}</div>;
-                                  return (
-                                    <DeleteCommentButton
-                                      onClick={() => {
-                                        DeleteComment({
-                                          refetchQueries: [
-                                            {
-                                              query: POST,
-                                              variables: {
-                                                postId: this.props.match.params
-                                                  .postId
-                                              }
-                                            }
-                                          ],
-                                          variables: {
-                                            commentId: comment.id
-                                          }
-                                        });
-                                      }}
-                                    >
-                                      <i className="fas fa-times" />
-                                    </DeleteCommentButton>
-                                  );
-                                }}
-                              </DeleteCommentQuery>
-                              {this.state.parentCommentId === comment.id ? (
-                                <AddCommentQuery
-                                  mutation={ADD_COMMENT}
-                                  onCompleted={data =>
-                                    this.addCommentConfirm(data)
-                                  }
-                                >
-                                  {(AddComment, { error }) => {
-                                    // if (loading) return "Loading...";
-                                    if (error)
-                                      return <div>{error.message}</div>;
-                                    return (
-                                      <RereplyContainer>
-                                        <RereplyInput
-                                          placeholder="Your comment is your face bro :)"
-                                          value={this.state.reCommentBody}
-                                          onChange={e =>
-                                            this.setState({
-                                              reCommentBody: e.target.value
-                                            })
-                                          }
-                                        />
-                                        <RereplyButton
-                                          onClick={e => {
-                                            e.preventDefault();
-                                            this.setState({
-                                              reCommentBody: "",
-                                              parentCommentId: null
-                                            });
-                                            AddComment({
-                                              refetchQueries: [
-                                                {
-                                                  query: POST,
-                                                  variables: {
-                                                    postId: this.props.match
-                                                      .params.postId
-                                                  }
-                                                }
-                                              ],
-                                              variables: {
-                                                postId: this.props.match.params
-                                                  .postId,
-                                                parentCommentId: comment.id,
-                                                body: this.state.reCommentBody,
-                                                level: comment.level + 1
-                                              }
-                                            });
-                                          }}
-                                        >
-                                          POST
-                                        </RereplyButton>
-                                      </RereplyContainer>
-                                    );
-                                  }}
-                                </AddCommentQuery>
-                              ) : null}
-                            </CommentBodyContainer>
-                            <CommentInfo>
-                              <CommentDate>
-                                {formatDate(comment.createdAt)}
-                              </CommentDate>
-                            </CommentInfo>
-                          </CommentContainer>
-                        ))}
-                      </tbody>
-                    </CommentsListContainer>
-                    <CommentInputContainer>
-                      <CommentInput
-                        placeholder="Your comment is your face bro :)"
-                        value={this.state.commentBody}
-                        onChange={e =>
-                          this.setState({ commentBody: e.target.value })
-                        }
-                      />
-                      <AddCommentQuery
-                        mutation={ADD_COMMENT}
-                        onCompleted={data => this.addCommentConfirm(data)}
-                      >
-                        {(AddComment, { error }) => {
-                          // if (loading) return "Loading...";
-                          if (error) return <div>{error.message}</div>;
-                          return (
-                            <CommentButton
-                              onClick={e => {
-                                e.preventDefault();
-                                this.setState({ commentBody: "" });
-                                AddComment({
-                                  refetchQueries: [
-                                    {
-                                      query: POST,
-                                      variables: {
-                                        postId: this.props.match.params.postId
-                                      }
+                                    variables: {
+                                      postId: this.props.match.params.postId,
+                                      parentCommentId: null,
+                                      body: this.state.commentBody,
+                                      level: 1
                                     }
-                                  ],
-                                  variables: {
-                                    postId: this.props.match.params.postId,
-                                    parentCommentId: null,
-                                    body: this.state.commentBody,
-                                    level: 1
-                                  }
-                                });
-                              }}
-                            >
-                              POST
-                            </CommentButton>
-                          );
-                        }}
-                      </AddCommentQuery>
-                    </CommentInputContainer>
-                  </PostContainer>
-                </DetailContainer>
-              </React.Fragment>
+                                  });
+                                }}
+                              >
+                                POST
+                              </CommentButton>
+                            );
+                          }}
+                        </AddCommentQuery>
+                      </CommentInputContainer>
+                    </PostContainer>
+                  </DetailContainer>
+                </React.Fragment>
+              )
             );
           }}
         </PostQuery>

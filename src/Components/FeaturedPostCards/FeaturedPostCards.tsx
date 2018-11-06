@@ -284,17 +284,9 @@ class FeaturedPostCards extends React.Component<IProps, IState> {
                             pos={post.titleImgPos}
                           >
                             <CategoryContainer>
-                              {post.category.parent![0] !== undefined ? (
-                                <CategoryTag
-                                  size={"SMALL"}
-                                  id={post.category.parent![0]!.id}
-                                  name={post.category.parent![0]!.name}
-                                />
-                              ) : null}
                               <CategoryTag
-                                size={"SMALL"}
-                                id={post.category.id}
-                                name={post.category.name}
+                                category={post.category}
+                                display={"both"}
                               />
                             </CategoryContainer>
                             <CardTextContainer>

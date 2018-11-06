@@ -278,17 +278,9 @@ class FeaturedImageCards extends React.Component<IProps, IState> {
                             alt={image.category.name}
                           >
                             <CategoryContainer>
-                              {image.category.parent![0] !== undefined ? (
-                                <CategoryTag
-                                  size={"SMALL"}
-                                  id={image.category.parent![0]!.id}
-                                  name={image.category.parent![0]!.name}
-                                />
-                              ) : null}
                               <CategoryTag
-                                size={"SMALL"}
-                                id={image.category.id}
-                                name={image.category.name}
+                                category={image.category}
+                                display={"text"}
                               />
                             </CategoryContainer>
                             <CardTextContainer>

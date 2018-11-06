@@ -7,7 +7,7 @@ const SlideContainer = styled.div`
   height: 500px;
   position: relative;
   z-index: 0;
-  top: 0px;
+  top: 50px;
   overflow: hidden;
   margin-bottom: 20px;
   padding-bottom: 40%;
@@ -30,7 +30,11 @@ const SlideImage = styled<ISlideImageProps, any>("div")`
   /* filter: brightness(50%); */
   background-size: 100% auto;
   background-position: 50% 0%;
-  background-image: linear-gradient(rgba(20, 20, 20, 0.3), rgba(20, 20, 20, 1)),
+  background-image: linear-gradient(
+      rgb(240, 242, 245),
+      transparent,
+      rgb(240, 242, 245)
+    ),
     url(${props => `${props.url}`});
   transition: opacity 1s ease;
   opacity: ${props => (props.isSelect ? "1" : "0")};

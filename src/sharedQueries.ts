@@ -11,6 +11,11 @@ export const POST = gql`
         titleImg
         titleImgPos
         body
+        user {
+          id
+          nickName
+          profilePhoto
+        }
         category {
           id
           name
@@ -20,17 +25,11 @@ export const POST = gql`
           }
           topWikiImage {
             id
-            name
             shownImage
             hoverImage
           }
         }
         view
-        user {
-          id
-          nickName
-          profilePhoto
-        }
         clapsCount
         commentsCount
         comments {
@@ -175,10 +174,72 @@ export const POSTS = gql`
         category {
           id
           name
-          parent {
+          topWikiImage {
             id
-            name
+            shownImage
+            hoverImage
           }
+        }
+        commentsCount
+        clapsCount
+        view
+        createdAt
+      }
+    }
+  }
+`;
+
+export const CLAPPEDPOSTS = gql`
+  query getClappedPosts {
+    GetClappedPosts {
+      ok
+      error
+      posts {
+        id
+        title
+        titleImg
+        titleImgPos
+        user {
+          id
+          nickName
+          profilePhoto
+        }
+        category {
+          id
+          name
+          topWikiImage {
+            id
+            shownImage
+            hoverImage
+          }
+        }
+        commentsCount
+        clapsCount
+        view
+        createdAt
+      }
+    }
+  }
+`;
+
+export const RISINGPOSTS = gql`
+  query getRisingPosts {
+    GetRisingPosts {
+      ok
+      error
+      posts {
+        id
+        title
+        titleImg
+        titleImgPos
+        user {
+          id
+          nickName
+          profilePhoto
+        }
+        category {
+          id
+          name
           topWikiImage {
             id
             shownImage
@@ -312,10 +373,18 @@ export const CATEGORY = gql`
         parent {
           id
           name
+          topWikiImage {
+            id
+            shownImage
+          }
         }
         children {
           id
           name
+          topWikiImage {
+            id
+            shownImage
+          }
         }
       }
     }

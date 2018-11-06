@@ -5,6 +5,13 @@
 // GraphQL query operation: getPostById
 // ====================================================
 
+export interface getPostById_GetPostById_post_user {
+  __typename: "User";
+  id: number;
+  nickName: string;
+  profilePhoto: string | null;
+}
+
 export interface getPostById_GetPostById_post_category_parent {
   __typename: "Category";
   id: number;
@@ -14,7 +21,6 @@ export interface getPostById_GetPostById_post_category_parent {
 export interface getPostById_GetPostById_post_category_topWikiImage {
   __typename: "WikiImage";
   id: number;
-  name: string | null;
   shownImage: string;
   hoverImage: string;
 }
@@ -25,13 +31,6 @@ export interface getPostById_GetPostById_post_category {
   name: string;
   parent: (getPostById_GetPostById_post_category_parent | null)[] | null;
   topWikiImage: getPostById_GetPostById_post_category_topWikiImage | null;
-}
-
-export interface getPostById_GetPostById_post_user {
-  __typename: "User";
-  id: number;
-  nickName: string;
-  profilePhoto: string | null;
 }
 
 export interface getPostById_GetPostById_post_comments_user {
@@ -89,9 +88,9 @@ export interface getPostById_GetPostById_post {
   titleImg: string | null;
   titleImgPos: number | null;
   body: string | null;
+  user: getPostById_GetPostById_post_user;
   category: getPostById_GetPostById_post_category | null;
   view: number;
-  user: getPostById_GetPostById_post_user;
   clapsCount: number | null;
   commentsCount: number | null;
   comments: (getPostById_GetPostById_post_comments | null)[] | null;
@@ -260,12 +259,6 @@ export interface getAllPosts_GetAllPosts_posts_user {
   profilePhoto: string | null;
 }
 
-export interface getAllPosts_GetAllPosts_posts_category_parent {
-  __typename: "Category";
-  id: number;
-  name: string;
-}
-
 export interface getAllPosts_GetAllPosts_posts_category_topWikiImage {
   __typename: "WikiImage";
   id: number;
@@ -277,7 +270,6 @@ export interface getAllPosts_GetAllPosts_posts_category {
   __typename: "Category";
   id: number;
   name: string;
-  parent: (getAllPosts_GetAllPosts_posts_category_parent | null)[] | null;
   topWikiImage: getAllPosts_GetAllPosts_posts_category_topWikiImage | null;
 }
 
@@ -309,6 +301,112 @@ export interface getAllPosts {
 export interface getAllPostsVariables {
   limit: number;
   type: string;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getClappedPosts
+// ====================================================
+
+export interface getClappedPosts_GetClappedPosts_posts_user {
+  __typename: "User";
+  id: number;
+  nickName: string;
+  profilePhoto: string | null;
+}
+
+export interface getClappedPosts_GetClappedPosts_posts_category_topWikiImage {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: string;
+  hoverImage: string;
+}
+
+export interface getClappedPosts_GetClappedPosts_posts_category {
+  __typename: "Category";
+  id: number;
+  name: string;
+  topWikiImage: getClappedPosts_GetClappedPosts_posts_category_topWikiImage | null;
+}
+
+export interface getClappedPosts_GetClappedPosts_posts {
+  __typename: "Post";
+  id: number;
+  title: string;
+  titleImg: string | null;
+  titleImgPos: number | null;
+  user: getClappedPosts_GetClappedPosts_posts_user;
+  category: getClappedPosts_GetClappedPosts_posts_category | null;
+  commentsCount: number | null;
+  clapsCount: number | null;
+  view: number;
+  createdAt: string;
+}
+
+export interface getClappedPosts_GetClappedPosts {
+  __typename: "GetClappedPostsResponse";
+  ok: boolean;
+  error: string | null;
+  posts: (getClappedPosts_GetClappedPosts_posts | null)[] | null;
+}
+
+export interface getClappedPosts {
+  GetClappedPosts: getClappedPosts_GetClappedPosts;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getRisingPosts
+// ====================================================
+
+export interface getRisingPosts_GetRisingPosts_posts_user {
+  __typename: "User";
+  id: number;
+  nickName: string;
+  profilePhoto: string | null;
+}
+
+export interface getRisingPosts_GetRisingPosts_posts_category_topWikiImage {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: string;
+  hoverImage: string;
+}
+
+export interface getRisingPosts_GetRisingPosts_posts_category {
+  __typename: "Category";
+  id: number;
+  name: string;
+  topWikiImage: getRisingPosts_GetRisingPosts_posts_category_topWikiImage | null;
+}
+
+export interface getRisingPosts_GetRisingPosts_posts {
+  __typename: "Post";
+  id: number;
+  title: string;
+  titleImg: string | null;
+  titleImgPos: number | null;
+  user: getRisingPosts_GetRisingPosts_posts_user;
+  category: getRisingPosts_GetRisingPosts_posts_category | null;
+  commentsCount: number | null;
+  clapsCount: number | null;
+  view: number;
+  createdAt: string;
+}
+
+export interface getRisingPosts_GetRisingPosts {
+  __typename: "GetRisingPostsResponse";
+  ok: boolean;
+  error: string | null;
+  posts: (getRisingPosts_GetRisingPosts_posts | null)[] | null;
+}
+
+export interface getRisingPosts {
+  GetRisingPosts: getRisingPosts_GetRisingPosts;
 }
 
 /* tslint:disable */
@@ -508,16 +606,30 @@ export interface getCategoryById_GetCategoryById_category_wikiImages {
   hoverImage: string;
 }
 
+export interface getCategoryById_GetCategoryById_category_parent_topWikiImage {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: string;
+}
+
 export interface getCategoryById_GetCategoryById_category_parent {
   __typename: "Category";
   id: number;
   name: string;
+  topWikiImage: getCategoryById_GetCategoryById_category_parent_topWikiImage | null;
+}
+
+export interface getCategoryById_GetCategoryById_category_children_topWikiImage {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: string;
 }
 
 export interface getCategoryById_GetCategoryById_category_children {
   __typename: "Category";
   id: number;
   name: string;
+  topWikiImage: getCategoryById_GetCategoryById_category_children_topWikiImage | null;
 }
 
 export interface getCategoryById_GetCategoryById_category {

@@ -18,7 +18,7 @@ ${reset};
     background-color: ${color.bgColor};
     /* font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Releway"; */
     font-size: ${fontSize.normalFontSize};
-    color: white;
+    color: ${color.fontColor};
   }
   a{ 
       color:inherit;
@@ -65,7 +65,18 @@ ${reset};
 .blockActive {
   border: 1px solid ${EditorDefaults.BORDER_SELECT_COLOR};
 }
+.ant-table-tbody>tr>td, .ant-table-thead>tr>th {
 
+  vertical-align: middle;
+}
+
+.ant-table-small>.ant-table-content>.ant-table-body {
+  margin: 0;
+}
+
+.ant-table-small.ant-table-bordered{
+  background-color: white;
+}
 
 .ql-stroke {
   stroke: #777;

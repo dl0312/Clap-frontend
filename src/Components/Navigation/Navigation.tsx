@@ -26,13 +26,13 @@ const NavContainer = styled.div`
 const Header = styled.header`
   display: flex;
   justify-content: center;
-  color: white;
+
   position: fixed;
   right: 0px;
   left: 0px;
   z-index: 3;
   /* background-color: rgba(5, 5, 5, 0.94); */
-  transition: background-color 0.1s ease;
+  transition: 0.1s ease;
 `;
 
 interface IMenuListProps {
@@ -44,9 +44,10 @@ const MenuList = styled<IMenuListProps, any>("ul")`
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
+  color: ${props => (props.darken ? "white" : null)};
   background-color: ${props =>
     props.darken ? "rgba(20, 20, 20, 0.94)" : "transparent"};
-  transition: background-color 0.3s ease, box-shadow 0.5s ease;
+  transition: 0.1s ease;
   box-shadow: ${props =>
     props.darken ? "0px 0.5px 2px rgba(0, 0, 0, 0.3)" : null};
   padding: 0 50px;
@@ -57,7 +58,7 @@ const MenuList = styled<IMenuListProps, any>("ul")`
 const MenuItem = styled.div`
   text-align: center;
   padding: 10px 30px;
-  color: white;
+
   text-decoration: none;
   font-family: "Raleway";
   font-weight: 100;
@@ -75,9 +76,10 @@ const ProfileContainer = styled<IProfileContainerProps, any>("div")`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  color: ${props => (props.darken ? "white" : null)};
   background-color: ${props =>
     props.darken ? "rgba(10, 10, 10, 0.94)" : "transparent"};
-  transition: background-color 0.3s ease;
+  transition: 0.1s ease;
   padding: 0 100px;
 `;
 
@@ -109,9 +111,10 @@ const PhoneMenuList = styled<IPhoneMenuListProps, any>("div")`
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  color: ${props => (props.darken ? "white" : null)};
   background-color: ${props =>
     props.darken ? "rgba(20, 20, 20, 0.94)" : "transparent"};
-  transition: background-color 0.3s ease, box-shadow 0.5s ease;
+  transition: 0.5s ease;
   box-shadow: ${props =>
     props.darken ? "0px 0.5px 2px rgba(0, 0, 0, 0.3)" : null};
 

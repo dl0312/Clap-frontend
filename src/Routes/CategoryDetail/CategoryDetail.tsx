@@ -222,13 +222,7 @@ class CategoryDetail extends React.Component<any, IState> {
                       <Subtitle>PARENT</Subtitle>
                       <ParentOrChildrenListContainer>
                         {category.parent.map((item: any, index: number) => (
-                          <CategoryTag
-                            key={index}
-                            size={"MEDIUM"}
-                            id={item.id}
-                            name={item.name}
-                            isMargin={true}
-                          />
+                          <CategoryTag category={item} display={"both"} />
                         ))}
                       </ParentOrChildrenListContainer>
                     </ParentOrChildrenContainer>
@@ -267,13 +261,7 @@ class CategoryDetail extends React.Component<any, IState> {
                       <Subtitle>CHILDREN</Subtitle>
                       <ParentOrChildrenListContainer>
                         {category.children.map((item: any, index: number) => (
-                          <CategoryTag
-                            key={index}
-                            size={"MEDIUM"}
-                            id={item.id}
-                            name={item.name}
-                            isMargin={true}
-                          />
+                          <CategoryTag category={item} display={"both"} />
                         ))}
                       </ParentOrChildrenListContainer>
                     </ParentOrChildrenContainer>

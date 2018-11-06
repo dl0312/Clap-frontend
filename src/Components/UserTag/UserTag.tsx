@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import onClickOutside from "react-onclickoutside";
-import { Avatar } from "antd";
+import { Avatar, List } from "antd";
 
 const UserTagContainer = styled.div`
   position: relative;
@@ -36,32 +36,14 @@ const UserName = styled<IUserNameProps, any>("div")`
   }};
 `;
 
-const UserTagOptionsConatiner = styled.div`
-  position: absolute;
-  z-index: 9999;
-  top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  flex-direction: column;
-  width: 70px;
-  height: 120px;
-  background-color: white;
-  width: 90px;
-  height: 90px;
-  background-color: white;
-  border-radius: 3px;
-  font-size: 8px;
-`;
-
-const UserTagOption = styled.div`
-  color: #000;
-`;
+// const data = [<span key={1}>Send Message</span>, <span key={1}>Profile</span>];
+const data = ["Send Message", "Profile"];
 
 interface IProps {
-  profilePhoto?: string | null;
+  profilePhoto: string | null;
   username: string;
-  size?: number | "large" | "small" | "default";
+  size: number | "large" | "small" | "default";
+  display: "text" | "photo" | "both" | null;
 }
 
 interface IState {
@@ -82,7 +64,7 @@ class UserTag extends React.Component<IProps, IState> {
   };
 
   public render() {
-    const { profilePhoto, username, size } = this.props;
+    const { profilePhoto, username, size, display } = this.props;
     const { isOpen } = this.state;
 
     return (
@@ -94,27 +76,39 @@ class UserTag extends React.Component<IProps, IState> {
             })
           }
         >
-          {profilePhoto !== null ? (
-            <Avatar
-              size={size !== undefined ? size : "default"}
-              src={profilePhoto}
-            />
-          ) : (
-            <Avatar size={size !== undefined ? size : "default"}>
-              {username}
-            </Avatar>
+          {profilePhoto !== null
+            ? (display === "photo" || display === "both") && (
+                <Avatar
+                  size={size !== undefined ? size : "default"}
+                  src={profilePhoto}
+                />
+              )
+            : (display === "photo" || display === "both") && (
+                <Avatar size={size !== undefined ? size : "default"}>
+                  {username}
+                </Avatar>
+              )}
+          {(display === "text" || display === "both") && (
+            <UserName size={size}>{username}</UserName>
           )}
-          <UserName size={size}>{username}</UserName>
         </UserContainer>
 
         {isOpen && (
-          <UserTagOptionsConatiner>
-            <UserTagOption>Send Message</UserTagOption>
-            <UserTagOption>Follow User</UserTagOption>
-            <UserTagOption>Block User</UserTagOption>
-            <UserTagOption>Profile</UserTagOption>
-            <UserTagOption>Written Guides</UserTagOption>
-          </UserTagOptionsConatiner>
+          <span
+            style={{
+              position: "absolute",
+              zIndex: 1,
+              width: "125px",
+              backgroundColor: "white"
+            }}
+          >
+            <List
+              size={"small"}
+              bordered={true}
+              dataSource={data}
+              renderItem={(item: any) => <List.Item>{item}</List.Item>}
+            />
+          </span>
         )}
       </UserTagContainer>
     );

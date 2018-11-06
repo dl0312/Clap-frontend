@@ -306,6 +306,7 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                                   <div style={{ marginBottom: "10px" }}>
                                     <UserTag
                                       size={"small"}
+                                      display={"both"}
                                       profilePhoto={wikiImage.user.profilePhoto}
                                       username={wikiImage.user.nickName}
                                     />
