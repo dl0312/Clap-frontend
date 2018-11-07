@@ -1,55 +1,54 @@
 import React from "react";
 import styled from "styled-components";
-import { CATEGORY, EDIT_CATEGORY } from "../../sharedQueries";
+import {
+  CATEGORY,
+  EDIT_CATEGORY,
+  CATEGORIES_KEYWORD
+} from "../../sharedQueries";
 import { Mutation, Query } from "react-apollo";
-import CategorySelection from "../../Components/CategorySelection";
 import { toast } from "react-toastify";
+import Helmet from "react-helmet";
+import { Form, Input, Select, Button } from "antd";
+import FormItem from "antd/lib/form/FormItem";
+import {
+  getCategoriesByKeyword,
+  getCategoriesByKeywordVariables,
+  editCategoryVariables,
+  editCategory,
+  getCategoryById,
+  getCategoryByIdVariables
+} from "src/types/api";
+import Loading from "src/Components/Loading";
+const Option = Select.Option;
 
-const FlexBox = styled.div`
+const CategoryAddContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 30px;
 `;
 
-const SearchInput = styled.input`
-  width: 200px;
-  margin-bottom: 30px;
-  padding: 0 10px;
-  height: 30px;
-  border: 1px solid #ced4da;
-  border-radius: 5px;
-  color: black;
-  &:focus {
-    outline: none;
-  }
-`;
-const CategoryAddContainer = FlexBox.extend`
-  width: 100%;
-`;
-
-const CategorySelectionsContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const SendIcon = styled.button`
-  color: black;
-  padding: 10px 25px;
-  margin-top: 15px;
-  font-size: 15px;
-  border: none;
-  background-color: white;
-  text-transform: uppercase;
-  cursor: pointer;
-`;
+class GetCategoryByIdQuery extends Query<
+  getCategoryById,
+  getCategoryByIdVariables
+> {}
+class EditCategoryQuery extends Mutation<editCategory, editCategoryVariables> {}
+class CategoriesByKeyword extends Query<
+  getCategoriesByKeyword,
+  getCategoriesByKeywordVariables
+> {}
 
 interface IState {
   name: string;
-  parentIds: number[];
+  parentId: number | null;
+  parent: any;
   childrenIds: number[];
+  children: any;
   shownImgUrl: string;
   hoverImgJson: string;
   onImage: boolean;
@@ -60,8 +59,10 @@ class CategoryEdit extends React.Component<any, IState> {
     super(props);
     this.state = {
       name: "",
-      parentIds: [],
+      parentId: null,
+      parent: null,
       childrenIds: [],
+      children: null,
       shownImgUrl: "",
       hoverImgJson: "",
       onImage: false
@@ -69,11 +70,11 @@ class CategoryEdit extends React.Component<any, IState> {
   }
 
   public addIdToState = (type: "parent" | "children", category: any) => {
-    const { parentIds, childrenIds } = this.state;
+    const { parentId, childrenIds } = this.state;
     if (type === "parent") {
-      const found = parentIds.includes(category.id);
+      const found = parentId === category.id;
       if (!found) {
-        this.setState({ parentIds: parentIds.concat(category.id) });
+        this.setState({ parentId });
       }
     } else if (type === "children") {
       const found = childrenIds.includes(category.id);
@@ -87,10 +88,7 @@ class CategoryEdit extends React.Component<any, IState> {
 
   deleteIdToState = (type: "parent" | "children", category: any) => {
     if (type === "parent") {
-      const { parentIds } = this.state;
-      const index = parentIds.findIndex(id => id === category.id);
-      parentIds.splice(index, 1);
-      this.setState({ parentIds });
+      this.setState({ parentId: null });
     } else if (type === "children") {
       const { childrenIds } = this.state;
       const index = childrenIds.findIndex(id => id === category.id);
@@ -110,94 +108,263 @@ class CategoryEdit extends React.Component<any, IState> {
   };
 
   public render() {
-    const { name, parentIds, childrenIds } = this.state;
+    const { name, parentId, childrenIds } = this.state;
+    console.log(this.state);
     return (
-      <CategoryAddContainer>
-        <Query
-          query={CATEGORY}
-          fetchPolicy={"cache-and-network"}
-          variables={{ categoryId: this.props.match.params.categoryId }}
-          onCompleted={data => {
-            const { category }: any = data.GetCategoryById;
-            this.setState({
-              name: category.name,
-              parentIds: category.parent.map((ele: any) => {
-                return ele.id;
-              }),
-              childrenIds: category.children.map((ele: any) => {
-                return ele.id;
-              })
-            });
-          }}
-        >
-          {({ loading, error, data }) => {
-            if (loading) {
-              return <div>Loading</div>;
-            }
-            if (error) {
-              return <div>{error.message}</div>;
-            }
-            return (
-              <React.Fragment>
-                <SearchInput
-                  type="text"
-                  value={name}
-                  onChange={e => {
-                    e.preventDefault();
-                    this.setState({ name: e.target.value });
-                  }}
-                />
-                <CategorySelectionsContainer>
-                  <CategorySelection
-                    addIdToState={this.addIdToState}
-                    deleteIdToState={this.deleteIdToState}
-                    selectedCategories={parentIds}
-                    type="parent"
-                    key="parent"
-                  />
-                  <CategorySelection
-                    addIdToState={this.addIdToState}
-                    deleteIdToState={this.deleteIdToState}
-                    selectedCategories={childrenIds}
-                    type="children"
-                    key="children"
-                  />
-                </CategorySelectionsContainer>
-                <Mutation
-                  mutation={EDIT_CATEGORY}
-                  onCompleted={data => this.confirm(data)}
-                >
-                  {(EditCategory, { data }) => (
-                    <SendIcon
-                      onClick={e => {
-                        e.preventDefault();
-                        EditCategory({
-                          refetchQueries: [
-                            {
-                              query: CATEGORY,
-                              variables: {
-                                categoryId: this.props.match.params.categoryId
-                              }
-                            }
-                          ],
-                          variables: {
-                            categoryId: this.props.match.params.categoryId,
-                            parentIds,
-                            childrenIds,
-                            name
-                          }
-                        });
-                      }}
+      <>
+        <Helmet>
+          <title>Edit Category | CLAP</title>
+        </Helmet>
+        <CategoryAddContainer>
+          <GetCategoryByIdQuery
+            query={CATEGORY}
+            fetchPolicy={"cache-and-network"}
+            variables={{ categoryId: this.props.match.params.categoryId }}
+            onCompleted={(data: any) => {
+              const { category }: any = data.GetCategoryById;
+              console.log(data);
+              this.setState({
+                name: category.name,
+                parentId: category.parent && category.parent.id,
+                childrenIds: category.children.map((ele: any) => {
+                  return ele.id;
+                })
+              });
+            }}
+          >
+            {({ loading, error, data }: any) => {
+              if (loading) {
+                return <div>Loading</div>;
+              }
+              if (error) {
+                return <div>{error.message}</div>;
+              }
+              const { category } = data.GetCategoryById;
+              return (
+                <React.Fragment>
+                  <Form layout={"vertical"} style={{ width: 400 }}>
+                    <FormItem label="Name">
+                      <Input
+                        value={name}
+                        onChange={e => this.setState({ name: e.target.value })}
+                        placeholder={"Category Name"}
+                      />
+                    </FormItem>
+                    <CategoriesByKeyword
+                      query={CATEGORIES_KEYWORD}
+                      variables={{ keyword: "" }}
                     >
-                      Send
-                    </SendIcon>
-                  )}
-                </Mutation>
-              </React.Fragment>
-            );
-          }}
-        </Query>
-      </CategoryAddContainer>
+                      {({ loading, error, data }) => {
+                        if (loading) {
+                          return <Loading color="#000" />;
+                        }
+                        if (error) {
+                          console.log("error");
+                          return <div>{error.message}</div>;
+                        }
+                        if (data === undefined || data === null) {
+                          console.log("undefined");
+                          return <div>undefined data</div>;
+                        }
+                        console.log(data);
+                        const categories =
+                          data.GetCategoriesByKeyword.categories;
+                        return (
+                          <>
+                            <FormItem label="Parent">
+                              <Select
+                                mode="default"
+                                showSearch={true}
+                                placeholder="Please select parent category"
+                                onChange={(value: string) =>
+                                  this.setState({
+                                    parentId: parseInt(value, 10),
+                                    parent
+                                  })
+                                }
+                                defaultValue={category.parent.name}
+                                optionFilterProp="children"
+                                filterOption={(input, option: any) => {
+                                  console.log(
+                                    option.props.children.props.children[1]
+                                      .props.children
+                                  );
+                                  return (
+                                    option.props.children.props.children[1].props.children
+                                      .toLowerCase()
+                                      .indexOf(input.toLowerCase()) >= 0
+                                  );
+                                }}
+                              >
+                                {categories &&
+                                  categories.map((category, index) => {
+                                    return (
+                                      category && (
+                                        <Option
+                                          value={JSON.stringify(category.id)}
+                                          key={JSON.stringify(category.id)}
+                                        >
+                                          <span
+                                            style={{
+                                              display: "flex",
+                                              justifyContent: "flex-start",
+                                              alignItems: "center",
+                                              verticalAlign: "top"
+                                            }}
+                                          >
+                                            {category.topWikiImage && (
+                                              <img
+                                                style={{
+                                                  height: "20px",
+                                                  borderRadius: 4
+                                                }}
+                                                src={
+                                                  category.topWikiImage
+                                                    .shownImage
+                                                }
+                                              />
+                                            )}
+                                            <span style={{ padding: "0 7px" }}>
+                                              {category.name}
+                                            </span>
+                                          </span>
+                                        </Option>
+                                      )
+                                    );
+                                  })}
+                              </Select>
+                            </FormItem>
+                            <FormItem label="Children">
+                              <Select
+                                mode="multiple"
+                                allowClear={true}
+                                showSearch={true}
+                                placeholder="Please select children categories"
+                                // onChange={(values: string[]) =>
+                                //   this.setState({
+                                //     childrenIds: values.map(value =>
+                                //       parseInt(value, 10)
+                                //     )
+                                //   })
+                                // }
+                                onSelect={(value: any, option) => {
+                                  console.log(value, option);
+                                  this.setState({
+                                    childrenIds: [
+                                      ...this.state.childrenIds,
+                                      parseInt(value, 10)
+                                    ]
+                                  });
+                                }}
+                                onDeselect={(value: any) => {
+                                  const index = childrenIds.findIndex(
+                                    id => id === parseInt(value, 10)
+                                  );
+                                  childrenIds.splice(index, 1);
+                                  this.setState({
+                                    childrenIds
+                                  });
+                                }}
+                                defaultValue={category.children.map(
+                                  (child: any) => {
+                                    return child.name;
+                                  }
+                                )}
+                                optionFilterProp="children"
+                                filterOption={(input, option: any) => {
+                                  console.log(
+                                    option.props.children.props.children[1]
+                                      .props.children
+                                  );
+                                  return (
+                                    option.props.children.props.children[1].props.children
+                                      .toLowerCase()
+                                      .indexOf(input.toLowerCase()) >= 0
+                                  );
+                                }}
+                              >
+                                {categories &&
+                                  categories.map((category, index) => {
+                                    return (
+                                      category && (
+                                        <Option
+                                          key={JSON.stringify(category.id)}
+                                        >
+                                          <span
+                                            style={{
+                                              display: "flex",
+                                              justifyContent: "flex-start",
+                                              alignItems: "center",
+                                              verticalAlign: "top"
+                                            }}
+                                          >
+                                            {category.topWikiImage && (
+                                              <img
+                                                style={{
+                                                  height: "20px",
+                                                  borderRadius: 4
+                                                }}
+                                                src={
+                                                  category.topWikiImage
+                                                    .shownImage
+                                                }
+                                              />
+                                            )}
+                                            <span style={{ padding: "0 7px" }}>
+                                              {category.name}
+                                            </span>
+                                          </span>
+                                        </Option>
+                                      )
+                                    );
+                                  })}
+                              </Select>
+                            </FormItem>
+                          </>
+                        );
+                      }}
+                    </CategoriesByKeyword>
+
+                    <EditCategoryQuery
+                      mutation={EDIT_CATEGORY}
+                      onCompleted={data => this.confirm(data)}
+                    >
+                      {(EditCategory, { data }) => (
+                        <Button
+                          type="primary"
+                          style={{ width: "100%" }}
+                          onClick={(e: any) => {
+                            e.preventDefault();
+                            EditCategory({
+                              refetchQueries: [
+                                {
+                                  query: CATEGORY,
+                                  variables: {
+                                    categoryId: this.props.match.params
+                                      .categoryId
+                                  }
+                                }
+                              ],
+                              variables: {
+                                categoryId: this.props.match.params.categoryId,
+                                parentId,
+                                childrenIds,
+                                name
+                              }
+                            });
+                          }}
+                        >
+                          Send
+                        </Button>
+                      )}
+                    </EditCategoryQuery>
+                  </Form>
+                </React.Fragment>
+              );
+            }}
+          </GetCategoryByIdQuery>
+        </CategoryAddContainer>
+      </>
     );
   }
 }

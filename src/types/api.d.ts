@@ -29,7 +29,7 @@ export interface getPostById_GetPostById_post_category {
   __typename: "Category";
   id: number;
   name: string;
-  parent: (getPostById_GetPostById_post_category_parent | null)[] | null;
+  parent: getPostById_GetPostById_post_category_parent | null;
   topWikiImage: getPostById_GetPostById_post_category_topWikiImage | null;
 }
 
@@ -214,7 +214,7 @@ export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category {
   __typename: "Category";
   id: number;
   name: string;
-  parent: (getPostsByCategoryId_GetPostsByCategoryId_posts_category_parent | null)[] | null;
+  parent: getPostsByCategoryId_GetPostsByCategoryId_posts_category_parent | null;
   wikiImages: (getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages | null)[] | null;
 }
 
@@ -433,7 +433,7 @@ export interface getWikiImages_GetWikiImages_wikiImages_category {
   __typename: "Category";
   id: number;
   name: string;
-  parent: (getWikiImages_GetWikiImages_wikiImages_category_parent | null)[] | null;
+  parent: getWikiImages_GetWikiImages_wikiImages_category_parent | null;
 }
 
 export interface getWikiImages_GetWikiImages_wikiImages {
@@ -539,6 +539,12 @@ export interface deleteCommentVariables {
 // GraphQL query operation: getCategoriesByKeyword
 // ====================================================
 
+export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_children {
+  __typename: "Category";
+  id: number;
+  name: string;
+}
+
 export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories_parent {
   __typename: "Category";
   id: number;
@@ -565,7 +571,8 @@ export interface getCategoriesByKeyword_GetCategoriesByKeyword_categories {
   __typename: "Category";
   id: number;
   name: string;
-  parent: (getCategoriesByKeyword_GetCategoriesByKeyword_categories_parent | null)[] | null;
+  children: (getCategoriesByKeyword_GetCategoriesByKeyword_categories_children | null)[] | null;
+  parent: getCategoriesByKeyword_GetCategoriesByKeyword_categories_parent | null;
   topWikiImage: getCategoriesByKeyword_GetCategoriesByKeyword_categories_topWikiImage | null;
   wikiImages: (getCategoriesByKeyword_GetCategoriesByKeyword_categories_wikiImages | null)[] | null;
 }
@@ -638,7 +645,7 @@ export interface getCategoryById_GetCategoryById_category {
   name: string;
   topWikiImage: getCategoryById_GetCategoryById_category_topWikiImage | null;
   wikiImages: (getCategoryById_GetCategoryById_category_wikiImages | null)[] | null;
-  parent: (getCategoryById_GetCategoryById_category_parent | null)[] | null;
+  parent: getCategoryById_GetCategoryById_category_parent | null;
   children: (getCategoryById_GetCategoryById_category_children | null)[] | null;
 }
 
@@ -740,7 +747,7 @@ export interface addCategory {
 
 export interface addCategoryVariables {
   name: string;
-  parentIds?: (number | null)[] | null;
+  parentId?: number | null;
   childrenIds?: (number | null)[] | null;
 }
 
@@ -763,7 +770,7 @@ export interface editCategory {
 
 export interface editCategoryVariables {
   categoryId: number;
-  parentIds?: (number | null)[] | null;
+  parentId?: number | null;
   childrenIds?: (number | null)[] | null;
   name: string;
 }

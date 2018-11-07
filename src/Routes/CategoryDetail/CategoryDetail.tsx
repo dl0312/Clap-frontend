@@ -221,9 +221,12 @@ class CategoryDetail extends React.Component<any, IState> {
                     <ParentOrChildrenContainer>
                       <Subtitle>PARENT</Subtitle>
                       <ParentOrChildrenListContainer>
-                        {category.parent.map((item: any, index: number) => (
-                          <CategoryTag category={item} display={"both"} />
-                        ))}
+                        {category.parent && (
+                          <CategoryTag
+                            category={category.parent}
+                            display={"both"}
+                          />
+                        )}
                       </ParentOrChildrenListContainer>
                     </ParentOrChildrenContainer>
                     <CurrentContainer>

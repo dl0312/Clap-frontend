@@ -18,6 +18,8 @@ import Loading from "../../Components/Loading";
 import { Table, Tabs, Button, Icon } from "antd";
 import CategoryTag from "src/Components/CategoryTag";
 import UserTag from "src/Components/UserTag";
+import Helmet from "react-helmet";
+const numeral = require("numeral");
 const TabPane = Tabs.TabPane;
 
 const BoardContainer = styled.div`
@@ -231,18 +233,32 @@ const columns = [
   {
     title: "Clap",
     dataIndex: "clap",
-    key: "clap"
+    key: "clap",
+    render: (clap: number) => (
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {numeral(clap).format("0 a")}
+      </div>
+    )
   },
   {
     title: "View",
     dataIndex: "view",
-    key: "view"
+    key: "view",
+    render: (view: number) => (
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {numeral(view).format("0 a")}
+      </div>
+    )
   },
   {
     title: "Date",
     dataIndex: "date",
     key: "date",
-    render: (date: Date) => <span>{new Date(date).toLocaleDateString()}</span>
+    render: (date: Date) => (
+      <span style={{ display: "flex", justifyContent: "center" }}>
+        {new Date(date).toLocaleDateString()}
+      </span>
+    )
   }
 ];
 
@@ -328,6 +344,9 @@ class Board extends React.Component<IProps, IState> {
     return (
       <>
         <BoardContainer>
+          <Helmet>
+            <title>GUIDE | CLAP</title>
+          </Helmet>
           <Tabs
             defaultActiveKey="1"
             tabPosition={"left"}

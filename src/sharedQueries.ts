@@ -331,6 +331,10 @@ export const CATEGORIES_KEYWORD = gql`
       categories {
         id
         name
+        children {
+          id
+          name
+        }
         parent {
           id
           name
@@ -422,8 +426,8 @@ export const CATEGORIES_IDS = gql`
 `;
 
 export const ADD_CATEGORY = gql`
-  mutation addCategory($name: String!, $parentIds: [Int], $childrenIds: [Int]) {
-    AddCategory(name: $name, parentIds: $parentIds, childrenIds: $childrenIds) {
+  mutation addCategory($name: String!, $parentId: Int, $childrenIds: [Int]) {
+    AddCategory(name: $name, parentId: $parentId, childrenIds: $childrenIds) {
       ok
       error
       categoryId
@@ -434,13 +438,13 @@ export const ADD_CATEGORY = gql`
 export const EDIT_CATEGORY = gql`
   mutation editCategory(
     $categoryId: Int!
-    $parentIds: [Int]
+    $parentId: Int
     $childrenIds: [Int]
     $name: String!
   ) {
     EditCategory(
       categoryId: $categoryId
-      parentIds: $parentIds
+      parentId: $parentId
       childrenIds: $childrenIds
       name: $name
     ) {

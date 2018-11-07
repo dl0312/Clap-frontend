@@ -14,7 +14,7 @@ export const fontSize = {
   largeFontSize: "15px"
 };
 
-export const color = { bgColor: "#f0f2f5", fontColor: "rgba(0,0,0,.65)" };
+export const color = { bgColor: "#f0f2f5", fontColor: "#111" };
 
 // iterate through the sizes and create a media template
 export const media = Object.keys(sizes).reduce((accumulator, label): any => {

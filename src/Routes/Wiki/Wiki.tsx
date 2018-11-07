@@ -8,6 +8,7 @@ import { GetPos } from "../../Utility/GetPos";
 import { CATEGORIES_KEYWORD } from "../../sharedQueries";
 import { media } from "../../config/_mixin";
 import Loading from "src/Components/Loading";
+import { Button } from "antd";
 
 const FlexBox = styled.div`
   display: flex;
@@ -58,18 +59,6 @@ const Buttons = styled.div`
   align-items: center;
   justify-content: center;
   color: black;
-`;
-
-const Button = styled.div`
-  text-transform: uppercase;
-  padding: 10px 25px;
-  margin: 15px 10px;
-  font-weight: bolder;
-  background-color: white;
-  /* transition: box-shadow 0.5s ease;
-  &:hover {
-    box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.5);
-  } */
 `;
 
 const CategoryContainer = styled.div`
@@ -233,7 +222,7 @@ class Wiki extends React.Component<any, IState> {
         <WikiContainer>
           <Buttons>
             <Link to={`/category/add`} style={{ textDecoration: "none" }}>
-              <Button>add category</Button>
+              <Button style={{ marginBottom: 10 }}>ADD CATEGORY</Button>
             </Link>
           </Buttons>
           <SearchInput
@@ -249,7 +238,7 @@ class Wiki extends React.Component<any, IState> {
             variables={{ keyword: this.state.keyword }}
           >
             {({ loading, data, error }) => {
-              if (loading) return <Loading color="#FFF" />;
+              if (loading) return <Loading color="black" />;
               if (error) return `${error.message}`;
               return (
                 <React.Fragment>

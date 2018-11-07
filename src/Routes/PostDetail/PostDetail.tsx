@@ -8,8 +8,7 @@ import {
   DELETE_POST,
   ADD_COMMENT,
   SEND_CLAP,
-  DELETE_COMMENT,
-  POSTS
+  DELETE_COMMENT
 } from "../../sharedQueries";
 import UserView from "../../Components/UserView";
 import {
@@ -29,6 +28,8 @@ import { formatDate } from "../../Utility/FormatDate";
 import { LOST_IMAGE_URL } from "../../constants";
 import Loading from "src/Components/Loading";
 import CategoryTag from "src/Components/CategoryTag";
+import { Button, BackTop, Popconfirm, message } from "antd";
+import UserTag from "src/Components/UserTag";
 
 const DetailContainer = styled.div`
   width: 100%;
@@ -112,22 +113,6 @@ const CountIcon = styled.i`
   text-shadow: 0 3px 5px rgba(0, 0, 0, 1);
 `;
 
-interface IUserImgProps {
-  url: string;
-}
-
-const UserImg = styled<IUserImgProps, any>("div")`
-  width: 25px;
-  height: 25px;
-  overflow: hidden;
-  border-radius: 100%;
-  background-image: url(${props => `${props.url}`});
-  background-size: auto 100%;
-  background-position: 50% 50%;
-
-  margin-left: 5px;
-`;
-
 const UserContainer = styled.span`
   margin-top: 10px;
   display: flex;
@@ -135,23 +120,19 @@ const UserContainer = styled.span`
   justify-content: flex-start;
 `;
 
-const UserNickName = styled.div`
-  margin-left: 5px;
-  text-shadow: 0 3px 5px rgba(0, 0, 0, 1);
-`;
-
 const BodyContainer = styled.div`
   padding: 10px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  background-color: #222;
+  background-color: white;
 `;
 
 const CommentsListContainer = styled.table`
   width: 100%;
   border-top: 4px solid white;
-  border-bottom: 0.5px solid white;
+  border-bottom: 4px solid white;
   margin: 10px 0;
   background-color: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 `;
 
 const CommentUserTable = styled.div`
@@ -162,27 +143,7 @@ const CommentUserTable = styled.div`
   vertical-align: inherit;
 `;
 
-interface IUserProfilePhotoProps {
-  url: string;
-}
-
-const UserProfilePhoto = styled<IUserProfilePhotoProps, any>("div")`
-  width: 15px;
-  height: 15px;
-  overflow: hidden;
-  position: relative;
-  transition: filter 0.5s ease;
-  margin-right: 5px;
-  background-image: url(${props => `${props.url}`});
-  background-size: auto 100%;
-  background-position: 50% 50%;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
-`;
-
-const UserViewContainer = styled.div`
-  border: 2px solid #444;
-  outline: 0.5px solid rgba(255, 255, 255, 0.5);
-`;
+const UserViewContainer = styled.div``;
 
 interface ICommentUserProps {
   hasIcon: boolean;
@@ -282,13 +243,11 @@ const CommentInfo = styled.td`
   position: relative;
   padding: 0 15px;
   display: table-cell;
-  vertical-align: inherit;
-  background-color: #222;
-  border-left: 0.5px solid gray;
+  vertical-align: middle;
+  border-left: 0.5px solid rgba(0, 0, 0, 0.2);
 `;
 
 const CommentDate = styled.div`
-  margin-top: 10px;
   width: 80px;
   text-align: center;
   position: relative;
@@ -300,10 +259,9 @@ const CommentContainer = styled.tr`
   width: 100%;
   align-items: center;
   min-height: 60px;
-  border-bottom: 0.5px solid gray;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
   display: table-row;
   vertical-align: inherit;
-  background-color: #333;
 `;
 
 const CommentInputContainer = styled.div`
@@ -375,17 +333,6 @@ const ButtonsContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: flex-end;
-`;
-
-const PostButton = styled.div`
-  padding: 5px 10px;
-  margin: 5px;
-  width: 60px;
-  text-align: center;
-  text-transform: uppercase;
-  cursor: pointer;
-  background-color: white;
-  color: black;
 `;
 
 // const ClapButton = styled.div`
@@ -512,7 +459,7 @@ class PostDetail extends React.Component<IProps, IState> {
         >
           {({ loading, data, error }) => {
             if (loading) {
-              return <Loading />;
+              return <Loading color={"black"} />;
             }
             if (error) {
               return <div>{error.message}</div>;
@@ -538,6 +485,7 @@ class PostDetail extends React.Component<IProps, IState> {
                   <Helmet>
                     <title>{`${post.title} | CLAP`}</title>
                   </Helmet>
+                  <BackTop />
                   <DetailContainer>
                     <PostContainer>
                       <TitleContainer
@@ -573,10 +521,12 @@ class PostDetail extends React.Component<IProps, IState> {
                             </CountItem>
                           </CountContainer>
                           <UserContainer>
-                            <UserImg url={post.user.profilePhoto!} />
-                            <UserNickName>{`${
-                              post.user.nickName
-                            }`}</UserNickName>
+                            <UserTag
+                              size={"small"}
+                              display={"both"}
+                              profilePhoto={post.user.profilePhoto}
+                              username={post.user.nickName}
+                            />
                           </UserContainer>
                         </TitleInnerContainer>
                       </TitleContainer>
@@ -630,27 +580,34 @@ class PostDetail extends React.Component<IProps, IState> {
                               to={`/post/edit/${post.id}`}
                               style={{ textDecoration: "none" }}
                             >
-                              <PostButton>Edit</PostButton>
+                              <Button
+                                type="primary"
+                                style={{ marginRight: "10px" }}
+                              >
+                                Edit
+                              </Button>
                             </Link>
                             <DeletePostQuery
                               mutation={DELETE_POST}
                               onCompleted={data => this.deletePostConfirm(data)}
                             >
                               {(DeletePost, { data }) => (
-                                <PostButton
-                                  onClick={e => {
+                                <Popconfirm
+                                  title="Are you sure delete this task?"
+                                  onConfirm={(e: any) => {
                                     e.preventDefault();
                                     DeletePost({
-                                      refetchQueries: [
-                                        {
-                                          query: POSTS
-                                        }
-                                      ]
+                                      variables: {
+                                        postId: post.id
+                                      }
                                     });
                                   }}
+                                  onCancel={() => message.error("Click on No")}
+                                  okText="Yes"
+                                  cancelText="No"
                                 >
-                                  Delete
-                                </PostButton>
+                                  <Button type="danger">Delete</Button>
+                                </Popconfirm>
                               )}
                             </DeletePostQuery>
                           </ButtonsContainer>
@@ -667,10 +624,12 @@ class PostDetail extends React.Component<IProps, IState> {
                                     {comment!.level > 1 ? (
                                       <ReCommentIcon className="fas fa-reply" />
                                     ) : null}
-                                    <UserProfilePhoto
-                                      url={comment.user.profilePhoto}
+                                    <UserTag
+                                      size={"small"}
+                                      display={"both"}
+                                      profilePhoto={comment.user.profilePhoto}
+                                      username={comment.user.nickName}
                                     />
-                                    {comment.user.nickName}
                                   </CommentUser>
                                 </CommentUserTable>
                                 <CommentBody>{comment.body}</CommentBody>

@@ -14,7 +14,8 @@ import {
   Select,
   Checkbox,
   Button,
-  DatePicker
+  DatePicker,
+  Modal
 } from "antd";
 
 const FormItem = Form.Item;
@@ -65,6 +66,7 @@ interface IState {
   confirmDirty: boolean;
   autoCompleteResult: any[];
   isVerified: boolean;
+  agreementVisible: boolean;
 }
 
 class SignUpQuery extends Mutation<emailSignUp, emailSignUpVariables> {}
@@ -89,7 +91,8 @@ class Register extends React.Component<IProps, IState> {
       birthday: "",
       confirmDirty: false,
       autoCompleteResult: [],
-      isVerified: false
+      isVerified: false,
+      agreementVisible: false
     };
   }
 
@@ -367,7 +370,78 @@ class Register extends React.Component<IProps, IState> {
                       ]
                     })(
                       <Checkbox>
-                        I have read the <a href="">agreement</a>
+                        I have read the{" "}
+                        <a
+                          onClick={() =>
+                            this.setState({ agreementVisible: true })
+                          }
+                        >
+                          agreement
+                        </a>
+                        <Modal
+                          title="Agreement"
+                          visible={this.state.agreementVisible}
+                          onOk={e =>
+                            this.setState({
+                              agreementVisible: false
+                            })
+                          }
+                          onCancel={e =>
+                            this.setState({
+                              agreementVisible: false
+                            })
+                          }
+                        >
+                          <p>
+                            Is this the real life? Is this just fantasy? Caught
+                            in a landslide, no escape from reality Open your
+                            eyes, look up to the skies and see I'm just a poor
+                            boy, I need no sympathy Because I'm easy come, easy
+                            go, little high, little low Any way the wind blows
+                            doesn't really matter to me, to me
+                          </p>
+                          <p>
+                            Mama, just killed a man Put a gun against his head
+                            Pulled my trigger, now he's dead Mama, life had just
+                            begun But now I've gone and thrown it all away Mama,
+                            ooh, didn't mean to make you cry If I'm not back
+                            again this time tomorrow Carry on, carry on as if
+                            nothing really matters Too late, my time has come
+                            Sends shivers down my spine, body's aching all the
+                            time Goodbye, everybody, I've got to go Gotta leave
+                            you all behind and face the truth Mama, ooh, I don't
+                            want to die I sometimes wish I'd never been born at
+                            all
+                          </p>
+                          <p>
+                            I see a little silhouetto of a man Scaramouche,
+                            Scaramouche, will you do the Fandango Thunderbolt
+                            and lightning, very, very fright'ning me (Galileo)
+                            Galileo, (Galileo) Galileo, Galileo figaro magnifico
+                            (I'm just a poor boy, nobody loves me) He's just a
+                            poor boy from a poor family Spare him his life from
+                            this monstrosity Easy come, easy go, will you let me
+                            go? Bismillah! No, we will not let you go (Let him
+                            go) Bismillah! We will not let you go (Let him go)
+                            Bismillah! We will not let you go (Let me go) Will
+                            not let you go (Let me go) Will not let you go (Let
+                            me go) Ah, no, no, no, no, no, no, no (Oh mamma mia,
+                            mamma mia) Mama mia, let me go Beelzebub has a devil
+                            put aside for me, for me, for me
+                          </p>
+                          <p>
+                            So you think you can stone me and spit in my eye? So
+                            you think you can love me and leave me to die? Oh,
+                            baby, can't do this to me, baby! Just gotta get out,
+                            just gotta get right outta here!
+                          </p>
+                          <p>
+                            Nothing really matters, anyone can see Nothing
+                            really matters Nothing really matters to me Any way
+                            the wind blows
+                          </p>
+                          <p>lyrics: Freddie Mercury</p>
+                        </Modal>
                       </Checkbox>
                     )}
                   </FormItem>

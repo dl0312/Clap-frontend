@@ -4,7 +4,7 @@ import { media } from "../../config/_mixin";
 
 const SlideContainer = styled.div`
   width: 100%;
-  height: 500px;
+  height: 700px;
   position: relative;
   z-index: 0;
   top: 50px;
@@ -29,7 +29,7 @@ const SlideImage = styled<ISlideImageProps, any>("div")`
   top: 0px;
   /* filter: brightness(50%); */
   background-size: 100% auto;
-  background-position: 50% 0%;
+  background-position: 50% 25%;
   background-image: linear-gradient(
       rgb(240, 242, 245),
       transparent,

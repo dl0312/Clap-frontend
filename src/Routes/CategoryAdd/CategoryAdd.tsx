@@ -1,56 +1,44 @@
 import React from "react";
 import styled from "styled-components";
-import { ADD_CATEGORY } from "../../sharedQueries";
-import { Mutation } from "react-apollo";
-import CategorySelection from "../../Components/CategorySelection";
+import { ADD_CATEGORY, CATEGORIES_KEYWORD } from "../../sharedQueries";
+import { Mutation, Query } from "react-apollo";
 import { toast } from "react-toastify";
 import { Helmet } from "react-helmet";
+import { Select, Form, Input, Button } from "antd";
+import {
+  addCategoryVariables,
+  addCategory,
+  getCategoriesByKeyword,
+  getCategoriesByKeywordVariables
+} from "src/types/api";
+import Loading from "src/Components/Loading";
+import FormItem from "antd/lib/form/FormItem";
+// const SHOW_PARENT = TreeSelect.SHOW_PARENT;
+const Option = Select.Option;
 
-const FlexBox = styled.div`
+const CategoryAddContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 30px;
 `;
 
-const SearchInput = styled.input`
-  width: 200px;
-  margin-bottom: 30px;
-  padding: 0 10px;
-  height: 30px;
-  border: 1px solid #ced4da;
-  border-radius: 5px;
-  color: black;
-  &:focus {
-    outline: none;
-  }
-`;
-const CategoryAddContainer = FlexBox.extend`
-  width: 100%;
-`;
-
-const CategorySelectionsContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const SendIcon = styled.button`
-  color: black;
-  padding: 10px 25px;
-  margin-top: 15px;
-  font-size: 15px;
-  border: none;
-  background-color: white;
-  text-transform: uppercase;
-  cursor: pointer;
-`;
+class AddCategoryQuery extends Mutation<addCategory, addCategoryVariables> {}
+class CategoriesByKeyword extends Query<
+  getCategoriesByKeyword,
+  getCategoriesByKeywordVariables
+> {}
 
 interface IState {
   name: string;
-  parentIds: number[];
+  parentId: number | null;
   childrenIds: number[];
+  keyword: string;
 }
 
 class CategoryAdd extends React.Component<any, IState> {
@@ -58,17 +46,18 @@ class CategoryAdd extends React.Component<any, IState> {
     super(props);
     this.state = {
       name: "",
-      parentIds: [],
-      childrenIds: []
+      parentId: null,
+      childrenIds: [],
+      keyword: ""
     };
   }
 
   public addIdToState = (type: "parent" | "children", category: any) => {
-    const { parentIds, childrenIds } = this.state;
+    const { parentId, childrenIds } = this.state;
     if (type === "parent") {
-      const found = parentIds.includes(category.id);
+      const found = parentId === category.id;
       if (!found) {
-        this.setState({ parentIds: parentIds.concat(category.id) });
+        this.setState({ parentId });
       }
     } else if (type === "children") {
       const found = childrenIds.includes(category.id);
@@ -82,10 +71,7 @@ class CategoryAdd extends React.Component<any, IState> {
 
   deleteIdToState = (type: "parent" | "children", category: any) => {
     if (type === "parent") {
-      const { parentIds } = this.state;
-      const index = parentIds.findIndex(id => id === category.id);
-      parentIds.splice(index, 1);
-      this.setState({ parentIds });
+      this.setState({ parentId: null });
     } else if (type === "children") {
       const { childrenIds } = this.state;
       const index = childrenIds.findIndex(id => id === category.id);
@@ -104,83 +90,213 @@ class CategoryAdd extends React.Component<any, IState> {
   };
 
   render() {
-    const { name, parentIds, childrenIds } = this.state;
-    console.log(name);
-    console.log(parentIds);
-    console.log(childrenIds);
+    const { name, parentId, childrenIds, keyword } = this.state;
+    console.log(this.state);
     return (
-      <React.Fragment>
+      <>
         <Helmet>
           <title>Add Category | CLAP</title>
         </Helmet>
-        <Mutation
+        <AddCategoryQuery
           mutation={ADD_CATEGORY}
           onCompleted={data => this.confirm(data)}
         >
-          {(AddCategory, { data }) => (
+          {AddCategory => (
             <CategoryAddContainer>
-              <SearchInput
-                type="text"
-                onChange={e => {
-                  this.setState({ name: e.target.value });
-                }}
-                placeholder={"Category Name"}
-              />
-              <CategorySelectionsContainer>
-                <CategorySelection
-                  addIdToState={this.addIdToState}
-                  deleteIdToState={this.deleteIdToState}
-                  selectedCategories={parentIds}
-                  type="parent"
-                  key="parent"
-                />
-                <CategorySelection
-                  addIdToState={this.addIdToState}
-                  deleteIdToState={this.deleteIdToState}
-                  selectedCategories={childrenIds}
-                  type="children"
-                  key="children"
-                />
-              </CategorySelectionsContainer>
-              <SendIcon
-                onClick={() =>
-                  parentIds.length === 0 && childrenIds.length === 0
-                    ? AddCategory({
-                        variables: {
-                          name
-                        }
-                      })
-                    : parentIds.length !== 0 && childrenIds.length === 0
+              <Form layout={"vertical"} style={{ width: 400 }}>
+                <FormItem label="Name">
+                  <Input
+                    onChange={e => this.setState({ name: e.target.value })}
+                    placeholder={"Category Name"}
+                  />
+                </FormItem>
+
+                <CategoriesByKeyword
+                  query={CATEGORIES_KEYWORD}
+                  variables={{ keyword }}
+                >
+                  {({ loading, error, data }) => {
+                    if (loading) {
+                      return <Loading color="#000" />;
+                    }
+                    if (error) {
+                      console.log("error");
+                      return <div>{error.message}</div>;
+                    }
+                    if (data === undefined || data === null) {
+                      console.log("undefined");
+                      return <div>undefined data</div>;
+                    }
+                    console.log(data);
+                    const categories = data.GetCategoriesByKeyword.categories;
+                    return (
+                      <>
+                        <FormItem label="Parent">
+                          <Select
+                            mode="default"
+                            showSearch={true}
+                            placeholder="Please select parent category"
+                            defaultValue={[]}
+                            onChange={(value: string) =>
+                              this.setState({ parentId: parseInt(value, 10) })
+                            }
+                            optionFilterProp="children"
+                            filterOption={(input, option: any) => {
+                              console.log(
+                                option.props.children.props.children[1].props
+                                  .children
+                              );
+                              return (
+                                option.props.children.props.children[1].props.children
+                                  .toLowerCase()
+                                  .indexOf(input.toLowerCase()) >= 0
+                              );
+                            }}
+                          >
+                            {categories &&
+                              categories.map((category, index) => {
+                                return (
+                                  category && (
+                                    <Option
+                                      value={JSON.stringify(category.id)}
+                                      key={JSON.stringify(category.id)}
+                                    >
+                                      <span
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "flex-start",
+                                          alignItems: "center",
+                                          verticalAlign: "top"
+                                        }}
+                                      >
+                                        {category.topWikiImage && (
+                                          <img
+                                            style={{
+                                              height: "20px",
+                                              borderRadius: 4
+                                            }}
+                                            src={
+                                              category.topWikiImage.shownImage
+                                            }
+                                          />
+                                        )}
+                                        <span style={{ padding: "0 7px" }}>
+                                          {category.name}
+                                        </span>
+                                      </span>
+                                    </Option>
+                                  )
+                                );
+                              })}
+                          </Select>
+                        </FormItem>
+                        <FormItem label="Children">
+                          <Select
+                            mode="multiple"
+                            allowClear={true}
+                            showSearch={true}
+                            placeholder="Please select children categories"
+                            defaultValue={[]}
+                            onChange={(values: string[]) =>
+                              this.setState({
+                                childrenIds: values.map(value =>
+                                  parseInt(value, 10)
+                                )
+                              })
+                            }
+                            optionFilterProp="children"
+                            filterOption={(input, option: any) => {
+                              console.log(
+                                option.props.children.props.children[1].props
+                                  .children
+                              );
+                              return (
+                                option.props.children.props.children[1].props.children
+                                  .toLowerCase()
+                                  .indexOf(input.toLowerCase()) >= 0
+                              );
+                            }}
+                          >
+                            {categories &&
+                              categories.map((category, index) => {
+                                return (
+                                  category && (
+                                    <Option key={JSON.stringify(category.id)}>
+                                      <span
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "flex-start",
+                                          alignItems: "center",
+                                          verticalAlign: "top"
+                                        }}
+                                      >
+                                        {category.topWikiImage && (
+                                          <img
+                                            style={{
+                                              height: "20px",
+                                              borderRadius: 4
+                                            }}
+                                            src={
+                                              category.topWikiImage.shownImage
+                                            }
+                                          />
+                                        )}
+                                        <span style={{ padding: "0 7px" }}>
+                                          {category.name}
+                                        </span>
+                                      </span>
+                                    </Option>
+                                  )
+                                );
+                              })}
+                          </Select>
+                        </FormItem>
+                      </>
+                    );
+                  }}
+                </CategoriesByKeyword>
+                <Button
+                  type="primary"
+                  style={{ width: "100%" }}
+                  onClick={() =>
+                    parentId === null && childrenIds.length === 0
+                      ? AddCategory({
+                          variables: {
+                            name
+                          }
+                        })
+                      : parentId && childrenIds.length === 0
                       ? AddCategory({
                           variables: {
                             name,
-                            parentIds
+                            parentId
                           }
                         })
-                      : parentIds.length === 0 && childrenIds.length !== 0
-                        ? AddCategory({
-                            variables: {
-                              name,
-                              childrenIds
-                            }
-                          })
-                        : parentIds.length !== 0 && childrenIds.length !== 0
-                          ? AddCategory({
-                              variables: {
-                                name,
-                                parentIds,
-                                childrenIds
-                              }
-                            })
-                          : null
-                }
-              >
-                Send
-              </SendIcon>
+                      : parentId === null && childrenIds.length !== 0
+                      ? AddCategory({
+                          variables: {
+                            name,
+                            childrenIds
+                          }
+                        })
+                      : parentId && childrenIds.length !== 0
+                      ? AddCategory({
+                          variables: {
+                            name,
+                            parentId,
+                            childrenIds
+                          }
+                        })
+                      : null
+                  }
+                >
+                  Send
+                </Button>
+              </Form>
             </CategoryAddContainer>
           )}
-        </Mutation>
-      </React.Fragment>
+        </AddCategoryQuery>
+      </>
     );
   }
 }
