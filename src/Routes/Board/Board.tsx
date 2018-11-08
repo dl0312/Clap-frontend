@@ -187,12 +187,18 @@ const BoardContainer = styled.div`
 
 const columns = [
   {
-    title: "Id",
+    title: <div style={{ display: "flex", justifyContent: "center" }}>ID</div>,
     dataIndex: "id",
-    key: "id"
+    key: "id",
+    width: 50,
+    render: (id: number) => (
+      <div style={{ display: "flex", justifyContent: "center" }}>{id}</div>
+    )
   },
   {
-    title: "Category",
+    title: (
+      <div style={{ display: "flex", justifyContent: "center" }}>Category</div>
+    ),
     key: "category",
     dataIndex: "category",
     render: (category: any) => (
@@ -218,7 +224,9 @@ const columns = [
     )
   },
   {
-    title: "User",
+    title: (
+      <div style={{ display: "flex", justifyContent: "center" }}>User</div>
+    ),
     dataIndex: "user",
     key: "user",
     render: (user: any) => (
@@ -231,7 +239,9 @@ const columns = [
     )
   },
   {
-    title: "Clap",
+    title: (
+      <div style={{ display: "flex", justifyContent: "center" }}>Clap</div>
+    ),
     dataIndex: "clap",
     key: "clap",
     render: (clap: number) => (
@@ -241,7 +251,9 @@ const columns = [
     )
   },
   {
-    title: "View",
+    title: (
+      <div style={{ display: "flex", justifyContent: "center" }}>View</div>
+    ),
     dataIndex: "view",
     key: "view",
     render: (view: number) => (
@@ -251,7 +263,9 @@ const columns = [
     )
   },
   {
-    title: "Date",
+    title: (
+      <div style={{ display: "flex", justifyContent: "center" }}>Date</div>
+    ),
     dataIndex: "date",
     key: "date",
     render: (date: Date) => (
@@ -387,6 +401,7 @@ class Board extends React.Component<IProps, IState> {
                     <React.Fragment>
                       {posts && (
                         <Table
+                          style={{ minWidth: 850 }}
                           size={"small"}
                           {...pagenationConfig}
                           // style={{ backgroundColor: "white" }}
@@ -467,6 +482,7 @@ class Board extends React.Component<IProps, IState> {
                     <React.Fragment>
                       {posts && (
                         <Table
+                          style={{ minWidth: 850 }}
                           size={"small"}
                           {...pagenationConfig}
                           // style={{ backgroundColor: "white" }}
@@ -548,6 +564,7 @@ class Board extends React.Component<IProps, IState> {
                     <React.Fragment>
                       {posts && (
                         <Table
+                          style={{ minWidth: 850 }}
                           size={"small"}
                           {...pagenationConfig}
                           // style={{ backgroundColor: "white" }}

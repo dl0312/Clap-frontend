@@ -141,9 +141,11 @@ export const POSTS_CATEGORY = gql`
           id
           name
           parent {
+            id
             name
           }
           wikiImages {
+            id
             shownImage
           }
         }

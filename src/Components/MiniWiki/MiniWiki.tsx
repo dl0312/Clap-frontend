@@ -101,6 +101,7 @@ const CategoryName = styled.div`
 
 function insertImage(
   change: Change,
+  id: number,
   represent: string,
   hover: any,
   name: string,
@@ -110,11 +111,10 @@ function insertImage(
   if (target) {
     change.select(target);
   }
-
   change.insertInline({
     type: "clap-image",
     isVoid: true,
-    data: { represent, hover, name, type }
+    data: { id, represent, hover, name, type }
   });
 }
 
@@ -235,20 +235,20 @@ class MiniWiki extends React.Component<IProps, IState> {
                                 });
                               }}
                               onClick={() => {
+                                const id = category.id;
                                 const represent =
                                   category.topWikiImage.shownImage;
                                 const hover = category.topWikiImage.hoverImage;
-                                console.log(this.props);
                                 const change = this.props.selectedContent.value
                                   .change()
                                   .call(
                                     insertImage,
+                                    id,
                                     represent,
                                     hover,
                                     category.name,
                                     this.state.inputType
                                   );
-                                console.log(change);
 
                                 this.props.handleOnChange(
                                   change,

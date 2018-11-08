@@ -11,60 +11,85 @@ ${reset};
 @import url("https://use.fontawesome.com/releases/v5.0.13/css/all.css");
 @import url("https://fonts.googleapis.com/css?family=Maven+Pro|Roboto:300:400,700|Eczar|Oswald|Playfair+Display|Hanalei+Fill|Quicksand|Open+Sans|Raleway|Anton|Do+Hyeon|Kirang+Haerang|Nanum+Gothic|Nanum+Gothic+Coding|Nanum+Myeongjo|Nanum+Pen+Script|Sunflower:300");
 @import url("//cdn.jsdelivr.net/font-iropke-batang/1.2/font-iropke-batang.css");
-  * {
-      box-sizing: border-box;
-  }
-  body{
-    background-color: ${color.bgColor};
-    /* font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Releway"; */
-    font-size: ${fontSize.normalFontSize};
-    color: ${color.fontColor};
-  }
-  a{ 
-      color:inherit;
-      text-decoration:none;
-  }
-  input,
-  button{&:focus,&:active{outline:none}
-  }
-  strong{
-    font-weight: bolder;
-  }
-  h1,h2,h3,h4,h5,h6{
-    all: unset;
-  }
-  h1{
-    font-family:'Maven Pro', sans-serif;
-    font-size: 30px;
-      color:inherit;
-      line-height: 25px;
-  }
-  h2{
-    font-family:'Maven Pro', sans-serif;
-    font-size: 21px;
-          color:inherit;
-
-  }
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Maven Pro', sans-serif;
-    font-weight: 400;
+* {
+    box-sizing: border-box;
 }
-  hr{
-    margin: 10px 0;
-  }
+body{
+  background-color: ${color.bgColor};
+  /* font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Releway"; */
+  font-size: ${fontSize.normalFontSize};
+  color: ${color.fontColor};
+}
+a{ 
+    color:inherit;
+    text-decoration:none;
+}
+input,
+
+button{&:focus,&:active{outline:none}
+}
+
+strong{
+  font-weight: bolder;
+}
+
+h1,h2,h3,h4,h5,h6{
+  all: unset;
+}
+
+h1{
+  font-family:'Maven Pro', sans-serif;
+  font-size: 30px;
+    color:inherit;
+    line-height: 25px;
+}
+h2{
+  font-family:'Maven Pro', sans-serif;
+  font-size: 21px;
+        color:inherit;
+
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Maven Pro', sans-serif;
+  font-weight: 400;
+}
+
+hr{
+  margin: 10px 0;
+}
+
 .frame{
     border: 1px solid transparent;
 }
+
 .container{
     border: 1px solid transparent;
 }
-  .blockHover {
+
+.blockHover {
   border: 1px solid ${EditorDefaults.BORDER_ISOVER_COLOR};
 }
 
 .blockActive {
   border: 1px solid ${EditorDefaults.BORDER_SELECT_COLOR};
 }
+
+.ant-avatar>img {
+  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.ant-carousel .slick-slide {
+  text-align: center;
+  height: 600px;
+  vertical-align: center;
+  background: transparent;
+  overflow: hidden;
+}
+
 .ant-table-tbody>tr>td, .ant-table-thead>tr>th {
 
   vertical-align: middle;

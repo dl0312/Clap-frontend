@@ -15,14 +15,12 @@ import { Helmet } from "react-helmet";
 import Loading from "src/Components/Loading";
 
 const HomeContainer = styled.div`
-  margin-top: -70px;
   width: 100%;
 `;
 
 const FeaturedContainer = styled.div`
   z-index: 2;
   position: relative;
-  margin-top: -200px;
   margin-bottom: 200px;
 `;
 

@@ -19,12 +19,13 @@ import Register from "../../Routes/Register";
 import SignUp from "../../Routes/SignUp";
 import Profile from "../../Routes/Profile";
 import SearchResult from "../../Routes/SearchResult";
+import Footer from "../Footer";
 // import { TransitionGroup, CSSTransition } from "react-transition-group";
-
 // import { ApolloProvider } from 'react-apollo';
 
 interface IProps {
   isLoggedIn: boolean;
+  changeLocale: any;
 }
 
 const AppBox = styled.div`
@@ -32,8 +33,8 @@ const AppBox = styled.div`
 `;
 
 const MainContainer = styled.div`
-  margin-top: 70px;
-
+  margin-top: 85px;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -74,7 +75,7 @@ function PrivateRoute({ component: Component, isLoggedIn, ...rest }: any) {
   );
 }
 
-const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
+const AppPresenter: React.SFC<IProps> = ({ isLoggedIn, changeLocale }) => (
   <Switch>
     <PrivateRoute
       isLoggedIn={isLoggedIn}
@@ -122,72 +123,6 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
         <AppBox>
           <Navigation isLoggedIn={isLoggedIn} />
           <MainContainer>
-            {/* <TransitionGroup>
-              <CSSTransition
-                key={location.pathname.split("/")[1]}
-                classNames={"fade"}
-                timeout={{ enter: 2000, exit: 2000 }}
-              >
-                <Switch location={location}>
-                  <Route
-                    path="/search/:keyword"
-                    exact={true}
-                    component={SearchResult}
-                  />
-
-                  <Route path="/login" exact={true} component={LogIn} />
-                  <Route path="/signup" exact={true} component={SignUp} />
-                  <Route path="/profile" exact={true} component={Profile} />
-
-                  <Route
-                    path="/category/read/:categoryId"
-                    exact={true}
-                    component={CategoryDetail}
-                  />
-                  <Route
-                    path="/category/add"
-                    exact={true}
-                    component={CategoryAdd}
-                  />
-                  <Route
-                    path="/category/edit/:categoryId"
-                    exact={true}
-                    component={CategoryEdit}
-                  />
-                  <Route
-                    path="/post/read/:postId"
-                    exact={true}
-                    component={PostDetail}
-                  />
-                  <Route path="/post/add" exact={true} component={PostAdd} />
-                  <Route
-                    path="/post/edit/:postId"
-                    exact={true}
-                    component={PostEdit}
-                  />
-                  <Route
-                    path="/category/:categoryId/wikiImage/read/:wikiImageId"
-                    exact={true}
-                    component={WikiImageDetail}
-                  />
-                  <Route
-                    path="/category/:categoryId/wikiImage/add"
-                    exact={true}
-                    component={WikiImageAdd}
-                  />
-                  <Route
-                    path="/category/:categoryId/wikiImage/edit/:wikiImageId"
-                    exact={true}
-                    component={WikiImageEdit}
-                  />
-                  <Route path={"/wiki"} exact={true} component={Wiki} />
-                  <Route path={"/board"} exact={true} component={Board} />
-                  <Route path={""} exact={true} component={Home} />
-                  <Redirect from={"*"} to={"/"} />
-                </Switch>
-              </CSSTransition>
-            </TransitionGroup> */}
-
             <Switch>
               <Route
                 path="/search/:categoryId"
@@ -223,6 +158,7 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn }) => (
               <Redirect from={"*"} to={"/"} />
             </Switch>
           </MainContainer>
+          <Footer changeLocale={changeLocale} />
         </AppBox>
       )}
     />

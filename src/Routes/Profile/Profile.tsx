@@ -35,7 +35,7 @@ const ProfileTitle = styled.div`
   font-size: 40px;
   font-weight: 100;
   padding-bottom: 15px;
-  border-bottom: 0.5px solid white;
+  border-bottom: 0.5px solid black;
   margin-bottom: 30px;
 `;
 
@@ -49,7 +49,6 @@ const ProfileSubTitleData = styled.div`
   padding: 10px 0;
   height: 50px;
   font-size: 20px;
-  color: white;
   font-weight: bolder;
   display: flex;
   justify-content: space-between;
@@ -60,10 +59,12 @@ const EditIcon = styled.i`
   margin: 0 5px;
   font-size: 30px;
   position: absolute;
+  color: white;
   top: 41%;
   left: 40%;
   opacity: 0;
   transition: opacity 0.2s ease;
+  cursor: pointer;
 `;
 
 interface IProfileImgProps {

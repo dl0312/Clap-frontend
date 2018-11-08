@@ -60,6 +60,11 @@ import EditCode from "slate-edit-code";
 import TrailingBlock from "slate-trailing-block";
 import EditTable from "slate-edit-table";
 import { RenderMarkProps, RenderNodeProps } from "slate-react";
+import { Popover } from "antd";
+import HoverView from "../HoverView";
+import { getCategoryById, getCategoryByIdVariables } from "src/types/api";
+import { Query } from "react-apollo";
+import { CATEGORY } from "src/sharedQueries";
 const plugins = [
   EditPrism({
     onlyIn: (node: any) => node.type === "code_block",
@@ -137,6 +142,11 @@ const ClapImageText = styled.span`
   color: ${props => props.color};
 `;
 
+class GetCategoryById extends Query<
+  getCategoryById,
+  getCategoryByIdVariables
+> {}
+
 interface IProps {
   json: {
     rightMenu: number | null;
@@ -187,6 +197,8 @@ class UserView extends React.Component<IProps, IState> {
           const hoverSrc = node.data.get("hover");
           const name = node.data.get("name");
           const type = node.data.get("type");
+          const id = node.data.get("id");
+          console.log(id);
           switch (type) {
             case "TEXT":
               return (
@@ -213,34 +225,78 @@ class UserView extends React.Component<IProps, IState> {
               );
             case "MINI_IMG":
               return (
-                <ClapImageContainer
-                  onMouseOut={(e: React.MouseEvent<HTMLImageElement>) => {
-                    console.log("leave");
-                    this.setState({ onImage: false });
-                  }}
-                  onMouseEnter={(e: React.MouseEvent<HTMLImageElement>) =>
-                    this.setState({
-                      hoverImgJson: hoverSrc,
-                      onImage: true,
-                      pos: GetPos(e)
-                    })
-                  }
-                  onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
-                    this.setState({ pos: GetPos(e) })
-                  }
-                  small={true}
+                <GetCategoryById
+                  query={CATEGORY}
+                  fetchPolicy={"cache-and-network"}
+                  variables={{ categoryId: id }}
                 >
-                  <ClapImage
-                    small={true}
-                    src={representSrc}
-                    alt={"hover"}
-                    selected={isSelected}
-                    {...attributes}
-                  />
-                  <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
-                    {name}
-                  </ClapImageText>
-                </ClapImageContainer>
+                  {({ loading, data, error }) => {
+                    if (loading) return "Loading...";
+                    if (error) return `${error.message}`;
+                    if (data !== undefined) {
+                      const { category } = data.GetCategoryById;
+                      return (
+                        category &&
+                        category.topWikiImage && (
+                          <Popover
+                            placement="top"
+                            content={
+                              <HoverView
+                                json={JSON.parse(
+                                  category.topWikiImage.hoverImage
+                                )}
+                              />
+                            }
+                            trigger="hover"
+                          >
+                            <ClapImage
+                              small={true}
+                              src={category.topWikiImage.shownImage}
+                              alt={"hover"}
+                              selected={isSelected}
+                              {...attributes}
+                            />
+                            <ClapImageText
+                              color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                            >
+                              {name}
+                            </ClapImageText>
+                          </Popover>
+                        )
+                      );
+                    } else {
+                      return null;
+                    }
+                  }}
+                </GetCategoryById>
+                // <ClapImageContainer
+                //   onMouseOut={(e: React.MouseEvent<HTMLImageElement>) => {
+                //     console.log("leave");
+                //     this.setState({ onImage: false });
+                //   }}
+                //   onMouseEnter={(e: React.MouseEvent<HTMLImageElement>) =>
+                //     this.setState({
+                //       hoverImgJson: hoverSrc,
+                //       onImage: true,
+                //       pos: GetPos(e)
+                //     })
+                //   }
+                //   onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
+                //     this.setState({ pos: GetPos(e) })
+                //   }
+                //   small={true}
+                // >
+                //   <ClapImage
+                //     small={true}
+                //     src={representSrc}
+                //     alt={"hover"}
+                //     selected={isSelected}
+                //     {...attributes}
+                //   />
+                //   <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
+                //     {name}
+                //   </ClapImageText>
+                // </ClapImageContainer>
               );
             case "NORMAL_IMG":
               return (

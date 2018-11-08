@@ -14,9 +14,15 @@ const PopupContainer = styled<IPopupContainer, any>("div")`
   z-index: 99999;
   left: ${props => props.left + 50}px;
   top: ${props => props.top}px;
+
+  border: 4px solid rgba(0, 0, 0, 0.5);
+  outline: 0.5px solid black;
 `;
 
-const StaticContainer = styled.div``;
+const StaticContainer = styled.div`
+  border: 4px solid rgba(0, 0, 0, 0.5);
+  outline: 0.5px solid black;
+`;
 
 interface IProps {
   pos: { x: number; y: number };

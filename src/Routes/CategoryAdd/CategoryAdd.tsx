@@ -134,12 +134,10 @@ class CategoryAdd extends React.Component<any, IState> {
                         <FormItem label="Parent">
                           <Select
                             mode="default"
+                            allowClear={true}
                             showSearch={true}
                             placeholder="Please select parent category"
                             defaultValue={[]}
-                            onChange={(value: string) =>
-                              this.setState({ parentId: parseInt(value, 10) })
-                            }
                             optionFilterProp="children"
                             filterOption={(input, option: any) => {
                               console.log(
@@ -151,6 +149,17 @@ class CategoryAdd extends React.Component<any, IState> {
                                   .toLowerCase()
                                   .indexOf(input.toLowerCase()) >= 0
                               );
+                            }}
+                            onChange={(value: string) => {
+                              if (value !== undefined) {
+                                this.setState({
+                                  parentId: parseInt(value, 10)
+                                });
+                              } else {
+                                this.setState({
+                                  parentId: null
+                                });
+                              }
                             }}
                           >
                             {categories &&

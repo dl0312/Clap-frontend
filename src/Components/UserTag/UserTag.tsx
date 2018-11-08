@@ -65,7 +65,6 @@ class UserTag extends React.Component<IProps, IState> {
   public render() {
     const { profilePhoto, username, size, display } = this.props;
     const { isOpen } = this.state;
-
     return (
       <UserTagContainer>
         <UserContainer
@@ -83,9 +82,11 @@ class UserTag extends React.Component<IProps, IState> {
                 />
               )
             : (display === "photo" || display === "both") && (
-                <Avatar size={size !== undefined ? size : "default"}>
-                  {username}
-                </Avatar>
+                <Avatar
+                  size={size !== undefined ? size : "default"}
+                  style={{ backgroundColor: "grey" }}
+                  icon="user"
+                />
               )}
           {(display === "text" || display === "both") && (
             <UserName size={size}>{username}</UserName>

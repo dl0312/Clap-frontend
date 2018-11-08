@@ -144,10 +144,10 @@ const SingleJsonContainer = styled<ISingleJsonContainerProps, any>("div")`
     props.size === "SMALL"
       ? "200px"
       : props.size === "MEDIUM"
-        ? "300px"
-        : props.size === "LARGE"
-          ? "400px"
-          : "100%"};
+      ? "300px"
+      : props.size === "LARGE"
+      ? "400px"
+      : "100%"};
 `;
 
 interface IHoverBorderProps {
@@ -159,12 +159,10 @@ const HoverBorder = styled<IHoverBorderProps, any>("div")`
     props.size === "SMALL"
       ? "200px"
       : props.size === "MEDIUM"
-        ? "300px"
-        : props.size === "LARGE"
-          ? "400px"
-          : "100%"};
-  border: 4px solid rgba(0, 0, 0, 0.5);
-  outline: 0.5px solid black;
+      ? "300px"
+      : props.size === "LARGE"
+      ? "400px"
+      : "100%"};
 `;
 
 interface IHoverViewProps {

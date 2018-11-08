@@ -139,7 +139,6 @@ class CategoryEdit extends React.Component<any, IState> {
               if (error) {
                 return <div>{error.message}</div>;
               }
-              const { category } = data.GetCategoryById;
               return (
                 <React.Fragment>
                   <Form layout={"vertical"} style={{ width: 400 }}>
@@ -174,15 +173,25 @@ class CategoryEdit extends React.Component<any, IState> {
                             <FormItem label="Parent">
                               <Select
                                 mode="default"
+                                allowClear={true}
                                 showSearch={true}
                                 placeholder="Please select parent category"
-                                onChange={(value: string) =>
-                                  this.setState({
-                                    parentId: parseInt(value, 10),
-                                    parent
-                                  })
+                                onChange={(value: string) => {
+                                  if (value !== undefined) {
+                                    this.setState({
+                                      parentId: parseInt(value, 10)
+                                    });
+                                  } else {
+                                    this.setState({
+                                      parentId: null
+                                    });
+                                  }
+                                }}
+                                value={
+                                  this.state.parentId !== null
+                                    ? JSON.stringify(this.state.parentId)
+                                    : []
                                 }
-                                defaultValue={category.parent.name}
                                 optionFilterProp="children"
                                 filterOption={(input, option: any) => {
                                   console.log(
@@ -201,7 +210,6 @@ class CategoryEdit extends React.Component<any, IState> {
                                     return (
                                       category && (
                                         <Option
-                                          value={JSON.stringify(category.id)}
                                           key={JSON.stringify(category.id)}
                                         >
                                           <span
@@ -240,34 +248,35 @@ class CategoryEdit extends React.Component<any, IState> {
                                 allowClear={true}
                                 showSearch={true}
                                 placeholder="Please select children categories"
-                                // onChange={(values: string[]) =>
-                                //   this.setState({
-                                //     childrenIds: values.map(value =>
-                                //       parseInt(value, 10)
-                                //     )
-                                //   })
-                                // }
-                                onSelect={(value: any, option) => {
-                                  console.log(value, option);
+                                onChange={(values: any) => {
+                                  console.log(values);
                                   this.setState({
-                                    childrenIds: [
-                                      ...this.state.childrenIds,
+                                    childrenIds: values.map((value: any) =>
                                       parseInt(value, 10)
-                                    ]
+                                    )
                                   });
                                 }}
-                                onDeselect={(value: any) => {
-                                  const index = childrenIds.findIndex(
-                                    id => id === parseInt(value, 10)
-                                  );
-                                  childrenIds.splice(index, 1);
-                                  this.setState({
-                                    childrenIds
-                                  });
-                                }}
-                                defaultValue={category.children.map(
-                                  (child: any) => {
-                                    return child.name;
+                                // onSelect={(value: any, option) => {
+                                //   console.log(value, option);
+                                //   this.setState({
+                                //     childrenIds: [
+                                //       ...this.state.childrenIds,
+                                //       parseInt(value, 10)
+                                //     ]
+                                //   });
+                                // }}
+                                // onDeselect={(value: any) => {
+                                //   const index = childrenIds.findIndex(
+                                //     id => id === parseInt(value, 10)
+                                //   );
+                                //   childrenIds.splice(index, 1);
+                                //   this.setState({
+                                //     childrenIds
+                                //   });
+                                // }}
+                                value={this.state.childrenIds.map(
+                                  (childId: any) => {
+                                    return JSON.stringify(childId);
                                   }
                                 )}
                                 optionFilterProp="children"

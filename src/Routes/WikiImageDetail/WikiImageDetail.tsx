@@ -19,12 +19,13 @@ import {
 } from "../../types/api";
 // import toast from "react-toastify"
 
-import ImagePopup from "../../Components/ImagePopup";
+// import ImagePopup from "../../Components/ImagePopup";
 import { GetPos } from "../../Utility/GetPos";
 import { toast } from "react-toastify";
 import UserTag from "src/Components/UserTag";
-import { Card, Icon, Skeleton } from "antd";
+import { Card, Icon, Skeleton, Popover } from "antd";
 import { Meta } from "antd/lib/list/Item";
+import HoverView from "src/Components/HoverView";
 
 const WikiImageDetailContainer = styled.div`
   width: 100%;
@@ -105,7 +106,9 @@ class WikiImageDetail extends React.Component<IProps, IState> {
   };
 
   public render() {
-    const { pos, hoverImgJson, onImage } = this.state;
+    // const { pos, hoverImgJson, onImage } = this.state;
+    const { hoverImgJson } = this.state;
+
     console.log(this.props);
     return (
       <WikiImageQuery
@@ -167,22 +170,34 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                             <Card
                               style={{ width: 300 }}
                               cover={
-                                <img
-                                  src={wikiImage.shownImage}
-                                  alt={wikiImage.name!}
-                                  onMouseOver={() =>
-                                    this.setState({
-                                      hoverImgJson: wikiImage.hoverImage,
-                                      onImage: true
-                                    })
+                                <Popover
+                                  placement="rightTop"
+                                  content={
+                                    hoverImgJson && (
+                                      <HoverView
+                                        json={JSON.parse(hoverImgJson)}
+                                      />
+                                    )
                                   }
-                                  onMouseMove={(
-                                    e: React.MouseEvent<HTMLImageElement>
-                                  ) => this.setState({ pos: GetPos(e) })}
-                                  onMouseOut={() => {
-                                    this.setState({ onImage: false });
-                                  }}
-                                />
+                                  trigger="hover"
+                                >
+                                  <img
+                                    src={wikiImage.shownImage}
+                                    alt={wikiImage.name!}
+                                    onMouseOver={() =>
+                                      this.setState({
+                                        hoverImgJson: wikiImage.hoverImage,
+                                        onImage: true
+                                      })
+                                    }
+                                    onMouseMove={(
+                                      e: React.MouseEvent<HTMLImageElement>
+                                    ) => this.setState({ pos: GetPos(e) })}
+                                    onMouseOut={() => {
+                                      this.setState({ onImage: false });
+                                    }}
+                                  />
+                                </Popover>
                               }
                               actions={
                                 isMine
@@ -318,11 +333,11 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                         </WikiImageDeleteQuery>
                       )}
                     </SendClapQuery>
-                    <ImagePopup
+                    {/* <ImagePopup
                       pos={pos}
                       json={hoverImgJson}
                       onImage={onImage}
-                    />
+                    /> */}
                     {/* <CurrentHoverContainer>
                       {wikiImage !== undefined ? (
                         <ImagePopup
