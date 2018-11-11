@@ -75,7 +75,6 @@ class Register extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.recaptchaLoaded = this.recaptchaLoaded.bind(this);
-    this.verifyCallback = this.verifyCallback.bind(this);
     this.state = {
       login: true,
       nickName: "",
@@ -224,8 +223,10 @@ class Register extends React.Component<IProps, IState> {
                     e.preventDefault();
                     this.props.form.validateFields((err: any, values: any) => {
                       console.log(values);
-                      if (!err && this.state.isVerified) {
+                      console.log(this.state);
+                      if (!err && values.verify) {
                         console.log("Received values of form: ", values);
+                        console.log(values.verify);
                         mutation({
                           variables: {
                             email: values.email,
@@ -462,12 +463,6 @@ class Register extends React.Component<IProps, IState> {
   public recaptchaLoaded = () => {
     console.log("reCAPTHCHA Loaded");
   };
-
-  public verifyCallback = (res: any) => {
-    if (res) {
-      this.setState({ isVerified: true });
-    }
-  };
 }
 
 class Captcha extends React.Component<any, any> {
@@ -476,7 +471,6 @@ class Captcha extends React.Component<any, any> {
     this.verifyCallback = this.verifyCallback.bind(this);
   }
   public verifyCallback(result: any) {
-    console.log("verifyCallback", result);
     this.props.onChange(result); // notify the form after verified
   }
   render() {

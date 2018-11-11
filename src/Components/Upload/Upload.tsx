@@ -124,7 +124,6 @@ class Upload extends React.Component<IProps, IState> {
 
   public render() {
     const { type } = this.props;
-    console.log(this.props);
     return (
       <div>
         <UploadContainer type={type}>

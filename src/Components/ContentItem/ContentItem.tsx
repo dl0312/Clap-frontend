@@ -5,11 +5,13 @@ import {
   DragSource,
   ConnectDragSource,
   DragSourceMonitor,
-  DragSourceConnector
+  DragSourceConnector,
+  ConnectDragPreview
 } from "react-dnd";
 import { Value } from "slate";
 import styled from "styled-components";
 import Plain from "slate-plain-serializer";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 interface IItemProps {
   opacity: number;
@@ -45,9 +47,8 @@ const Title = styled.div`
 `;
 
 const itemSource = {
-  beginDrag(props: IProps) {
+  beginDrag(props: IProps, monitor: DragSourceMonitor) {
     props.masterCallback("onDrag", "content");
-
     const item: {
       type: "content" | null;
       onDrag: "content" | null;
@@ -167,13 +168,27 @@ interface IProps {
 }
 
 interface IDnDProps {
-  connectDragSource: ConnectDragSource;
   isDragging: boolean;
+  connectDragSource: ConnectDragSource;
+  connectDragPreview: ConnectDragPreview;
 }
 
 class ContentItem extends Component<IProps & IDnDProps> {
   constructor(props: IProps & IDnDProps) {
     super(props);
+  }
+
+  public componentDidMount() {
+    const { connectDragPreview } = this.props;
+    if (connectDragPreview) {
+      // Use empty image as a drag preview so browsers don't draw it
+      // and we can draw whatever we want on the custom drag layer instead.
+      connectDragPreview(getEmptyImage(), {
+        // IE fallback: specify that we'd rather screenshot the node
+        // when it already knows it's being dragged so we can hide it with CSS.
+        captureDraggingState: true
+      });
+    }
   }
 
   public render() {
@@ -193,10 +208,13 @@ class ContentItem extends Component<IProps & IDnDProps> {
   }
 }
 
-export default DragSource(
+export default DragSource<IProps, IDnDProps>(
   ItemTypes.CONTENT,
   itemSource,
-  (connect: DragSourceConnector): object => ({
-    connectDragSource: connect.dragSource()
+  (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
+    item: monitor.getItem(),
+    isDragging: monitor.isDragging(),
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview()
   })
 )(ContentItem);

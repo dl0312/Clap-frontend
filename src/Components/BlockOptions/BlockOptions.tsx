@@ -721,6 +721,10 @@ class BlockOptions extends React.Component<IProps, any> {
     }
   };
 
+  // public handleClickOutside = () => {
+  //   this.props.onBlockOptionDownClick();
+  // };
+
   public render() {
     const {
       onBlockOptionDownClick,
@@ -729,10 +733,7 @@ class BlockOptions extends React.Component<IProps, any> {
     } = this.props;
     return (
       <BlockOptionContainer
-        isSelected={
-          // this.props.selectedContent !== null ||
-          this.props.selectedContent !== undefined
-        }
+        isSelected={this.props.selectedContent !== undefined}
         type={this.props.type}
       >
         <Header>

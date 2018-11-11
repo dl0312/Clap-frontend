@@ -89,7 +89,7 @@ class ColumnItem extends React.Component<IProps> {
                     this.props.selectedIndex
                   }
                   hoveredIndex={this.props.hoveredIndex}
-                  item={item}
+                  containerItem={item}
                   onDrag={this.props.onDrag}
                   renderNode={this.props.renderNode}
                   renderMark={this.props.renderMark}

@@ -86,12 +86,12 @@ class Slide extends React.Component<any, IState> {
       slides: [
         {
           src:
-            "https://www.pcgamesn.com/wp-content/uploads/2018/10/kda-skins-splash.jpg",
+            "https://pmcvariety.files.wordpress.com/2018/11/kda-akali-league-of-legends.jpg",
           title: "league of legend"
         },
         {
           src:
-            "http://vamers.com/wp-content/uploads/2018/07/Vamers-Gaming-World-of-Warcraft-subscription-now-gives-access-to-all-previous-expansions-1.jpg",
+            "https://bnetproduct-a.akamaihd.net//fbb/901ae4416b5a12d29df8e2c7c3a50518-WOW_ProductPage_Banner_Mobile_MN01.jpg",
           title: "world of warcraft"
         },
         {

@@ -31,6 +31,7 @@ import CategoryButton from "../CategoryButton";
 import ImageButton from "../ImageButton";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import CustomDragLayer from "../CustomDragLayer";
 
 interface IEditorContainerProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
@@ -184,10 +185,10 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
     props.device === "PHONE"
       ? "425px"
       : props.device === "TABLET"
-        ? "767px"
-        : props.device === "DESKTOP"
-          ? "100%"
-          : "100%"};
+      ? "767px"
+      : props.device === "DESKTOP"
+      ? "100%"
+      : "100%"};
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -375,6 +376,7 @@ interface IState {
   titleImg: string;
   titleImgUploading: boolean;
   titleImgPos: number;
+  comp: any;
 }
 
 class Editor extends React.Component<IProps, IState> {
@@ -410,6 +412,7 @@ class Editor extends React.Component<IProps, IState> {
       titleImg: null,
       titleImgUploading: false,
       titleImgPos: 50,
+      comp: null,
       ...props.state
     };
   }
@@ -824,7 +827,7 @@ class Editor extends React.Component<IProps, IState> {
       | "targetIndex"
       | "selectedIndex"
       | "hoveredIndex",
-    dataFromChild: any,
+    dataFromChild?: any,
     secondDataFromChild?: any
   ) => {
     if (type === "title") {
@@ -851,6 +854,14 @@ class Editor extends React.Component<IProps, IState> {
       this.setState({
         exShownImg: { url: dataFromChild, id: secondDataFromChild }
       });
+    } else if (type === "deselect") {
+      this.setState({
+        selectedIndex: null,
+        hoveredIndex: null,
+        selectedContent: null
+      });
+    } else if (type === "setComp") {
+      this.setState({ comp: dataFromChild });
     }
   };
 
@@ -1073,43 +1084,42 @@ class Editor extends React.Component<IProps, IState> {
     if (type === "POST_ADD") {
       return (
         <PostButtonContainer>
-          {this.state.category.length !== 0 &&
-            this.state.title && (
-              <PostButton
-                onClick={e => {
-                  e.preventDefault();
-                  const filteredState: IState = this.state;
-                  filteredState.rightMenu = null;
-                  filteredState.selectedContent = null;
-                  filteredState.selectedIndex = null;
-                  filteredState.onDrag = null;
-                  filteredState.hoverImgJson = null;
-                  filteredState.pos = { x: 0, y: 0 };
-                  filteredState.onImage = false;
-                  filteredState.view = "EDIT";
-                  this.props.AddPost!({
-                    refetchQueries: [
-                      {
-                        query: POSTS,
-                        variables: {
-                          limit: 20,
-                          type: "createdAt"
-                        }
+          {this.state.category.length !== 0 && this.state.title && (
+            <PostButton
+              onClick={e => {
+                e.preventDefault();
+                const filteredState: IState = this.state;
+                filteredState.rightMenu = null;
+                filteredState.selectedContent = null;
+                filteredState.selectedIndex = null;
+                filteredState.onDrag = null;
+                filteredState.hoverImgJson = null;
+                filteredState.pos = { x: 0, y: 0 };
+                filteredState.onImage = false;
+                filteredState.view = "EDIT";
+                this.props.AddPost!({
+                  refetchQueries: [
+                    {
+                      query: POSTS,
+                      variables: {
+                        limit: 20,
+                        type: "createdAt"
                       }
-                    ],
-                    variables: {
-                      title: this.state.title,
-                      titleImg: this.state.titleImg,
-                      titleImgPos: this.state.titleImgPos,
-                      categoryId: this.state.category[0],
-                      body: JSON.stringify(filteredState)
                     }
-                  });
-                }}
-              >
-                SEND
-              </PostButton>
-            )}
+                  ],
+                  variables: {
+                    title: this.state.title,
+                    titleImg: this.state.titleImg,
+                    titleImgPos: this.state.titleImgPos,
+                    categoryId: this.state.category[0],
+                    body: JSON.stringify(filteredState)
+                  }
+                });
+              }}
+            >
+              SEND
+            </PostButton>
+          )}
         </PostButtonContainer>
       );
     } else if (type === "POST_EDIT") {
@@ -1176,7 +1186,6 @@ class Editor extends React.Component<IProps, IState> {
       titleImgUploading,
       titleImgPos
     } = this.state;
-    console.log(view);
     return (
       <React.Fragment>
         <EditorContainer type={type}>
@@ -1263,6 +1272,7 @@ class Editor extends React.Component<IProps, IState> {
             />
           </EditorNavTwo>
           <EditorContentContainer>
+            <CustomDragLayer comp={this.state.comp} />
             <EditorRightContainer>
               {!this.state.selectedContent ? (
                 <EditorRight
@@ -1583,6 +1593,7 @@ class Editor extends React.Component<IProps, IState> {
   };
 
   public onBlockOptionDownClick = () => {
+    console.log("out");
     this.setState({
       selectedIndex: null,
       hoveredIndex: null,
@@ -1613,7 +1624,6 @@ class Editor extends React.Component<IProps, IState> {
         const targetIndex = hoverIndex;
         if (!isEqual(targetIndex, this.state.targetIndex)) {
           this.setState({ targetIndex });
-          console.log("over", targetIndex);
         }
       } else if (dropPosition === "under") {
         const tempIndex = cloneDeep(hoverIndex);
@@ -1622,7 +1632,6 @@ class Editor extends React.Component<IProps, IState> {
         // console.log(targetIndex, this.state.targetIndex);
         if (!isEqual(targetIndex, this.state.targetIndex)) {
           this.setState({ targetIndex });
-          console.log("under", targetIndex);
         }
       }
     }

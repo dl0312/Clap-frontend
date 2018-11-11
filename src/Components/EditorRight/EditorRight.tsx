@@ -38,8 +38,8 @@ const MenuTitle = styled.div`
 `;
 
 const menus = [
-  { icon: "fas fa-th-large", name: "CONTENT" },
   { icon: "fas fa-bars", name: "ROW" },
+  { icon: "fas fa-th-large", name: "CONTENT" },
   { icon: "fas fa-columns", name: "BODY" }
 ];
 
@@ -117,9 +117,9 @@ class EditorRight extends Component<IProps, IState> {
   public showSection = () => {
     switch (this.props.rightMenu) {
       case 0:
-        return <Content masterCallback={this.props.masterCallback} />;
-      case 1:
         return <Row masterCallback={this.props.masterCallback} />;
+      case 1:
+        return <Content masterCallback={this.props.masterCallback} />;
       case 2:
         return (
           <Body

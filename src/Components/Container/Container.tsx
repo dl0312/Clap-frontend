@@ -14,18 +14,18 @@ import {
 } from "react-dnd";
 
 import { Value, ValueJSON } from "slate";
-import styled from "styled-components";
+// import styled from "styled-components";
 import flow from "lodash/flow";
-import EditorDefaults from "../../EditorDefaults";
+// import EditorDefaults from "../../EditorDefaults";
 // import ContentBox from "../ContentBox";
 
-import Button from "../ContentItems/Button";
-import Text from "../ContentItems/Text";
-import Divider from "../ContentItems/Divider";
-import Html from "../ContentItems/Html";
-import Image from "../ContentItems/Image";
-import Video from "../ContentItems/Video";
-import SocialMedia from "../ContentItems/SocialMedia";
+import ButtonContent from "../ContentItems/ButtonContent";
+import TextContent from "../ContentItems/TextContent";
+import DividerContent from "../ContentItems/DividerContent";
+import HtmlContent from "../ContentItems/HtmlContent";
+import ImageContent from "../ContentItems/ImageContent";
+import VideoContent from "../ContentItems/VideoContent";
+import SocialMediaContent from "../ContentItems/SocialMediaContent";
 
 import {
   AlignCenterPlugin,
@@ -75,6 +75,7 @@ import TrailingBlock from "slate-trailing-block";
 import EditTable from "slate-edit-table";
 import { findDOMNode } from "react-dom";
 import { RenderNodeProps, RenderMarkProps } from "slate-react";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 const plugins = [
   EditPrism({
@@ -123,91 +124,16 @@ const plugins = [
   copyPastePlugin()
 ];
 
-const Handle = styled.div`
-  background-color: ${EditorDefaults.HANDLE_COLOR};
-  width: 2rem;
-  height: 2rem;
-  border-top-right-radius: 100%;
-  border-bottom-right-radius: 100%;
-  margin-right: 0.75rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  position: absolute;
-  top: 50%;
-  right: 0px;
-  margin-left: -2px;
-  z-index: 100;
-  transform: translate(45px, -16px);
-`;
-
-const ButtonOption = styled.button`
-  border: none;
-  outline: none;
-  background-color: ${EditorDefaults.HANDLE_COLOR};
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  margin-bottom: 10px;
-  cursor: pointer;
-`;
-
-const Tool = styled.div`
-  z-index: 100;
-  display: flex;
-  position: absolute;
-  margin-right: 0.75rem;
-  cursor: -webkit-grab;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  top: 50%;
-  transform: translate(108px, -16px);
-  margin-left: -2px;
-  right: 0px;
-`;
-
-// interface IBuilderProps {
-//   state: "ISOVER" | "ONDRAG" | null;
-//   position: "over" | "under";
-// }
-
-// const Builder = styled<IBuilderProps, any>("div")`
-//   position: absolute;
-//   z-index: ${props => (props.state === "ISOVER" ? "999" : null)};
-//   top: ${props => (props.position === "over" ? "-4px" : null)};
-//   bottom: ${props => (props.position === "under" ? "-4px" : null)};
-//   text-align: center;
-//   color: white;
-//   background-color: ${props => {
-//     switch (props.state) {
-//       case "ONDRAG":
-//         return EditorDefaults.BUILDER_ONDRAG_COLOR;
-//       case "ISOVER":
-//         return EditorDefaults.BUILDER_ISOVER_COLOR;
-//       default:
-//         return "transparent";
-//     }
-//   }};
-//   border-radius: 5px;
-//   font-size: 12px;
-//   padding: 2px 10px;
-//   transition: background-color 0.5s ease;
-//   width: 100%;
-// `;
-
 const cardSource = {
   beginDrag(props: IProps, monitor: DragSourceMonitor, component: Container) {
     props.masterCallback("onDrag", "content");
+    props.masterCallback("setComp", component);
     return { index: props.index };
   },
   endDrag(props: IProps, monitor: DragSourceMonitor, component?: Container) {
     props.masterCallback("onDrag", null);
+
+    props.masterCallback("setComp", null);
     return { index: props.index };
   }
 };
@@ -235,6 +161,7 @@ const cardTarget = {
 
   drop(props: IProps, monitor: DropTargetMonitor, component: Container) {
     const type = monitor.getItemType();
+    props.masterCallback("setComp", null);
     if (type === ItemTypes.CARD) {
       props.pushPresentBlockToTargetIndex(monitor.getItem().index);
     } else if (type === ItemTypes.CONTENT) {
@@ -258,7 +185,7 @@ interface IProps {
   // For Content Render
   selectedIndex: number | number[] | null;
   hoveredIndex: number | number[] | null;
-  item: {
+  containerItem: {
     type: string;
     content:
       | "BUTTON"
@@ -306,18 +233,26 @@ interface IState {
   toolHover: boolean;
 }
 
-interface IDnDProps {
+interface IDnDSourceProps {
   // React-dnd props
-  isDragging?: boolean;
-  connectDragSource?: ConnectDragSource;
+  isDragging: boolean;
+  connectDragSource: ConnectDragSource;
   connectDragPreview: ConnectDragPreview;
-  connectDropTarget?: ConnectDropTarget;
-  isOver?: boolean;
 }
 
-class Container extends React.Component<IProps & IDnDProps, IState> {
-  constructor(props: IProps & IDnDProps) {
+interface IDnDTargetProps {
+  // React-dnd props
+  connectDropTarget: ConnectDropTarget;
+  isOver: boolean;
+}
+
+class Container extends React.Component<
+  IProps & IDnDSourceProps & IDnDTargetProps,
+  IState
+> {
+  constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
     super(props);
+
     this.state = {
       hover: false,
       active: false,
@@ -325,12 +260,44 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
     };
   }
 
+  public setDragImage = () => {
+    const image = new Image();
+    image.src =
+      "https://pbs.twimg.com/profile_images/882259118131523585/jckOG2cP_400x400.jpg";
+    image.onload = () => {
+      image.width = image.height = 20;
+      this.props.connectDragPreview(image);
+    };
+  };
+
+  // public componentDidMount = () => {
+  //   const image = new Image();
+  //   image.src =
+  //     "https://pbs.twimg.com/profile_images/882259118131523585/jckOG2cP_400x400.jpg";
+  //   image.onload = () => {
+  //     this.props.connectDragPreview(image);
+  //   };
+  // };
+
+  public componentDidMount() {
+    const { connectDragPreview } = this.props;
+    if (connectDragPreview) {
+      // Use empty image as a drag preview so browsers don't draw it
+      // and we can draw whatever we want on the custom drag layer instead.
+      connectDragPreview(getEmptyImage(), {
+        // IE fallback: specify that we'd rather screenshot the node
+        // when it already knows it's being dragged so we can hide it with CSS.
+        captureDraggingState: true
+      });
+    }
+  }
+
   public showInner = (selected: boolean) => {
-    switch (this.props.item.content) {
+    switch (this.props.containerItem.content) {
       case "BUTTON":
         let value = null;
-        if (!Value.isValue(this.props.item.value)) {
-          value = Value.fromJSON(this.props.item.value);
+        if (!Value.isValue(this.props.containerItem.value)) {
+          value = Value.fromJSON(this.props.containerItem.value);
           this.props.handleOnChange(
             { value },
             this.props.index,
@@ -338,11 +305,11 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
             "TEXT_CHANGE"
           );
         } else {
-          value = this.props.item.value;
+          value = this.props.containerItem.value;
         }
         return (
-          <Button
-            item={this.props.item}
+          <ButtonContent
+            item={this.props.containerItem}
             index={this.props.index}
             value={value}
             handleOnChange={this.props.handleOnChange}
@@ -351,10 +318,10 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
           />
         );
       case "DIVIDER":
-        return <Divider />;
+        return <DividerContent />;
       case "HTML":
-        if (!Value.isValue(this.props.item.value)) {
-          value = Value.fromJSON(this.props.item.value);
+        if (!Value.isValue(this.props.containerItem.value)) {
+          value = Value.fromJSON(this.props.containerItem.value);
           this.props.handleOnChange(
             { value },
             this.props.index,
@@ -362,10 +329,10 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
             "TEXT_CHANGE"
           );
         } else {
-          value = this.props.item.value;
+          value = this.props.containerItem.value;
         }
         return (
-          <Html
+          <HtmlContent
             index={this.props.index}
             value={value}
             handleOnChange={this.props.handleOnChange}
@@ -375,16 +342,16 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
         );
       case "IMAGE":
         return (
-          <Image
-            src={this.props.item.imageSrc}
-            alt={this.props.item.alt}
-            link={this.props.item.link}
-            fullWidth={this.props.item.fullWidth}
+          <ImageContent
+            src={this.props.containerItem.imageSrc}
+            alt={this.props.containerItem.alt}
+            link={this.props.containerItem.link}
+            fullWidth={this.props.containerItem.fullWidth}
           />
         );
       case "TEXT":
-        if (!Value.isValue(this.props.item.value)) {
-          value = Value.fromJSON(this.props.item.value);
+        if (!Value.isValue(this.props.containerItem.value)) {
+          value = Value.fromJSON(this.props.containerItem.value);
           this.props.handleOnChange(
             { value },
             this.props.index,
@@ -392,13 +359,13 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
             "TEXT_CHANGE"
           );
         } else {
-          value = this.props.item.value;
+          value = this.props.containerItem.value;
         }
         return (
-          <Text
+          <TextContent
             value={value}
             index={this.props.index}
-            item={this.props.item}
+            item={this.props.containerItem}
             plugins={plugins}
             selected={selected}
             handleOnChange={this.props.handleOnChange}
@@ -407,9 +374,14 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
           />
         );
       case "VIDEO":
-        return <Video src={this.props.item.videoSrc!} autoplay={false} />;
+        return (
+          <VideoContent
+            src={this.props.containerItem.videoSrc!}
+            autoplay={false}
+          />
+        );
       case "SOCIAL":
-        return <SocialMedia />;
+        return <SocialMediaContent />;
       default:
         return null;
     }
@@ -452,16 +424,11 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
     const {
       isDragging,
       connectDragSource,
-      connectDragPreview,
       connectDropTarget
+      // connectDragPreview
     } = this.props;
-    const {
-      index,
-      callbackfromparent,
-      hoveredIndex,
-      selectedIndex
-    } = this.props;
-    const opacity = isDragging ? 0.2 : 1;
+    const { index, hoveredIndex, selectedIndex } = this.props;
+    const opacity = isDragging ? 0.5 : 1;
     let hover: boolean = false;
     let active: boolean = false;
     if (Array.isArray(hoveredIndex)) {
@@ -480,114 +447,67 @@ class Container extends React.Component<IProps & IDnDProps, IState> {
           : false
         : false;
     }
-    return (
-      connectDragSource &&
-      connectDropTarget &&
-      connectDropTarget(
-        connectDragPreview(
-          <div
-            className={classnames(
-              "container",
-              hover ? "blockHover" : null,
-              active ? "blockActive" : null
-            )}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              position: "relative",
-              padding: "5px",
-              width: "100%",
-              justifyContent:
-                this.props.item.content === "TEXT" ||
-                this.props.item.content === "BUTTON" ||
-                this.props.item.content === "HTML" ||
-                this.props.item.content === "IMAGE" ||
-                this.props.item.content === "VIDEO"
-                  ? this.props.item.align
-                    ? this.props.item.align
-                    : "center"
-                  : "center",
-              opacity,
-              transition: "border 0.5s ease, opacity 0.5s ease",
-              borderRadius: "2px"
-            }}
-            onMouseOver={this.handleOnMouseOver}
-            onMouseDown={this.handleOnMouseDown}
-            onMouseLeave={this.handleOnMouseLeave}
-          >
-            {hover || active ? (
-              <div>
-                {this.state.toolHover ? (
-                  <Tool onMouseLeave={this.handleOnMouseLeaveTool}>
-                    <ButtonOption
-                      onClick={() => {
-                        // console.log(index);
-                        callbackfromparent("delete", index);
-                      }}
-                    >
-                      <i className="fas fa-trash-alt" />
-                    </ButtonOption>
-                    <ButtonOption
-                      onClick={() => {
-                        callbackfromparent("duplicate", index);
-                      }}
-                    >
-                      <i className="far fa-copy" />
-                    </ButtonOption>
-                    {connectDragSource(
-                      <button
-                        style={{
-                          border: "none",
-                          outline: "none",
-                          backgroundColor: EditorDefaults.HANDLE_COLOR,
-                          color: "white",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          width: "2rem",
-                          height: "2rem",
-                          marginBottom: "10px",
-                          cursor: "pointer",
-                          borderTopRightRadius: "100%",
-                          borderBottomRightRadius: "100%"
-                        }}
-                      >
-                        <i className="fas fa-arrows-alt" />
-                      </button>
-                    )}
-                  </Tool>
-                ) : (
-                  <Handle onMouseOver={this.handleOnMouseOverTool}>
-                    <i className="fas fa-ellipsis-h" />
-                  </Handle>
-                )}
-              </div>
-            ) : null}
-            {this.showInner(active)}
-            {/* {(hover || active) && <ContentBox index={index} />} */}
-          </div>
-        )
+
+    return connectDropTarget(
+      connectDragSource(
+        <div
+          className={classnames(
+            "container",
+            hover ? "blockHover" : null,
+            active ? "blockActive" : null
+          )}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            position: "relative",
+            padding: "5px",
+            width: "100%",
+            cursor: "grab",
+            justifyContent:
+              this.props.containerItem.content === "TEXT" ||
+              this.props.containerItem.content === "BUTTON" ||
+              this.props.containerItem.content === "HTML" ||
+              this.props.containerItem.content === "IMAGE" ||
+              this.props.containerItem.content === "VIDEO"
+                ? this.props.containerItem.align
+                  ? this.props.containerItem.align
+                  : "center"
+                : "center",
+            opacity,
+            transition: "border 0.5s ease, opacity 0.5s ease",
+            borderRadius: "2px"
+          }}
+          onMouseOver={this.handleOnMouseOver}
+          onMouseDown={this.handleOnMouseDown}
+          onMouseLeave={this.handleOnMouseLeave}
+        >
+          {this.showInner(active)}
+        </div>
       )
     );
   }
+  // public handleClickOutside = () => {
+  //   this.props.masterCallback("deselect");
+  // };
 }
 
 export default flow(
-  DropTarget(
+  DropTarget<IProps, IDnDTargetProps>(
     [ItemTypes.CARD, ItemTypes.CONTENT],
     cardTarget,
-    (connect: DropTargetConnector, monitor: DropTargetMonitor): object => ({
+    (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
       connectDropTarget: connect.dropTarget(),
       isOver: monitor.isOver()
     })
   ),
-  DragSource(
+  DragSource<IProps, IDnDSourceProps>(
     ItemTypes.CARD,
     cardSource,
-    (connect: DragSourceConnector, monitor: DragSourceMonitor): object => ({
+    (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
+      item: monitor.getItem(),
+      isDragging: monitor.isDragging(),
       connectDragSource: connect.dragSource(),
-      connectDragPreview: connect.dragPreview(),
-      isDragging: monitor.isDragging()
+      connectDragPreview: connect.dragPreview()
     })
   )
 )(Container);

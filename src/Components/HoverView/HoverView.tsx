@@ -4,13 +4,13 @@ import { Value, ValueJSON } from "slate";
 import EditorDefaults from "../../EditorDefaults";
 import { GetPos } from "../../Utility/GetPos";
 
-import Button from "../ContentItems/Button";
-import Text from "../ContentItems/Text";
-import Divider from "../ContentItems/Divider";
-import Html from "../ContentItems/Html";
-import Image from "../ContentItems/Image";
-import Video from "../ContentItems/Video";
-import SocialMedia from "../ContentItems/SocialMedia";
+import ButtonContent from "../ContentItems/ButtonContent";
+import TextContent from "../ContentItems/TextContent";
+import DividerContent from "../ContentItems/DividerContent";
+import HtmlContent from "../ContentItems/HtmlContent";
+import ImageContent from "../ContentItems/ImageContent";
+import VideoContent from "../ContentItems/VideoContent";
+import SocialMediaContent from "../ContentItems/SocialMediaContent";
 
 import {
   AlignCenterPlugin,
@@ -551,7 +551,7 @@ class UserContainer extends React.Component<IUserContainerProps> {
           value = this.props.item.value;
         }
         return (
-          <Button
+          <ButtonContent
             item={this.props.item}
             value={value}
             renderNode={this.props.renderNode}
@@ -559,7 +559,7 @@ class UserContainer extends React.Component<IUserContainerProps> {
           />
         );
       case "DIVIDER":
-        return <Divider />;
+        return <DividerContent />;
       case "HTML":
         if (!Value.isValue(this.props.item.value)) {
           value = Value.fromJSON(this.props.item.value);
@@ -567,7 +567,7 @@ class UserContainer extends React.Component<IUserContainerProps> {
           value = this.props.item.value;
         }
         return (
-          <Html
+          <HtmlContent
             value={value}
             renderNode={this.props.renderNode}
             renderMark={this.props.renderMark}
@@ -575,7 +575,7 @@ class UserContainer extends React.Component<IUserContainerProps> {
         );
       case "IMAGE":
         return (
-          <Image
+          <ImageContent
             src={this.props.item.imageSrc}
             alt={this.props.item.alt}
             link={this.props.item.link}
@@ -589,7 +589,7 @@ class UserContainer extends React.Component<IUserContainerProps> {
           value = this.props.item.value;
         }
         return (
-          <Text
+          <TextContent
             value={value}
             item={this.props.item}
             plugins={plugins}
@@ -598,9 +598,9 @@ class UserContainer extends React.Component<IUserContainerProps> {
           />
         );
       case "VIDEO":
-        return <Video src={this.props.item.videoSrc} autoplay={true} />;
+        return <VideoContent src={this.props.item.videoSrc} autoplay={true} />;
       case "SOCIAL":
-        return <SocialMedia />;
+        return <SocialMediaContent />;
       default:
         return null;
     }

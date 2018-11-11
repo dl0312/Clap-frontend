@@ -16,7 +16,6 @@ import CategoryAdd from "../../Routes/CategoryAdd";
 import CategoryEdit from "../../Routes/CategoryEdit";
 import LogIn from "../../Routes/LogIn";
 import Register from "../../Routes/Register";
-import SignUp from "../../Routes/SignUp";
 import Profile from "../../Routes/Profile";
 import SearchResult from "../../Routes/SearchResult";
 import Footer from "../Footer";
@@ -129,7 +128,6 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn, changeLocale }) => (
                 exact={true}
                 component={SearchResult}
               />
-              <Route path="/signup" exact={true} component={SignUp} />
               <PrivateRoute
                 isLoggedIn={isLoggedIn}
                 path="/profile"

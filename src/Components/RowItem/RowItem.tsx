@@ -5,8 +5,10 @@ import {
   DragSource,
   ConnectDragSource,
   DragSourceMonitor,
-  DragSourceConnector
+  DragSourceConnector,
+  ConnectDragPreview
 } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 const itemSource = {
   beginDrag(
@@ -23,12 +25,6 @@ const itemSource = {
     const columnListArray: any[] = [];
     component.props.array.map(element => {
       return columnListArray.push([]);
-    });
-    console.log({
-      type: "columnList",
-      onDrag: "columnList",
-      content: props.item.array,
-      columnListArray
     });
     return {
       type: "columnList",
@@ -71,8 +67,9 @@ interface IProps {
 }
 
 interface IDnDProps {
-  connectDragSource: ConnectDragSource;
   isDragging: boolean;
+  connectDragSource: ConnectDragSource;
+  connectDragPreview: ConnectDragPreview;
 }
 
 class RowItem extends Component<IProps & IDnDProps> {
@@ -93,12 +90,28 @@ class RowItem extends Component<IProps & IDnDProps> {
       )
     );
   }
+
+  public componentDidMount() {
+    const { connectDragPreview } = this.props;
+    if (connectDragPreview) {
+      // Use empty image as a drag preview so browsers don't draw it
+      // and we can draw whatever we want on the custom drag layer instead.
+      connectDragPreview(getEmptyImage(), {
+        // IE fallback: specify that we'd rather screenshot the node
+        // when it already knows it's being dragged so we can hide it with CSS.
+        captureDraggingState: true
+      });
+    }
+  }
 }
 
-export default DragSource(
+export default DragSource<IProps, IDnDProps>(
   ItemTypes.ROW,
   itemSource,
-  (connect: DragSourceConnector): object => ({
-    connectDragSource: connect.dragSource()
+  (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
+    item: monitor.getItem(),
+    isDragging: monitor.isDragging(),
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview()
   })
 )(RowItem);
