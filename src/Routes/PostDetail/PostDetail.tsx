@@ -28,7 +28,7 @@ import { formatDate } from "../../Utility/FormatDate";
 import { LOST_IMAGE_URL } from "../../constants";
 import Loading from "src/Components/Loading";
 import CategoryTag from "src/Components/CategoryTag";
-import { Button, BackTop, Popconfirm, message } from "antd";
+import { Button, Popconfirm, message } from "antd";
 import UserTag from "src/Components/UserTag";
 
 const DetailContainer = styled.div`
@@ -345,7 +345,7 @@ const ButtonsContainer = styled.div`
 const ClapImageContainer = styled.div`
   margin-top: 15px;
   border: 1px solid white;
-  background-color: white
+  background-color: white;
   border-radius: 4px;
 `;
 
@@ -485,7 +485,6 @@ class PostDetail extends React.Component<IProps, IState> {
                   <Helmet>
                     <title>{`${post.title} | CLAP`}</title>
                   </Helmet>
-                  <BackTop />
                   <DetailContainer>
                     <PostContainer>
                       <TitleContainer
@@ -493,8 +492,8 @@ class PostDetail extends React.Component<IProps, IState> {
                           post.titleImg
                             ? post.titleImg
                             : post.category.topWikiImage !== null
-                              ? post.category.topWikiImage.shownImage
-                              : LOST_IMAGE_URL
+                            ? post.category.topWikiImage.shownImage
+                            : LOST_IMAGE_URL
                         }
                         pos={post.titleImgPos}
                       >

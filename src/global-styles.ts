@@ -103,6 +103,13 @@ hr{
   background-color: white;
 }
 
+.ant-popover-inner-content{
+  padding: 3px 4px;
+}
+.ant-popover-title{
+    padding: 10px 15px 9px;
+}
+
 .ql-stroke {
   stroke: #777;
   fill: transparent;

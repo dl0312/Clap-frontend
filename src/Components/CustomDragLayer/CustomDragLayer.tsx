@@ -6,7 +6,7 @@ import CardDragPreiview from "../CardDragPreview";
 const layerStyles: React.CSSProperties = {
   position: "fixed",
   pointerEvents: "none",
-  zIndex: 100,
+  zIndex: 1000,
   left: 0,
   top: 0,
   width: "100%",
@@ -52,6 +52,7 @@ class CustomDragLayer extends React.Component<ICustomDragLayerProps, any> {
   };
 
   public render() {
+    console.log(this.props);
     const { isDragging, comp, itemType } = this.props;
     if (!isDragging) {
       return null;

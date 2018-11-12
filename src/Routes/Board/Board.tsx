@@ -401,6 +401,7 @@ class Board extends React.Component<IProps, IState> {
                     <React.Fragment>
                       {posts && (
                         <Table
+                          rowKey="uid"
                           style={{ minWidth: 850 }}
                           size={"small"}
                           {...pagenationConfig}
@@ -482,21 +483,25 @@ class Board extends React.Component<IProps, IState> {
                     <React.Fragment>
                       {posts && (
                         <Table
+                          rowKey="uid"
                           style={{ minWidth: 850 }}
                           size={"small"}
                           {...pagenationConfig}
                           // style={{ backgroundColor: "white" }}
                           columns={columns}
                           dataSource={posts.map((post: any) => {
-                            return {
-                              id: post!.id,
-                              title: post,
-                              user: post!.user,
-                              category: post!.category,
-                              clap: post!.clapsCount,
-                              view: post!.view,
-                              date: post!.createdAt
-                            };
+                            console.log(post);
+                            return (
+                              post && {
+                                id: post.id,
+                                title: post,
+                                user: post.user,
+                                category: post.category,
+                                clap: post.clapsCount,
+                                view: post.view,
+                                date: post.createdAt
+                              }
+                            );
                           })}
                           footer={() => (
                             <div
@@ -564,6 +569,7 @@ class Board extends React.Component<IProps, IState> {
                     <React.Fragment>
                       {posts && (
                         <Table
+                          rowKey="uid"
                           style={{ minWidth: 850 }}
                           size={"small"}
                           {...pagenationConfig}

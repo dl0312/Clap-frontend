@@ -39,8 +39,8 @@ const MenuTitle = styled.div`
 
 const menus = [
   { icon: "fas fa-bars", name: "ROW" },
-  { icon: "fas fa-th-large", name: "CONTENT" },
-  { icon: "fas fa-columns", name: "BODY" }
+  { icon: "fas fa-th-large", name: "CONTENT" }
+  // { icon: "fas fa-columns", name: "BODY" }
 ];
 
 interface IProps {

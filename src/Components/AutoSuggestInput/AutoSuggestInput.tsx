@@ -6,7 +6,6 @@ import {
   getCategoriesByKeyword,
   getCategoriesByKeywordVariables
 } from "src/types/api";
-import Loading from "../Loading";
 
 const Option = Select.Option;
 
@@ -38,7 +37,15 @@ class AutoSuggestInput extends React.Component<any, IState> {
       >
         {({ loading, error, data }) => {
           if (loading) {
-            return <Loading color="#000" />;
+            return (
+              <Select
+                mode="default"
+                allowClear={true}
+                showSearch={true}
+                placeholder="Clap Category"
+                style={{ width: 250 }}
+              />
+            );
           }
           if (error) {
             console.log("error");

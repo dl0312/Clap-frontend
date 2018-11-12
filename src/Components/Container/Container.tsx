@@ -132,7 +132,6 @@ const cardSource = {
   },
   endDrag(props: IProps, monitor: DragSourceMonitor, component?: Container) {
     props.masterCallback("onDrag", null);
-
     props.masterCallback("setComp", null);
     return { index: props.index };
   }

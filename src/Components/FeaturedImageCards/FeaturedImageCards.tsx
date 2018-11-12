@@ -154,7 +154,7 @@ const CardTextContainer = styled.div`
   margin: 5px;
   border-radius: 2px;
   position: relative;
-  top: 25%;
+  top: 20%;
 `;
 
 const CardTitle = styled.div`

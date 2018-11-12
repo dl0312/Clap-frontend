@@ -51,7 +51,10 @@ class CardDragPreiview extends React.Component<
   public render() {
     const { comp, itemType } = this.props;
     const { tickTock } = this.state;
-    const node = comp ? (findDOMNode(this.props.comp) as Element) : null;
+    const node =
+      comp && comp.isCurrentlyMounted
+        ? (findDOMNode(this.props.comp) as Element)
+        : null;
     const rect = node ? (node.getBoundingClientRect() as DOMRect) : null;
     console.log(tickTock);
     return (
@@ -61,7 +64,7 @@ class CardDragPreiview extends React.Component<
             transition: "0.2s ease",
             width: rect
               ? tickTock
-                ? 0
+                ? "0px"
                 : rect.width / 2
               : tickTock
               ? "0px"
@@ -73,6 +76,15 @@ class CardDragPreiview extends React.Component<
               : tickTock
               ? "0px"
               : "100px",
+            transform: rect
+              ? tickTock
+                ? "0px"
+                : `translate(${(-1 * rect.width) / 4}px, ${(-1 * rect.height) /
+                    4}px)`
+              : tickTock
+              ? "0px"
+              : `translate(-50px, -50px)`,
+            textTransform: "uppercase",
             backgroundColor: "white",
             border: "2px solid black",
             borderRadius: 10,

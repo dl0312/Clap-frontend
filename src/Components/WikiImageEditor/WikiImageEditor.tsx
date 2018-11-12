@@ -28,6 +28,8 @@ import Template from "../Template";
 import Builder from "../Builder";
 import { Link } from "react-router-dom";
 import Upload from "../Upload";
+import { Popover, Tooltip, Icon } from "antd";
+import HoverView from "../HoverView";
 
 interface IEditorContainerProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
@@ -155,7 +157,7 @@ const EditorContentContainer = styled.div`
 
 const WikiImageContainer = styled.div`
   width: 40%;
-  background-color: #222;
+  background-color: #ddd;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -163,7 +165,7 @@ const WikiImageContainer = styled.div`
 `;
 
 const ShownImageContainer = styled.div`
-  margin-bottom: 10px;
+  margin-top: 10px;
 `;
 
 const EditorLeftOuterContainer = styled.div`
@@ -194,10 +196,10 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
     props.size === "SMALL"
       ? "200px"
       : props.size === "MEDIUM"
-        ? "300px"
-        : props.size === "LARGE"
-          ? "400px"
-          : "100%"};
+      ? "300px"
+      : props.size === "LARGE"
+      ? "400px"
+      : "100%"};
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -1171,22 +1173,33 @@ class WikiImageEditor extends React.Component<IProps, IState> {
             />
           </EditorNavTwo>
           <EditorContentContainer>
-            <WikiImageContainer>
-              <ShownImageContainer>
-                <Upload
-                  type={"WIKIIMAGE"}
-                  exShownImg={this.state.exShownImg}
-                  masterCallback={this.masterCallback}
-                />
-              </ShownImageContainer>
-
-              <ImagePopup
-                pos={pos}
-                follow={false}
-                json={JSON.stringify(this.state)}
-                onImage={true}
+            <EditorRightContainer>
+              <EditorRight
+                masterCallback={
+                  this.masterCallback // func
+                }
+                addIdToState={this.addIdToState}
+                deleteIdToState={this.deleteIdToState}
+                rightMenu={
+                  this.state.rightMenu // values
+                }
+                cards={this.state.cards}
+                view={this.state.view}
+                title={this.state.title}
+                font={this.state.font}
+                category={this.state.category}
               />
-            </WikiImageContainer>
+              <BlockOptions
+                type={this.props.type}
+                handleOnChange={this.handleOnChange}
+                selectedIndex={selectedIndex}
+                selectedContent={this.showSelected(selectedIndex)}
+                OnChangeCards={this.OnChangeCards}
+                onBlockOptionDownClick={this.onBlockOptionDownClick}
+                buttonCallback={this.buttonCallback}
+              />
+            </EditorRightContainer>
+
             <EditorLeftOuterContainer>
               <EditorLeftContainer view={view} size={size}>
                 {view === "EDIT" ? (
@@ -1290,32 +1303,29 @@ class WikiImageEditor extends React.Component<IProps, IState> {
               </EditorLeftContainer>
             </EditorLeftOuterContainer>
 
-            <EditorRightContainer>
-              <EditorRight
-                masterCallback={
-                  this.masterCallback // func
+            <WikiImageContainer>
+              <div style={{ fontSize: 20, fontWeight: "bolder" }}>
+                WIKIIMAGE PREVIEW
+                <Tooltip title="You can preview wikiImage">
+                  <Icon style={{ marginLeft: 5 }} type="question-circle-o" />
+                </Tooltip>
+              </div>
+              <Popover
+                placement="left"
+                content={
+                  <HoverView json={JSON.parse(JSON.stringify(this.state))} />
                 }
-                addIdToState={this.addIdToState}
-                deleteIdToState={this.deleteIdToState}
-                rightMenu={
-                  this.state.rightMenu // values
-                }
-                cards={this.state.cards}
-                view={this.state.view}
-                title={this.state.title}
-                font={this.state.font}
-                category={this.state.category}
-              />
-              <BlockOptions
-                type={this.props.type}
-                handleOnChange={this.handleOnChange}
-                selectedIndex={selectedIndex}
-                selectedContent={this.showSelected(selectedIndex)}
-                OnChangeCards={this.OnChangeCards}
-                onBlockOptionDownClick={this.onBlockOptionDownClick}
-                buttonCallback={this.buttonCallback}
-              />
-            </EditorRightContainer>
+                trigger="hover"
+              >
+                <ShownImageContainer>
+                  <Upload
+                    type={"WIKIIMAGE"}
+                    exShownImg={this.state.exShownImg}
+                    masterCallback={this.masterCallback}
+                  />
+                </ShownImageContainer>
+              </Popover>
+            </WikiImageContainer>
           </EditorContentContainer>
         </EditorContainer>
         <ImagePopup

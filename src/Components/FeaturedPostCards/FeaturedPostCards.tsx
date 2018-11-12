@@ -157,7 +157,7 @@ const CardTextContainer = styled.div`
   margin: 5px;
   border-radius: 2px;
   position: relative;
-  top: 25%;
+  top: 20%;
 `;
 
 const CardTitle = styled.div`
@@ -277,8 +277,8 @@ class FeaturedPostCards extends React.Component<IProps, IState> {
                               post.titleImg
                                 ? post.titleImg
                                 : post.category.topWikiImage !== null
-                                  ? post.category.topWikiImage.shownImage
-                                  : LOST_IMAGE_URL
+                                ? post.category.topWikiImage.shownImage
+                                : LOST_IMAGE_URL
                             }
                             alt={post.category.name}
                             pos={post.titleImgPos}

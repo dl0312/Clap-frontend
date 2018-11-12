@@ -40,18 +40,19 @@ const UploadContainer = styled<IUploadContainerProps, any>("div")`
         return;
     }
   }};
-  outline: ${props => {
+  border: ${props => {
     switch (props.type) {
       case "POST_IMAGE":
         return "1px dashed black";
       case "WIKIIMAGE":
-        return "1px dashed white";
+        return "1px dashed black";
       case "PROFILE":
         return "1px dashed black";
       default:
         return;
     }
   }};
+  border-radius: 4px;
   background-color: white;
 `;
 

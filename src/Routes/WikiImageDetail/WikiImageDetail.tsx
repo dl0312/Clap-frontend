@@ -26,6 +26,7 @@ import UserTag from "src/Components/UserTag";
 import { Card, Icon, Skeleton, Popover } from "antd";
 import { Meta } from "antd/lib/list/Item";
 import HoverView from "src/Components/HoverView";
+import EditorDefaults from "src/EditorDefaults";
 
 const WikiImageDetailContainer = styled.div`
   width: 100%;
@@ -43,6 +44,28 @@ const WikiImageDetailInner = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
+`;
+
+interface IClapImageProps {
+  small: boolean;
+  selected: boolean;
+}
+
+const ClapImage = styled<IClapImageProps, any>("img")`
+  width: ${props => (props.small ? "20px" : null)};
+  margin-left: ${props => (props.small ? "2px" : null)};
+  margin-right: ${props => (props.small ? "2px" : null)};
+  max-width: 100%;
+  max-height: 20em;
+  margin-bottom: ${props => (props.small ? "-4px" : null)};
+  border-radius: 4px;
+  box-shadow: ${props => (props.selected ? "0 0 0 2px blue;" : "none")};
+`;
+
+const ClapImageText = styled.span`
+  font-weight: bolder;
+  color: ${props => props.color};
+  padding: 0 2px;
 `;
 
 // const CurrentHoverContainer = styled.div``;
@@ -172,6 +195,22 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                               cover={
                                 <Popover
                                   placement="rightTop"
+                                  title={
+                                    <>
+                                      <ClapImage
+                                        small={true}
+                                        src={wikiImage.shownImage}
+                                        alt={"hover"}
+                                      />
+                                      <ClapImageText
+                                        color={
+                                          EditorDefaults.CLAP_IMG_TEXT_COLOR
+                                        }
+                                      >
+                                        {wikiImage.category.name}
+                                      </ClapImageText>
+                                    </>
+                                  }
                                   content={
                                     hoverImgJson && (
                                       <HoverView
@@ -311,14 +350,14 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                               <Meta
                                 style={{
                                   display: "flex",
-                                  flexDirection: "column",
+                                  flexDirection: "column-reverse",
                                   alignItems: "center",
                                   justifyContent: "center",
                                   margin: "-10px"
                                 }}
                                 title={<h2>{wikiImage.category.name}</h2>}
                                 avatar={
-                                  <div style={{ marginBottom: "10px" }}>
+                                  <div style={{ marginTop: "10px" }}>
                                     <UserTag
                                       size={"small"}
                                       display={"both"}
@@ -333,23 +372,6 @@ class WikiImageDetail extends React.Component<IProps, IState> {
                         </WikiImageDeleteQuery>
                       )}
                     </SendClapQuery>
-                    {/* <ImagePopup
-                      pos={pos}
-                      json={hoverImgJson}
-                      onImage={onImage}
-                    /> */}
-                    {/* <CurrentHoverContainer>
-                      {wikiImage !== undefined ? (
-                        <ImagePopup
-                          pos={pos}
-                          follow={false}
-                          json={wikiImage.hoverImage}
-                          onImage={true}
-                        />
-                      ) : (
-                        <div>no hover image</div>
-                      )}
-                    </CurrentHoverContainer> */}
                   </WikiImageDetailInner>
                 </WikiImageDetailContainer>
               )

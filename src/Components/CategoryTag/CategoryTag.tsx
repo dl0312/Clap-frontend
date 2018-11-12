@@ -31,18 +31,17 @@ const CategoryTag: React.SFC<IProps> = ({ category, display }) => (
         verticalAlign: "top"
       }}
     >
-      {category.topWikiImage &&
-        (display === "photo" || display === "both") && (
-          <img
-            style={{
-              height: "100%",
-              borderTopLeftRadius: "4px",
-              borderBottomLeftRadius: "4px",
-              borderRight: "1px solid #d9d9d9"
-            }}
-            src={category.topWikiImage.shownImage}
-          />
-        )}
+      {category.topWikiImage && (display === "photo" || display === "both") && (
+        <img
+          style={{
+            height: "100%",
+            borderTopLeftRadius: "4px",
+            borderBottomLeftRadius: "4px",
+            borderRight: "1px solid #d9d9d9"
+          }}
+          src={category.topWikiImage.shownImage}
+        />
+      )}
       {(display === "text" || display === "both") && (
         <span style={{ padding: "0 7px" }}>{category.name}</span>
       )}{" "}

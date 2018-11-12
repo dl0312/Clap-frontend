@@ -1,3 +1,3 @@
 export const AUTH_TOKEN = "jwt";
 export const LOST_IMAGE_URL =
-  "http://www.evolvefish.com/thumbnail.asp?file=assets/images/vinyl%20decals/EF-VDC-00035(black).jpg&maxx=300&maxy=0";
+  "https://www.biotekrx.com/wp-content/uploads/2017/08/IMG_1185.png";

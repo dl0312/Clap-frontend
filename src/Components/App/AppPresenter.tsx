@@ -19,6 +19,7 @@ import Register from "../../Routes/Register";
 import Profile from "../../Routes/Profile";
 import SearchResult from "../../Routes/SearchResult";
 import Footer from "../Footer";
+import { BackTop } from "antd";
 // import { TransitionGroup, CSSTransition } from "react-transition-group";
 // import { ApolloProvider } from 'react-apollo';
 
@@ -120,6 +121,7 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn, changeLocale }) => (
       exact={true}
       render={({ location }) => (
         <AppBox>
+          <BackTop />
           <Navigation isLoggedIn={isLoggedIn} />
           <MainContainer>
             <Switch>

@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { Value, ValueJSON } from "slate";
 import EditorDefaults from "../../EditorDefaults";
 import ImagePopup from "../ImagePopup";
-import { GetPos } from "../../Utility/GetPos";
 
 import ButtonContent from "../ContentItems/ButtonContent";
 import TextContent from "../ContentItems/TextContent";
@@ -65,6 +64,7 @@ import HoverView from "../HoverView";
 import { getCategoryById, getCategoryByIdVariables } from "src/types/api";
 import { Query } from "react-apollo";
 import { CATEGORY } from "src/sharedQueries";
+import { Link } from "react-router-dom";
 const plugins = [
   EditPrism({
     onlyIn: (node: any) => node.type === "code_block",
@@ -124,22 +124,14 @@ const ClapImage = styled<IClapImageProps, any>("img")`
   max-width: 100%;
   max-height: 20em;
   margin-bottom: ${props => (props.small ? "-4px" : null)};
+  border-radius: 4px;
   box-shadow: ${props => (props.selected ? "0 0 0 2px blue;" : "none")};
-`;
-
-interface IClapImageContainerProps {
-  small: boolean;
-}
-
-const ClapImageContainer = styled<IClapImageContainerProps, any>("span")`
-  margin-left: ${props => (props.small ? "2px" : null)};
-  margin-right: ${props => (props.small ? "2px" : null)};
-  cursor: pointer;
 `;
 
 const ClapImageText = styled.span`
   font-weight: bolder;
   color: ${props => props.color};
+  padding: 0 2px;
 `;
 
 class GetCategoryById extends Query<
@@ -193,8 +185,6 @@ class UserView extends React.Component<IProps, IState> {
         case "numbered-list":
           return <ol {...attributes}>{children}</ol>;
         case "clap-image": {
-          const representSrc = node.data.get("represent");
-          const hoverSrc = node.data.get("hover");
           const name = node.data.get("name");
           const type = node.data.get("type");
           const id = node.data.get("id");
@@ -202,26 +192,75 @@ class UserView extends React.Component<IProps, IState> {
           switch (type) {
             case "TEXT":
               return (
-                <ClapImageContainer
-                  onMouseOver={(e: any) =>
-                    this.setState({
-                      hoverImgJson: hoverSrc,
-                      onImage: true,
-                      pos: GetPos(e)
-                    })
-                  }
-                  onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
-                    this.setState({ pos: GetPos(e) })
-                  }
-                  onMouseOut={() => {
-                    this.setState({ onImage: false });
-                  }}
-                  small={true}
+                <GetCategoryById
+                  query={CATEGORY}
+                  fetchPolicy={"cache-and-network"}
+                  variables={{ categoryId: id }}
                 >
-                  <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
-                    {name}
-                  </ClapImageText>
-                </ClapImageContainer>
+                  {({ loading, data, error }) => {
+                    if (loading)
+                      return (
+                        <ClapImageText
+                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                        >
+                          {name}
+                        </ClapImageText>
+                      );
+                    if (error) return `${error.message}`;
+                    if (data !== undefined) {
+                      const { category } = data.GetCategoryById;
+                      return (
+                        category &&
+                        category.topWikiImage && (
+                          <Popover
+                            placement="leftTop"
+                            content={
+                              <HoverView
+                                json={JSON.parse(
+                                  category.topWikiImage.hoverImage
+                                )}
+                              />
+                            }
+                            title={
+                              <>
+                                <ClapImage
+                                  small={true}
+                                  src={category.topWikiImage.shownImage}
+                                  alt={"hover"}
+                                  selected={isSelected}
+                                  {...attributes}
+                                />
+                                <ClapImageText
+                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                                >
+                                  {name}
+                                </ClapImageText>
+                              </>
+                            }
+                            trigger="hover"
+                          >
+                            <Link
+                              target="_blank"
+                              style={{
+                                textDecoration: "none"
+                              }}
+                              rel="noopener noreferrer"
+                              to={`/category/read/${category.id}`}
+                            >
+                              <ClapImageText
+                                color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                              >
+                                {name}
+                              </ClapImageText>
+                            </Link>
+                          </Popover>
+                        )
+                      );
+                    } else {
+                      return null;
+                    }
+                  }}
+                </GetCategoryById>
               );
             case "MINI_IMG":
               return (
@@ -231,7 +270,14 @@ class UserView extends React.Component<IProps, IState> {
                   variables={{ categoryId: id }}
                 >
                   {({ loading, data, error }) => {
-                    if (loading) return "Loading...";
+                    if (loading)
+                      return (
+                        <ClapImageText
+                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                        >
+                          {name}
+                        </ClapImageText>
+                      );
                     if (error) return `${error.message}`;
                     if (data !== undefined) {
                       const { category } = data.GetCategoryById;
@@ -239,7 +285,7 @@ class UserView extends React.Component<IProps, IState> {
                         category &&
                         category.topWikiImage && (
                           <Popover
-                            placement="top"
+                            placement="leftTop"
                             content={
                               <HoverView
                                 json={JSON.parse(
@@ -247,20 +293,45 @@ class UserView extends React.Component<IProps, IState> {
                                 )}
                               />
                             }
+                            title={
+                              <>
+                                <ClapImage
+                                  small={true}
+                                  src={category.topWikiImage.shownImage}
+                                  alt={"hover"}
+                                  selected={isSelected}
+                                  {...attributes}
+                                />
+                                <ClapImageText
+                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                                >
+                                  {name}
+                                </ClapImageText>
+                              </>
+                            }
                             trigger="hover"
                           >
-                            <ClapImage
-                              small={true}
-                              src={category.topWikiImage.shownImage}
-                              alt={"hover"}
-                              selected={isSelected}
-                              {...attributes}
-                            />
-                            <ClapImageText
-                              color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                            <Link
+                              target="_blank"
+                              style={{
+                                textDecoration: "none"
+                              }}
+                              rel="noopener noreferrer"
+                              to={`/category/read/${category.id}`}
                             >
-                              {name}
-                            </ClapImageText>
+                              <ClapImage
+                                small={true}
+                                src={category.topWikiImage.shownImage}
+                                alt={"hover"}
+                                selected={isSelected}
+                                {...attributes}
+                              />
+                              <ClapImageText
+                                color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                              >
+                                {name}
+                              </ClapImageText>
+                            </Link>
                           </Popover>
                         )
                       );
@@ -269,56 +340,85 @@ class UserView extends React.Component<IProps, IState> {
                     }
                   }}
                 </GetCategoryById>
-                // <ClapImageContainer
-                //   onMouseOut={(e: React.MouseEvent<HTMLImageElement>) => {
-                //     console.log("leave");
-                //     this.setState({ onImage: false });
-                //   }}
-                //   onMouseEnter={(e: React.MouseEvent<HTMLImageElement>) =>
-                //     this.setState({
-                //       hoverImgJson: hoverSrc,
-                //       onImage: true,
-                //       pos: GetPos(e)
-                //     })
-                //   }
-                //   onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
-                //     this.setState({ pos: GetPos(e) })
-                //   }
-                //   small={true}
-                // >
-                //   <ClapImage
-                //     small={true}
-                //     src={representSrc}
-                //     alt={"hover"}
-                //     selected={isSelected}
-                //     {...attributes}
-                //   />
-                //   <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
-                //     {name}
-                //   </ClapImageText>
-                // </ClapImageContainer>
               );
             case "NORMAL_IMG":
               return (
-                <ClapImage
-                  src={representSrc}
-                  alt={"hover"}
-                  selected={isSelected}
-                  onMouseOver={(e: any) =>
-                    this.setState({
-                      hoverImgJson: hoverSrc,
-                      onImage: true,
-                      pos: GetPos(e)
-                    })
-                  }
-                  onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
-                    this.setState({ pos: GetPos(e) })
-                  }
-                  onMouseOut={() => {
-                    this.setState({ onImage: false });
+                <GetCategoryById
+                  query={CATEGORY}
+                  fetchPolicy={"cache-and-network"}
+                  variables={{ categoryId: id }}
+                >
+                  {({ loading, data, error }) => {
+                    if (loading)
+                      return (
+                        <ClapImageText
+                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                        >
+                          {name}
+                        </ClapImageText>
+                      );
+                    if (error) return `${error.message}`;
+                    if (data !== undefined) {
+                      const { category } = data.GetCategoryById;
+                      return (
+                        category &&
+                        category.topWikiImage && (
+                          <Popover
+                            placement="leftTop"
+                            content={
+                              <HoverView
+                                json={JSON.parse(
+                                  category.topWikiImage.hoverImage
+                                )}
+                              />
+                            }
+                            title={
+                              <>
+                                <ClapImage
+                                  small={true}
+                                  src={category.topWikiImage.shownImage}
+                                  alt={"hover"}
+                                  selected={isSelected}
+                                  {...attributes}
+                                />
+                                <ClapImageText
+                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                                >
+                                  {name}
+                                </ClapImageText>
+                              </>
+                            }
+                            trigger="hover"
+                          >
+                            <Link
+                              target="_blank"
+                              style={{
+                                height: "100%",
+                                textDecoration: "none",
+                                display: "inline-flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+
+                                verticalAlign: "top"
+                              }}
+                              rel="noopener noreferrer"
+                              to={`/category/read/${category.id}`}
+                            >
+                              <ClapImage
+                                src={category.topWikiImage.shownImage}
+                                alt={"hover"}
+                                selected={isSelected}
+                                {...attributes}
+                              />
+                            </Link>
+                          </Popover>
+                        )
+                      );
+                    } else {
+                      return null;
+                    }
                   }}
-                  {...attributes}
-                />
+                </GetCategoryById>
               );
             default:
               return;
@@ -591,7 +691,11 @@ class UserContainer extends React.Component<IUserContainerProps> {
           />
         );
       case "VIDEO":
-        return <VideoContent src={this.props.item.videoSrc} autoplay={false} />;
+        return (
+          this.props.item.videoSrc && (
+            <VideoContent src={this.props.item.videoSrc} autoplay={false} />
+          )
+        );
       case "SOCIAL":
         return <SocialMediaContent />;
       default:

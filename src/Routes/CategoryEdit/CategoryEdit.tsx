@@ -99,6 +99,7 @@ class CategoryEdit extends React.Component<any, IState> {
 
   public confirm = async (data: any) => {
     const { EditCategory } = data;
+    console.log(data);
     if (EditCategory.ok) {
       toast.success("Category Edit Success");
       this.props.history.push(`/wiki`);
@@ -344,6 +345,12 @@ class CategoryEdit extends React.Component<any, IState> {
                           style={{ width: "100%" }}
                           onClick={(e: any) => {
                             e.preventDefault();
+                            console.log(
+                              this.props.match.params.categoryId,
+                              parentId,
+                              childrenIds,
+                              name
+                            );
                             EditCategory({
                               refetchQueries: [
                                 {
