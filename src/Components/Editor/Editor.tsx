@@ -11,18 +11,21 @@ import JsonView from "../JsonView";
 import UserView from "../UserView";
 import BlockOptions from "../BlockOptions";
 import { media } from "../../config/_mixin";
-import ImagePopup from "../ImagePopup";
 import { Value } from "slate";
 import EmptyCard from "../EmptyCard";
 import { RenderNodeProps, RenderMarkProps } from "slate-react";
-import { POST, POSTS } from "../../sharedQueries";
+import { POST, POSTS, CATEGORY } from "../../sharedQueries";
 
 import update from "immutability-helper";
 import isEqual from "lodash.isequal";
 import cloneDeep from "lodash.clonedeep";
-import { GetPos } from "../../Utility/GetPos";
-import { MutationFn } from "react-apollo";
-import { addPost, addPostVariables } from "../../types/api";
+import { MutationFn, Query } from "react-apollo";
+import {
+  addPost,
+  addPostVariables,
+  getCategoryById,
+  getCategoryByIdVariables
+} from "../../types/api";
 import { Button } from "../../sharedStyle";
 import Textarea from "../Textarea";
 import Template from "../Template";
@@ -32,6 +35,8 @@ import ImageButton from "../ImageButton";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import CustomDragLayer from "../CustomDragLayer";
+import { InputNumber, Popover } from "antd";
+import HoverView from "../HoverView";
 
 interface IEditorContainerProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
@@ -224,21 +229,21 @@ const TitleContainer = styled<ITitleContainer, any>("div")`
   color: ${props => (props.titleImg ? "white" : null)};
 `;
 
-const TitleImgPosInput = styled.input`
-  position: absolute;
-  color: black;
-  right: 25px;
-  top: 50%;
-  padding-left: 10px;
-  margin-top: -5px;
-  width: 50px;
-  border: none;
-  border-radius: 3px;
-  border: bolder;
-  ::-webkit-inner-spin-button {
-    opacity: 1;
-  }
-`;
+// const TitleImgPosInput = styled.input`
+//   position: absolute;
+//   color: black;
+//   right: 25px;
+//   top: 50%;
+//   padding-left: 10px;
+//   margin-top: -5px;
+//   width: 50px;
+//   border: none;
+//   border-radius: 3px;
+//   border: bolder;
+//   ::-webkit-inner-spin-button {
+//     opacity: 1;
+//   }
+// `;
 
 interface ITitleInputProps {
   device: "PHONE" | "TABLET" | "DESKTOP";
@@ -295,16 +300,6 @@ const ClapImage = styled<IClapImageProps, any>("img")`
   box-shadow: ${props => (props.selected ? "0 0 0 2px blue;" : "none")};
 `;
 
-interface IClapImageContainerProps {
-  small: boolean;
-}
-
-const ClapImageContainer = styled<IClapImageContainerProps, any>("span")`
-  margin-left: ${props => (props.small ? "2px" : null)};
-  margin-right: ${props => (props.small ? "2px" : null)};
-  cursor: pointer;
-`;
-
 const ClapImageText = styled.span`
   font-weight: bolder;
   color: ${props => props.color};
@@ -338,6 +333,11 @@ const ViewIcon = styled<IViewIconProps, any>("i")`
     opacity: ${props => (props.isSelected ? null : "0.5")};
   }
 `;
+
+class GetCategoryById extends Query<
+  getCategoryById,
+  getCategoryByIdVariables
+> {}
 
 interface IProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | "POST_ADD" | "POST_EDIT";
@@ -865,7 +865,7 @@ class Editor extends React.Component<IProps, IState> {
     }
   };
 
-  public OnChangeCards = (index: number[], props: any, value: string) => {
+  public OnChangeCards = (index: number[], props: any, value: any) => {
     if (value === "toggle") {
       if (index.length === 2) {
         this.setState(
@@ -1178,8 +1178,6 @@ class Editor extends React.Component<IProps, IState> {
       view,
       device,
       pos,
-      hoverImgJson,
-      onImage,
       onDrag,
       targetIndex,
       titleImg,
@@ -1322,14 +1320,31 @@ class Editor extends React.Component<IProps, IState> {
                         />
                         <ImageButton onChange={this.onInputImageChange} />
                         {titleImg && (
-                          <TitleImgPosInput
-                            type={"number"}
-                            value={titleImgPos}
+                          <InputNumber
+                            defaultValue={titleImgPos}
+                            min={0}
+                            max={100}
+                            size="small"
+                            formatter={value => `${value}%`}
+                            parser={value =>
+                              parseInt(
+                                value !== undefined
+                                  ? value.replace("%", "")
+                                  : "",
+                                10
+                              )
+                            }
+                            style={{ margin: 12 }}
                             onChange={this.onInputChange}
-                            name={"titleImgPos"}
-                            min="0"
-                            max="100"
                           />
+                          // <TitleImgPosInput
+                          //   type={"number"}
+                          //   value={titleImgPos}
+                          //   onChange={this.onInputChange}
+                          //   name={"titleImgPos"}
+                          //   min="0"
+                          //   max="100"
+                          // />
                         )}
                         <CategoryButton
                           addIdToState={this.addIdToState}
@@ -1438,16 +1453,10 @@ class Editor extends React.Component<IProps, IState> {
               </EditorLeftContainer>
             </EditorLeftOuterContainer>
           </EditorContentContainer>
-          <ImagePopup
-            pos={pos}
-            json={hoverImgJson ? hoverImgJson : null}
-            onImage={onImage}
-          />
         </EditorContainer>
       </React.Fragment>
     );
   }
-
   public renderNode = (props: RenderNodeProps): JSX.Element | undefined => {
     const { attributes, children, node, isSelected } = props;
 
@@ -1462,86 +1471,240 @@ class Editor extends React.Component<IProps, IState> {
         case "numbered-list":
           return <ol {...attributes}>{children}</ol>;
         case "clap-image": {
-          const representSrc = node.data.get("represent");
-          const hoverSrc = node.data.get("hover");
           const name = node.data.get("name");
           const type = node.data.get("type");
+          const id = node.data.get("id");
+          console.log(id);
           switch (type) {
             case "TEXT":
               return (
-                <ClapImageContainer
-                  onMouseOver={(e: any) =>
-                    this.setState({
-                      hoverImgJson: hoverSrc,
-                      onImage: true,
-                      pos: GetPos(e)
-                    })
-                  }
-                  onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
-                    this.setState({ pos: GetPos(e) })
-                  }
-                  onMouseOut={() => {
-                    this.setState({ onImage: false });
-                  }}
-                  small={true}
+                <GetCategoryById
+                  query={CATEGORY}
+                  fetchPolicy={"cache-and-network"}
+                  variables={{ categoryId: id }}
                 >
-                  <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
-                    {name}
-                  </ClapImageText>
-                </ClapImageContainer>
+                  {({ loading, data, error }) => {
+                    if (loading)
+                      return (
+                        <ClapImageText
+                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                        >
+                          {name}
+                        </ClapImageText>
+                      );
+                    if (error) return `${error.message}`;
+                    if (data !== undefined) {
+                      const { category } = data.GetCategoryById;
+                      return (
+                        category &&
+                        category.topWikiImage && (
+                          <Popover
+                            placement="leftTop"
+                            content={
+                              <HoverView
+                                json={JSON.parse(
+                                  category.topWikiImage.hoverImage
+                                )}
+                              />
+                            }
+                            title={
+                              <>
+                                <ClapImage
+                                  small={true}
+                                  src={category.topWikiImage.shownImage}
+                                  alt={"hover"}
+                                  selected={isSelected}
+                                  {...attributes}
+                                />
+                                <ClapImageText
+                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                                >
+                                  {name}
+                                </ClapImageText>
+                              </>
+                            }
+                            trigger="hover"
+                          >
+                            <Link
+                              target="_blank"
+                              style={{
+                                textDecoration: "none"
+                              }}
+                              rel="noopener noreferrer"
+                              to={`/category/read/${category.id}`}
+                            >
+                              <ClapImageText
+                                color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                              >
+                                {name}
+                              </ClapImageText>
+                            </Link>
+                          </Popover>
+                        )
+                      );
+                    } else {
+                      return null;
+                    }
+                  }}
+                </GetCategoryById>
               );
             case "MINI_IMG":
               return (
-                <ClapImageContainer
-                  onMouseOut={(e: React.MouseEvent<HTMLImageElement>) => {
-                    console.log("leave");
-                    this.setState({ onImage: false });
-                  }}
-                  onMouseEnter={(e: React.MouseEvent<HTMLImageElement>) =>
-                    this.setState({
-                      hoverImgJson: hoverSrc,
-                      onImage: true,
-                      pos: GetPos(e)
-                    })
-                  }
-                  onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
-                    this.setState({ pos: GetPos(e) })
-                  }
-                  small={true}
+                <GetCategoryById
+                  query={CATEGORY}
+                  fetchPolicy={"cache-and-network"}
+                  variables={{ categoryId: id }}
                 >
-                  <ClapImage
-                    small={true}
-                    src={representSrc}
-                    alt={"hover"}
-                    selected={isSelected}
-                    {...attributes}
-                  />
-                  <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
-                    {name}
-                  </ClapImageText>
-                </ClapImageContainer>
+                  {({ loading, data, error }) => {
+                    if (loading)
+                      return (
+                        <ClapImageText
+                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                        >
+                          {name}
+                        </ClapImageText>
+                      );
+                    if (error) return `${error.message}`;
+                    if (data !== undefined) {
+                      const { category } = data.GetCategoryById;
+                      return (
+                        category &&
+                        category.topWikiImage && (
+                          <Popover
+                            placement="leftTop"
+                            content={
+                              <HoverView
+                                json={JSON.parse(
+                                  category.topWikiImage.hoverImage
+                                )}
+                              />
+                            }
+                            title={
+                              <>
+                                <ClapImage
+                                  small={true}
+                                  src={category.topWikiImage.shownImage}
+                                  alt={"hover"}
+                                  selected={isSelected}
+                                  {...attributes}
+                                />
+                                <ClapImageText
+                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                                >
+                                  {name}
+                                </ClapImageText>
+                              </>
+                            }
+                            trigger="hover"
+                          >
+                            <Link
+                              target="_blank"
+                              style={{
+                                textDecoration: "none"
+                              }}
+                              rel="noopener noreferrer"
+                              to={`/category/read/${category.id}`}
+                            >
+                              <ClapImage
+                                small={true}
+                                src={category.topWikiImage.shownImage}
+                                alt={"hover"}
+                                selected={isSelected}
+                                {...attributes}
+                              />
+                              <ClapImageText
+                                color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                              >
+                                {name}
+                              </ClapImageText>
+                            </Link>
+                          </Popover>
+                        )
+                      );
+                    } else {
+                      return null;
+                    }
+                  }}
+                </GetCategoryById>
               );
             case "NORMAL_IMG":
               return (
-                <ClapImage
-                  src={representSrc}
-                  alt={"hover"}
-                  selected={isSelected}
-                  onMouseOver={(e: any) =>
-                    this.setState({
-                      hoverImgJson: hoverSrc,
-                      onImage: true,
-                      pos: GetPos(e)
-                    })
-                  }
-                  onMouseMove={(e: React.MouseEvent<HTMLImageElement>) =>
-                    this.setState({ pos: GetPos(e) })
-                  }
-                  onMouseOut={() => {
-                    this.setState({ onImage: false });
+                <GetCategoryById
+                  query={CATEGORY}
+                  fetchPolicy={"cache-and-network"}
+                  variables={{ categoryId: id }}
+                >
+                  {({ loading, data, error }) => {
+                    if (loading)
+                      return (
+                        <ClapImageText
+                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                        >
+                          {name}
+                        </ClapImageText>
+                      );
+                    if (error) return `${error.message}`;
+                    if (data !== undefined) {
+                      const { category } = data.GetCategoryById;
+                      return (
+                        category &&
+                        category.topWikiImage && (
+                          <Popover
+                            placement="leftTop"
+                            content={
+                              <HoverView
+                                json={JSON.parse(
+                                  category.topWikiImage.hoverImage
+                                )}
+                              />
+                            }
+                            title={
+                              <>
+                                <ClapImage
+                                  small={true}
+                                  src={category.topWikiImage.shownImage}
+                                  alt={"hover"}
+                                  selected={isSelected}
+                                  {...attributes}
+                                />
+                                <ClapImageText
+                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                                >
+                                  {name}
+                                </ClapImageText>
+                              </>
+                            }
+                            trigger="hover"
+                          >
+                            <Link
+                              target="_blank"
+                              style={{
+                                height: "100%",
+                                textDecoration: "none",
+                                display: "inline-flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+
+                                verticalAlign: "top"
+                              }}
+                              rel="noopener noreferrer"
+                              to={`/category/read/${category.id}`}
+                            >
+                              <ClapImage
+                                src={category.topWikiImage.shownImage}
+                                alt={"hover"}
+                                selected={isSelected}
+                                {...attributes}
+                              />
+                            </Link>
+                          </Popover>
+                        )
+                      );
+                    } else {
+                      return null;
+                    }
                   }}
-                  {...attributes}
-                />
+                </GetCategoryById>
               );
             default:
               return;
@@ -1568,14 +1731,12 @@ class Editor extends React.Component<IProps, IState> {
     this.setState({ device });
   };
 
-  public onInputChange: React.ChangeEventHandler<
-    HTMLInputElement
-  > = async event => {
-    const {
-      target: { name, value }
-    } = event;
+  public onInputChange = async (value: any) => {
+    // const {
+    //   target: { name, value }
+    // } = event;
     this.setState({
-      [name]: value
+      titleImgPos: value
     } as any);
   };
 
@@ -1643,7 +1804,6 @@ class Editor extends React.Component<IProps, IState> {
   };
 
   public pushNewBlockToTargetIndex = (dragItem: any) => {
-    console.log(dragItem, this.state.targetIndex);
     this.masterCallback("onDrag", null);
     this.handleDrop(dragItem, this.state.targetIndex);
   };

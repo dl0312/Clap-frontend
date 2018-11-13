@@ -112,9 +112,10 @@ function insertImage(
     change.select(target);
   }
   change.insertInline({
+    data: { id, represent, hover, name, type },
+    key: JSON.stringify(id),
     type: "clap-image",
-    isVoid: true,
-    data: { id, represent, hover, name, type }
+    isVoid: true
   });
 }
 
@@ -248,7 +249,9 @@ class MiniWiki extends React.Component<IProps, IState> {
                                     hover,
                                     category.name,
                                     this.state.inputType
-                                  );
+                                  )
+                                  .moveToStartOfNextText()
+                                  .focus();
 
                                 this.props.handleOnChange(
                                   change,

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { DropTarget, DropTargetMonitor, ConnectDropTarget } from "react-dnd";
 import ItemTypes from "../../ItemTypes";
 import EditorDefaults from "../../EditorDefaults";
+import Plain from "slate-plain-serializer";
 
 interface IInsertProps {
   state: "ONDRAG" | "NOTHING" | "ISOVER";
@@ -14,12 +15,12 @@ const InsertText = styled<IInsertProps, any>("div")`
     props.state === "ISOVER"
       ? "rgb(184, 233, 148, 0.5)"
       : props.state === "ONDRAG"
-        ? "#eee"
-        : props.state === "NOTHING"
-          ? EditorDefaults.MAIN_BACKGROUND_COLOR
-          : null};
+      ? "#eee"
+      : props.state === "NOTHING"
+      ? EditorDefaults.MAIN_BACKGROUND_COLOR
+      : null};
   height: 100%;
-  min-height: 75px;
+  min-height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,13 +68,14 @@ class EmptyContainer extends React.Component<IProps & IDnDProps, any> {
   }
 
   public render() {
-    const { connectDropTarget, isOverCurrent } = this.props;
+    const { connectDropTarget, isOverCurrent, index, handleDrop } = this.props;
     const state =
       this.props.onDrag === "content"
         ? isOverCurrent
           ? "ISOVER"
           : "ONDRAG"
         : "NOTHING";
+    console.log(index);
     return (
       connectDropTarget &&
       connectDropTarget(
@@ -84,9 +86,27 @@ class EmptyContainer extends React.Component<IProps & IDnDProps, any> {
             ) : state === "ONDRAG" ? (
               `DROP HERE!`
             ) : state === "NOTHING" ? (
-              <div>
-                INSERT <br /> CONTENT
-              </div>
+              <span style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ fontSize: 15 }}>
+                  INSERT <br /> CONTENT
+                </div>
+                <div
+                  onClick={() =>
+                    handleDrop(
+                      {
+                        type: "content",
+                        onDrag: "content",
+                        content: "TEXT",
+                        value: Plain.deserialize("")
+                      },
+                      index
+                    )
+                  }
+                  style={{ margin: 5 }}
+                >
+                  TEXT
+                </div>
+              </span>
             ) : null}
           </InsertText>
         </div>

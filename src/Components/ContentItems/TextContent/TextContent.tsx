@@ -203,6 +203,7 @@ const TextContent: React.SFC<IProps> = ({
             renderNode={renderNode}
             renderMark={renderMark}
             autoCorrect={false}
+            autoFocus={true}
             spellCheck={false}
             plugins={plugins}
           />

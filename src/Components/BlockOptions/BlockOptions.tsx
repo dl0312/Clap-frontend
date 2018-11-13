@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Sketch from "../../Utility/Sketch";
 import MiniWiki from "../MiniWiki";
 import Upload from "../Upload";
+import { Switch } from "antd";
 // import onClickOutside from "react-onclickoutside";
 
 interface IBlockOptionContainerProps {
@@ -189,53 +190,53 @@ const ToggleContainer = styled.label`
   height: 20px;
 `;
 
-const Toggle = styled.input`
-  display: none;
-  &:focus + .slider-round {
-    box-shadow: 0 0 1px #2196f3;
-  }
-  &:checked + .slider-round:before {
-    -webkit-transform: translateX(18px);
-    -ms-transform: translateX(18px);
-    transform: translateX(18px);
-  }
-`;
+// const Toggle = styled.input`
+//   display: none;
+//   &:focus + .slider-round {
+//     box-shadow: 0 0 1px #2196f3;
+//   }
+//   &:checked + .slider-round:before {
+//     -webkit-transform: translateX(18px);
+//     -ms-transform: translateX(18px);
+//     transform: translateX(18px);
+//   }
+// `;
 
-interface IToggleRoundProps {
-  fullWidth: boolean;
-}
+// interface IToggleRoundProps {
+//   fullWidth: boolean;
+// }
 
-const ToggleRound = styled<IToggleRoundProps, any>("span")`
-  border-radius: 34px;
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-  background-color: ${props => (props.fullWidth ? "#2196f3" : null)};
-  box-shadow: ${props => (props.fullWidth ? "0 0 1px #2196f3" : null)};
+// const ToggleRound = styled<IToggleRoundProps, any>("span")`
+//   border-radius: 34px;
+//   position: absolute;
+//   cursor: pointer;
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   background-color: #ccc;
+//   -webkit-transition: 0.4s;
+//   transition: 0.4s;
+//   background-color: ${props => (props.fullWidth ? "#2196f3" : null)};
+//   box-shadow: ${props => (props.fullWidth ? "0 0 1px #2196f3" : null)};
 
-  &::before {
-    -webkit-transform: ${props =>
-      props.fullWidth ? "#translateX(18px)" : null};
-    -ms-transform: ${props => (props.fullWidth ? "translateX(18px)" : null)};
-    transform: ${props => (props.fullWidth ? "translateX(18px)" : null)};
-    position: absolute;
-    content: "";
-    height: 15px;
-    width: 15px;
-    left: 4px;
-    bottom: 2.6px;
-    background-color: white;
-    -webkit-transition: 0.4s;
-    transition: 0.4s;
-    border-radius: 50%;
-  }
-`;
+//   &::before {
+//     -webkit-transform: ${props =>
+//       props.fullWidth ? "#translateX(18px)" : null};
+//     -ms-transform: ${props => (props.fullWidth ? "translateX(18px)" : null)};
+//     transform: ${props => (props.fullWidth ? "translateX(18px)" : null)};
+//     position: absolute;
+//     content: "";
+//     height: 15px;
+//     width: 15px;
+//     left: 4px;
+//     bottom: 2.6px;
+//     background-color: white;
+//     -webkit-transition: 0.4s;
+//     transition: 0.4s;
+//     border-radius: 50%;
+//   }
+// `;
 
 interface IProps {
   selectedIndex: number | number[] | null;
@@ -571,13 +572,20 @@ class BlockOptions extends React.Component<IProps, any> {
                     <FunctionTitle>Full Width</FunctionTitle>
                     <ActionColumn>
                       <ToggleContainer>
+                        <Switch
+                          defaultChecked={false}
+                          onChange={e => {
+                            OnChangeCards(selectedIndex, "fullWidth", e);
+                          }}
+                        />
+                        {/* ,
                         <Toggle
                           onClick={() =>
                             OnChangeCards(selectedIndex, "fullWidth", "toggle")
                           }
                           type="checkbox"
-                        />
-                        <ToggleRound fullWidth={selectedContent.fullWidth} />
+                        /> */}
+                        {/* <ToggleRound fullWidth={selectedContent.fullWidth} /> */}
                       </ToggleContainer>
                     </ActionColumn>
                   </FunctionColumn>
