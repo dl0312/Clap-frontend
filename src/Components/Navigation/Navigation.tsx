@@ -524,7 +524,7 @@ class Navigation extends React.Component<IProps, IState> {
                       </div>
                     </MenuItem>
                   </NavLink>
-                  <NavLink to="/board" style={{ textDecoration: "none" }}>
+                  {/* <NavLink to="/board" style={{ textDecoration: "none" }}>
                     <MenuItem>GUIDE</MenuItem>
                   </NavLink>
                   <NavLink to="/wiki" style={{ textDecoration: "none" }}>
@@ -532,7 +532,7 @@ class Navigation extends React.Component<IProps, IState> {
                   </NavLink>
                   <NavLink to="/store" style={{ textDecoration: "none" }}>
                     <MenuItem>STORE</MenuItem>
-                  </NavLink>
+                  </NavLink> */}
                   <Route
                     render={({ history }) => {
                       return <AutoSuggestInput history={history} />;

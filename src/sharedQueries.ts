@@ -553,8 +553,6 @@ export const WIKIIMAGE = gql`
   }
 `;
 
-// export const CLAP_TO_WIKIIMAGE = gql``;
-
 export const SEND_CLAP = gql`
   mutation sendClap($postId: Int, $wikiImageId: Int) {
     SendClap(postId: $postId, wikiImageId: $wikiImageId) {
@@ -625,7 +623,49 @@ export const PROFILE = gql`
           nickName
           profilePhoto
         }
+        games {
+          id
+          title
+          icon
+        }
       }
+    }
+  }
+`;
+
+export const GAMES = gql`
+  query getAllGames {
+    GetAllGames {
+      ok
+      error
+      games {
+        id
+        title
+        icon
+      }
+    }
+  }
+`;
+
+export const GET_GAME_BY_ID = gql`
+  query getGameById($gameId: Int!) {
+    GetGameById(gameId: $gameId) {
+      ok
+      error
+      game {
+        id
+        title
+        icon
+      }
+    }
+  }
+`;
+
+export const EDIT_MY_GAMES = gql`
+  mutation editMyGames($gameIds: [Int]) {
+    EditMyGames(gameIds: $gameIds) {
+      ok
+      error
     }
   }
 `;

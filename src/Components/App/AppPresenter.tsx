@@ -20,6 +20,8 @@ import Profile from "../../Routes/Profile";
 import SearchResult from "../../Routes/SearchResult";
 import Footer from "../Footer";
 import { BackTop } from "antd";
+import EditMyGames from "../../Routes/EditMyGames";
+import GameHome from "../../Routes/GameHome";
 // import { TransitionGroup, CSSTransition } from "react-transition-group";
 // import { ApolloProvider } from 'react-apollo';
 
@@ -79,6 +81,12 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn, changeLocale }) => (
   <Switch>
     <PrivateRoute
       isLoggedIn={isLoggedIn}
+      path="/games"
+      exact={true}
+      component={EditMyGames}
+    />
+    <PrivateRoute
+      isLoggedIn={isLoggedIn}
       path="/post/add"
       exact={true}
       component={PostAdd}
@@ -125,6 +133,7 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn, changeLocale }) => (
           <Navigation isLoggedIn={isLoggedIn} />
           <MainContainer>
             <Switch>
+              <Route path="/game/:gameId" exact={true} component={GameHome} />
               <Route
                 path="/search/:categoryId"
                 exact={true}

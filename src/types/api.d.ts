@@ -202,11 +202,13 @@ export interface getPostsByCategoryId_GetPostsByCategoryId_posts_user {
 
 export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category_parent {
   __typename: "Category";
+  id: number;
   name: string;
 }
 
 export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages {
   __typename: "WikiImage";
+  id: number;
   shownImage: string;
 }
 
@@ -1037,6 +1039,13 @@ export interface getMyProfile_GetMyProfile_user_followers {
   profilePhoto: string | null;
 }
 
+export interface getMyProfile_GetMyProfile_user_games {
+  __typename: "Game";
+  id: number;
+  title: string;
+  icon: string | null;
+}
+
 export interface getMyProfile_GetMyProfile_user {
   __typename: "User";
   id: number;
@@ -1049,6 +1058,7 @@ export interface getMyProfile_GetMyProfile_user {
   profilePhoto: string | null;
   following: (getMyProfile_GetMyProfile_user_following | null)[] | null;
   followers: (getMyProfile_GetMyProfile_user_followers | null)[] | null;
+  games: (getMyProfile_GetMyProfile_user_games | null)[] | null;
 }
 
 export interface getMyProfile_GetMyProfile {
@@ -1060,6 +1070,81 @@ export interface getMyProfile_GetMyProfile {
 
 export interface getMyProfile {
   GetMyProfile: getMyProfile_GetMyProfile;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getAllGames
+// ====================================================
+
+export interface getAllGames_GetAllGames_games {
+  __typename: "Game";
+  id: number;
+  title: string;
+  icon: string | null;
+}
+
+export interface getAllGames_GetAllGames {
+  __typename: "GetAllGamesResponse";
+  ok: boolean;
+  error: string | null;
+  games: (getAllGames_GetAllGames_games | null)[] | null;
+}
+
+export interface getAllGames {
+  GetAllGames: getAllGames_GetAllGames | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getGameById
+// ====================================================
+
+export interface getGameById_GetGameById_game {
+  __typename: "Game";
+  id: number;
+  title: string;
+  icon: string | null;
+}
+
+export interface getGameById_GetGameById {
+  __typename: "GetGameByIdResponse";
+  ok: boolean;
+  error: string | null;
+  game: getGameById_GetGameById_game | null;
+}
+
+export interface getGameById {
+  GetGameById: getGameById_GetGameById;
+}
+
+export interface getGameByIdVariables {
+  gameId: number;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: editMyGames
+// ====================================================
+
+export interface editMyGames_EditMyGames {
+  __typename: "EditMyGamesResponse";
+  ok: boolean;
+  error: string | null;
+}
+
+export interface editMyGames {
+  EditMyGames: editMyGames_EditMyGames;
+}
+
+export interface editMyGamesVariables {
+  gameIds?: (number | null)[] | null;
 }
 
 /* tslint:disable */
