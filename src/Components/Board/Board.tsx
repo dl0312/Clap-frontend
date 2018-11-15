@@ -1,22 +1,26 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import { RouteComponentProps, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
-  getAllPosts,
-  getAllPostsVariables,
-  getClappedPosts,
-  getRisingPosts
+  getPostsByGameId,
+  getPostsByGameIdVariables,
+  getClappedPostsByGameId,
+  getClappedPostsByGameIdVariables,
+  getRisingPostsByGameId,
+  getRisingPostsByGameIdVariables
 } from "../../types/api";
-// import { Helmet } from "react-helmet";
 import styled from "styled-components";
 import ImagePopup from "../../Components/ImagePopup";
-import { POSTS, CLAPPEDPOSTS, RISINGPOSTS } from "../../sharedQueries";
-// import { LOST_IMAGE_URL } from "../../constants";
+import {
+  GET_POSTS_BY_GAME_ID,
+  GET_CLAPPED_POSTS_BY_GAME_ID,
+  GET_RISING_POSTS_BY_GAME_ID
+} from "../../sharedQueries";
 import Loading from "../../Components/Loading";
 // import CategoryTag from "src/Components/CategoryTag";
 // import UserTag from "src/Components/UserTag";
 import { Table, Tabs, Button, Icon } from "antd";
-import CategoryTag from "src/Components/CategoryTag";
+// import CategoryTag from "src/Components/CategoryTag";
 import UserTag from "src/Components/UserTag";
 import Helmet from "react-helmet";
 const numeral = require("numeral");
@@ -27,7 +31,7 @@ const BoardContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 100px 0px;
+  padding: 20px 0px;
   font-family: "Open Sans", sans-serif;
 `;
 
@@ -195,23 +199,23 @@ const columns = [
       <div style={{ display: "flex", justifyContent: "center" }}>{id}</div>
     )
   },
-  {
-    title: (
-      <div style={{ display: "flex", justifyContent: "center" }}>Category</div>
-    ),
-    key: "category",
-    dataIndex: "category",
-    render: (category: any) => (
-      <>
-        <CategoryTag category={category} display={"both"} />
-      </>
-    )
-  },
+  // {
+  //   title: (
+  //     <div style={{ display: "flex", justifyContent: "center" }}>Category</div>
+  //   ),
+  //   key: "category",
+  //   dataIndex: "category",
+  //   render: (category: any) => (
+  //     <>
+  //       <CategoryTag category={category} display={"both"} />
+  //     </>
+  //   )
+  // },
   {
     title: "Title",
     dataIndex: "title",
     key: "title",
-    width: 300,
+    width: 500,
     render: (post: any) => (
       <Link
         to={`/post/read/${post.id}`}
@@ -307,7 +311,10 @@ const pagenationConfig = {
   }
 };
 
-interface IProps extends RouteComponentProps<any> {}
+interface IProps {
+  gameId: number;
+  history: any;
+}
 
 interface IState {
   hoverImgJson: string;
@@ -316,9 +323,18 @@ interface IState {
   newGuideCounter: number;
 }
 
-class PostsQuery extends Query<getAllPosts, getAllPostsVariables> {}
-class ClappedPostsQuery extends Query<getClappedPosts> {}
-class RisingPostsQuery extends Query<getRisingPosts> {}
+class GetPostsByGameIdQuery extends Query<
+  getPostsByGameId,
+  getPostsByGameIdVariables
+> {}
+class GetClappedPostsByGameIdQuery extends Query<
+  getClappedPostsByGameId,
+  getClappedPostsByGameIdVariables
+> {}
+class GetRisingPostsByGameIdQuery extends Query<
+  getRisingPostsByGameId,
+  getRisingPostsByGameIdVariables
+> {}
 
 class Board extends React.Component<IProps, IState> {
   constructor(props: IProps) {
@@ -354,6 +370,7 @@ class Board extends React.Component<IProps, IState> {
 
   public render() {
     const { pos, hoverImgJson, onImage } = this.state;
+    const { gameId } = this.props;
     console.log(this.props);
     return (
       <>
@@ -379,10 +396,10 @@ class Board extends React.Component<IProps, IState> {
               }
               key="1"
             >
-              <PostsQuery
-                query={POSTS}
+              <GetPostsByGameIdQuery
+                query={GET_POSTS_BY_GAME_ID}
                 fetchPolicy={"cache-and-network"}
-                variables={{ limit: 100, type: "createdAt" }}
+                variables={{ gameId }}
               >
                 {({ loading, data, error }) => {
                   if (loading) {
@@ -395,7 +412,7 @@ class Board extends React.Component<IProps, IState> {
                   if (data === undefined) {
                     return <div>data undefined</div>;
                   }
-                  const posts = data.GetAllPosts.posts;
+                  const posts = data.GetPostsByGameId.posts;
                   console.log(posts);
                   return (
                     <React.Fragment>
@@ -426,7 +443,12 @@ class Board extends React.Component<IProps, IState> {
                               }}
                             >
                               <Link
-                                to={`/post/add`}
+                                to={{
+                                  pathname: "/post/add",
+                                  state: {
+                                    gameId
+                                  }
+                                }}
                                 style={{ textDecoration: "none" }}
                               >
                                 <Button
@@ -451,7 +473,7 @@ class Board extends React.Component<IProps, IState> {
                     </React.Fragment>
                   );
                 }}
-              </PostsQuery>
+              </GetPostsByGameIdQuery>
             </TabPane>
             <TabPane
               tab={
@@ -462,8 +484,9 @@ class Board extends React.Component<IProps, IState> {
               }
               key="2"
             >
-              <ClappedPostsQuery
-                query={CLAPPEDPOSTS}
+              <GetClappedPostsByGameIdQuery
+                query={GET_CLAPPED_POSTS_BY_GAME_ID}
+                variables={{ gameId }}
                 fetchPolicy={"cache-and-network"}
               >
                 {({ loading, data, error }) => {
@@ -477,7 +500,8 @@ class Board extends React.Component<IProps, IState> {
                   if (data === undefined) {
                     return <div>data undefined</div>;
                   }
-                  const posts = data.GetClappedPosts.posts;
+                  console.log(data);
+                  const posts = data.GetClappedPostsByGameId.posts;
                   console.log(posts);
                   return (
                     <React.Fragment>
@@ -511,7 +535,12 @@ class Board extends React.Component<IProps, IState> {
                               }}
                             >
                               <Link
-                                to={`/post/add`}
+                                to={{
+                                  pathname: "/post/add",
+                                  state: {
+                                    gameId
+                                  }
+                                }}
                                 style={{ textDecoration: "none" }}
                               >
                                 <Button
@@ -536,7 +565,7 @@ class Board extends React.Component<IProps, IState> {
                     </React.Fragment>
                   );
                 }}
-              </ClappedPostsQuery>
+              </GetClappedPostsByGameIdQuery>
             </TabPane>
             <TabPane
               tab={
@@ -547,10 +576,10 @@ class Board extends React.Component<IProps, IState> {
               }
               key="3"
             >
-              <RisingPostsQuery
-                query={RISINGPOSTS}
+              <GetRisingPostsByGameIdQuery
+                query={GET_RISING_POSTS_BY_GAME_ID}
+                variables={{ gameId }}
                 fetchPolicy={"cache-and-network"}
-                variables={{ limit: 100, type: "createdAt" }}
               >
                 {({ loading, data, error }) => {
                   if (loading) {
@@ -563,7 +592,7 @@ class Board extends React.Component<IProps, IState> {
                   if (data === undefined) {
                     return <div>data undefined</div>;
                   }
-                  const posts = data.GetRisingPosts.posts;
+                  const posts = data.GetRisingPostsByGameId.posts;
                   console.log(posts);
                   return (
                     <React.Fragment>
@@ -595,7 +624,12 @@ class Board extends React.Component<IProps, IState> {
                               }}
                             >
                               <Link
-                                to={`/post/add`}
+                                to={{
+                                  pathname: "/post/add",
+                                  state: {
+                                    gameId
+                                  }
+                                }}
                                 style={{ textDecoration: "none" }}
                               >
                                 <Button
@@ -619,7 +653,7 @@ class Board extends React.Component<IProps, IState> {
                     </React.Fragment>
                   );
                 }}
-              </RisingPostsQuery>
+              </GetRisingPostsByGameIdQuery>
             </TabPane>
           </Tabs>
         </BoardContainer>

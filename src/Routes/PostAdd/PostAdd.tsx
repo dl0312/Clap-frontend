@@ -10,6 +10,7 @@ import Loading from "src/Components/Loading";
 
 interface IProps {
   history: any;
+  location: { state: { gameId: number } };
 }
 
 interface IState {
@@ -77,6 +78,8 @@ class PostAdd extends React.Component<IProps, IState> {
 
   public render() {
     const { body } = this.state;
+    console.log(this.props);
+    const { gameId } = this.props.location.state;
     return (
       <AddPostQuery
         mutation={ADD_POST}
@@ -95,7 +98,12 @@ class PostAdd extends React.Component<IProps, IState> {
               <Helmet>
                 <title>ADD POST | CLAP</title>
               </Helmet>
-              <Editor state={body} type="POST_ADD" AddPost={AddPost} />
+              <Editor
+                state={body}
+                type="POST_ADD"
+                AddPost={AddPost}
+                gameId={gameId}
+              />
             </React.Fragment>
           );
         }}

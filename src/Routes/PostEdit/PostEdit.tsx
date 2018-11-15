@@ -9,6 +9,7 @@ import Helmet from "react-helmet";
 interface IProps {
   match: { params: { postId: number } };
   history: any;
+  location: { state: { gameId: number } };
 }
 
 class PostEdit extends React.Component<IProps, any> {
@@ -28,6 +29,7 @@ class PostEdit extends React.Component<IProps, any> {
   };
 
   public render() {
+    const { gameId } = this.props.location.state;
     return (
       <React.Fragment>
         <Query
@@ -64,6 +66,7 @@ class PostEdit extends React.Component<IProps, any> {
                         type="POST_EDIT"
                         state={body}
                         EditPost={EditPost}
+                        gameId={gameId}
                       />
                     </React.Fragment>
                   );

@@ -229,22 +229,6 @@ const TitleContainer = styled<ITitleContainer, any>("div")`
   color: ${props => (props.titleImg ? "white" : null)};
 `;
 
-// const TitleImgPosInput = styled.input`
-//   position: absolute;
-//   color: black;
-//   right: 25px;
-//   top: 50%;
-//   padding-left: 10px;
-//   margin-top: -5px;
-//   width: 50px;
-//   border: none;
-//   border-radius: 3px;
-//   border: bolder;
-//   ::-webkit-inner-spin-button {
-//     opacity: 1;
-//   }
-// `;
-
 interface ITitleInputProps {
   device: "PHONE" | "TABLET" | "DESKTOP";
 }
@@ -341,6 +325,7 @@ class GetCategoryById extends Query<
 
 interface IProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT" | "POST_ADD" | "POST_EDIT";
+  gameId: number;
   postId?: number;
   wikiImage?: any;
   state?: any;

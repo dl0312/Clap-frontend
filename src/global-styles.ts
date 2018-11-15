@@ -104,7 +104,7 @@ hr{
 }
 
 .ant-popover-inner-content{
-  padding: 3px 4px;
+  padding: 9px 10px;
 }
 .ant-popover-title{
     padding: 10px 15px 9px;

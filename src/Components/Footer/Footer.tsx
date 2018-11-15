@@ -3,11 +3,12 @@ import { Divider } from "antd";
 import styled from "styled-components";
 
 const FooterContainer = styled.div`
+  position: relative;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 50px 0;
+  padding: 300px 0 50px;
 `;
 
 const Section = styled.div`

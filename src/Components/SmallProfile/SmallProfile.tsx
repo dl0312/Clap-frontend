@@ -1,7 +1,11 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
-import { Avatar } from "antd";
+import { Avatar, Button } from "antd";
+
+const SmallProfileContainer = styled.span`
+  margin: 10;
+`;
 
 const ProfileItemContainer = styled.div`
   padding: 3px 0;
@@ -34,7 +38,7 @@ class SmallProfile extends React.Component<IProps, any> {
     const { logUserOut, user } = this.props;
     return (
       <>
-        <span>
+        <SmallProfileContainer>
           <div style={{ fontWeight: "bolder" }}>PROFILE SETTINGS</div>
           <div>
             <ProfileSettingContainer>
@@ -49,6 +53,9 @@ class SmallProfile extends React.Component<IProps, any> {
                 />
               )}
               <div>
+                <NavLink to="/profile" style={{ textDecoration: "none" }}>
+                  <ProfileItemContainer>PROFILE</ProfileItemContainer>
+                </NavLink>
                 <NavLink to="/" style={{ textDecoration: "none" }}>
                   <ProfileItemContainer
                     onClick={() => {
@@ -58,13 +65,29 @@ class SmallProfile extends React.Component<IProps, any> {
                     LOG OUT
                   </ProfileItemContainer>
                 </NavLink>
-                <NavLink to="/profile" style={{ textDecoration: "none" }}>
-                  <ProfileItemContainer>PROFILE</ProfileItemContainer>
-                </NavLink>
               </div>
             </ProfileSettingContainer>
           </div>
-        </span>
+          <NavLink
+            to="/wiki"
+            style={{
+              width: "100%",
+              textDecoration: "none"
+            }}
+          >
+            <Button
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              <i className="fas fa-book-open" style={{ marginRight: 10 }} />{" "}
+              WIKI
+            </Button>
+          </NavLink>
+        </SmallProfileContainer>
       </>
     );
   }

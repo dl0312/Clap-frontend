@@ -59,6 +59,7 @@ class EditMyGames extends React.Component<any, any> {
         <EditMyGamesContainer>
           <GetMyProfileQuery
             query={PROFILE}
+            fetchPolicy={"cache-and-network"}
             onCompleted={(data: any) => {
               const { games }: any = data.GetMyProfile.user;
               console.log(data, games);

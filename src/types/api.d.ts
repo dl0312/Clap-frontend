@@ -5,6 +5,13 @@
 // GraphQL query operation: getPostById
 // ====================================================
 
+export interface getPostById_GetPostById_post_game {
+  __typename: "Game";
+  id: number;
+  title: string;
+  logo: string | null;
+}
+
 export interface getPostById_GetPostById_post_user {
   __typename: "User";
   id: number;
@@ -88,6 +95,8 @@ export interface getPostById_GetPostById_post {
   titleImg: string | null;
   titleImgPos: number | null;
   body: string | null;
+  gameId: number | null;
+  game: getPostById_GetPostById_post_game | null;
   user: getPostById_GetPostById_post_user;
   category: getPostById_GetPostById_post_category | null;
   view: number;
@@ -251,6 +260,63 @@ export interface getPostsByCategoryIdVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: getPostsByGameId
+// ====================================================
+
+export interface getPostsByGameId_GetPostsByGameId_posts_user {
+  __typename: "User";
+  id: number;
+  nickName: string;
+  profilePhoto: string | null;
+}
+
+export interface getPostsByGameId_GetPostsByGameId_posts_category_topWikiImage {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: string;
+  hoverImage: string;
+}
+
+export interface getPostsByGameId_GetPostsByGameId_posts_category {
+  __typename: "Category";
+  id: number;
+  name: string;
+  topWikiImage: getPostsByGameId_GetPostsByGameId_posts_category_topWikiImage | null;
+}
+
+export interface getPostsByGameId_GetPostsByGameId_posts {
+  __typename: "Post";
+  id: number;
+  title: string;
+  titleImg: string | null;
+  titleImgPos: number | null;
+  user: getPostsByGameId_GetPostsByGameId_posts_user;
+  category: getPostsByGameId_GetPostsByGameId_posts_category | null;
+  commentsCount: number | null;
+  clapsCount: number | null;
+  view: number;
+  createdAt: string;
+}
+
+export interface getPostsByGameId_GetPostsByGameId {
+  __typename: "GetPostsByGameIdResponse";
+  ok: boolean;
+  error: string | null;
+  posts: (getPostsByGameId_GetPostsByGameId_posts | null)[] | null;
+}
+
+export interface getPostsByGameId {
+  GetPostsByGameId: getPostsByGameId_GetPostsByGameId;
+}
+
+export interface getPostsByGameIdVariables {
+  gameId: number;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: getAllPosts
 // ====================================================
 
@@ -309,6 +375,63 @@ export interface getAllPostsVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: getClappedPostsByGameId
+// ====================================================
+
+export interface getClappedPostsByGameId_GetClappedPostsByGameId_posts_user {
+  __typename: "User";
+  id: number;
+  nickName: string;
+  profilePhoto: string | null;
+}
+
+export interface getClappedPostsByGameId_GetClappedPostsByGameId_posts_category_topWikiImage {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: string;
+  hoverImage: string;
+}
+
+export interface getClappedPostsByGameId_GetClappedPostsByGameId_posts_category {
+  __typename: "Category";
+  id: number;
+  name: string;
+  topWikiImage: getClappedPostsByGameId_GetClappedPostsByGameId_posts_category_topWikiImage | null;
+}
+
+export interface getClappedPostsByGameId_GetClappedPostsByGameId_posts {
+  __typename: "Post";
+  id: number;
+  title: string;
+  titleImg: string | null;
+  titleImgPos: number | null;
+  user: getClappedPostsByGameId_GetClappedPostsByGameId_posts_user;
+  category: getClappedPostsByGameId_GetClappedPostsByGameId_posts_category | null;
+  commentsCount: number | null;
+  clapsCount: number | null;
+  view: number;
+  createdAt: string;
+}
+
+export interface getClappedPostsByGameId_GetClappedPostsByGameId {
+  __typename: "GetClappedPostsByGameIdResponse";
+  ok: boolean;
+  error: string | null;
+  posts: (getClappedPostsByGameId_GetClappedPostsByGameId_posts | null)[] | null;
+}
+
+export interface getClappedPostsByGameId {
+  GetClappedPostsByGameId: getClappedPostsByGameId_GetClappedPostsByGameId;
+}
+
+export interface getClappedPostsByGameIdVariables {
+  gameId: number;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: getClappedPosts
 // ====================================================
 
@@ -356,6 +479,63 @@ export interface getClappedPosts_GetClappedPosts {
 
 export interface getClappedPosts {
   GetClappedPosts: getClappedPosts_GetClappedPosts;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getRisingPostsByGameId
+// ====================================================
+
+export interface getRisingPostsByGameId_GetRisingPostsByGameId_posts_user {
+  __typename: "User";
+  id: number;
+  nickName: string;
+  profilePhoto: string | null;
+}
+
+export interface getRisingPostsByGameId_GetRisingPostsByGameId_posts_category_topWikiImage {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: string;
+  hoverImage: string;
+}
+
+export interface getRisingPostsByGameId_GetRisingPostsByGameId_posts_category {
+  __typename: "Category";
+  id: number;
+  name: string;
+  topWikiImage: getRisingPostsByGameId_GetRisingPostsByGameId_posts_category_topWikiImage | null;
+}
+
+export interface getRisingPostsByGameId_GetRisingPostsByGameId_posts {
+  __typename: "Post";
+  id: number;
+  title: string;
+  titleImg: string | null;
+  titleImgPos: number | null;
+  user: getRisingPostsByGameId_GetRisingPostsByGameId_posts_user;
+  category: getRisingPostsByGameId_GetRisingPostsByGameId_posts_category | null;
+  commentsCount: number | null;
+  clapsCount: number | null;
+  view: number;
+  createdAt: string;
+}
+
+export interface getRisingPostsByGameId_GetRisingPostsByGameId {
+  __typename: "GetRisingPostsByGameIdResponse";
+  ok: boolean;
+  error: string | null;
+  posts: (getRisingPostsByGameId_GetRisingPostsByGameId_posts | null)[] | null;
+}
+
+export interface getRisingPostsByGameId {
+  GetRisingPostsByGameId: getRisingPostsByGameId_GetRisingPostsByGameId;
+}
+
+export interface getRisingPostsByGameIdVariables {
+  gameId: number;
 }
 
 /* tslint:disable */
@@ -1109,6 +1289,8 @@ export interface getGameById_GetGameById_game {
   id: number;
   title: string;
   icon: string | null;
+  logo: string | null;
+  wallpaper: string | null;
 }
 
 export interface getGameById_GetGameById {

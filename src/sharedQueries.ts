@@ -11,6 +11,12 @@ export const POST = gql`
         titleImg
         titleImgPos
         body
+        gameId
+        game {
+          id
+          title
+          logo
+        }
         user {
           id
           nickName
@@ -158,6 +164,39 @@ export const POSTS_CATEGORY = gql`
   }
 `;
 
+export const GET_POSTS_BY_GAME_ID = gql`
+  query getPostsByGameId($gameId: Int!) {
+    GetPostsByGameId(gameId: $gameId) {
+      ok
+      error
+      posts {
+        id
+        title
+        titleImg
+        titleImgPos
+        user {
+          id
+          nickName
+          profilePhoto
+        }
+        category {
+          id
+          name
+          topWikiImage {
+            id
+            shownImage
+            hoverImage
+          }
+        }
+        commentsCount
+        clapsCount
+        view
+        createdAt
+      }
+    }
+  }
+`;
+
 export const POSTS = gql`
   query getAllPosts($limit: Int!, $type: String!) {
     GetAllPosts(limit: $limit, type: $type) {
@@ -191,9 +230,75 @@ export const POSTS = gql`
   }
 `;
 
+export const GET_CLAPPED_POSTS_BY_GAME_ID = gql`
+  query getClappedPostsByGameId($gameId: Int!) {
+    GetClappedPostsByGameId(gameId: $gameId) {
+      ok
+      error
+      posts {
+        id
+        title
+        titleImg
+        titleImgPos
+        user {
+          id
+          nickName
+          profilePhoto
+        }
+        category {
+          id
+          name
+          topWikiImage {
+            id
+            shownImage
+            hoverImage
+          }
+        }
+        commentsCount
+        clapsCount
+        view
+        createdAt
+      }
+    }
+  }
+`;
+
 export const CLAPPEDPOSTS = gql`
   query getClappedPosts {
     GetClappedPosts {
+      ok
+      error
+      posts {
+        id
+        title
+        titleImg
+        titleImgPos
+        user {
+          id
+          nickName
+          profilePhoto
+        }
+        category {
+          id
+          name
+          topWikiImage {
+            id
+            shownImage
+            hoverImage
+          }
+        }
+        commentsCount
+        clapsCount
+        view
+        createdAt
+      }
+    }
+  }
+`;
+
+export const GET_RISING_POSTS_BY_GAME_ID = gql`
+  query getRisingPostsByGameId($gameId: Int!) {
+    GetRisingPostsByGameId(gameId: $gameId) {
       ok
       error
       posts {
@@ -656,6 +761,8 @@ export const GET_GAME_BY_ID = gql`
         id
         title
         icon
+        logo
+        wallpaper
       }
     }
   }

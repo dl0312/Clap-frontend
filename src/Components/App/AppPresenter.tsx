@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
-import Board from "../../Routes/Board";
 import Home from "../../Routes/Home";
 import Navigation from "../Navigation/Navigation";
 import Wiki from "../../Routes/Wiki";
@@ -35,7 +34,7 @@ const AppBox = styled.div`
 `;
 
 const MainContainer = styled.div`
-  margin-top: 85px;
+  margin-top: 100px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -162,7 +161,6 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn, changeLocale }) => (
                 component={WikiImageDetail}
               />
               <Route path={"/wiki"} exact={true} component={Wiki} />
-              <Route path={"/board"} exact={true} component={Board} />
               <Route path={""} exact={true} component={Home} />
               <Redirect from={"*"} to={"/"} />
             </Switch>

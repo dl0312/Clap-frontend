@@ -1,5 +1,5 @@
 import * as React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import styled from "styled-components";
 import { LOG_USER_OUT } from "../../sharedQueries.local";
 // import { LOG_USER_OUT, LOG_USER_IN } from "../../sharedQueries.local";
@@ -17,8 +17,6 @@ import {
 // import { FACEBOOK_CONNECT, GOOGLE_CONNECT, PROFILE } from "../../sharedQueries";
 
 import { PROFILE } from "../../sharedQueries";
-import AutoSuggestInput from "../AutoSuggestInput";
-import { Route } from "react-router-dom";
 import { media } from "src/config/_mixin";
 import { Avatar, Popover, Icon } from "antd";
 import SmallProfile from "../SmallProfile";
@@ -56,7 +54,7 @@ const MenuList = styled<IMenuListProps, any>("ul")`
   transition: 0.1s ease;
   box-shadow: ${props =>
     props.darken ? "0px 0.5px 2px rgba(0, 0, 0, 0.3)" : null};
-  padding: 0 50px;
+  position: relative;
   ${media.desktop`display: none;`};
   ${media.phone``};
 `;
@@ -64,7 +62,6 @@ const MenuList = styled<IMenuListProps, any>("ul")`
 const MenuItem = styled.div`
   text-align: center;
   padding: 10px 30px;
-
   text-decoration: none;
   font-family: "Raleway";
   font-weight: 100;
@@ -108,59 +105,6 @@ const ProfileItemContainer = styled.div`
 //   cursor: pointer;
 // `;
 
-interface IPhoneMenuListProps {
-  darken: boolean;
-}
-
-const PhoneMenuList = styled<IPhoneMenuListProps, any>("div")`
-  display: none;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  color: ${props => (props.darken ? "white" : null)};
-  background-color: ${props =>
-    props.darken ? "rgba(20, 20, 20, 0.94)" : "transparent"};
-  transition: 0.5s ease;
-  box-shadow: ${props =>
-    props.darken ? "0px 0.5px 2px rgba(0, 0, 0, 0.3)" : null};
-
-  ${media.desktop`display: flex;`};
-  ${media.phone``};
-`;
-
-const MenuBarButton = styled.i`
-  color: white;
-  position: absolute;
-  left: 15px;
-  font-size: 15px;
-  cursor: pointer;
-`;
-
-interface ISideNavProps {
-  isSideBarOpen: boolean;
-}
-
-const SideNav = styled<ISideNavProps, any>("div")`
-  height: 100%;
-  width: ${props => (props.isSideBarOpen ? "20%" : 0)};
-  position: fixed;
-  z-index: 15;
-  top: 0;
-  left: 0;
-  background-color: #111;
-  overflow-x: hidden;
-  transition: 0.5s;
-  padding-top: 60px;
-
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-`;
-
-const CloseButton = styled.i`
-  cursor: pointer;
-`;
-
 const ProfileNavContainer = styled.div`
   display: flex;
   align-items: center;
@@ -181,6 +125,11 @@ const IconContainer = styled.div`
     background-color: grey;
     color: white;
   }
+`;
+
+const GameIcon = styled.img`
+  height: 25px;
+  padding: 0 5px;
 `;
 
 class GetMyProfileQuery extends Query<getMyProfile> {}
@@ -240,7 +189,7 @@ class Navigation extends React.Component<IProps, IState> {
   };
 
   public render() {
-    const { darken, isSideBarOpen } = this.state;
+    const { darken } = this.state;
     return (
       <Mutation
         mutation={LOG_USER_OUT}
@@ -289,6 +238,39 @@ class Navigation extends React.Component<IProps, IState> {
                             return (
                               user && (
                                 <>
+                                  {user.games &&
+                                    user.games.map((game, index) => {
+                                      return (
+                                        game && (
+                                          <Link
+                                            to={`/game/${game.id}`}
+                                            style={{
+                                              textDecoration: "none",
+                                              display: "flex",
+                                              justifyContent: "center",
+                                              alignItems: "center"
+                                            }}
+                                          >
+                                            <GameIcon
+                                              key={index}
+                                              src={game.icon!}
+                                            />
+                                            {game.title}
+                                          </Link>
+                                        )
+                                      );
+                                    })}
+                                  <Link to={"/games"}>
+                                    {" "}
+                                    <Icon
+                                      style={{
+                                        fontSize: 18,
+                                        margin: "0 5px"
+                                      }}
+                                      type="edit"
+                                    />
+                                  </Link>
+
                                   <ProfileNavContainer>
                                     <IconContainer>
                                       <Icon
@@ -501,15 +483,14 @@ class Navigation extends React.Component<IProps, IState> {
                   )}
                 </ProfileContainer>
                 <MenuList darken={darken}>
-                  <NavLink
-                    to="/"
-                    style={{
-                      fontSize: "20px",
-                      marginRight: "100px",
-                      textDecoration: "none"
-                    }}
-                  >
-                    <MenuItem style={{ minWidth: "240px" }}>
+                  <MenuItem style={{ minWidth: "240px" }}>
+                    <NavLink
+                      to="/"
+                      style={{
+                        fontSize: "20px",
+                        textDecoration: "none"
+                      }}
+                    >
                       CLAP
                       <div
                         role="img"
@@ -522,22 +503,8 @@ class Navigation extends React.Component<IProps, IState> {
                       >
                         🕹️POWERED BY GAMERS🕹️
                       </div>
-                    </MenuItem>
-                  </NavLink>
-                  {/* <NavLink to="/board" style={{ textDecoration: "none" }}>
-                    <MenuItem>GUIDE</MenuItem>
-                  </NavLink>
-                  <NavLink to="/wiki" style={{ textDecoration: "none" }}>
-                    <MenuItem>WIKI</MenuItem>
-                  </NavLink>
-                  <NavLink to="/store" style={{ textDecoration: "none" }}>
-                    <MenuItem>STORE</MenuItem>
-                  </NavLink> */}
-                  <Route
-                    render={({ history }) => {
-                      return <AutoSuggestInput history={history} />;
-                    }}
-                  />
+                    </NavLink>
+                  </MenuItem>
 
                   {/* <NavLink to="/editor" style={{ textDecoration: "none" }}>
                 <MenuItem>EDITOR</MenuItem>
@@ -551,63 +518,8 @@ class Navigation extends React.Component<IProps, IState> {
               </MenuItem>
             </NavLink> */}
                 </MenuList>
-                <PhoneMenuList darken={darken}>
-                  <NavLink
-                    to="/"
-                    style={{
-                      textDecoration: "none"
-                    }}
-                  >
-                    <MenuItem>
-                      CLAP
-                      <div
-                        role="img"
-                        aria-label="Game"
-                        style={{
-                          fontFamily: "Open Sans",
-                          fontSize: "5px",
-                          letterSpacing: "2px"
-                        }}
-                      >
-                        🕹️POWERED BY GAMERS🕹️
-                      </div>
-                    </MenuItem>
-                  </NavLink>
-                  <MenuBarButton
-                    onClick={() =>
-                      this.setState({
-                        isSideBarOpen: true
-                      })
-                    }
-                    className="fas fa-bars"
-                  />
-                </PhoneMenuList>
               </div>
             </Header>
-            <SideNav isSideBarOpen={isSideBarOpen}>
-              <CloseButton
-                onClick={() =>
-                  this.setState({
-                    isSideBarOpen: false
-                  })
-                }
-                className="fas fa-times"
-              />
-              <NavLink to="/board" style={{ textDecoration: "none" }}>
-                <MenuItem>GUIDE</MenuItem>
-              </NavLink>
-              <NavLink to="/wiki" style={{ textDecoration: "none" }}>
-                <MenuItem>WIKI</MenuItem>
-              </NavLink>
-              <NavLink to="/store" style={{ textDecoration: "none" }}>
-                <MenuItem>STORE</MenuItem>
-              </NavLink>
-              <Route
-                render={({ history }) => {
-                  return <AutoSuggestInput history={history} />;
-                }}
-              />
-            </SideNav>
           </NavContainer>
         )}
       </Mutation>

@@ -479,6 +479,7 @@ class PostDetail extends React.Component<IProps, IState> {
               return <div>have no post [category]</div>;
             }
             const body = JSON.parse(post.body);
+            const gameId = post.gameId;
             return (
               post && (
                 <React.Fragment>
@@ -568,7 +569,7 @@ class PostDetail extends React.Component<IProps, IState> {
                                     <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" />
                                   </svg>
                                 </ClapImage>
-                                <ClapCount>1</ClapCount>
+                                <ClapCount>{post.clapsCount}</ClapCount>
                               </ClapImageContainer>
                             )}
                           </Mutation>
@@ -576,7 +577,12 @@ class PostDetail extends React.Component<IProps, IState> {
                         {isMine ? (
                           <ButtonsContainer>
                             <Link
-                              to={`/post/edit/${post.id}`}
+                              to={{
+                                pathname: `/post/edit/${post.id}`,
+                                state: {
+                                  gameId
+                                }
+                              }}
                               style={{ textDecoration: "none" }}
                             >
                               <Button
