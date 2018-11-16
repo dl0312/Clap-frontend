@@ -58,7 +58,6 @@ const RealEditorContainer = styled<IRealEditorContainerProps, any>("div")`
 
 interface IProps {
   view: "EDIT" | "USER" | "JSON";
-  font: string | null;
 }
 
 // interface IDnDProps {
@@ -81,11 +80,7 @@ class EditorLeft extends React.Component<IProps> {
         //   connectDropTarget!(instance);
         // }}
       >
-        <RealEditorContainer
-          fontFamily={this.props.font}
-          id="container"
-          view={this.props.view}
-        >
+        <RealEditorContainer id="container" view={this.props.view}>
           {this.props.children}
         </RealEditorContainer>
       </EditorLeftContainer>

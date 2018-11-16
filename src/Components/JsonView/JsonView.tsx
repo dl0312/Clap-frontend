@@ -11,9 +11,6 @@ interface IProps {
   json: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
-    // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
-    // contentWidth: number;
-    font: string | null;
     onDrag: "content" | "columnList" | null;
     selectedIndex: number | number[] | null;
     hoveredIndex: number | number[] | null;

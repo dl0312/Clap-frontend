@@ -60,7 +60,7 @@ class PostAdd extends React.Component<IProps, IState> {
         titleImg: null,
         titleImgPos: null,
         category: [],
-        cards: []
+        cards: EditorDefaults.DEFAULT_EDITOR_BLOCK
       }
     };
   }

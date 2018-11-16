@@ -342,9 +342,6 @@ interface IState {
   device: "PHONE" | "TABLET" | "DESKTOP";
   templatePopUp: boolean;
   categoryPopUp: boolean;
-  // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
-  // contentWidth: number;
-  font: string;
   onDrag: "content" | "columnList" | null;
   selectedIndex: number | number[] | null;
   hoveredIndex: number | number[] | null;
@@ -419,12 +416,8 @@ class Editor extends React.Component<IProps, IState> {
     type: "parent" | "child" | null,
     category: { id: number }
   ): void => {
-    console.log(type);
-    console.log(category);
     const found = this.state.category.indexOf(category.id) !== -1;
     const hasUnique = this.state.category.length === 1;
-    console.log(found);
-    console.log(hasUnique);
     if (!found && !hasUnique) {
       this.setState({ category: this.state.category.concat(category.id) });
     }
@@ -804,7 +797,6 @@ class Editor extends React.Component<IProps, IState> {
   public masterCallback = (
     type:
       | "title"
-      | "font"
       | "view"
       | "onDrag"
       | "rightMenu"
@@ -817,8 +809,6 @@ class Editor extends React.Component<IProps, IState> {
   ) => {
     if (type === "title") {
       this.setState({ title: dataFromChild });
-    } else if (type === "font") {
-      this.setState({ font: dataFromChild });
     } else if (type === "view") {
       this.setState({ view: dataFromChild });
     } else if (type === "onDrag") {
@@ -1270,7 +1260,6 @@ class Editor extends React.Component<IProps, IState> {
                   cards={this.state.cards}
                   view={this.state.view}
                   title={this.state.title}
-                  font={this.state.font}
                   category={this.state.category}
                 />
               ) : (
@@ -1289,7 +1278,7 @@ class Editor extends React.Component<IProps, IState> {
               <EditorLeftContainer view={view} device={device}>
                 {view === "EDIT" ? (
                   <React.Fragment>
-                    <EditorLeft font={this.state.font} view="EDIT">
+                    <EditorLeft view="EDIT">
                       <TitleContainer
                         titleImg={titleImg}
                         titleImgUploading={titleImgUploading}
@@ -1322,14 +1311,6 @@ class Editor extends React.Component<IProps, IState> {
                             style={{ margin: 12 }}
                             onChange={this.onInputChange}
                           />
-                          // <TitleImgPosInput
-                          //   type={"number"}
-                          //   value={titleImgPos}
-                          //   onChange={this.onInputChange}
-                          //   name={"titleImgPos"}
-                          //   min="0"
-                          //   max="100"
-                          // />
                         )}
                         <CategoryButton
                           addIdToState={this.addIdToState}

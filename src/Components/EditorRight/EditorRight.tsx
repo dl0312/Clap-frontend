@@ -1,8 +1,6 @@
 import React, { Component, Fragment } from "react";
 import Content from "../EditorMenu/Content";
 import Row from "../EditorMenu/Row";
-import Body from "../EditorMenu/Body";
-import Title from "../EditorMenu/Title";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -52,9 +50,6 @@ interface IProps {
   cards: any[];
   view: "EDIT" | "USER" | "JSON";
   title: string;
-  // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
-  // contentWidth: number;
-  font: string;
   category: number[];
 }
 
@@ -120,26 +115,6 @@ class EditorRight extends Component<IProps, IState> {
         return <Row masterCallback={this.props.masterCallback} />;
       case 1:
         return <Content masterCallback={this.props.masterCallback} />;
-      case 2:
-        return (
-          <Body
-            masterCallback={this.props.masterCallback}
-            view={this.props.view}
-            // bodyBackgroundColor={this.props.bodyBackgroundColor}
-            // contentWidth={this.props.contentWidth}
-            font={this.props.font}
-          />
-        );
-      case 3:
-        return (
-          <Title
-            title={this.props.title}
-            masterCallback={this.props.masterCallback}
-            addIdToState={this.props.addIdToState}
-            deleteIdToState={this.props.deleteIdToState}
-            category={this.props.category}
-          />
-        );
       default:
         return null;
     }

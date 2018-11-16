@@ -27,6 +27,49 @@ export default {
   BORDER_SELECT_COLOR: "#000",
   BORDER_ISOVER_COLOR: "#bbb",
   CLAP_IMG_TEXT_COLOR: "GoldenRod",
+  DEFAULT_EDITOR_BLOCK: [
+    {
+      type: "columnList",
+      onDrag: "columnList",
+      content: [1],
+      columnListArray: [
+        [
+          {
+            type: "content",
+            onDrag: "content",
+            content: "TEXT",
+            value: {
+              object: "value",
+              document: {
+                object: "document",
+                data: {},
+                nodes: [
+                  {
+                    object: "block",
+                    type: "line",
+                    isVoid: false,
+                    data: {},
+                    nodes: [
+                      {
+                        object: "text",
+                        leaves: [
+                          {
+                            object: "leaf",
+                            text: "",
+                            marks: []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      ]
+    }
+  ],
 
   HANDLE_COLOR: "#000"
 };

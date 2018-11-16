@@ -143,9 +143,6 @@ interface IProps {
   json: {
     rightMenu: number | null;
     view: "EDIT" | "USER" | "JSON";
-    // bodyBackgroundColor: { r: number; g: number; b: number; a: number };
-    // contentWidth: number;
-    font: string | null;
     onDrag: "content" | "columnList" | null;
     selectedIndex: number | number[] | null;
     hoveredIndex: number | number[] | null;
@@ -452,7 +449,7 @@ class UserView extends React.Component<IProps, IState> {
     const { pos, hoverImgJson, onImage } = this.state;
     console.log(this.state);
     return (
-      <EditorLeft font={json.font} view="USER">
+      <EditorLeft view="USER">
         {json.cards.map((item, index) => (
           <UserCard key={index}>
             <UserColumn

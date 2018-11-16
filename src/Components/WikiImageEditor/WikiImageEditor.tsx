@@ -1186,7 +1186,6 @@ class WikiImageEditor extends React.Component<IProps, IState> {
                 cards={this.state.cards}
                 view={this.state.view}
                 title={this.state.title}
-                font={this.state.font}
                 category={this.state.category}
               />
               <BlockOptions

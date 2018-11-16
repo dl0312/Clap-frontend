@@ -102,8 +102,6 @@ const CategoryName = styled.div`
 function insertImage(
   change: Change,
   id: number,
-  represent: string,
-  hover: any,
   name: string,
   type: string,
   target: any
@@ -112,7 +110,7 @@ function insertImage(
     change.select(target);
   }
   change.insertInline({
-    data: { id, represent, hover, name, type },
+    data: { id, name, type },
     key: JSON.stringify(id),
     type: "clap-image",
     isVoid: true
