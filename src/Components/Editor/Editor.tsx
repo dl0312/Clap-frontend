@@ -14,7 +14,12 @@ import { media } from "../../config/_mixin";
 import { Value } from "slate";
 import EmptyCard from "../EmptyCard";
 import { RenderNodeProps, RenderMarkProps } from "slate-react";
-import { POST, POSTS, CATEGORY } from "../../sharedQueries";
+import {
+  POST,
+  POSTS,
+  CATEGORY,
+  GET_CATEGORIES_BY_GAME_ID
+} from "../../sharedQueries";
 
 import update from "immutability-helper";
 import isEqual from "lodash.isequal";
@@ -24,19 +29,21 @@ import {
   addPost,
   addPostVariables,
   getCategoryById,
-  getCategoryByIdVariables
+  getCategoryByIdVariables,
+  getCategoriesByGameIdVariables,
+  getCategoriesByGameId
 } from "../../types/api";
 import { Button } from "../../sharedStyle";
 import Textarea from "../Textarea";
 import Template from "../Template";
 import Builder from "../Builder";
-import CategoryButton from "../CategoryButton";
 import ImageButton from "../ImageButton";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import CustomDragLayer from "../CustomDragLayer";
-import { InputNumber, Popover } from "antd";
+import { InputNumber, Popover, Select } from "antd";
 import HoverView from "../HoverView";
+const Option = Select.Option;
 
 interface IEditorContainerProps {
   type: "WIKIIMAGE_ADD" | "WIKIIMAGE_EDIT";
@@ -208,7 +215,6 @@ interface ITitleContainer {
 }
 
 const TitleContainer = styled<ITitleContainer, any>("div")`
-  max-width: 800px;
   width: 100%;
   padding-top: 50px;
   padding-bottom: 20px;
@@ -318,9 +324,67 @@ const ViewIcon = styled<IViewIconProps, any>("i")`
   }
 `;
 
+interface ITagContainerProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
+}
+
+const TagContainer = styled<ITagContainerProps, any>("div")`
+  width: 100%;
+  padding-bottom: 120px;
+  background-color: ${EditorDefaults.MAIN_BACKGROUND_COLOR};
+  padding-left: ${props => (props.device === "DESKTOP" ? null : "20px")};
+  padding-right: ${props => (props.device === "DESKTOP" ? null : "20px")};
+  transition: 0.2s ease;
+`;
+
+const InnerTagContainer = styled.div`
+  max-width: 886px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: rgba(0, 0, 0, 0.1);
+  text-align: left;
+`;
+
+const TagLabel = styled.span`
+  display: inline-block;
+  padding: 2px 0;
+  width: 35px;
+  vertical-align: top;
+  color: #000;
+  font-size: 16px;
+  font-weight: bolder;
+`;
+
+const TagArea = styled.span`
+  display: inline-block;
+  width: 100%;
+  vertical-align: top;
+  text-align: left;
+  margin-top: -1px;
+`;
+
+const TagInputHolder = styled.span`
+  display: inline-block;
+  width: 100%;
+  color: #bfbfbf;
+  font-size: 15px;
+`;
+
+// const TagItem = styled.span``;
+
 class GetCategoryById extends Query<
   getCategoryById,
   getCategoryByIdVariables
+> {}
+
+class GetCategoriesByGameIdQuery extends Query<
+  getCategoriesByGameId,
+  getCategoriesByGameIdVariables
 > {}
 
 interface IProps {
@@ -351,7 +415,6 @@ interface IState {
   exShownImg: { url: string; id: string };
   pos: { x: number; y: number };
   title: string;
-  category: number[];
   cards: any[];
   cardbuilderpositions: any[];
   targetIndex: any;
@@ -359,9 +422,10 @@ interface IState {
   titleImgUploading: boolean;
   titleImgPos: number;
   comp: any;
+  tags: any[];
 }
 
-class Editor extends React.Component<IProps, IState> {
+class Editor extends React.Component<IProps, IState, any> {
   constructor(props: IProps) {
     super(props);
     this.moveCard = this.moveCard.bind(this);
@@ -387,7 +451,6 @@ class Editor extends React.Component<IProps, IState> {
           : { url: null, id: null },
       pos: { x: 0, y: 0 },
       title: "",
-      category: [],
       cards: [],
       cardbuilderpositions: [],
       targetIndex: [],
@@ -395,6 +458,9 @@ class Editor extends React.Component<IProps, IState> {
       titleImgUploading: false,
       titleImgPos: 50,
       comp: null,
+      tags: [],
+      inputVisible: false,
+      inputValue: "",
       ...props.state
     };
   }
@@ -411,27 +477,6 @@ class Editor extends React.Component<IProps, IState> {
   public componentWillUnmount() {
     window.removeEventListener("beforeunload", this.onUnload);
   }
-
-  public addIdToState = (
-    type: "parent" | "child" | null,
-    category: { id: number }
-  ): void => {
-    const found = this.state.category.indexOf(category.id) !== -1;
-    const hasUnique = this.state.category.length === 1;
-    if (!found && !hasUnique) {
-      this.setState({ category: this.state.category.concat(category.id) });
-    }
-  };
-
-  public deleteIdToState = (
-    type: "parent" | "child" | null,
-    category: { id: number }
-  ): void => {
-    const curCategory = this.state.category;
-    const index = this.state.category.findIndex(id => id === category.id);
-    curCategory.splice(index, 1);
-    this.setState({ category: curCategory });
-  };
 
   public buttonCallback = (
     type: "mouseover" | "mouseleave" | "select" | "delete",
@@ -559,6 +604,7 @@ class Editor extends React.Component<IProps, IState> {
   // 오른쪽 버튼 Drop Here에 놨을 때
   public handleDrop = (hoverItem: any, hoverIndex: number | number[]) => {
     // on column
+    console.log(hoverItem, hoverIndex);
     if (!Array.isArray(hoverIndex)) {
       // on frame
       if (!!hoverItem) {
@@ -1059,42 +1105,41 @@ class Editor extends React.Component<IProps, IState> {
     if (type === "POST_ADD") {
       return (
         <PostButtonContainer>
-          {this.state.category.length !== 0 && this.state.title && (
-            <PostButton
-              onClick={e => {
-                e.preventDefault();
-                const filteredState: IState = this.state;
-                filteredState.rightMenu = null;
-                filteredState.selectedContent = null;
-                filteredState.selectedIndex = null;
-                filteredState.onDrag = null;
-                filteredState.hoverImgJson = null;
-                filteredState.pos = { x: 0, y: 0 };
-                filteredState.onImage = false;
-                filteredState.view = "EDIT";
-                this.props.AddPost!({
-                  refetchQueries: [
-                    {
-                      query: POSTS,
-                      variables: {
-                        limit: 20,
-                        type: "createdAt"
-                      }
+          <PostButton
+            onClick={e => {
+              e.preventDefault();
+              const filteredState: IState = this.state;
+              filteredState.rightMenu = null;
+              filteredState.selectedContent = null;
+              filteredState.selectedIndex = null;
+              filteredState.onDrag = null;
+              filteredState.hoverImgJson = null;
+              filteredState.pos = { x: 0, y: 0 };
+              filteredState.onImage = false;
+              filteredState.view = "EDIT";
+              this.props.AddPost!({
+                refetchQueries: [
+                  {
+                    query: POSTS,
+                    variables: {
+                      limit: 20,
+                      type: "createdAt"
                     }
-                  ],
-                  variables: {
-                    title: this.state.title,
-                    titleImg: this.state.titleImg,
-                    titleImgPos: this.state.titleImgPos,
-                    categoryId: this.state.category[0],
-                    body: JSON.stringify(filteredState)
                   }
-                });
-              }}
-            >
-              SEND
-            </PostButton>
-          )}
+                ],
+                variables: {
+                  title: this.state.title,
+                  titleImg: this.state.titleImg,
+                  titleImgPos: this.state.titleImgPos,
+                  tags: this.state.tags,
+                  body: JSON.stringify(filteredState),
+                  gameId: this.props.gameId
+                }
+              });
+            }}
+          >
+            SEND
+          </PostButton>
         </PostButtonContainer>
       );
     } else if (type === "POST_EDIT") {
@@ -1129,8 +1174,9 @@ class Editor extends React.Component<IProps, IState> {
                   title: this.state.title,
                   titleImg: this.state.titleImg,
                   titleImgPos: this.state.titleImgPos,
-                  categoryId: this.state.category[0],
-                  body: JSON.stringify(filteredState)
+                  tags: this.state.tags,
+                  body: JSON.stringify(filteredState),
+                  gameId: this.props.gameId
                 }
               });
             }}
@@ -1145,7 +1191,7 @@ class Editor extends React.Component<IProps, IState> {
   };
 
   public render() {
-    const { type } = this.props;
+    const { type, gameId } = this.props;
     const {
       cards,
       selectedIndex,
@@ -1157,7 +1203,8 @@ class Editor extends React.Component<IProps, IState> {
       targetIndex,
       titleImg,
       titleImgUploading,
-      titleImgPos
+      titleImgPos,
+      tags
     } = this.state;
     return (
       <React.Fragment>
@@ -1252,15 +1299,13 @@ class Editor extends React.Component<IProps, IState> {
                   masterCallback={
                     this.masterCallback // func
                   }
-                  addIdToState={this.addIdToState}
-                  deleteIdToState={this.deleteIdToState}
                   rightMenu={
                     this.state.rightMenu // values
                   }
                   cards={this.state.cards}
                   view={this.state.view}
                   title={this.state.title}
-                  category={this.state.category}
+                  onClickPushNewBlock={this.onClickPushNewBlock}
                 />
               ) : (
                 <BlockOptions
@@ -1278,7 +1323,7 @@ class Editor extends React.Component<IProps, IState> {
               <EditorLeftContainer view={view} device={device}>
                 {view === "EDIT" ? (
                   <React.Fragment>
-                    <EditorLeft view="EDIT">
+                    <EditorLeft view="EDIT" device={device}>
                       <TitleContainer
                         titleImg={titleImg}
                         titleImgUploading={titleImgUploading}
@@ -1287,7 +1332,9 @@ class Editor extends React.Component<IProps, IState> {
                         <TitleInput
                           type={"text"}
                           value={this.state.title}
-                          onChange={this.onInputChange}
+                          onChange={(e: any) =>
+                            this.onInputChange("title", e.target.value)
+                          }
                           placeholder="Title"
                           name={"title"}
                           device={device}
@@ -1309,14 +1356,11 @@ class Editor extends React.Component<IProps, IState> {
                               )
                             }
                             style={{ margin: 12 }}
-                            onChange={this.onInputChange}
+                            onChange={(value: any) =>
+                              this.onInputChange("titleImgPos", value)
+                            }
                           />
                         )}
-                        <CategoryButton
-                          addIdToState={this.addIdToState}
-                          deleteIdToState={this.deleteIdToState}
-                          selectedCategories={this.state.category}
-                        />
                       </TitleContainer>
 
                       {cards.length !== 0 ? (
@@ -1410,6 +1454,112 @@ class Editor extends React.Component<IProps, IState> {
                         />
                       )}
                     </EditorLeft>
+                    <TagContainer>
+                      <InnerTagContainer>
+                        <TagLabel>Tag</TagLabel>
+                        <TagArea>
+                          <TagInputHolder>
+                            <GetCategoriesByGameIdQuery
+                              query={GET_CATEGORIES_BY_GAME_ID}
+                              variables={{ gameId }}
+                            >
+                              {({ loading, error, data }) => {
+                                if (loading) {
+                                  return (
+                                    <Select
+                                      mode="tags"
+                                      style={{ width: "100%" }}
+                                      placeholder="Tags Mode"
+                                      onChange={(value: any) =>
+                                        console.log(`selected ${value}`)
+                                      }
+                                    />
+                                  );
+                                }
+                                if (error) return `${error}`;
+                                if (data !== undefined) {
+                                  console.log(data);
+                                  const {
+                                    categories
+                                  } = data.GetCategoriesByGameId;
+                                  return (
+                                    <Select
+                                      mode="tags"
+                                      allowClear={true}
+                                      style={{ width: "100%" }}
+                                      placeholder="Tags"
+                                      onChange={(values: any) => {
+                                        console.log(values);
+                                        this.setState({
+                                          tags: values.map(
+                                            (value: any) => value
+                                          )
+                                        });
+                                      }}
+                                      value={tags.map((tag: any) => {
+                                        return tag;
+                                      })}
+                                      optionFilterProp="Tags"
+                                      filterOption={(input, option: any) => {
+                                        return (
+                                          option.props.children.props.children[1].props.children
+                                            .toLowerCase()
+                                            .indexOf(input.toLowerCase()) >= 0
+                                        );
+                                      }}
+                                    >
+                                      {categories &&
+                                        categories.map((category, index) => {
+                                          return (
+                                            category && (
+                                              <Option
+                                                value={category.name}
+                                                key={JSON.stringify(
+                                                  category.id
+                                                )}
+                                              >
+                                                <span
+                                                  style={{
+                                                    display: "flex",
+                                                    justifyContent:
+                                                      "flex-start",
+                                                    alignItems: "center",
+                                                    verticalAlign: "top"
+                                                  }}
+                                                >
+                                                  {category.topWikiImage && (
+                                                    <img
+                                                      style={{
+                                                        height: "20px",
+                                                        borderRadius: 4
+                                                      }}
+                                                      src={
+                                                        category.topWikiImage
+                                                          .shownImage
+                                                      }
+                                                    />
+                                                  )}
+                                                  <span
+                                                    style={{ padding: "0 7px" }}
+                                                  >
+                                                    {category.name}
+                                                  </span>
+                                                </span>
+                                              </Option>
+                                            )
+                                          );
+                                        })}
+                                    </Select>
+                                  );
+                                } else {
+                                  return null;
+                                }
+                              }}
+                            </GetCategoriesByGameIdQuery>
+                          </TagInputHolder>
+                        </TagArea>
+                      </InnerTagContainer>
+                    </TagContainer>
                   </React.Fragment>
                 ) : view === "USER" ? (
                   <UserView json={this.state} />
@@ -1697,12 +1847,12 @@ class Editor extends React.Component<IProps, IState> {
     this.setState({ device });
   };
 
-  public onInputChange = async (value: any) => {
+  public onInputChange = async (name: string, value: any) => {
     // const {
     //   target: { name, value }
     // } = event;
     this.setState({
-      titleImgPos: value
+      [name]: value
     } as any);
   };
 
@@ -1772,6 +1922,19 @@ class Editor extends React.Component<IProps, IState> {
   public pushNewBlockToTargetIndex = (dragItem: any) => {
     this.masterCallback("onDrag", null);
     this.handleDrop(dragItem, this.state.targetIndex);
+  };
+
+  public onClickPushNewBlock = (dragItem: any, type: "ROW" | "CONTENT") => {
+    if (this.state.selectedIndex) {
+      console.log(this.state.selectedIndex, this.state.cards);
+      this.handleDrop(dragItem, this.state.selectedIndex[0] + 1);
+    } else {
+      if (type === "ROW") {
+        this.handleDrop(dragItem, this.state.cards.length);
+      } else if (type === "CONTENT") {
+        this.handleDrop(dragItem, this.state.cards.length);
+      }
+    }
   };
 
   public onInputImageChange: React.ChangeEventHandler<

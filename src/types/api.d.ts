@@ -19,27 +19,6 @@ export interface getPostById_GetPostById_post_user {
   profilePhoto: string | null;
 }
 
-export interface getPostById_GetPostById_post_category_parent {
-  __typename: "Category";
-  id: number;
-  name: string;
-}
-
-export interface getPostById_GetPostById_post_category_topWikiImage {
-  __typename: "WikiImage";
-  id: number;
-  shownImage: string;
-  hoverImage: string;
-}
-
-export interface getPostById_GetPostById_post_category {
-  __typename: "Category";
-  id: number;
-  name: string;
-  parent: getPostById_GetPostById_post_category_parent | null;
-  topWikiImage: getPostById_GetPostById_post_category_topWikiImage | null;
-}
-
 export interface getPostById_GetPostById_post_comments_user {
   __typename: "User";
   id: number;
@@ -98,7 +77,7 @@ export interface getPostById_GetPostById_post {
   gameId: number | null;
   game: getPostById_GetPostById_post_game | null;
   user: getPostById_GetPostById_post_user;
-  category: getPostById_GetPostById_post_category | null;
+  tags: (string | null)[] | null;
   view: number;
   clapsCount: number | null;
   commentsCount: number | null;
@@ -144,8 +123,9 @@ export interface addPostVariables {
   title: string;
   titleImg?: string | null;
   titleImgPos?: number | null;
-  categoryId: number;
+  tags?: (string | null)[] | null;
   body: string;
+  gameId: number;
 }
 
 /* tslint:disable */
@@ -170,8 +150,9 @@ export interface editPostVariables {
   title?: string | null;
   titleImg?: string | null;
   titleImgPos?: number | null;
-  categoryId?: number | null;
+  tags?: (string | null)[] | null;
   body?: string | null;
+  gameId: number;
 }
 
 /* tslint:disable */
@@ -209,32 +190,12 @@ export interface getPostsByCategoryId_GetPostsByCategoryId_posts_user {
   nickName: string;
 }
 
-export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category_parent {
-  __typename: "Category";
-  id: number;
-  name: string;
-}
-
-export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages {
-  __typename: "WikiImage";
-  id: number;
-  shownImage: string;
-}
-
-export interface getPostsByCategoryId_GetPostsByCategoryId_posts_category {
-  __typename: "Category";
-  id: number;
-  name: string;
-  parent: getPostsByCategoryId_GetPostsByCategoryId_posts_category_parent | null;
-  wikiImages: (getPostsByCategoryId_GetPostsByCategoryId_posts_category_wikiImages | null)[] | null;
-}
-
 export interface getPostsByCategoryId_GetPostsByCategoryId_posts {
   __typename: "Post";
   id: number;
   title: string;
   user: getPostsByCategoryId_GetPostsByCategoryId_posts_user;
-  category: getPostsByCategoryId_GetPostsByCategoryId_posts_category | null;
+  tags: (string | null)[] | null;
   commentsCount: number | null;
   clapsCount: number | null;
   view: number;
@@ -270,20 +231,6 @@ export interface getPostsByGameId_GetPostsByGameId_posts_user {
   profilePhoto: string | null;
 }
 
-export interface getPostsByGameId_GetPostsByGameId_posts_category_topWikiImage {
-  __typename: "WikiImage";
-  id: number;
-  shownImage: string;
-  hoverImage: string;
-}
-
-export interface getPostsByGameId_GetPostsByGameId_posts_category {
-  __typename: "Category";
-  id: number;
-  name: string;
-  topWikiImage: getPostsByGameId_GetPostsByGameId_posts_category_topWikiImage | null;
-}
-
 export interface getPostsByGameId_GetPostsByGameId_posts {
   __typename: "Post";
   id: number;
@@ -291,7 +238,7 @@ export interface getPostsByGameId_GetPostsByGameId_posts {
   titleImg: string | null;
   titleImgPos: number | null;
   user: getPostsByGameId_GetPostsByGameId_posts_user;
-  category: getPostsByGameId_GetPostsByGameId_posts_category | null;
+  tags: (string | null)[] | null;
   commentsCount: number | null;
   clapsCount: number | null;
   view: number;
@@ -327,20 +274,6 @@ export interface getAllPosts_GetAllPosts_posts_user {
   profilePhoto: string | null;
 }
 
-export interface getAllPosts_GetAllPosts_posts_category_topWikiImage {
-  __typename: "WikiImage";
-  id: number;
-  shownImage: string;
-  hoverImage: string;
-}
-
-export interface getAllPosts_GetAllPosts_posts_category {
-  __typename: "Category";
-  id: number;
-  name: string;
-  topWikiImage: getAllPosts_GetAllPosts_posts_category_topWikiImage | null;
-}
-
 export interface getAllPosts_GetAllPosts_posts {
   __typename: "Post";
   id: number;
@@ -348,7 +281,7 @@ export interface getAllPosts_GetAllPosts_posts {
   titleImg: string | null;
   titleImgPos: number | null;
   user: getAllPosts_GetAllPosts_posts_user;
-  category: getAllPosts_GetAllPosts_posts_category | null;
+  tags: (string | null)[] | null;
   commentsCount: number | null;
   clapsCount: number | null;
   view: number;
@@ -385,20 +318,6 @@ export interface getClappedPostsByGameId_GetClappedPostsByGameId_posts_user {
   profilePhoto: string | null;
 }
 
-export interface getClappedPostsByGameId_GetClappedPostsByGameId_posts_category_topWikiImage {
-  __typename: "WikiImage";
-  id: number;
-  shownImage: string;
-  hoverImage: string;
-}
-
-export interface getClappedPostsByGameId_GetClappedPostsByGameId_posts_category {
-  __typename: "Category";
-  id: number;
-  name: string;
-  topWikiImage: getClappedPostsByGameId_GetClappedPostsByGameId_posts_category_topWikiImage | null;
-}
-
 export interface getClappedPostsByGameId_GetClappedPostsByGameId_posts {
   __typename: "Post";
   id: number;
@@ -406,7 +325,7 @@ export interface getClappedPostsByGameId_GetClappedPostsByGameId_posts {
   titleImg: string | null;
   titleImgPos: number | null;
   user: getClappedPostsByGameId_GetClappedPostsByGameId_posts_user;
-  category: getClappedPostsByGameId_GetClappedPostsByGameId_posts_category | null;
+  tags: (string | null)[] | null;
   commentsCount: number | null;
   clapsCount: number | null;
   view: number;
@@ -442,20 +361,6 @@ export interface getClappedPosts_GetClappedPosts_posts_user {
   profilePhoto: string | null;
 }
 
-export interface getClappedPosts_GetClappedPosts_posts_category_topWikiImage {
-  __typename: "WikiImage";
-  id: number;
-  shownImage: string;
-  hoverImage: string;
-}
-
-export interface getClappedPosts_GetClappedPosts_posts_category {
-  __typename: "Category";
-  id: number;
-  name: string;
-  topWikiImage: getClappedPosts_GetClappedPosts_posts_category_topWikiImage | null;
-}
-
 export interface getClappedPosts_GetClappedPosts_posts {
   __typename: "Post";
   id: number;
@@ -463,7 +368,7 @@ export interface getClappedPosts_GetClappedPosts_posts {
   titleImg: string | null;
   titleImgPos: number | null;
   user: getClappedPosts_GetClappedPosts_posts_user;
-  category: getClappedPosts_GetClappedPosts_posts_category | null;
+  tags: (string | null)[] | null;
   commentsCount: number | null;
   clapsCount: number | null;
   view: number;
@@ -495,20 +400,6 @@ export interface getRisingPostsByGameId_GetRisingPostsByGameId_posts_user {
   profilePhoto: string | null;
 }
 
-export interface getRisingPostsByGameId_GetRisingPostsByGameId_posts_category_topWikiImage {
-  __typename: "WikiImage";
-  id: number;
-  shownImage: string;
-  hoverImage: string;
-}
-
-export interface getRisingPostsByGameId_GetRisingPostsByGameId_posts_category {
-  __typename: "Category";
-  id: number;
-  name: string;
-  topWikiImage: getRisingPostsByGameId_GetRisingPostsByGameId_posts_category_topWikiImage | null;
-}
-
 export interface getRisingPostsByGameId_GetRisingPostsByGameId_posts {
   __typename: "Post";
   id: number;
@@ -516,7 +407,7 @@ export interface getRisingPostsByGameId_GetRisingPostsByGameId_posts {
   titleImg: string | null;
   titleImgPos: number | null;
   user: getRisingPostsByGameId_GetRisingPostsByGameId_posts_user;
-  category: getRisingPostsByGameId_GetRisingPostsByGameId_posts_category | null;
+  tags: (string | null)[] | null;
   commentsCount: number | null;
   clapsCount: number | null;
   view: number;
@@ -552,20 +443,6 @@ export interface getRisingPosts_GetRisingPosts_posts_user {
   profilePhoto: string | null;
 }
 
-export interface getRisingPosts_GetRisingPosts_posts_category_topWikiImage {
-  __typename: "WikiImage";
-  id: number;
-  shownImage: string;
-  hoverImage: string;
-}
-
-export interface getRisingPosts_GetRisingPosts_posts_category {
-  __typename: "Category";
-  id: number;
-  name: string;
-  topWikiImage: getRisingPosts_GetRisingPosts_posts_category_topWikiImage | null;
-}
-
 export interface getRisingPosts_GetRisingPosts_posts {
   __typename: "Post";
   id: number;
@@ -573,7 +450,7 @@ export interface getRisingPosts_GetRisingPosts_posts {
   titleImg: string | null;
   titleImgPos: number | null;
   user: getRisingPosts_GetRisingPosts_posts_user;
-  category: getRisingPosts_GetRisingPosts_posts_category | null;
+  tags: (string | null)[] | null;
   commentsCount: number | null;
   clapsCount: number | null;
   view: number;
@@ -605,17 +482,10 @@ export interface getWikiImages_GetWikiImages_wikiImages_user {
   profilePhoto: string | null;
 }
 
-export interface getWikiImages_GetWikiImages_wikiImages_category_parent {
-  __typename: "Category";
-  id: number;
-  name: string;
-}
-
 export interface getWikiImages_GetWikiImages_wikiImages_category {
   __typename: "Category";
   id: number;
   name: string;
-  parent: getWikiImages_GetWikiImages_wikiImages_category_parent | null;
 }
 
 export interface getWikiImages_GetWikiImages_wikiImages {
@@ -907,6 +777,66 @@ export interface getCategoriesByIds {
 
 export interface getCategoriesByIdsVariables {
   categoriesIds?: (number | null)[] | null;
+}
+
+/* tslint:disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: getCategoriesByGameId
+// ====================================================
+
+export interface getCategoriesByGameId_GetCategoriesByGameId_categories_children {
+  __typename: "Category";
+  id: number;
+  name: string;
+}
+
+export interface getCategoriesByGameId_GetCategoriesByGameId_categories_parent {
+  __typename: "Category";
+  id: number;
+  name: string;
+}
+
+export interface getCategoriesByGameId_GetCategoriesByGameId_categories_topWikiImage {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: string;
+  hoverImage: string;
+}
+
+export interface getCategoriesByGameId_GetCategoriesByGameId_categories_wikiImages {
+  __typename: "WikiImage";
+  id: number;
+  shownImage: string;
+  hoverImage: string;
+  clapsCount: number;
+  postsCount: number;
+}
+
+export interface getCategoriesByGameId_GetCategoriesByGameId_categories {
+  __typename: "Category";
+  id: number;
+  name: string;
+  children: (getCategoriesByGameId_GetCategoriesByGameId_categories_children | null)[] | null;
+  parent: getCategoriesByGameId_GetCategoriesByGameId_categories_parent | null;
+  topWikiImage: getCategoriesByGameId_GetCategoriesByGameId_categories_topWikiImage | null;
+  wikiImages: (getCategoriesByGameId_GetCategoriesByGameId_categories_wikiImages | null)[] | null;
+}
+
+export interface getCategoriesByGameId_GetCategoriesByGameId {
+  __typename: "GetCategoriesByGameIdResponse";
+  ok: boolean;
+  error: string | null;
+  categories: (getCategoriesByGameId_GetCategoriesByGameId_categories | null)[] | null;
+}
+
+export interface getCategoriesByGameId {
+  GetCategoriesByGameId: getCategoriesByGameId_GetCategoriesByGameId;
+}
+
+export interface getCategoriesByGameIdVariables {
+  gameId: number;
 }
 
 /* tslint:disable */

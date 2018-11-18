@@ -52,7 +52,13 @@ class AppContainer extends React.Component<IProps, IState> {
             />
           </LocaleProvider>
         </ThemeProvider>
-        <ToastContainer draggable={true} position={"bottom-center"} />
+        <ToastContainer
+          draggable={true}
+          position={"top-left"}
+          autoClose={5000}
+          hideProgressBar={true}
+          pauseOnHover={true}
+        />
       </React.Fragment>
     );
   }

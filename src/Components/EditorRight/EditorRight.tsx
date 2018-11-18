@@ -44,13 +44,11 @@ const menus = [
 interface IProps {
   // func
   masterCallback: any;
-  addIdToState: any;
-  deleteIdToState: any;
+  onClickPushNewBlock: any;
   rightMenu: number | null;
   cards: any[];
   view: "EDIT" | "USER" | "JSON";
   title: string;
-  category: number[];
 }
 
 interface IState {
@@ -112,9 +110,19 @@ class EditorRight extends Component<IProps, IState> {
   public showSection = () => {
     switch (this.props.rightMenu) {
       case 0:
-        return <Row masterCallback={this.props.masterCallback} />;
+        return (
+          <Row
+            onClickPushNewBlock={this.props.onClickPushNewBlock}
+            masterCallback={this.props.masterCallback}
+          />
+        );
       case 1:
-        return <Content masterCallback={this.props.masterCallback} />;
+        return (
+          <Content
+            onClickPushNewBlock={this.props.onClickPushNewBlock}
+            masterCallback={this.props.masterCallback}
+          />
+        );
       default:
         return null;
     }

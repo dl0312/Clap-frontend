@@ -12,7 +12,6 @@ interface IBuilderContainerProps {
 
 const BuilderContainer = styled<IBuilderContainerProps, any>("div")`
   width: 100%;
-  max-width: 800px;
   background-color: goldenrod;
   z-index: ${props => (props.state === "ISOVER" ? "999" : null)};
   background-color: ${props => {

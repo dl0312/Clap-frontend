@@ -64,6 +64,7 @@ interface IProps {
   array: any[];
   masterCallback: any;
   item: any;
+  onClickPushNewBlock: any;
 }
 
 interface IDnDProps {
@@ -81,7 +82,10 @@ class RowItem extends Component<IProps & IDnDProps> {
       connectDragSource &&
       connectDragSource(
         <div>
-          <RowItemContainer style={{ opacity, gridTemplateColumns }}>
+          <RowItemContainer
+            style={{ opacity, gridTemplateColumns }}
+            onClick={() => this.handleOnClick(array)}
+          >
             {array.map((element, index) => {
               return <RowItemBox key={index} />;
             })}
@@ -90,6 +94,23 @@ class RowItem extends Component<IProps & IDnDProps> {
       )
     );
   }
+
+  public handleOnClick = (array: any) => {
+    const columnListArray: any[] = [];
+    array.map(() => {
+      return columnListArray.push([]);
+    });
+    this.props.onClickPushNewBlock(
+      {
+        type: "columnList",
+        onDrag: "columnList",
+        content: array,
+        columnListArray
+      },
+      "ROW"
+    );
+    console.log(`RowItem Clicked!`);
+  };
 
   public componentDidMount() {
     const { connectDragPreview } = this.props;

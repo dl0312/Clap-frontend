@@ -27,8 +27,7 @@ import { toast } from "react-toastify";
 import { formatDate } from "../../Utility/FormatDate";
 import { LOST_IMAGE_URL } from "../../constants";
 import Loading from "src/Components/Loading";
-import CategoryTag from "src/Components/CategoryTag";
-import { Button, Popconfirm, message } from "antd";
+import { Button, Popconfirm, message, Tag } from "antd";
 import UserTag from "src/Components/UserTag";
 
 const DetailContainer = styled.div`
@@ -475,9 +474,7 @@ class PostDetail extends React.Component<IProps, IState> {
             if (post.body === null) {
               return <div>have no post [body]</div>;
             }
-            if (post.category === null) {
-              return <div>have no post [category]</div>;
-            }
+            const tags = post.tags;
             const body = JSON.parse(post.body);
             const gameId = post.gameId;
             return (
@@ -489,21 +486,15 @@ class PostDetail extends React.Component<IProps, IState> {
                   <DetailContainer>
                     <PostContainer>
                       <TitleContainer
-                        src={
-                          post.titleImg
-                            ? post.titleImg
-                            : post.category.topWikiImage !== null
-                            ? post.category.topWikiImage.shownImage
-                            : LOST_IMAGE_URL
-                        }
+                        src={post.titleImg ? post.titleImg : LOST_IMAGE_URL}
                         pos={post.titleImgPos}
                       >
                         <TitleInnerContainer>
                           <CategoryContainer>
-                            <CategoryTag
-                              category={post.category}
-                              display={"both"}
-                            />
+                            {tags &&
+                              tags.map((tag, index) => (
+                                <Tag key={index}>{tag}</Tag>
+                              ))}
                           </CategoryContainer>
                           <Title>{post.title}</Title>
                           <CountContainer>

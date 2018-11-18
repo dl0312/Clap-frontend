@@ -1178,15 +1178,13 @@ class WikiImageEditor extends React.Component<IProps, IState> {
                 masterCallback={
                   this.masterCallback // func
                 }
-                addIdToState={this.addIdToState}
-                deleteIdToState={this.deleteIdToState}
                 rightMenu={
                   this.state.rightMenu // values
                 }
                 cards={this.state.cards}
                 view={this.state.view}
                 title={this.state.title}
-                category={this.state.category}
+                onClickPushNewBlock={this.onClickPushNewBlock}
               />
               <BlockOptions
                 type={this.props.type}
@@ -1522,6 +1520,14 @@ class WikiImageEditor extends React.Component<IProps, IState> {
     console.log(this.state.targetIndex);
     this.masterCallback("onDrag", null);
     this.handleDrop(dragItem, this.state.targetIndex);
+  };
+
+  public onClickPushNewBlock = () => {
+    if (this.state.selectedIndex) {
+      console.log(this.state.selectedIndex, this.state.cards);
+    } else {
+      console.log(this.state.cards);
+    }
   };
 }
 

@@ -22,19 +22,7 @@ export const POST = gql`
           nickName
           profilePhoto
         }
-        category {
-          id
-          name
-          parent {
-            id
-            name
-          }
-          topWikiImage {
-            id
-            shownImage
-            hoverImage
-          }
-        }
+        tags
         view
         clapsCount
         commentsCount
@@ -82,15 +70,17 @@ export const ADD_POST = gql`
     $title: String!
     $titleImg: String
     $titleImgPos: Float
-    $categoryId: Int!
+    $tags: [String]
     $body: String!
+    $gameId: Int!
   ) {
     AddPost(
       title: $title
       titleImg: $titleImg
       titleImgPos: $titleImgPos
-      categoryId: $categoryId
+      tags: $tags
       body: $body
+      gameId: $gameId
     ) {
       ok
       error
@@ -104,16 +94,18 @@ export const EDIT_POST = gql`
     $title: String
     $titleImg: String
     $titleImgPos: Float
-    $categoryId: Int
+    $tags: [String]
     $body: String
+    $gameId: Int!
   ) {
     EditPost(
       postId: $postId
       title: $title
       titleImg: $titleImg
       titleImgPos: $titleImgPos
-      categoryId: $categoryId
+      tags: $tags
       body: $body
+      gameId: $gameId
     ) {
       ok
       error
@@ -143,18 +135,7 @@ export const POSTS_CATEGORY = gql`
           profilePhoto
           nickName
         }
-        category {
-          id
-          name
-          parent {
-            id
-            name
-          }
-          wikiImages {
-            id
-            shownImage
-          }
-        }
+        tags
         commentsCount
         clapsCount
         view
@@ -179,15 +160,7 @@ export const GET_POSTS_BY_GAME_ID = gql`
           nickName
           profilePhoto
         }
-        category {
-          id
-          name
-          topWikiImage {
-            id
-            shownImage
-            hoverImage
-          }
-        }
+        tags
         commentsCount
         clapsCount
         view
@@ -212,15 +185,7 @@ export const POSTS = gql`
           nickName
           profilePhoto
         }
-        category {
-          id
-          name
-          topWikiImage {
-            id
-            shownImage
-            hoverImage
-          }
-        }
+        tags
         commentsCount
         clapsCount
         view
@@ -245,15 +210,7 @@ export const GET_CLAPPED_POSTS_BY_GAME_ID = gql`
           nickName
           profilePhoto
         }
-        category {
-          id
-          name
-          topWikiImage {
-            id
-            shownImage
-            hoverImage
-          }
-        }
+        tags
         commentsCount
         clapsCount
         view
@@ -278,15 +235,7 @@ export const CLAPPEDPOSTS = gql`
           nickName
           profilePhoto
         }
-        category {
-          id
-          name
-          topWikiImage {
-            id
-            shownImage
-            hoverImage
-          }
-        }
+        tags
         commentsCount
         clapsCount
         view
@@ -311,15 +260,7 @@ export const GET_RISING_POSTS_BY_GAME_ID = gql`
           nickName
           profilePhoto
         }
-        category {
-          id
-          name
-          topWikiImage {
-            id
-            shownImage
-            hoverImage
-          }
-        }
+        tags
         commentsCount
         clapsCount
         view
@@ -344,15 +285,7 @@ export const RISINGPOSTS = gql`
           nickName
           profilePhoto
         }
-        category {
-          id
-          name
-          topWikiImage {
-            id
-            shownImage
-            hoverImage
-          }
-        }
+        tags
         commentsCount
         clapsCount
         view
@@ -377,10 +310,6 @@ export const WIKIIMAGES = gql`
         category {
           id
           name
-          parent {
-            id
-            name
-          }
         }
         shownImage
         hoverImage
@@ -526,6 +455,39 @@ export const CATEGORIES_IDS = gql`
         wikiImages {
           shownImage
           hoverImage
+        }
+      }
+    }
+  }
+`;
+
+export const GET_CATEGORIES_BY_GAME_ID = gql`
+  query getCategoriesByGameId($gameId: Int!) {
+    GetCategoriesByGameId(gameId: $gameId) {
+      ok
+      error
+      categories {
+        id
+        name
+        children {
+          id
+          name
+        }
+        parent {
+          id
+          name
+        }
+        topWikiImage {
+          id
+          shownImage
+          hoverImage
+        }
+        wikiImages {
+          id
+          shownImage
+          hoverImage
+          clapsCount
+          postsCount
         }
       }
     }

@@ -14,6 +14,7 @@ const ContentColumn = styled.ul`
 
 interface IProps {
   masterCallback: any;
+  onClickPushNewBlock: any;
 }
 
 interface IState {
@@ -25,15 +26,15 @@ class Content extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       contentItems: [
-        { icon: "fas fa-square", name: "BUTTON" },
-        { icon: "fas fa-divide", name: "DIVIDER" },
-        { icon: "fas fa-code", name: "HTML" },
-        { icon: "fas fa-image", name: "IMAGE" },
+        // { icon: "fas fa-square", name: "BUTTON" },
         { icon: "fas fa-font", name: "TEXT" },
+        { icon: "fas fa-image", name: "IMAGE" },
         { icon: "fab fa-youtube", name: "VIDEO" },
-        { icon: "fab fa-hubspot", name: "SOCIAL" },
-        { icon: "fas fa-bars", name: "BANNER" },
-        { icon: "fas fa-ellipsis-h", name: "MENU" }
+        { icon: "fas fa-divide", name: "DIVIDER" }
+        // { icon: "fas fa-code", name: "HTML" },
+        // { icon: "fab fa-hubspot", name: "SOCIAL" }
+        // { icon: "fas fa-bars", name: "BANNER" },
+        // { icon: "fas fa-ellipsis-h", name: "MENU" }
       ]
     };
   }
@@ -53,6 +54,7 @@ class Content extends React.Component<IProps, IState> {
               icon={item.icon}
               name={item.name}
               masterCallback={this.props.masterCallback}
+              onClickPushNewBlock={this.props.onClickPushNewBlock}
             />
           ))}
         </ContentColumn>

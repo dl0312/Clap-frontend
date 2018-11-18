@@ -20,7 +20,6 @@ interface IProps {
     exShownImg: { url: string; id: string };
     pos: { x: number; y: number };
     title: string;
-    category: number[];
     cards: any[];
   };
 }

@@ -38,26 +38,32 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   }}; */
   background-color: ${EditorDefaults.MAIN_BACKGROUND_COLOR};
   width: 100%;
-  position: ${props => (props.view === "USER" ? "block" : "absolute")};
+  /* position: ${props => (props.view === "USER" ? "block" : "absolute")}; */
   min-height: ${props => (props.view === "USER" ? "100%" : "90.5vh")};
+  padding-bottom: 80px;
   /* overflow-y: ${props => (props.view === "USER" ? null : "auto")}; */
 
 `;
 
 interface IRealEditorContainerProps {
   view: "EDIT" | "USER" | "JSON";
+  device: "PHONE" | "TABLET" | "DESKTOP";
 }
 
 const RealEditorContainer = styled<IRealEditorContainerProps, any>("div")`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 0 auto;
+  max-width: 886px;
   margin-bottom: ${props => (props.view === "USER" ? null : null)};
   margin-top: ${props => (props.view === "USER" ? null : "10px")};
+  min-height: ${props => (props.device === "PHONE" ? "551px" : "662px")};
 `;
 
 interface IProps {
   view: "EDIT" | "USER" | "JSON";
+  device: "PHONE" | "TABLET" | "DESKTOP";
 }
 
 // interface IDnDProps {

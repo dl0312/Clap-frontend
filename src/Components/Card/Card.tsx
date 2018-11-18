@@ -227,7 +227,6 @@ class Card extends React.Component<IProps & IDnDProps, IState> {
             )}
             style={{
               backgroundColor: "transparent",
-              maxWidth: "800px",
               width: "100%",
               position: "relative",
               padding: "5px",

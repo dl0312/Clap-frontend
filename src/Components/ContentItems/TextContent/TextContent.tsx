@@ -3,9 +3,10 @@ import styled from "styled-components";
 import { Value } from "slate";
 import { RenderNodeProps, RenderMarkProps, Editor, Plugin } from "slate-react";
 import EditorDefaults from "../../../EditorDefaults";
-
 // import { Row, Col } from "antd";
+
 import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
+// import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
 import Blockquote from "@canner/slate-icon-blockquote";
 import Bold from "@canner/slate-icon-bold";
 // import Clean from "@canner/slate-icon-clean";
@@ -40,19 +41,16 @@ import "prismjs/themes/prism.css";
 const icons = [
   Header1,
   Header2,
-
   Bold,
   Italic,
   Underline,
   StrikeThrough,
   FontBgColor,
   FontColor,
-
   AlignLeft,
   AlignCenter,
   AlignRight,
   Blockquote,
-
   // Clean,
   // Code,
   // CodeBlock,
@@ -66,10 +64,35 @@ const icons = [
   // OlList,
   // UlList,
   Table,
-
   Undo,
   Redo
 ];
+
+// const USER_MENTION_NODE_TYPE = "userMention";
+// const CONTEXT_MARK_TYPE = "mentionContext";
+// const schema = {
+//   inlines: {
+//     [USER_MENTION_NODE_TYPE]: {
+//       // It's important that we mark the mentions as void nodes so that users
+//       // can't edit the text of the mention.
+//       isVoid: true
+//     }
+//   }
+// };
+// const CAPTURE_REGEX = /@(\S*)$/;
+// function getInput(value: any) {
+//   // In some cases, like if the node that was selected gets deleted,
+//   // `startText` can be null.
+//   if (!value.startText) {
+//     return null;
+//   }
+
+//   const startOffset = value.selection.start.offset;
+//   const textBefore = value.startText.text.slice(0, startOffset);
+//   const result = CAPTURE_REGEX.exec(textBefore);
+
+//   return result === null ? null : result[1];
+// }
 
 const TextEditorButtonContainer = styled.div`
   display: flex;

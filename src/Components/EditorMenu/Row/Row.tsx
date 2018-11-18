@@ -8,6 +8,7 @@ const RowBody = styled.div`
 
 interface IProps {
   masterCallback: any;
+  onClickPushNewBlock: any;
 }
 
 interface IState {
@@ -43,6 +44,7 @@ class Row extends React.Component<IProps, IState> {
             item={item}
             array={item.array}
             masterCallback={this.props.masterCallback}
+            onClickPushNewBlock={this.props.onClickPushNewBlock}
           />
         ))}
       </RowBody>

@@ -165,6 +165,7 @@ interface IProps {
   icon: any;
   name: any;
   masterCallback: any;
+  onClickPushNewBlock: any;
 }
 
 interface IDnDProps {
@@ -191,6 +192,60 @@ class ContentItem extends Component<IProps & IDnDProps> {
     }
   }
 
+  public contentItem = (name: any) => {
+    switch (name) {
+      case "IMAGE":
+        return {
+          fullWidth: false,
+          alt: "Image"
+        };
+      case "VIDEO":
+        return null;
+      case "BUTTON":
+        return {
+          textColor: EditorDefaults.BUTTON_TEXT_COLOR,
+          backgroundColor: EditorDefaults.BUTTON_BACKGROUND_COLOR,
+          hoverColor: EditorDefaults.BUTTON_HOVER_COLOR,
+          link: "http://localhost:3000",
+          value: Value.fromJSON({
+            object: "value",
+            document: {
+              object: "document",
+              data: {},
+              nodes: [
+                {
+                  object: "block",
+                  type: "paragraph",
+                  isVoid: false,
+                  data: {},
+                  nodes: [
+                    {
+                      object: "text",
+                      leaves: [
+                        {
+                          object: "leaf",
+                          text: "BUTTON",
+                          marks: []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          })
+        };
+      case "TEXT":
+        return { value: Plain.deserialize("") };
+      case "HTML":
+        return {
+          value: Plain.deserialize("html code")
+        };
+      default:
+        return null;
+    }
+  };
+
   public render() {
     const { icon, name, connectDragSource, isDragging } = this.props;
     const opacity = isDragging ? 0.5 : 1;
@@ -198,7 +253,29 @@ class ContentItem extends Component<IProps & IDnDProps> {
       connectDragSource &&
       connectDragSource(
         <div>
-          <Item opacity={opacity}>
+          <Item
+            opacity={opacity}
+            onClick={() =>
+              this.props.onClickPushNewBlock(
+                {
+                  type: "columnList",
+                  onDrag: "columnList",
+                  content: [1],
+                  columnListArray: [
+                    [
+                      {
+                        type: "content",
+                        onDrag: "content",
+                        content: name,
+                        ...this.contentItem(name)
+                      }
+                    ]
+                  ]
+                },
+                "CONTENT"
+              )
+            }
+          >
             <Icon className={icon} />
             <Title>{name}</Title>
           </Item>

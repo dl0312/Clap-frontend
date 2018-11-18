@@ -152,7 +152,6 @@ interface IProps {
     exShownImg: { url: string; id: string };
     pos: { x: number; y: number };
     title: string;
-    category: number[];
     cards: any[];
   };
 }
@@ -449,7 +448,7 @@ class UserView extends React.Component<IProps, IState> {
     const { pos, hoverImgJson, onImage } = this.state;
     console.log(this.state);
     return (
-      <EditorLeft view="USER">
+      <EditorLeft view="USER" device="DESKTOP">
         {json.cards.map((item, index) => (
           <UserCard key={index}>
             <UserColumn
@@ -481,7 +480,6 @@ class UserCard extends React.Component {
         style={{
           backgroundColor: "transparent",
           width: "100%",
-          maxWidth: "800px",
           position: "relative",
           padding: "5px",
           display: "flex",
