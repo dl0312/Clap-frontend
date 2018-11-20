@@ -7,7 +7,6 @@ const Container = styled(TextareaAutosize)`
   border-bottom: 2px solid ${props => props.theme.greyColor};
   font-size: 15px;
   width: 100%;
-  padding-bottom: 10px;
   font-weight: 500;
   transition: border-bottom 0.1s linear;
   &:-webkit-autofill {
@@ -42,7 +41,8 @@ const Textarea: React.SFC<IProps> = ({
   className
 }) => (
   <Container
-    minRows={2}
+    onKeyPress={sendMessage}
+    minRows={1}
     className={className}
     onChange={onChange}
     name={name}
@@ -51,5 +51,11 @@ const Textarea: React.SFC<IProps> = ({
     placeholder={placeholder}
   />
 );
+
+function sendMessage(e: any) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+  }
+}
 
 export default Textarea;

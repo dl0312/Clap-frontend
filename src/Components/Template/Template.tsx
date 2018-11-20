@@ -1,11 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import onClickOutside from "react-onclickoutside";
-import { Button } from "src/sharedStyle";
+import { Button } from "antd";
 
 const TemplateButtonContainer = styled.div``;
-
-const TemplateButton = Button.extend``;
 
 const TemplateCompContainer = styled.div`
   position: absolute;
@@ -157,9 +155,9 @@ class Template extends React.Component<any, IState> {
     const { isOpen } = this.state;
     return (
       <TemplateButtonContainer>
-        <TemplateButton onClick={() => this.setState({ isOpen: !isOpen })}>
+        <Button onClick={() => this.setState({ isOpen: !isOpen })}>
           TEMPLATES
-        </TemplateButton>
+        </Button>
         {isOpen && (
           <TemplateCompContainer>
             <TemplateMainTitleContainer>

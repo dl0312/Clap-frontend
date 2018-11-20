@@ -33,7 +33,6 @@ import {
   getCategoriesByGameIdVariables,
   getCategoriesByGameId
 } from "../../types/api";
-import { Button } from "../../sharedStyle";
 import Textarea from "../Textarea";
 import Template from "../Template";
 import Builder from "../Builder";
@@ -41,8 +40,9 @@ import ImageButton from "../ImageButton";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import CustomDragLayer from "../CustomDragLayer";
-import { InputNumber, Popover, Select } from "antd";
+import { Popover, Select, Button, Icon, Slider } from "antd";
 import HoverView from "../HoverView";
+import ButtonGroup from "antd/lib/button/button-group";
 const Option = Select.Option;
 
 interface IEditorContainerProps {
@@ -112,26 +112,7 @@ const Device = styled<IDeviceProps, any>("svg")`
   }
 `;
 
-const EditorButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const SaveButton = Button.extend`
-  border-radius: 100px;
-`;
-
-const QestionButton = Button.extend`
-  padding: 10px 13px;
-  border-radius: 100%;
-  font-weight: bolder;
-`;
-
-const MoreOptionButton = styled.i`
-  font-size: 15px;
-  margin: 0 5px;
-`;
+const EditorButtonContainer = styled.div``;
 
 const EditorUtilButtonContainer = styled.div`
   justify-self: auto;
@@ -212,12 +193,13 @@ interface ITitleContainer {
   titleImg: string;
   titleImgUploading: boolean;
   titleImgPos: number;
+  device: "PHONE" | "TABLET" | "DESKTOP";
 }
 
 const TitleContainer = styled<ITitleContainer, any>("div")`
   width: 100%;
-  padding-top: 50px;
-  padding-bottom: 20px;
+  padding-top: 116px;
+  padding-bottom: ${props => (props.device === "PHONE" ? "40px" : "70px")};
   margin-bottom: 30px;
   display: flex;
   justify-content: center;
@@ -251,7 +233,7 @@ const TitleInput = styled<ITitleInputProps, any>(Textarea)`
   line-height: ${props => (props.device === "PHONE" ? "36px" : "42px")};
   font-weight: 400;
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
-  margin: 0 10px;
+  margin: 0 30px;
   background-color: transparent;
 `;
 
@@ -293,19 +275,6 @@ const ClapImage = styled<IClapImageProps, any>("img")`
 const ClapImageText = styled.span`
   font-weight: bolder;
   color: ${props => props.color};
-`;
-
-const PostButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 100%;
-`;
-
-const PostButton = Button.extend`
-  border-radius: 100px;
-  background-color: #7158e2;
-  color: white;
 `;
 
 interface IViewIconProps {
@@ -375,7 +344,15 @@ const TagInputHolder = styled.span`
   font-size: 15px;
 `;
 
-// const TagItem = styled.span``;
+// const ImageInput = styled.input`
+//   position: absolute;
+//   color: white;
+//   opacity: 0;
+//   height: 0px;
+//   &:focus {
+//     outline: none;
+//   }
+// `;
 
 class GetCategoryById extends Query<
   getCategoryById,
@@ -423,6 +400,7 @@ interface IState {
   titleImgPos: number;
   comp: any;
   tags: any[];
+  isTitlePosDraggable: boolean;
 }
 
 class Editor extends React.Component<IProps, IState, any> {
@@ -461,6 +439,7 @@ class Editor extends React.Component<IProps, IState, any> {
       tags: [],
       inputVisible: false,
       inputValue: "",
+      isTitlePosDraggable: false,
       ...props.state
     };
   }
@@ -1104,86 +1083,86 @@ class Editor extends React.Component<IProps, IState, any> {
   ) => {
     if (type === "POST_ADD") {
       return (
-        <PostButtonContainer>
-          <PostButton
-            onClick={e => {
-              e.preventDefault();
-              const filteredState: IState = this.state;
-              filteredState.rightMenu = null;
-              filteredState.selectedContent = null;
-              filteredState.selectedIndex = null;
-              filteredState.onDrag = null;
-              filteredState.hoverImgJson = null;
-              filteredState.pos = { x: 0, y: 0 };
-              filteredState.onImage = false;
-              filteredState.view = "EDIT";
-              this.props.AddPost!({
-                refetchQueries: [
-                  {
-                    query: POSTS,
-                    variables: {
-                      limit: 20,
-                      type: "createdAt"
-                    }
+        <Button
+          type="primary"
+          style={{ margin: "0 5px" }}
+          onClick={(e: any) => {
+            e.preventDefault();
+            const filteredState: IState = this.state;
+            filteredState.rightMenu = null;
+            filteredState.selectedContent = null;
+            filteredState.selectedIndex = null;
+            filteredState.onDrag = null;
+            filteredState.hoverImgJson = null;
+            filteredState.pos = { x: 0, y: 0 };
+            filteredState.onImage = false;
+            filteredState.view = "EDIT";
+            this.props.AddPost!({
+              refetchQueries: [
+                {
+                  query: POSTS,
+                  variables: {
+                    limit: 20,
+                    type: "createdAt"
                   }
-                ],
-                variables: {
-                  title: this.state.title,
-                  titleImg: this.state.titleImg,
-                  titleImgPos: this.state.titleImgPos,
-                  tags: this.state.tags,
-                  body: JSON.stringify(filteredState),
-                  gameId: this.props.gameId
                 }
-              });
-            }}
-          >
-            SEND
-          </PostButton>
-        </PostButtonContainer>
+              ],
+              variables: {
+                title: this.state.title,
+                titleImg: this.state.titleImg,
+                titleImgPos: this.state.titleImgPos,
+                tags: this.state.tags,
+                body: JSON.stringify(filteredState),
+                gameId: this.props.gameId
+              }
+            });
+          }}
+        >
+          SEND
+        </Button>
       );
     } else if (type === "POST_EDIT") {
       return (
-        <PostButtonContainer>
-          <PostButton
-            onClick={e => {
-              e.preventDefault();
-              const filteredState: IState = this.state;
-              filteredState.rightMenu = null;
-              filteredState.selectedContent = null;
-              filteredState.selectedIndex = null;
-              filteredState.onDrag = null;
-              filteredState.hoverImgJson = null;
-              filteredState.pos = { x: 0, y: 0 };
-              filteredState.onImage = false;
-              filteredState.view = "EDIT";
-              filteredState.hoveredIndex = null;
-              filteredState.targetIndex = null;
+        <Button
+          type="primary"
+          style={{ margin: "0 5px" }}
+          onClick={(e: any) => {
+            e.preventDefault();
+            const filteredState: IState = this.state;
+            filteredState.rightMenu = null;
+            filteredState.selectedContent = null;
+            filteredState.selectedIndex = null;
+            filteredState.onDrag = null;
+            filteredState.hoverImgJson = null;
+            filteredState.pos = { x: 0, y: 0 };
+            filteredState.onImage = false;
+            filteredState.view = "EDIT";
+            filteredState.hoveredIndex = null;
+            filteredState.targetIndex = null;
 
-              this.props.EditPost({
-                refetchQueries: [
-                  {
-                    query: POST,
-                    variables: {
-                      postId: this.props.postId
-                    }
+            this.props.EditPost({
+              refetchQueries: [
+                {
+                  query: POST,
+                  variables: {
+                    postId: this.props.postId
                   }
-                ],
-                variables: {
-                  postId: this.props.postId,
-                  title: this.state.title,
-                  titleImg: this.state.titleImg,
-                  titleImgPos: this.state.titleImgPos,
-                  tags: this.state.tags,
-                  body: JSON.stringify(filteredState),
-                  gameId: this.props.gameId
                 }
-              });
-            }}
-          >
-            SEND
-          </PostButton>
-        </PostButtonContainer>
+              ],
+              variables: {
+                postId: this.props.postId,
+                title: this.state.title,
+                titleImg: this.state.titleImg,
+                titleImgPos: this.state.titleImgPos,
+                tags: this.state.tags,
+                body: JSON.stringify(filteredState),
+                gameId: this.props.gameId
+              }
+            });
+          }}
+        >
+          SEND
+        </Button>
       );
     } else {
       return null;
@@ -1204,8 +1183,10 @@ class Editor extends React.Component<IProps, IState, any> {
       titleImg,
       titleImgUploading,
       titleImgPos,
-      tags
+      tags,
+      isTitlePosDraggable
     } = this.state;
+
     return (
       <React.Fragment>
         <EditorContainer type={type}>
@@ -1261,10 +1242,20 @@ class Editor extends React.Component<IProps, IState, any> {
               </Device>
             </DeviceSelectorContainer>
             <EditorButtonContainer>
-              <SaveButton>SAVE</SaveButton>
+              <Button icon="save" style={{ margin: "0 5px" }}>
+                SAVE
+              </Button>
               {this.sendButton(type, pos)}
-              <QestionButton>?</QestionButton>
-              <MoreOptionButton className="fas fa-ellipsis-v" />
+              <Button
+                style={{ margin: "0 5px" }}
+                shape="circle"
+                icon="question"
+              />
+              <Button
+                style={{ margin: "0 5px" }}
+                shape="circle"
+                icon="ellipsis"
+              />
             </EditorButtonContainer>
           </EditorNavOne>
           <EditorNavTwo>
@@ -1328,6 +1319,7 @@ class Editor extends React.Component<IProps, IState, any> {
                         titleImg={titleImg}
                         titleImgUploading={titleImgUploading}
                         titleImgPos={titleImgPos}
+                        device={device}
                       >
                         <TitleInput
                           type={"text"}
@@ -1339,30 +1331,105 @@ class Editor extends React.Component<IProps, IState, any> {
                           name={"title"}
                           device={device}
                         />
-                        <ImageButton onChange={this.onInputImageChange} />
-                        {titleImg && (
-                          <InputNumber
-                            defaultValue={titleImgPos}
-                            min={0}
-                            max={100}
-                            size="small"
-                            formatter={value => `${value}%`}
-                            parser={value =>
-                              parseInt(
-                                value !== undefined
-                                  ? value.replace("%", "")
-                                  : "",
-                                10
-                              )
-                            }
-                            style={{ margin: 12 }}
-                            onChange={(value: any) =>
-                              this.onInputChange("titleImgPos", value)
-                            }
-                          />
+                        {!titleImg ? (
+                          <ButtonGroup
+                            style={{
+                              position: "absolute",
+                              right: 20,
+                              top: 20
+                            }}
+                          >
+                            <Button style={{ padding: "0 8px" }}>
+                              <ImageButton onChange={this.onInputImageChange} />
+                              <span style={{ marginLeft: 5 }}>Title Image</span>
+                            </Button>
+                          </ButtonGroup>
+                        ) : (
+                          !isTitlePosDraggable && (
+                            <ButtonGroup
+                              style={{
+                                position: "absolute",
+                                right: 20,
+                                top: 20
+                              }}
+                            >
+                              {/* <ImageInput
+                              id={"newPhoto"}
+                              type="file"
+                              accept="image/*"
+                              onChange={this.onInputImageChange}
+                            />
+                            <label htmlFor="newPhoto">
+                              <Button
+                                onClick={() => this.onInputImageChange}
+                                icon="picture"
+                              />
+                            </label> */}
+                              <Button style={{ padding: "0 8px" }}>
+                                <ImageButton
+                                  onChange={this.onInputImageChange}
+                                />
+                              </Button>
+                              <Button icon="cloud-upload" />
+                              <Button icon="edit" />
+                              <Button
+                                onClick={() => {
+                                  this.setState({ isTitlePosDraggable: true });
+                                }}
+                                icon="drag"
+                              />
+                              <Button
+                                onClick={() => {
+                                  this.setState({
+                                    titleImg: "",
+                                    isTitlePosDraggable: false,
+                                    titleImgPos: 0
+                                  });
+                                }}
+                                icon="delete"
+                              />
+                            </ButtonGroup>
+                          )
+                        )}
+                        {isTitlePosDraggable && (
+                          <>
+                            <div
+                              style={{
+                                right: "15px",
+                                top: "40px",
+                                height: "100px",
+                                position: "absolute"
+                              }}
+                            >
+                              <Slider
+                                defaultValue={titleImgPos}
+                                vertical={true}
+                                onChange={(value: any) =>
+                                  this.onInputChange("titleImgPos", value)
+                                }
+                              />
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                position: "absolute",
+                                right: "20px",
+                                bottom: "20px"
+                              }}
+                            >
+                              <Button
+                                style={{ margin: "0 5px" }}
+                                type="primary"
+                                onClick={() =>
+                                  this.setState({ isTitlePosDraggable: false })
+                                }
+                              >
+                                Ok
+                              </Button>
+                            </div>
+                          </>
                         )}
                       </TitleContainer>
-
                       {cards.length !== 0 ? (
                         <React.Fragment>
                           <Builder
@@ -1456,6 +1523,10 @@ class Editor extends React.Component<IProps, IState, any> {
                     </EditorLeft>
                     <TagContainer>
                       <InnerTagContainer>
+                        <Icon
+                          style={{ fontSize: 16, marginRight: 5 }}
+                          type="tags"
+                        />
                         <TagLabel>Tag</TagLabel>
                         <TagArea>
                           <TagInputHolder>

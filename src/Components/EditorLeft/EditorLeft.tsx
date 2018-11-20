@@ -57,7 +57,6 @@ const RealEditorContainer = styled<IRealEditorContainerProps, any>("div")`
   margin: 0 auto;
   max-width: 886px;
   margin-bottom: ${props => (props.view === "USER" ? null : null)};
-  margin-top: ${props => (props.view === "USER" ? null : "10px")};
   min-height: ${props => (props.device === "PHONE" ? "551px" : "662px")};
 `;
 
