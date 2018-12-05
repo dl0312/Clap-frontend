@@ -3,12 +3,16 @@ import styled from "../../typed-components";
 import TextareaAutosize from "react-textarea-autosize";
 
 const Container = styled(TextareaAutosize)`
-  border: none;
-  border-bottom: 2px solid ${props => props.theme.greyColor};
   font-size: 15px;
   width: 100%;
   font-weight: 500;
   transition: border-bottom 0.1s linear;
+  resize: none;
+  ::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: red;
+    opacity: 1; /* Firefox */
+  }
   &:-webkit-autofill {
     box-shadow: 0 0 0px 1000px white inset !important;
   }

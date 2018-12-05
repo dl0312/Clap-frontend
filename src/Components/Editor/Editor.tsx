@@ -3,46 +3,34 @@ import EditorLeft from "../EditorLeft";
 import EditorRight from "../EditorRight";
 import { DragDropContext } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
-import Card from "../Card";
-import Column from "../Column";
 import styled from "styled-components";
 import EditorDefaults from "../../EditorDefaults";
-import JsonView from "../JsonView";
-import UserView from "../UserView";
+// import JsonView from "../JsonView";
+// import UserView from "../UserView";
 import BlockOptions from "../BlockOptions";
-import { media } from "../../config/_mixin";
-import { Value } from "slate";
-import EmptyCard from "../EmptyCard";
-import { RenderNodeProps, RenderMarkProps } from "slate-react";
-import {
-  POST,
-  POSTS,
-  CATEGORY,
-  GET_CATEGORIES_BY_GAME_ID
-} from "../../sharedQueries";
-
+// import EmptyCard from "../EmptyCard";
+import { POST, POSTS, GET_CATEGORIES_BY_GAME_ID } from "../../sharedQueries";
 import update from "immutability-helper";
-import isEqual from "lodash.isequal";
-import cloneDeep from "lodash.clonedeep";
+// import isEqual from "lodash.isequal";
+// import cloneDeep from "lodash.clonedeep";
 import { MutationFn, Query } from "react-apollo";
 import {
   addPost,
   addPostVariables,
-  getCategoryById,
-  getCategoryByIdVariables,
   getCategoriesByGameIdVariables,
   getCategoriesByGameId
 } from "../../types/api";
 import Textarea from "../Textarea";
 import Template from "../Template";
-import Builder from "../Builder";
+// import Builder from "../Builder";
 import ImageButton from "../ImageButton";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import CustomDragLayer from "../CustomDragLayer";
-import { Popover, Select, Button, Icon, Slider } from "antd";
-import HoverView from "../HoverView";
+import { Select, Button, Icon, Slider } from "antd";
 import ButtonGroup from "antd/lib/button/button-group";
+import Container from "../Container";
+import Builder from "../Builder";
 const Option = Select.Option;
 
 interface IEditorContainerProps {
@@ -139,9 +127,6 @@ const EditorNavTwo = styled.div`
 `;
 
 const EditorContentContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
   overflow: hidden;
   position: absolute;
   top: 88px;
@@ -151,12 +136,17 @@ const EditorContentContainer = styled.div`
 `;
 
 const EditorLeftOuterContainer = styled.div`
-  width: 80%;
+  position: absolute;
+  top: 0;
+  left: 246px;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  min-width: 360px;
+  background: #f7f7f7;
   display: flex;
   justify-content: center;
   background-color: #f7f7f7;
-  ${media.tablet`width: 100%;`};
-  ${media.phone`width: 100%;`};
 
   overflow-y: auto;
   ::-webkit-scrollbar {
@@ -198,6 +188,7 @@ interface ITitleContainer {
 
 const TitleContainer = styled<ITitleContainer, any>("div")`
   width: 100%;
+  max-width: 886px;
   padding-top: 116px;
   padding-bottom: ${props => (props.device === "PHONE" ? "40px" : "70px")};
   margin-bottom: 30px;
@@ -219,6 +210,7 @@ const TitleContainer = styled<ITitleContainer, any>("div")`
 
 interface ITitleInputProps {
   device: "PHONE" | "TABLET" | "DESKTOP";
+  titleImg: string;
 }
 
 const TitleInput = styled<ITitleInputProps, any>(Textarea)`
@@ -231,10 +223,18 @@ const TitleInput = styled<ITitleInputProps, any>(Textarea)`
   overflow: hidden;
   font-size: ${props => (props.device === "PHONE" ? "26px" : "32px")};
   line-height: ${props => (props.device === "PHONE" ? "36px" : "42px")};
+  margin: 0 10px;
+  margin-right: 60px;
   font-weight: 400;
-  border-bottom: 0.5px solid rgba(0, 0, 0, 0.2);
-  margin: 0 30px;
   background-color: transparent;
+  border: none;
+  border-bottom: ${props =>
+    !props.titleImg ? "1px solid rgba(0,0,0,0.1)" : "none"};
+  ::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: ${props => (props.titleImg ? "white" : null)};
+    opacity: 0.5;
+  }
 `;
 
 const EditorRightContainer = styled.div`
@@ -242,8 +242,8 @@ const EditorRightContainer = styled.div`
   transition: width 1s ease;
   overflow-y: hidden;
   overflow-x: hidden;
-  width: 20%;
-  min-width: 300px;
+  height: 100%;
+  width: 245px !important;
   border-right: 1px solid rgba(0, 0, 0, 0.2);
   ::-webkit-scrollbar {
     width: 6px;
@@ -252,29 +252,6 @@ const EditorRightContainer = styled.div`
   ::-webkit-scrollbar-thumb {
     background-color: #000000;
   }
-  ${media.tablet`width: 0%;  min-width: 0px;
-`};
-  ${media.phone`width: 0%;`};
-`;
-
-interface IClapImageProps {
-  small: boolean;
-  selected: boolean;
-}
-
-const ClapImage = styled<IClapImageProps, any>("img")`
-  width: ${props => (props.small ? "20px" : null)};
-  margin-left: ${props => (props.small ? "2px" : null)};
-  margin-right: ${props => (props.small ? "2px" : null)};
-  max-width: 100%;
-  max-height: 20em;
-  margin-bottom: ${props => (props.small ? "-4px" : null)};
-  box-shadow: ${props => (props.selected ? "0 0 0 2px blue;" : "none")};
-`;
-
-const ClapImageText = styled.span`
-  font-weight: bolder;
-  color: ${props => props.color};
 `;
 
 interface IViewIconProps {
@@ -344,21 +321,6 @@ const TagInputHolder = styled.span`
   font-size: 15px;
 `;
 
-// const ImageInput = styled.input`
-//   position: absolute;
-//   color: white;
-//   opacity: 0;
-//   height: 0px;
-//   &:focus {
-//     outline: none;
-//   }
-// `;
-
-class GetCategoryById extends Query<
-  getCategoryById,
-  getCategoryByIdVariables
-> {}
-
 class GetCategoriesByGameIdQuery extends Query<
   getCategoriesByGameId,
   getCategoriesByGameIdVariables
@@ -383,9 +345,8 @@ interface IState {
   device: "PHONE" | "TABLET" | "DESKTOP";
   templatePopUp: boolean;
   categoryPopUp: boolean;
-  onDrag: "content" | "columnList" | null;
-  selectedIndex: number | number[] | null;
-  hoveredIndex: number | number[] | null;
+  selectedIndex: number | null;
+  hoveredIndex: number | null;
   selectedContent: any;
   hoverImgJson: any;
   onImage: boolean;
@@ -394,16 +355,19 @@ interface IState {
   title: string;
   cards: any[];
   cardbuilderpositions: any[];
-  targetIndex: any;
+  targetIndex: number | null;
   titleImg: string;
   titleImgUploading: boolean;
   titleImgPos: number;
   comp: any;
   tags: any[];
   isTitlePosDraggable: boolean;
+  isDragging: boolean;
+  ImageLibrary: any;
 }
 
 class Editor extends React.Component<IProps, IState, any> {
+  inputElement: any;
   constructor(props: IProps) {
     super(props);
     this.moveCard = this.moveCard.bind(this);
@@ -431,7 +395,7 @@ class Editor extends React.Component<IProps, IState, any> {
       title: "",
       cards: [],
       cardbuilderpositions: [],
-      targetIndex: [],
+      targetIndex: null,
       titleImg: null,
       titleImgUploading: false,
       titleImgPos: 50,
@@ -440,6 +404,8 @@ class Editor extends React.Component<IProps, IState, any> {
       inputVisible: false,
       inputValue: "",
       isTitlePosDraggable: false,
+      isDragging: false,
+      ImageLibrary: [],
       ...props.state
     };
   }
@@ -459,7 +425,7 @@ class Editor extends React.Component<IProps, IState, any> {
 
   public buttonCallback = (
     type: "mouseover" | "mouseleave" | "select" | "delete",
-    dataFromChild: number | number[]
+    dataFromChild: number
   ) => {
     const { cards, hoveredIndex, selectedIndex } = this.state;
     if (type === "mouseover") {
@@ -470,17 +436,7 @@ class Editor extends React.Component<IProps, IState, any> {
       }
     } else if (type === "select") {
       if (selectedIndex !== null) {
-        if (
-          !Array.isArray(selectedIndex) &&
-          !Array.isArray(dataFromChild) &&
-          selectedIndex === dataFromChild
-        ) {
-          console.log("same index");
-        } else if (
-          Array.isArray(selectedIndex) &&
-          Array.isArray(dataFromChild) &&
-          selectedIndex.every((v, i) => v === dataFromChild[i])
-        ) {
+        if (selectedIndex === dataFromChild) {
           console.log("same index");
         } else {
           this.setState({
@@ -507,129 +463,43 @@ class Editor extends React.Component<IProps, IState, any> {
         });
       }
     } else if (type === "delete") {
-      if (!Array.isArray(dataFromChild)) {
-        // frame
-        if (selectedIndex === dataFromChild) {
-          this.setState({ selectedIndex: null, selectedContent: null });
-        }
-        this.setState(
-          update(this.state, {
-            cards: {
-              $splice: [[dataFromChild, 1]]
-            }
-          })
-        );
-      } else if (dataFromChild.length === 3) {
-        // block
-        this.setState(
-          {
-            selectedIndex: null,
-            selectedContent: null
-          },
-          (): void =>
-            this.setState(
-              update(this.state, {
-                cards: {
-                  [dataFromChild[0]]: {
-                    columnListArray: {
-                      [dataFromChild[1]]: {
-                        $splice: [[dataFromChild[2], 1]]
-                      }
-                    }
-                  }
-                }
-              })
-            )
-        );
+      // frame
+      if (selectedIndex === dataFromChild) {
+        this.setState({ selectedIndex: null, selectedContent: null });
       }
+      this.setState(
+        update(this.state, {
+          cards: {
+            $splice: [[dataFromChild, 1]]
+          }
+        })
+      );
     } else if (type === "duplicate") {
-      if (!Array.isArray(dataFromChild)) {
-        const targetCard = JSON.parse(JSON.stringify(cards[dataFromChild]));
-        this.setState(
-          update(this.state, {
-            cards: {
-              $splice: [[dataFromChild, 0, targetCard]]
-            }
-          })
-        );
-      } else {
-        const targetCard = JSON.parse(
-          JSON.stringify(
-            cards[dataFromChild[0]].columnListArray[dataFromChild[1]][
-              dataFromChild[2]
-            ]
-          )
-        );
-        if (targetCard.content === "BUTTON" || targetCard.content === "TEXT") {
-          targetCard.value = Value.fromJSON(targetCard.value);
-        }
-        this.setState(
-          update(this.state, {
-            cards: {
-              [dataFromChild[0]]: {
-                columnListArray: {
-                  [dataFromChild[1]]: {
-                    $splice: [[dataFromChild[2], 0, targetCard]]
-                  }
-                }
-              }
-            }
-          })
-        );
-      }
+      const targetCard = JSON.parse(JSON.stringify(cards[dataFromChild]));
+      this.setState(
+        update(this.state, {
+          cards: {
+            $splice: [[dataFromChild, 0, targetCard]]
+          }
+        })
+      );
     }
   };
 
   // 오른쪽 버튼 Drop Here에 놨을 때
-  public handleDrop = (hoverItem: any, hoverIndex: number | number[]) => {
+  public handleDrop = (hoverItem: any, hoverIndex: number) => {
     // on column
     console.log(hoverItem, hoverIndex);
-    if (!Array.isArray(hoverIndex)) {
-      // on frame
-      if (!!hoverItem) {
-        this.setState(
-          update(this.state, {
-            cards: {
-              $splice: [[hoverIndex, 0, hoverItem]]
-            }
-          })
-        );
-      }
-    } else if (hoverIndex.length === 3) {
-      if (!!hoverItem) {
-        if (hoverIndex[2] === -1) {
-          hoverIndex[2] = 0;
-        }
-        this.setState(
-          update(this.state, {
-            cards: {
-              [hoverIndex[0]]: {
-                columnListArray: {
-                  [hoverIndex[1]]: {
-                    $splice: [[hoverIndex[2], 0, hoverItem]]
-                  }
-                }
-              }
-            }
-          })
-        );
-      }
-    } else if (hoverIndex.length === 2) {
-      if (!!hoverItem) {
-        this.setState(
-          update(this.state, {
-            cards: {
-              [hoverIndex[0]]: {
-                columnListArray: {
-                  [hoverIndex[1]]: {
-                    $splice: [[0, 0, hoverItem]]
-                  }
-                }
-              }
-            }
-          })
-        );
-      }
+    // on frame
+    if (!!hoverItem) {
+      this.setState(
+        update(this.state, {
+          cards: {
+            $splice: [[hoverIndex, 0, hoverItem]]
+          }
+        })
+      );
+      this.setState({ isDragging: false, targetIndex: null });
     }
   };
 
@@ -645,8 +515,6 @@ class Editor extends React.Component<IProps, IState, any> {
       // frame => frame
       const { cards } = this.state;
       const dragCard = cards[dragIndex];
-      console.log(dragIndex);
-      console.log(hoverIndex);
       this.setState({ selectedIndex: null, selectedContent: null });
       if (dragIndex < hoverIndex) {
         if (dragIndex !== hoverIndex - 1) {
@@ -667,155 +535,6 @@ class Editor extends React.Component<IProps, IState, any> {
           })
         );
       }
-    } else if (Array.isArray(dragIndex) && Array.isArray(hoverIndex)) {
-      if (dragIndex.length === 3 && hoverIndex.length === 3) {
-        // block => block
-        const { cards } = this.state;
-        const dragCard =
-          cards[dragIndex[0]].columnListArray[dragIndex[1]][dragIndex[2]];
-        this.setState({
-          selectedIndex: null,
-          selectedContent: null
-        });
-        if (
-          dragIndex[0] === hoverIndex[0] &&
-          dragIndex[1] === hoverIndex[1] &&
-          dragIndex[2] === hoverIndex[2]
-        ) {
-          console.log("same index");
-        } else {
-          if (
-            dragIndex[0] === hoverIndex[0] &&
-            dragIndex[1] === hoverIndex[1] &&
-            dragIndex[2] !== hoverIndex[2]
-          ) {
-            if (dragIndex[2] < hoverIndex[2]) {
-              this.setState(
-                update(this.state, {
-                  cards: {
-                    [dragIndex[0]]: {
-                      columnListArray: {
-                        [dragIndex[1]]: {
-                          $splice: [[dragIndex[2], 1]]
-                        }
-                      }
-                    }
-                  }
-                })
-              );
-              this.setState(
-                update(this.state, {
-                  cards: {
-                    [hoverIndex[0]]: {
-                      columnListArray: {
-                        [hoverIndex[1]]: {
-                          $splice: [[hoverIndex[2] - 1, 0, dragCard]]
-                        }
-                      }
-                    }
-                  }
-                })
-              );
-            } else {
-              this.setState(
-                update(this.state, {
-                  cards: {
-                    [dragIndex[0]]: {
-                      columnListArray: {
-                        [dragIndex[1]]: {
-                          $splice: [[dragIndex[2], 1]]
-                        }
-                      }
-                    }
-                  }
-                })
-              );
-              this.setState(
-                update(this.state, {
-                  cards: {
-                    [hoverIndex[0]]: {
-                      columnListArray: {
-                        [hoverIndex[1]]: {
-                          $splice: [[hoverIndex[2], 0, dragCard]]
-                        }
-                      }
-                    }
-                  }
-                })
-              );
-            }
-          } else if (
-            dragIndex[0] !== hoverIndex[0] ||
-            dragIndex[1] !== hoverIndex[1]
-          ) {
-            this.setState(
-              update(this.state, {
-                cards: {
-                  [dragIndex[0]]: {
-                    columnListArray: {
-                      [dragIndex[1]]: {
-                        $splice: [[dragIndex[2], 1]]
-                      }
-                    }
-                  }
-                }
-              })
-            );
-            this.setState(
-              update(this.state, {
-                cards: {
-                  [hoverIndex[0]]: {
-                    columnListArray: {
-                      [hoverIndex[1]]: {
-                        $splice: [[hoverIndex[2], 0, dragCard]]
-                      }
-                    }
-                  }
-                }
-              })
-            );
-          }
-        }
-      } else if (dragIndex.length === 3 && hoverIndex.length === 2) {
-        // block => block
-        const { cards } = this.state;
-        const dragCard =
-          cards[dragIndex[0]].columnListArray[dragIndex[1]][dragIndex[2]];
-        console.log(dragIndex);
-        console.log(hoverIndex);
-        this.setState({
-          selectedIndex: null,
-          selectedContent: null
-        });
-        if (!!dragCard) {
-          this.setState(
-            update(this.state, {
-              cards: {
-                [dragIndex[0]]: {
-                  columnListArray: {
-                    [dragIndex[1]]: {
-                      $splice: [[dragIndex[2], 1]]
-                    }
-                  }
-                }
-              }
-            })
-          );
-          this.setState(
-            update(this.state, {
-              cards: {
-                [hoverIndex[0]]: {
-                  columnListArray: {
-                    [hoverIndex[1]]: {
-                      $splice: [[0, 0, dragCard]]
-                    }
-                  }
-                }
-              }
-            })
-          );
-        }
-      }
     }
   };
 
@@ -823,7 +542,7 @@ class Editor extends React.Component<IProps, IState, any> {
     type:
       | "title"
       | "view"
-      | "onDrag"
+      | "isDragging"
       | "rightMenu"
       | "shownImage"
       | "targetIndex"
@@ -836,8 +555,6 @@ class Editor extends React.Component<IProps, IState, any> {
       this.setState({ title: dataFromChild });
     } else if (type === "view") {
       this.setState({ view: dataFromChild });
-    } else if (type === "onDrag") {
-      this.setState({ onDrag: dataFromChild });
     } else if (type === "targetIndex") {
       this.setState({ targetIndex: dataFromChild });
     } else if (type === "selectedIndex") {
@@ -854,14 +571,8 @@ class Editor extends React.Component<IProps, IState, any> {
       this.setState({
         exShownImg: { url: dataFromChild, id: secondDataFromChild }
       });
-    } else if (type === "deselect") {
-      this.setState({
-        selectedIndex: null,
-        hoveredIndex: null,
-        selectedContent: null
-      });
-    } else if (type === "setComp") {
-      this.setState({ comp: dataFromChild });
+    } else if (type === "isDragging") {
+      this.setState({ isDragging: dataFromChild });
     }
   };
 
@@ -927,153 +638,52 @@ class Editor extends React.Component<IProps, IState, any> {
 
   public handleOnChange = (
     value: any,
-    index: number[],
-    content: any,
-    type: "TEXT_CHANGE" | "LINK" | "ALT" | "URL"
+    index: number,
+    type: "TEXT_CHANGE" | "IMAGE_URL" | "VIDEO_URL"
   ) => {
     if (type === "TEXT_CHANGE") {
-      if (index.length === 2) {
-        this.setState(
-          update(this.state, {
-            cards: { [index[0]]: { value: { $set: value.value } } }
-          })
-        );
-      } else if (index.length === 3) {
-        this.setState(
-          update(this.state, {
-            cards: {
-              [index[0]]: {
-                columnListArray: {
-                  [index[1]]: {
-                    [index[2]]: {
-                      value: { $set: value.value }
-                    }
-                  }
-                }
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                slateData: { $set: value.value }
               }
             }
-          })
-        );
-        // let cards = this.state.cards.slice();
-        // cards[index[0]].columnListArray[index[1]][index[2]].value = value;
-        // this.setState({ cards });
-      }
-    } else if (content === "IMAGE") {
-      if (type === "URL") {
-        if (index.length === 2) {
-          this.setState(
-            update(this.state, {
-              cards: { [index[0]]: { imageSrc: { $set: value } } }
-            })
-          );
-        } else if (index.length === 3) {
-          this.setState(
-            update(this.state, {
-              cards: {
-                [index[0]]: {
-                  columnListArray: {
-                    [index[1]]: {
-                      [index[2]]: {
-                        imageSrc: { $set: value }
-                      }
-                    }
-                  }
-                }
-              }
-            })
-          );
-        }
-      } else if (type === "ALT") {
-        if (index.length === 2) {
-          this.setState(
-            update(this.state, {
-              cards: { [index[0]]: { alt: { $set: value } } }
-            })
-          );
-        } else if (index.length === 3) {
-          this.setState(
-            update(this.state, {
-              cards: {
-                [index[0]]: {
-                  columnListArray: {
-                    [index[1]]: {
-                      [index[2]]: {
-                        alt: { $set: value }
-                      }
-                    }
-                  }
-                }
-              }
-            })
-          );
-        }
-      }
-    } else if (type === "LINK") {
-      if (index.length === 2) {
-        this.setState(
-          update(this.state, {
-            cards: { [index[0]]: { link: { $set: value } } }
-          })
-        );
-      } else if (index.length === 3) {
-        this.setState(
-          update(this.state, {
-            cards: {
-              [index[0]]: {
-                columnListArray: {
-                  [index[1]]: {
-                    [index[2]]: {
-                      link: { $set: value }
-                    }
-                  }
-                }
+          }
+        })
+      );
+    } else if (type === "IMAGE_URL") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                imageUrl: { $set: value }
               }
             }
-          })
-        );
-      }
-    } else if (content === "VIDEO") {
-      if (type === "URL") {
-        if (index.length === 2) {
-          this.setState(
-            update(this.state, {
-              cards: { [index[0]]: { videoSrc: { $set: value } } }
-            })
-          );
-        } else if (index.length === 3) {
-          this.setState(
-            update(this.state, {
-              cards: {
-                [index[0]]: {
-                  columnListArray: {
-                    [index[1]]: {
-                      [index[2]]: {
-                        videoSrc: { $set: value }
-                      }
-                    }
-                  }
-                }
+          }
+        })
+      );
+    } else if (type === "VIDEO_URL") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                videoUrl: { $set: value }
               }
-            })
-          );
-        }
-      }
+            }
+          }
+        })
+      );
     }
   };
 
-  public showSelected = (index: number | number[] | null) => {
+  public showSelected = (index: number | null) => {
     const { cards } = this.state;
-    if (index) {
-      if (!Array.isArray(index)) {
-        console.log(cards[index]);
-        return cards[index];
-      } else {
-        if (index.length === 2) {
-          return cards[index[0]];
-        } else if (index.length === 3) {
-          return cards[index[0]].columnListArray[index[1]][index[2]];
-        }
-      }
+    if (index !== null) {
+      return cards[index];
     }
   };
 
@@ -1092,7 +702,6 @@ class Editor extends React.Component<IProps, IState, any> {
             filteredState.rightMenu = null;
             filteredState.selectedContent = null;
             filteredState.selectedIndex = null;
-            filteredState.onDrag = null;
             filteredState.hoverImgJson = null;
             filteredState.pos = { x: 0, y: 0 };
             filteredState.onImage = false;
@@ -1132,7 +741,6 @@ class Editor extends React.Component<IProps, IState, any> {
             filteredState.rightMenu = null;
             filteredState.selectedContent = null;
             filteredState.selectedIndex = null;
-            filteredState.onDrag = null;
             filteredState.hoverImgJson = null;
             filteredState.pos = { x: 0, y: 0 };
             filteredState.onImage = false;
@@ -1174,17 +782,16 @@ class Editor extends React.Component<IProps, IState, any> {
     const {
       cards,
       selectedIndex,
-      hoveredIndex,
       view,
       device,
       pos,
-      onDrag,
-      targetIndex,
       titleImg,
       titleImgUploading,
       titleImgPos,
       tags,
-      isTitlePosDraggable
+      isTitlePosDraggable,
+      targetIndex,
+      isDragging
     } = this.state;
 
     return (
@@ -1297,6 +904,7 @@ class Editor extends React.Component<IProps, IState, any> {
                   view={this.state.view}
                   title={this.state.title}
                   onClickPushNewBlock={this.onClickPushNewBlock}
+                  ImageLibrary={this.state.ImageLibrary}
                 />
               ) : (
                 <BlockOptions
@@ -1330,6 +938,7 @@ class Editor extends React.Component<IProps, IState, any> {
                           placeholder="Title"
                           name={"title"}
                           device={device}
+                          titleImg={titleImg}
                         />
                         {!titleImg ? (
                           <ButtonGroup
@@ -1353,18 +962,6 @@ class Editor extends React.Component<IProps, IState, any> {
                                 top: 20
                               }}
                             >
-                              {/* <ImageInput
-                              id={"newPhoto"}
-                              type="file"
-                              accept="image/*"
-                              onChange={this.onInputImageChange}
-                            />
-                            <label htmlFor="newPhoto">
-                              <Button
-                                onClick={() => this.onInputImageChange}
-                                icon="picture"
-                              />
-                            </label> */}
                               <Button style={{ padding: "0 8px" }}>
                                 <ImageButton
                                   onChange={this.onInputImageChange}
@@ -1434,9 +1031,8 @@ class Editor extends React.Component<IProps, IState, any> {
                         <React.Fragment>
                           <Builder
                             index={0}
-                            type={"columnList"}
                             state={
-                              onDrag === "columnList"
+                              isDragging
                                 ? 0 === targetIndex
                                   ? "ISOVER"
                                   : "ONDRAG"
@@ -1445,81 +1041,43 @@ class Editor extends React.Component<IProps, IState, any> {
                             handleDrop={this.handleDrop}
                           />
                           {cards.map((item, index) => {
-                            if (item.type === "columnList") {
-                              return (
-                                <React.Fragment key={index}>
-                                  <Card
-                                    cards={this.state.cards.length}
-                                    key={index}
-                                    index={index}
-                                    moveCard={this.moveCard}
-                                    handleDrop={this.handleDrop}
-                                    onDrag={onDrag}
-                                    callbackfromparent={this.buttonCallback}
-                                    selectedIndex={selectedIndex}
-                                    hoveredIndex={hoveredIndex}
-                                    masterCallback={this.masterCallback}
-                                    handleSetState={this.handleSetState}
-                                    pushPresentBlockToTargetIndex={
-                                      this.pushPresentBlockToTargetIndex
-                                    }
-                                    pushNewBlockToTargetIndex={
-                                      this.pushNewBlockToTargetIndex
-                                    }
-                                    setTargetIndex={this.setTargetIndex}
-                                  >
-                                    <Column
-                                      columnListArray={item.columnListArray}
-                                      columnArray={item.content}
-                                      index={[index, 0, 0]}
-                                      callbackfromparent={this.buttonCallback}
-                                      handleDrop={this.handleDrop}
-                                      moveCard={this.moveCard}
-                                      handleOnChange={this.handleOnChange}
-                                      renderNode={this.renderNode}
-                                      renderMark={this.renderMark}
-                                      selectedIndex={selectedIndex}
-                                      hoveredIndex={hoveredIndex}
-                                      onDrag={onDrag}
-                                      masterCallback={this.masterCallback}
-                                      targetIndex={targetIndex}
-                                      setTargetIndex={this.setTargetIndex}
-                                      pushPresentBlockToTargetIndex={
-                                        this.pushPresentBlockToTargetIndex
-                                      }
-                                      pushNewBlockToTargetIndex={
-                                        this.pushNewBlockToTargetIndex
-                                      }
-                                    />
-                                  </Card>
-                                  <Builder
-                                    index={index + 1}
-                                    type={"columnList"}
-                                    state={
-                                      onDrag === "columnList"
-                                        ? index + 1 === targetIndex
-                                          ? "ISOVER"
-                                          : "ONDRAG"
-                                        : "NOTHING"
-                                    }
-                                    handleDrop={this.handleDrop}
-                                  />
-                                </React.Fragment>
-                              );
-                            } else {
-                              return null;
-                            }
+                            return (
+                              <React.Fragment key={index}>
+                                <Container
+                                  callbackfromparent={this.buttonCallback}
+                                  masterCallback={this.masterCallback}
+                                  moveCard={this.moveCard}
+                                  handleDrop={this.handleDrop}
+                                  handleOnChange={this.handleOnChange}
+                                  index={index}
+                                  type={item.type}
+                                  contents={item.contents}
+                                  setTargetIndex={this.setTargetIndex}
+                                  pushPresentBlockToTargetIndex={
+                                    this.pushPresentBlockToTargetIndex
+                                  }
+                                  pushNewBlockToTargetIndex={
+                                    this.pushNewBlockToTargetIndex
+                                  }
+                                  hoveredIndex={this.state.hoveredIndex}
+                                  selectedIndex={this.state.selectedIndex}
+                                />
+                                <Builder
+                                  index={index + 1}
+                                  state={
+                                    isDragging
+                                      ? index + 1 === targetIndex
+                                        ? "ISOVER"
+                                        : "ONDRAG"
+                                      : "NOTHING"
+                                  }
+                                  handleDrop={this.handleDrop}
+                                />
+                              </React.Fragment>
+                            );
                           })}
                         </React.Fragment>
-                      ) : (
-                        <EmptyCard
-                          index={0}
-                          masterCallback={this.masterCallback}
-                          moveCard={this.moveCard}
-                          handleDrop={this.handleDrop}
-                          onDrag={this.state.onDrag}
-                        />
-                      )}
+                      ) : null}
                     </EditorLeft>
                     <TagContainer>
                       <InnerTagContainer>
@@ -1549,7 +1107,6 @@ class Editor extends React.Component<IProps, IState, any> {
                                 }
                                 if (error) return `${error}`;
                                 if (data !== undefined) {
-                                  console.log(data);
                                   const {
                                     categories
                                   } = data.GetCategoriesByGameId;
@@ -1560,7 +1117,6 @@ class Editor extends React.Component<IProps, IState, any> {
                                       style={{ width: "100%" }}
                                       placeholder="Tags"
                                       onChange={(values: any) => {
-                                        console.log(values);
                                         this.setState({
                                           tags: values.map(
                                             (value: any) => value
@@ -1632,287 +1188,21 @@ class Editor extends React.Component<IProps, IState, any> {
                       </InnerTagContainer>
                     </TagContainer>
                   </React.Fragment>
-                ) : view === "USER" ? (
-                  <UserView json={this.state} />
-                ) : view === "JSON" ? (
-                  <JsonView json={this.state} />
-                ) : null}
+                ) : view === "USER" ? null : view === "JSON" ? null : null // <UserView json={this.state} /> // <JsonView json={this.state} />
+                }
               </EditorLeftContainer>
             </EditorLeftOuterContainer>
           </EditorContentContainer>
         </EditorContainer>
+        <input
+          type="file"
+          accept="image/*"
+          ref={input => (this.inputElement = input)}
+          // multiple={true}
+        />
       </React.Fragment>
     );
   }
-  public renderNode = (props: RenderNodeProps): JSX.Element | undefined => {
-    const { attributes, children, node, isSelected } = props;
-
-    if (node.object === "block" || node.object === "inline") {
-      switch (node.type) {
-        case "block-quote":
-          return <blockquote {...attributes}>{children}</blockquote>;
-        case "bulleted-list":
-          return <ul {...attributes}>{children}</ul>;
-        case "list-item":
-          return <li {...attributes}>{children}</li>;
-        case "numbered-list":
-          return <ol {...attributes}>{children}</ol>;
-        case "clap-image": {
-          const name = node.data.get("name");
-          const type = node.data.get("type");
-          const id = node.data.get("id");
-          console.log(id);
-          switch (type) {
-            case "TEXT":
-              return (
-                <GetCategoryById
-                  query={CATEGORY}
-                  fetchPolicy={"cache-and-network"}
-                  variables={{ categoryId: id }}
-                >
-                  {({ loading, data, error }) => {
-                    if (loading)
-                      return (
-                        <ClapImageText
-                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                        >
-                          {name}
-                        </ClapImageText>
-                      );
-                    if (error) return `${error.message}`;
-                    if (data !== undefined) {
-                      const { category } = data.GetCategoryById;
-                      return (
-                        category &&
-                        category.topWikiImage && (
-                          <Popover
-                            placement="leftTop"
-                            content={
-                              <HoverView
-                                json={JSON.parse(
-                                  category.topWikiImage.hoverImage
-                                )}
-                              />
-                            }
-                            title={
-                              <>
-                                <ClapImage
-                                  small={true}
-                                  src={category.topWikiImage.shownImage}
-                                  alt={"hover"}
-                                  selected={isSelected}
-                                  {...attributes}
-                                />
-                                <ClapImageText
-                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                                >
-                                  {name}
-                                </ClapImageText>
-                              </>
-                            }
-                            trigger="hover"
-                          >
-                            <Link
-                              target="_blank"
-                              style={{
-                                textDecoration: "none"
-                              }}
-                              rel="noopener noreferrer"
-                              to={`/category/read/${category.id}`}
-                            >
-                              <ClapImageText
-                                color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                              >
-                                {name}
-                              </ClapImageText>
-                            </Link>
-                          </Popover>
-                        )
-                      );
-                    } else {
-                      return null;
-                    }
-                  }}
-                </GetCategoryById>
-              );
-            case "MINI_IMG":
-              return (
-                <GetCategoryById
-                  query={CATEGORY}
-                  fetchPolicy={"cache-and-network"}
-                  variables={{ categoryId: id }}
-                >
-                  {({ loading, data, error }) => {
-                    if (loading)
-                      return (
-                        <ClapImageText
-                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                        >
-                          {name}
-                        </ClapImageText>
-                      );
-                    if (error) return `${error.message}`;
-                    if (data !== undefined) {
-                      const { category } = data.GetCategoryById;
-                      return (
-                        category &&
-                        category.topWikiImage && (
-                          <Popover
-                            placement="leftTop"
-                            content={
-                              <HoverView
-                                json={JSON.parse(
-                                  category.topWikiImage.hoverImage
-                                )}
-                              />
-                            }
-                            title={
-                              <>
-                                <ClapImage
-                                  small={true}
-                                  src={category.topWikiImage.shownImage}
-                                  alt={"hover"}
-                                  selected={isSelected}
-                                  {...attributes}
-                                />
-                                <ClapImageText
-                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                                >
-                                  {name}
-                                </ClapImageText>
-                              </>
-                            }
-                            trigger="hover"
-                          >
-                            <Link
-                              target="_blank"
-                              style={{
-                                textDecoration: "none"
-                              }}
-                              rel="noopener noreferrer"
-                              to={`/category/read/${category.id}`}
-                            >
-                              <ClapImage
-                                small={true}
-                                src={category.topWikiImage.shownImage}
-                                alt={"hover"}
-                                selected={isSelected}
-                                {...attributes}
-                              />
-                              <ClapImageText
-                                color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                              >
-                                {name}
-                              </ClapImageText>
-                            </Link>
-                          </Popover>
-                        )
-                      );
-                    } else {
-                      return null;
-                    }
-                  }}
-                </GetCategoryById>
-              );
-            case "NORMAL_IMG":
-              return (
-                <GetCategoryById
-                  query={CATEGORY}
-                  fetchPolicy={"cache-and-network"}
-                  variables={{ categoryId: id }}
-                >
-                  {({ loading, data, error }) => {
-                    if (loading)
-                      return (
-                        <ClapImageText
-                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                        >
-                          {name}
-                        </ClapImageText>
-                      );
-                    if (error) return `${error.message}`;
-                    if (data !== undefined) {
-                      const { category } = data.GetCategoryById;
-                      return (
-                        category &&
-                        category.topWikiImage && (
-                          <Popover
-                            placement="leftTop"
-                            content={
-                              <HoverView
-                                json={JSON.parse(
-                                  category.topWikiImage.hoverImage
-                                )}
-                              />
-                            }
-                            title={
-                              <>
-                                <ClapImage
-                                  small={true}
-                                  src={category.topWikiImage.shownImage}
-                                  alt={"hover"}
-                                  selected={isSelected}
-                                  {...attributes}
-                                />
-                                <ClapImageText
-                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                                >
-                                  {name}
-                                </ClapImageText>
-                              </>
-                            }
-                            trigger="hover"
-                          >
-                            <Link
-                              target="_blank"
-                              style={{
-                                height: "100%",
-                                textDecoration: "none",
-                                display: "inline-flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-
-                                verticalAlign: "top"
-                              }}
-                              rel="noopener noreferrer"
-                              to={`/category/read/${category.id}`}
-                            >
-                              <ClapImage
-                                src={category.topWikiImage.shownImage}
-                                alt={"hover"}
-                                selected={isSelected}
-                                {...attributes}
-                              />
-                            </Link>
-                          </Popover>
-                        )
-                      );
-                    } else {
-                      return null;
-                    }
-                  }}
-                </GetCategoryById>
-              );
-            default:
-              return;
-          }
-        }
-        default:
-          return;
-      }
-    } else {
-      return;
-    }
-  };
-
-  public renderMark = (props: RenderMarkProps): JSX.Element | undefined => {
-    const { mark } = props;
-
-    switch (mark.type) {
-      default:
-        return;
-    }
-  };
 
   public handleDevice = (device: "PHONE" | "TABLET" | "DESKTOP") => {
     this.setState({ device });
@@ -1950,62 +1240,60 @@ class Editor extends React.Component<IProps, IState, any> {
   };
 
   public setTargetIndex = (
-    onDrag: "content" | "columnList",
-    hoverIndex: any,
+    hoverIndex: number,
     dropPosition: "over" | "under"
   ) => {
-    if (onDrag === "columnList") {
-      if (dropPosition === "over") {
-        const targetIndex = hoverIndex;
-        if (targetIndex !== this.state.targetIndex) {
-          this.setState({ targetIndex });
-        }
-      } else if (dropPosition === "under") {
-        const targetIndex = hoverIndex + 1;
-        if (targetIndex !== this.state.targetIndex) {
-          this.setState({ targetIndex });
-        }
+    if (dropPosition === "over") {
+      const targetIndex = hoverIndex;
+      console.log(this.state.targetIndex);
+      if (targetIndex !== this.state.targetIndex) {
+        this.setState({ targetIndex });
       }
-    } else if (onDrag === "content") {
-      // console.log(hoverIndex, this.state.targetIndex);
-      if (dropPosition === "over") {
-        const targetIndex = hoverIndex;
-        if (!isEqual(targetIndex, this.state.targetIndex)) {
-          this.setState({ targetIndex });
-        }
-      } else if (dropPosition === "under") {
-        const tempIndex = cloneDeep(hoverIndex);
-        tempIndex[2] += 1;
-        const targetIndex = tempIndex;
-        // console.log(targetIndex, this.state.targetIndex);
-        if (!isEqual(targetIndex, this.state.targetIndex)) {
-          this.setState({ targetIndex });
-        }
+    } else if (dropPosition === "under") {
+      const targetIndex = hoverIndex + 1;
+      console.log(this.state.targetIndex);
+      if (targetIndex !== this.state.targetIndex) {
+        this.setState({ targetIndex });
       }
     }
   };
 
   public pushPresentBlockToTargetIndex = (dragIndex: any) => {
-    this.masterCallback("onDrag", null);
-    this.moveCard(dragIndex, this.state.targetIndex);
-  };
-
-  public pushNewBlockToTargetIndex = (dragItem: any) => {
-    this.masterCallback("onDrag", null);
-    this.handleDrop(dragItem, this.state.targetIndex);
-  };
-
-  public onClickPushNewBlock = (dragItem: any, type: "ROW" | "CONTENT") => {
-    if (this.state.selectedIndex) {
-      console.log(this.state.selectedIndex, this.state.cards);
-      this.handleDrop(dragItem, this.state.selectedIndex[0] + 1);
+    this.masterCallback("isDragging", false);
+    console.log(this.state.targetIndex);
+    if (this.state.targetIndex) {
+      this.moveCard(dragIndex, this.state.targetIndex);
     } else {
-      if (type === "ROW") {
-        this.handleDrop(dragItem, this.state.cards.length);
-      } else if (type === "CONTENT") {
-        this.handleDrop(dragItem, this.state.cards.length);
-      }
+      console.log(`타겟 인덱스가 없으요`);
     }
+  };
+
+  public pushNewBlockToTargetIndex = async (dragItem: any) => {
+    this.masterCallback("isDragging", false);
+    console.log(this.state.targetIndex);
+    if (this.state.targetIndex !== null) {
+      if (dragItem.type === "Image") {
+        this.inputElement.addEventListener(
+          "change",
+          async (e: any) => await this.handleBlockInputImageChange(e, dragItem)
+        );
+        await this.inputElement.click();
+      } else if (dragItem.type === "Video") {
+        console.log(`This is Video`);
+      } else {
+        this.handleDrop(dragItem, this.state.targetIndex);
+      }
+    } else {
+      console.log(`타겟 인덱스가 없으요`);
+    }
+  };
+
+  public onClickPushNewBlock = (dragItem: any) => {
+    console.log(this.state.selectedIndex, this.state.cards, dragItem);
+    if (this.state.selectedIndex) {
+      this.handleDrop(dragItem, this.state.selectedIndex[0] + 1);
+    }
+    this.handleDrop(dragItem, this.state.cards.length);
   };
 
   public onInputImageChange: React.ChangeEventHandler<
@@ -2039,6 +1327,39 @@ class Editor extends React.Component<IProps, IState, any> {
     this.setState({
       [name]: value
     } as any);
+  };
+
+  public handleBlockInputImageChange = async (event: any, dragItem: any) => {
+    console.log(event);
+    const {
+      target: { name, value, files }
+    } = event;
+    console.log(name, value, files);
+    if (files) {
+      const formData = new FormData();
+      formData.append("file", files[0]);
+      formData.append("api_key", "811881451928618");
+      formData.append("upload_preset", "tqecb16q");
+      formData.append("timestamp", String(Date.now() / 1000));
+      const {
+        data: { secure_url }
+      } = await axios.post(
+        "https://api.cloudinary.com/v1_1/djjpx4ror/image/upload",
+        formData
+      );
+      if (secure_url) {
+        await this.setState({
+          ImageLibrary: [...this.state.ImageLibrary, secure_url]
+        });
+      }
+      dragItem.contents.imageUrl = this.state.ImageLibrary[
+        this.state.ImageLibrary.length - 1
+      ];
+      console.log(this.state.targetIndex);
+      if (this.state.targetIndex !== null) {
+        this.handleDrop(dragItem, this.state.targetIndex);
+      }
+    }
   };
 }
 

@@ -1,3 +1,5 @@
+import Plain from "slate-plain-serializer";
+
 export default {
   // Content
   MAIN_TEXT_COLOR: "#000",
@@ -29,45 +31,10 @@ export default {
   CLAP_IMG_TEXT_COLOR: "GoldenRod",
   DEFAULT_EDITOR_BLOCK: [
     {
-      type: "columnList",
-      onDrag: "columnList",
-      content: [1],
-      columnListArray: [
-        [
-          {
-            type: "content",
-            onDrag: "content",
-            content: "TEXT",
-            value: {
-              object: "value",
-              document: {
-                object: "document",
-                data: {},
-                nodes: [
-                  {
-                    object: "block",
-                    type: "line",
-                    isVoid: false,
-                    data: {},
-                    nodes: [
-                      {
-                        object: "text",
-                        leaves: [
-                          {
-                            object: "leaf",
-                            text: "",
-                            marks: []
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      ]
+      type: "Text",
+      contents: {
+        slateData: Plain.deserialize("")
+      }
     }
   ],
 

@@ -46,7 +46,7 @@ interface IProps {
   masterCallback?: any;
   OnChangeCards?: any;
   onChange?: any;
-  selectedIndex?: number | number[];
+  selectedIndex: number;
 }
 
 interface IState {
@@ -73,15 +73,6 @@ export default class Sketch extends React.Component<IProps, IState> {
     this.setState({
       displayColorPicker: !this.state.displayColorPicker
     });
-    // if (this.props.type === "bodyBackgroundColor") {
-    //   this.props.masterCallback(this.props.type, this.state.color);
-    // } else {
-    //   this.props.OnChangeCards(
-    //     this.props.selectedIndex,
-    //     this.props.type,
-    //     this.state.color
-    //   );
-    // }
   };
 
   public handleFontOnClick = (event: React.MouseEvent) => {

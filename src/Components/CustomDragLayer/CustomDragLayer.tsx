@@ -20,7 +20,6 @@ function getItemStyles(props: ICustomDragLayerProps) {
       display: "none"
     };
   }
-  console.log(initialOffset, currentOffset);
   const { x, y } = currentOffset;
 
   const transform = `translate(${x}px, ${y}px)`;
@@ -52,7 +51,6 @@ class CustomDragLayer extends React.Component<ICustomDragLayerProps, any> {
   };
 
   public render() {
-    console.log(this.props);
     const { isDragging, comp, itemType } = this.props;
     if (!isDragging) {
       return null;

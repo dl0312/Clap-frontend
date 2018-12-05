@@ -26,21 +26,31 @@ const EmptyImageIcon = styled.i`
 `;
 
 interface IProps {
-  src?: string;
-  alt?: string;
-  link?: string;
-  fullWidth?: boolean;
+  contents: IImageContents;
 }
 
-const ImageContent: React.SFC<IProps> = ({ fullWidth, src }) => {
+interface IImageContents {
+  slateData?: any;
+  imageUrl: string | null;
+  description: string | null;
+  isUploaded: boolean | null;
+  link: string | null;
+  style:
+    | "Wallpaper"
+    | "AlignLeft"
+    | "AlignCenter"
+    | "AlignRight"
+    | "WithManyTextLeft"
+    | "WithManyTextRight"
+    | "WithLessTextLeft"
+    | "WithLessTextRight";
+}
+
+const ImageContent: React.SFC<IProps> = ({ contents: { imageUrl } }) => {
   return (
-    <ImageContainer
-      className="content"
-      fullWidth={fullWidth}
-      isEmpty={src === undefined}
-    >
-      {src ? (
-        <img style={{ width: "100%" }} src={src} alt="logo" />
+    <ImageContainer className="content" fullWidth={true} isEmpty={true}>
+      {imageUrl ? (
+        <img style={{ width: "100%" }} src={imageUrl} alt="logo" />
       ) : (
         <EmptyImageContainer>
           <EmptyImageIcon className="far fa-image" />

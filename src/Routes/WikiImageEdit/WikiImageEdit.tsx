@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { WIKIIMAGE, EDIT_WIKIIMAGE } from "../../sharedQueries";
 import EditorDefaults from "../../EditorDefaults";
 import { toast } from "react-toastify";
-import WikiImageEditor from "src/Components/WikiImageEditor";
+// import WikiImageEditor from "src/Components/WikiImageEditor";
 
 const WikiImageAddContainer = styled.div`
   width: 100%;
@@ -101,7 +101,7 @@ class WikiImageEdit extends React.Component<IProps, IState> {
           if (loading) return "Loading...";
           if (error) return `${error.message}`;
           console.log(data);
-          const { wikiImage } = data.GetWikiImageById;
+          // const { wikiImage } = data.GetWikiImageById;
           return (
             <React.Fragment>
               <WikiImageAddContainer>
@@ -111,13 +111,13 @@ class WikiImageEdit extends React.Component<IProps, IState> {
                 >
                   {(EditWikiImage, { data }) => (
                     <HoverImageContainer>
-                      <WikiImageEditor
+                      {/* <WikiImageEditor
                         wikiImage={wikiImage}
                         state={JSON.parse(wikiImage.hoverImage)}
                         type="WIKIIMAGE_EDIT"
                         EditWikiImage={EditWikiImage}
                         categoryId={this.props.match.params.categoryId}
-                      />
+                      /> */}
                     </HoverImageContainer>
                   )}
                 </Mutation>

@@ -13,19 +13,19 @@ import {
   DragSourceConnector
 } from "react-dnd";
 
-import { Value, ValueJSON } from "slate";
+import { Value } from "slate";
 // import styled from "styled-components";
 import flow from "lodash/flow";
 // import EditorDefaults from "../../EditorDefaults";
 // import ContentBox from "../ContentBox";
 
-import ButtonContent from "../ContentItems/ButtonContent";
+// import ButtonContent from "../ContentItems/ButtonContent";
 import TextContent from "../ContentItems/TextContent";
-import DividerContent from "../ContentItems/DividerContent";
-import HtmlContent from "../ContentItems/HtmlContent";
-import ImageContent from "../ContentItems/ImageContent";
-import VideoContent from "../ContentItems/VideoContent";
-import SocialMediaContent from "../ContentItems/SocialMediaContent";
+// import DividerContent from "../ContentItems/DividerContent";
+// import HtmlContent from "../ContentItems/HtmlContent";
+// import ImageContent from "../ContentItems/ImageContent";
+// import VideoContent from "../ContentItems/VideoContent";
+// import SocialMediaContent from "../ContentItems/SocialMediaContent";
 
 import {
   AlignCenterPlugin,
@@ -74,8 +74,11 @@ import EditCode from "slate-edit-code";
 import TrailingBlock from "slate-trailing-block";
 import EditTable from "slate-edit-table";
 import { findDOMNode } from "react-dom";
-import { RenderNodeProps, RenderMarkProps } from "slate-react";
+// import { RenderNodeProps, RenderMarkProps } from "slate-react";
 import { getEmptyImage } from "react-dnd-html5-backend";
+import styled from "styled-components";
+import ImageContent from "../ContentItems/ImageContent";
+import VideoContent from "../ContentItems/VideoContent";
 
 const plugins = [
   EditPrism({
@@ -126,12 +129,12 @@ const plugins = [
 
 const cardSource = {
   beginDrag(props: IProps, monitor: DragSourceMonitor, component: Container) {
-    props.masterCallback("onDrag", "content");
+    props.masterCallback("isDragging", true);
     props.masterCallback("setComp", component);
     return { index: props.index };
   },
   endDrag(props: IProps, monitor: DragSourceMonitor, component?: Container) {
-    props.masterCallback("onDrag", null);
+    props.masterCallback("isDragging", false);
     props.masterCallback("setComp", null);
     return { index: props.index };
   }
@@ -154,13 +157,19 @@ const cardTarget = {
       const clientOffset = monitor.getClientOffset();
       const position =
         clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-      props.setTargetIndex(props.onDrag, props.index, position);
+      props.setTargetIndex(props.index, position);
     }
   },
 
   drop(props: IProps, monitor: DropTargetMonitor, component: Container) {
     const type = monitor.getItemType();
+    const item = monitor.getItem();
     props.masterCallback("setComp", null);
+    if (item.type === "Image") {
+      console.log(`Image`);
+    } else if (item.type === "Video") {
+      console.log(`Video`);
+    }
     if (type === ItemTypes.CARD) {
       props.pushPresentBlockToTargetIndex(monitor.getItem().index);
     } else if (type === ItemTypes.CONTENT) {
@@ -169,61 +178,67 @@ const cardTarget = {
   }
 };
 
+const InnerContainer = styled.div`
+  width: 100%;
+  max-width: 886px;
+  margin: 0 auto;
+  position: relative;
+  cursor: grab;
+  padding: 10px;
+`;
+
 interface IProps {
   // Action to Parent Component
   callbackfromparent: (
     type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
-    dataFromchild: number[]
+    dataFromchild: number
   ) => void;
   masterCallback: any;
   moveCard: any;
-  handleDrop: (hoverItem: any, hoverIndex: number[]) => void;
-  index: number[];
+  handleDrop: (hoverItem: any, hoverIndex: number) => void;
   handleOnChange: any;
-
-  // For Content Render
-  selectedIndex: number | number[] | null;
-  hoveredIndex: number | number[] | null;
-  containerItem: {
-    type: string;
-    content:
-      | "BUTTON"
-      | "DIVIDER"
-      | "HTML"
-      | "IMAGE"
-      | "TEXT"
-      | "VIDEO"
-      | "SOCIAL";
-    // Button, Text
-    value: ValueJSON;
-    // Button, Text
-    align?: "left" | "center" | "right";
-    // Button, Text
-    textAlign?: "left" | "center" | "right";
-    // Button, Text
-    textColor?: { r: string; g: string; b: string; a: string };
-    // Button
-    backgroundColor?: { r: string; g: string; b: string; a: string };
-    // Button
-    hoverColor?: { r: string; g: string; b: string; a: string };
-    // Image
-    imageSrc?: string;
-    // Image
-    fullWidth?: boolean;
-    // Image
-    alt?: string;
-    // Image, Button
-    link?: string;
-    // Video
-    videoSrc?: string;
-  };
-  onDrag: "content" | "columnList";
+  index: number;
+  type: "Text" | "Image" | "Video" | "Table" | "Divider";
+  contents: ITextContents & IImageContents & IVideoContents;
+  // // For Content Render
+  selectedIndex: number | null;
+  hoveredIndex: number | null;
+  // onDrag: "content" | "columnList";
   // contentWidth: number;
-  renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
-  renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
+  // renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
+  // renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
   setTargetIndex: any;
   pushPresentBlockToTargetIndex: any;
   pushNewBlockToTargetIndex: any;
+}
+
+interface ITextContents {
+  slateData: any;
+}
+
+interface IImageContents {
+  slateData?: any;
+  imageUrl: string | null;
+  description: string | null;
+  isUploaded: boolean | null;
+  link: string | null;
+  style:
+    | "Wallpaper"
+    | "AlignLeft"
+    | "AlignCenter"
+    | "AlignRight"
+    | "WithManyTextLeft"
+    | "WithManyTextRight"
+    | "WithLessTextLeft"
+    | "WithLessTextRight";
+}
+
+interface IVideoContents {
+  videoUrl: string | null;
+  description: string | null;
+  width: number;
+  height: number;
+  style: "Wallpaper" | "AlignLeft" | "AlignCenter" | "AlignRight";
 }
 
 interface IState {
@@ -251,7 +266,6 @@ class Container extends React.Component<
 > {
   constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
     super(props);
-
     this.state = {
       hover: false,
       active: false,
@@ -292,95 +306,35 @@ class Container extends React.Component<
   }
 
   public showInner = (selected: boolean) => {
-    switch (this.props.containerItem.content) {
-      case "BUTTON":
-        let value = null;
-        if (!Value.isValue(this.props.containerItem.value)) {
-          value = Value.fromJSON(this.props.containerItem.value);
+    switch (this.props.type) {
+      case "Image":
+        return <ImageContent contents={this.props.contents} />;
+      case "Text":
+        if (!Value.isValue(this.props.contents.slateData)) {
+          const slatifiedData = Value.fromJSON(this.props.contents.slateData);
+          console.log(slatifiedData);
           this.props.handleOnChange(
-            { value },
+            { slatifiedData },
             this.props.index,
-            "BUTTON",
             "TEXT_CHANGE"
           );
         } else {
-          value = this.props.containerItem.value;
-        }
-        return (
-          <ButtonContent
-            item={this.props.containerItem}
-            index={this.props.index}
-            value={value}
-            handleOnChange={this.props.handleOnChange}
-            renderNode={this.props.renderNode}
-            renderMark={this.props.renderMark}
-          />
-        );
-      case "DIVIDER":
-        return <DividerContent />;
-      case "HTML":
-        if (!Value.isValue(this.props.containerItem.value)) {
-          value = Value.fromJSON(this.props.containerItem.value);
-          this.props.handleOnChange(
-            { value },
-            this.props.index,
-            "BUTTON",
-            "TEXT_CHANGE"
-          );
-        } else {
-          value = this.props.containerItem.value;
-        }
-        return (
-          <HtmlContent
-            index={this.props.index}
-            value={value}
-            handleOnChange={this.props.handleOnChange}
-            renderNode={this.props.renderNode}
-            renderMark={this.props.renderMark}
-          />
-        );
-      case "IMAGE":
-        return (
-          <ImageContent
-            src={this.props.containerItem.imageSrc}
-            alt={this.props.containerItem.alt}
-            link={this.props.containerItem.link}
-            fullWidth={this.props.containerItem.fullWidth}
-          />
-        );
-      case "TEXT":
-        if (!Value.isValue(this.props.containerItem.value)) {
-          value = Value.fromJSON(this.props.containerItem.value);
-          this.props.handleOnChange(
-            { value },
-            this.props.index,
-            "BUTTON",
-            "TEXT_CHANGE"
-          );
-        } else {
-          value = this.props.containerItem.value;
+          // console.log(`data is slate friendly`);
         }
         return (
           <TextContent
-            value={value}
             index={this.props.index}
-            item={this.props.containerItem}
+            contents={this.props.contents}
             plugins={plugins}
             selected={selected}
             handleOnChange={this.props.handleOnChange}
-            renderNode={this.props.renderNode}
-            renderMark={this.props.renderMark}
+            callbackfromparent={this.props.callbackfromparent}
           />
         );
-      case "VIDEO":
-        return (
-          <VideoContent
-            src={this.props.containerItem.videoSrc!}
-            autoplay={false}
-          />
-        );
-      case "SOCIAL":
-        return <SocialMediaContent />;
+      case "Video":
+        return <VideoContent contents={this.props.contents} autoplay={false} />;
+      // case "Social":
+      //   return <SocialMediaContent />;
       default:
         return null;
     }
@@ -430,57 +384,36 @@ class Container extends React.Component<
     const opacity = isDragging ? 0.5 : 1;
     let hover: boolean = false;
     let active: boolean = false;
-    if (Array.isArray(hoveredIndex)) {
-      hover = hoveredIndex
-        ? hoveredIndex.length === index.length &&
-          hoveredIndex.every((v, i) => v === index[i])
-          ? true
-          : false
-        : false;
-    }
-    if (Array.isArray(selectedIndex)) {
-      active = selectedIndex
-        ? selectedIndex.length === index.length &&
-          selectedIndex.every((v, i) => v === index[i])
-          ? true
-          : false
-        : false;
-    }
+    hover = hoveredIndex === index;
+    active = selectedIndex === index;
 
     return connectDropTarget(
       connectDragSource(
         <div
-          className={classnames(
-            "container",
-            hover ? "blockHover" : null,
-            active ? "blockActive" : null
-          )}
           style={{
             display: "flex",
             alignItems: "center",
             position: "relative",
-            padding: "5px",
+            // padding: "5px",
             width: "100%",
-            cursor: "grab",
-            justifyContent:
-              this.props.containerItem.content === "TEXT" ||
-              this.props.containerItem.content === "BUTTON" ||
-              this.props.containerItem.content === "HTML" ||
-              this.props.containerItem.content === "IMAGE" ||
-              this.props.containerItem.content === "VIDEO"
-                ? this.props.containerItem.align
-                  ? this.props.containerItem.align
-                  : "center"
-                : "center",
+            justifyContent: "center",
             opacity,
             transition: "border 0.5s ease, opacity 0.5s ease",
             borderRadius: "2px"
           }}
-          onMouseOver={this.handleOnMouseOver}
-          onMouseDown={this.handleOnMouseDown}
-          onMouseLeave={this.handleOnMouseLeave}
         >
-          {this.showInner(active)}
+          <InnerContainer
+            className={classnames(
+              "container",
+              hover ? "blockHover" : null,
+              active ? "blockActive" : null
+            )}
+            onMouseOver={this.handleOnMouseOver}
+            onMouseDown={this.handleOnMouseDown}
+            onMouseLeave={this.handleOnMouseLeave}
+          >
+            {this.showInner(active)}
+          </InnerContainer>
         </div>
       )
     );

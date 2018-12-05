@@ -1,45 +1,76 @@
 import React, { Component, Fragment } from "react";
 import Content from "../EditorMenu/Content";
-import Row from "../EditorMenu/Row";
+import Library from "../Library";
 import styled from "styled-components";
 
-const Container = styled.div`
-  color: #505659;
+const EditorToolContainer = styled.div`
+  color: black;
 `;
 
-const MenuColumn = styled.ul`
-  color: #abacad;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  height: 45px;
-  background-color: #d6d9dc;
+const TitleContainer = styled.div`
+  display: block;
+  position: relative;
+  height: 50px;
+  font-size: 14px;
+  color: #000;
+  text-align: left;
+  border: 0;
+  cursor: pointer;
 `;
 
-const MenuItem = styled.li`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: -webkit-grab;
+const TitleWrapper = styled.div`
+  position: relative;
+  width: 186px;
+  margin: 0 auto;
 `;
 
-const Icon = styled.i`
-  font-size: 12px;
-`;
+const Title = styled.div`
+  font-style: normal;
+  line-height: 50px;
 
-const MenuTitle = styled.div`
-  margin-left: 5px;
-  font-size: 12px;
   font-weight: 600;
 `;
 
-const menus = [
-  { icon: "fas fa-bars", name: "ROW" },
-  { icon: "fas fa-th-large", name: "CONTENT" }
-  // { icon: "fas fa-columns", name: "BODY" }
-];
+interface IOptionToggleIconProps {
+  isOpen: boolean;
+}
+
+const ToggleIcon = styled<IOptionToggleIconProps, any>("i")`
+  position: absolute;
+  top: 15px;
+  right: 0;
+  display: inline-block;
+  font-size: 20px;
+  background-position: -715px -858px;
+  transform: ${props => (props.isOpen ? "rotate(0)" : "rotate(180deg)")};
+  transition: 0.1s ease;
+`;
+
+const LibraryContainer = styled.div`
+  border-top: 1px solid #ededed;
+`;
+
+const HelperContainer = styled.div`
+  display: block;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 246px;
+  height: 46px;
+  border-top: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+  background-color: #fff;
+  text-align: center;
+  box-sizing: border-box;
+  z-index: 1;
+`;
+
+const HelperTitle = styled.p`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+`;
 
 interface IProps {
   // func
@@ -49,117 +80,69 @@ interface IProps {
   cards: any[];
   view: "EDIT" | "USER" | "JSON";
   title: string;
+  ImageLibrary: any;
 }
 
 interface IState {
-  active: number | null;
-  hover: number | null;
+  isEditorToolOpen: boolean;
+  isLibraryOpen: boolean;
 }
 
 class EditorRight extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      active: this.props.rightMenu,
-      hover: null
+      isEditorToolOpen: true,
+      isLibraryOpen: true
     };
   }
 
-  public toggle = (position: number) => {
-    if (this.state.active === position) {
-      this.props.masterCallback("rightMenu", null);
-    } else {
-      this.props.masterCallback("rightMenu", position);
-    }
-  };
-
-  public hover = (position: number) => {
-    if (this.state.hover === position) {
-      this.setState({ hover: null });
-    } else {
-      this.setState({ hover: position });
-    }
-  };
-
-  public leave = (position: number) => {
-    if (this.state.hover === position) {
-      this.setState({ hover: null });
-    }
-  };
-
-  public myColor = (position: number) => {
-    if (this.props.rightMenu === position) {
-      return "#fafafa";
-    }
-    if (this.state.hover === position) {
-      return "#c0c5c9";
-    }
-    return "";
-  };
-
-  public fontColor = (position: number) => {
-    if (this.props.rightMenu === position) {
-      return "#505659";
-    }
-    if (this.state.hover === position) {
-      return "#505659";
-    }
-    return "";
-  };
-
-  public showSection = () => {
-    switch (this.props.rightMenu) {
-      case 0:
-        return (
-          <Row
-            onClickPushNewBlock={this.props.onClickPushNewBlock}
-            masterCallback={this.props.masterCallback}
-          />
-        );
-      case 1:
-        return (
-          <Content
-            onClickPushNewBlock={this.props.onClickPushNewBlock}
-            masterCallback={this.props.masterCallback}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
   public render() {
+    const { ImageLibrary } = this.props;
+    const { isEditorToolOpen, isLibraryOpen } = this.state;
     return (
       <Fragment>
-        <Container>
-          <MenuColumn>
-            {menus.map((menu, index) => (
-              <MenuItem
-                key={index}
-                style={{
-                  background: this.myColor(index),
-                  color: this.fontColor(index)
-                }}
-                onClick={() => {
-                  this.toggle(index);
-                }}
-                onMouseOver={() => {
-                  this.hover(index);
-                }}
-                onMouseLeave={() => {
-                  this.leave(index);
-                }}
-              >
-                <Icon className={menu.icon} />
-                <MenuTitle>{menu.name}</MenuTitle>
-              </MenuItem>
-            ))}
-          </MenuColumn>
-          {this.showSection()}
-        </Container>
+        <EditorToolContainer>
+          <TitleContainer onClick={this.handleOnClickEditorToolToggleButton}>
+            <TitleWrapper>
+              <Title>Editor Tool</Title>
+              <ToggleIcon
+                className="fas fa-angle-up"
+                isOpen={isEditorToolOpen}
+              />
+            </TitleWrapper>
+          </TitleContainer>
+          <Content
+            isEditorToolOpen={isEditorToolOpen}
+            onClickPushNewBlock={this.props.onClickPushNewBlock}
+            masterCallback={this.props.masterCallback}
+          />
+        </EditorToolContainer>
+        <LibraryContainer>
+          <TitleContainer onClick={this.handleOnClickLibraryToggleButton}>
+            <TitleWrapper>
+              <Title>Library</Title>
+              <ToggleIcon className="fas fa-angle-up" isOpen={isLibraryOpen} />
+            </TitleWrapper>
+          </TitleContainer>
+          <Library ImageLibrary={ImageLibrary} />
+        </LibraryContainer>
+        <HelperContainer>
+          <HelperTitle>I can help you</HelperTitle>
+        </HelperContainer>
       </Fragment>
     );
   }
+
+  public handleOnClickEditorToolToggleButton = (e: any) => {
+    e.preventDefault();
+    this.setState({ isEditorToolOpen: !this.state.isEditorToolOpen });
+  };
+
+  public handleOnClickLibraryToggleButton = (e: any) => {
+    e.preventDefault();
+    this.setState({ isLibraryOpen: !this.state.isLibraryOpen });
+  };
 }
 
 export default EditorRight;

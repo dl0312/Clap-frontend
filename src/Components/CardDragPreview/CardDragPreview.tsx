@@ -56,7 +56,6 @@ class CardDragPreiview extends React.Component<
         ? (findDOMNode(this.props.comp) as Element)
         : null;
     const rect = node ? (node.getBoundingClientRect() as DOMRect) : null;
-    console.log(tickTock);
     return (
       itemType && (
         <div

@@ -36,13 +36,19 @@ const BuilderContainer = styled<IBuilderContainerProps, any>("div")`
   }};
   transition: background-color 0.2s ease, height 0.1s ease;
   width: 100%;
+  max-width: 886px;
+  width: 100%;
+  margin: 0 auto;
   position: relative;
 `;
 
+const OuterBuilder = styled.div`
+  width: 100%;
+`;
+
 interface IProps {
-  index: any;
+  index: number;
   state: "ISOVER" | "ONDRAG" | "NOTHING";
-  type: "content" | "columnList";
   handleDrop?: any;
 }
 
@@ -59,21 +65,20 @@ class Builder extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { index, state, type, handleDrop } = this.props;
+    const { index, state, handleDrop } = this.props;
     const { isOpen } = this.state;
     return (
-      <BuilderContainer className={"Builder"} state={state} isOpen={isOpen}>
-        {type === "columnList" && (
+      <OuterBuilder>
+        <BuilderContainer className={"Builder"} state={state} isOpen={isOpen}>
           <ContentBox
             state={state}
             index={index}
-            type={type}
             setStateBuilder={this.setStateBuilder}
             isOpen={isOpen}
             handleDrop={handleDrop}
           />
-        )}
-      </BuilderContainer>
+        </BuilderContainer>
+      </OuterBuilder>
     );
   }
 

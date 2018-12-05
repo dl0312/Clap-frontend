@@ -95,7 +95,7 @@ interface IProps {
   handleOnChange?: any;
   masterCallback?: any;
   UpdateMyProfile?: any;
-  selectedIndex?: number | number[];
+  selectedIndex?: number;
 }
 
 interface IState {
@@ -157,8 +157,7 @@ class Upload extends React.Component<IProps, IState> {
                       this.props.handleOnChange(
                         secure_url,
                         this.props.selectedIndex,
-                        "IMAGE",
-                        "URL"
+                        "IMAGE_URL"
                       );
                     } else if (this.props.type === "PROFILE") {
                       this.props.UpdateMyProfile({

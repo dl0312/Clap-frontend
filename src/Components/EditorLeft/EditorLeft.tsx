@@ -39,7 +39,7 @@ const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
   background-color: ${EditorDefaults.MAIN_BACKGROUND_COLOR};
   width: 100%;
   /* position: ${props => (props.view === "USER" ? "block" : "absolute")}; */
-  min-height: ${props => (props.view === "USER" ? "100%" : "90.5vh")};
+  min-height: ${props => (props.view === "USER" ? "100%" : null)};
   padding-bottom: 80px;
   /* overflow-y: ${props => (props.view === "USER" ? null : "auto")}; */
 
@@ -55,7 +55,6 @@ const RealEditorContainer = styled<IRealEditorContainerProps, any>("div")`
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
-  max-width: 886px;
   margin-bottom: ${props => (props.view === "USER" ? null : null)};
   min-height: ${props => (props.device === "PHONE" ? "551px" : "662px")};
 `;

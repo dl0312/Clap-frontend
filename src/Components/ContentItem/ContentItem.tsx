@@ -18,27 +18,26 @@ interface IItemProps {
 }
 
 const Item = styled<IItemProps, any>("li")`
-  cursor: -webkit-grab;
-  border: 0.5px solid #d8d8d8;
-  border-radius: 5px;
+  cursor: pointer;
   height: 70px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: box-shadow 0.2s ease;
+  transition: 0.2s ease;
   opacity: ${props => props.opacity};
   background-color: white;
   &:hover {
-    -webkit-box-shadow: 0 6px 10px rgba(0, 0, 0, 0.35);
-    -moz-box-shadow: 0 6px 10px rgba(0, 0, 0, 0.35);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.35);
+    color: #00bcd4;
   }
 `;
 
 const Icon = styled.i`
   font-size: 25px;
-  margin-bottom: 3px;
+  width: 38px;
+  height: 34px;
+  display: flex;
+  justify-content: center;
 `;
 
 const Title = styled.div`
@@ -48,120 +47,54 @@ const Title = styled.div`
 
 const itemSource = {
   beginDrag(props: IProps, monitor: DragSourceMonitor) {
-    props.masterCallback("onDrag", "content");
-    const item: {
-      type: "content" | null;
-      onDrag: "content" | null;
-      content: string;
-      // Image
-      imageSrc?: string;
-      fullWidth?: boolean;
-      alt?: string;
-      // Button
-      textColor?: { r: string; g: string; b: string; a: string };
-      backgroundColor?: { r: string; g: string; b: string; a: string };
-      hoverColor?: { r: string; g: string; b: string; a: string };
-      link?: string;
-      value?: Value;
-    } = {
-      type: "content",
-      onDrag: "content",
-      content: props.item.name
-    };
+    props.masterCallback("isDragging", true);
     // default block content src, text etc...
+    const item: {
+      type: "Text" | "Image" | "Video" | "Divider" | "Table";
+      contents: {
+        slateData?: any;
+        imageUrl?: string | null;
+        videoUrl?: string | null;
+        style?: string | null;
+      };
+    } = {
+      type: props.item.name,
+      contents: {
+        slateData: null,
+        imageUrl: null,
+        videoUrl: null,
+        style: null
+      }
+    };
     switch (props.item.name) {
-      case "IMAGE":
-        item.fullWidth = false;
-        item.alt = "Image";
+      case "Image":
         break;
-      case "VIDEO":
+      case "Video":
         break;
-      case "BUTTON":
-        item.textColor = EditorDefaults.BUTTON_TEXT_COLOR;
-        item.backgroundColor = EditorDefaults.BUTTON_BACKGROUND_COLOR;
-        item.hoverColor = EditorDefaults.BUTTON_HOVER_COLOR;
-        item.link = "http://localhost:3000";
-        item.value = Value.fromJSON({
-          object: "value",
-          document: {
-            object: "document",
-            data: {},
-            nodes: [
-              {
-                object: "block",
-                type: "paragraph",
-                isVoid: false,
-                data: {},
-                nodes: [
-                  {
-                    object: "text",
-                    leaves: [
-                      {
-                        object: "leaf",
-                        text: "BUTTON",
-                        marks: []
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        });
-        break;
-      case "TEXT":
-        item.value = Plain.deserialize("");
-        break;
-      case "HTML":
-        item.value = Value.fromJSON({
-          object: "value",
-          document: {
-            object: "document",
-            data: {},
-            nodes: [
-              {
-                object: "block",
-                type: "paragraph",
-                isVoid: false,
-                data: {},
-                nodes: [
-                  {
-                    object: "text",
-                    leaves: [
-                      {
-                        object: "leaf",
-                        text: "this is html code",
-                        marks: []
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        });
+      case "Text":
+        item.contents.slateData = Plain.deserialize("");
         break;
       default:
         break;
     }
-
-    return item;
+    return { type: props.item.name, contents: item.contents };
   },
   endDrag(props: IProps, monitor: DragSourceMonitor, component: ContentItem) {
-    props.masterCallback("onDrag", null);
-    props.masterCallback("targetIndex", null);
     const item = {
-      type: "content",
-      onDrag: "content",
-      content: props.item.name
+      type: "Text",
+      contents: props.item.name
     };
+
     return item;
   }
 };
 
 interface IProps {
   key: number;
-  item: { icon: string; name: string };
+  item: {
+    icon: string;
+    name: "Text" | "Image" | "Video" | "Divider" | "Table";
+  };
   icon: any;
   name: any;
   masterCallback: any;
@@ -191,17 +124,25 @@ class ContentItem extends Component<IProps & IDnDProps> {
       });
     }
   }
+  public handleInputImage = () => {
+    console.log(`input image`);
+  };
+  public handleInputVideo = () => {
+    console.log(`input video`);
+  };
 
   public contentItem = (name: any) => {
     switch (name) {
-      case "IMAGE":
+      case "Image":
+        this.handleInputImage();
         return {
           fullWidth: false,
           alt: "Image"
         };
-      case "VIDEO":
+      case "Video":
+        this.handleInputVideo();
         return null;
-      case "BUTTON":
+      case "Button":
         return {
           textColor: EditorDefaults.BUTTON_TEXT_COLOR,
           backgroundColor: EditorDefaults.BUTTON_BACKGROUND_COLOR,
@@ -235,9 +176,15 @@ class ContentItem extends Component<IProps & IDnDProps> {
             }
           })
         };
-      case "TEXT":
-        return { value: Plain.deserialize("") };
-      case "HTML":
+      case "Text":
+        return {
+          slateData: Plain.deserialize("")
+        };
+      case "Html":
+        return {
+          value: Plain.deserialize("html code")
+        };
+      case "Table":
         return {
           value: Plain.deserialize("html code")
         };
@@ -256,24 +203,10 @@ class ContentItem extends Component<IProps & IDnDProps> {
           <Item
             opacity={opacity}
             onClick={() =>
-              this.props.onClickPushNewBlock(
-                {
-                  type: "columnList",
-                  onDrag: "columnList",
-                  content: [1],
-                  columnListArray: [
-                    [
-                      {
-                        type: "content",
-                        onDrag: "content",
-                        content: name,
-                        ...this.contentItem(name)
-                      }
-                    ]
-                  ]
-                },
-                "CONTENT"
-              )
+              this.props.onClickPushNewBlock({
+                type: name,
+                contents: this.contentItem(name)
+              })
             }
           >
             <Icon className={icon} />

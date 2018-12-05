@@ -29,8 +29,7 @@ const ExpandButton = styled<IExpandButtonProps, any>("div")`
   position: absolute;
   top: 50%;
   transform: translateY(-12.5px);
-  right: ${props => (props.type === "content" ? "-25px" : null)};
-  left: ${props => (props.type === "columnList" ? "-30px" : null)};
+  left: -30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,7 +110,6 @@ const contentItems = [
 interface IProps {
   index: any;
   state: "ISOVER" | "ONDRAG" | "NOTHING";
-  type: "content" | "columnList";
   setStateBuilder: any;
   isOpen: boolean;
   handleDrop: any;
@@ -185,10 +183,10 @@ class ContentBox extends React.Component<IProps, any> {
   };
 
   public render() {
-    const { index, state, type, isOpen, handleDrop } = this.props;
+    const { index, state, isOpen, handleDrop } = this.props;
     return (
       <ContentBoxContainer isOpen={isOpen}>
-        <ExpandButton state={state} type={type} isOpen={isOpen}>
+        <ExpandButton state={state} isOpen={isOpen}>
           <ExpandIcon
             isOpen={isOpen}
             onClick={this.handleOnClick}

@@ -1,7 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Value } from "slate";
-import { RenderNodeProps, RenderMarkProps, Editor, Plugin } from "slate-react";
+import {  Editor, Plugin } from "slate-react";
 import EditorDefaults from "../../../EditorDefaults";
 // import { Row, Col } from "antd";
 
@@ -36,6 +35,13 @@ import Video from "@canner/slate-icon-video";
 
 // plugins
 import "prismjs/themes/prism.css";
+import { getCategoryById, getCategoryByIdVariables } from "src/types/api";
+import { Query } from "react-apollo";
+import { CATEGORY } from "src/sharedQueries";
+import { Popover } from "antd";
+import Delete from "../../Delete";
+import _ from "lodash";
+// import HoverView from "src/Components/HoverView";
 
 // const selectors = [FontSize, LetterSpacing, LineHeight];
 const icons = [
@@ -64,35 +70,30 @@ const icons = [
   // OlList,
   // UlList,
   Table,
+  Delete,
   Undo,
   Redo
 ];
 
-// const USER_MENTION_NODE_TYPE = "userMention";
-// const CONTEXT_MARK_TYPE = "mentionContext";
-// const schema = {
-//   inlines: {
-//     [USER_MENTION_NODE_TYPE]: {
-//       // It's important that we mark the mentions as void nodes so that users
-//       // can't edit the text of the mention.
-//       isVoid: true
-//     }
-//   }
-// };
-// const CAPTURE_REGEX = /@(\S*)$/;
-// function getInput(value: any) {
-//   // In some cases, like if the node that was selected gets deleted,
-//   // `startText` can be null.
-//   if (!value.startText) {
-//     return null;
-//   }
+interface IClapImageProps {
+  small: boolean;
+  selected: boolean;
+}
 
-//   const startOffset = value.selection.start.offset;
-//   const textBefore = value.startText.text.slice(0, startOffset);
-//   const result = CAPTURE_REGEX.exec(textBefore);
+const ClapImage = styled<IClapImageProps, any>("img")`
+  width: ${props => (props.small ? "20px" : null)};
+  margin-left: ${props => (props.small ? "2px" : null)};
+  margin-right: ${props => (props.small ? "2px" : null)};
+  max-width: 100%;
+  max-height: 20em;
+  margin-bottom: ${props => (props.small ? "-4px" : null)};
+  box-shadow: ${props => (props.selected ? "0 0 0 2px blue;" : "none")};
+`;
 
-//   return result === null ? null : result[1];
-// }
+const ClapImageText = styled.span`
+  font-weight: bolder;
+  color: ${props => props.color};
+`;
 
 const TextEditorButtonContainer = styled.div`
   display: flex;
@@ -136,119 +137,373 @@ const TextContainer = styled<ITextContainerProps, any>("div")`
   width: 100%;
   cursor: auto;
   line-height: 1.9;
-  padding-top: 10px;
-  padding-right: 10px;
-  padding-left: 10px;
-  padding-bottom: 10px;
 `;
 
+class GetCategoryById extends Query<
+  getCategoryById,
+  getCategoryByIdVariables
+> {}
+
+interface ITextContents {
+  slateData: any;
+}
+
+
 interface IProps {
-  item: {
-    type: string;
-    content:
-      | "BUTTON"
-      | "DIVIDER"
-      | "HTML"
-      | "IMAGE"
-      | "TEXT"
-      | "VIDEO"
-      | "SOCIAL";
-    value?: any;
-    align?: "left" | "center" | "right";
-    textAlign?: "left" | "center" | "right";
-    backgroundColor?: { r: string; g: string; b: string; a: string };
-    hoverColor?: { r: string; g: string; b: string; a: string };
-  };
-  index?: number[];
-  value: Value;
+  index: number;
+  contents: ITextContents;
   plugins: Plugin[];
   handleOnChange?: any;
   selected?: boolean;
-  renderNode: (props: RenderNodeProps) => JSX.Element | undefined;
-  renderMark: (props: RenderMarkProps) => JSX.Element | undefined;
+  callbackfromparent: any;
 }
 
-const TextContent: React.SFC<IProps> = ({
-  item,
-  value,
-  plugins,
-  handleOnChange,
-  index,
-  renderNode,
-  renderMark,
-  selected
-}) => {
-  return (
-    <TextContainer
-      textAlign={item.textAlign ? item.textAlign : "left"}
-      className="markdown-body"
-    >
-      {handleOnChange !== undefined ? (
-        <React.Fragment>
-          <div className="toolbar">
-            <TextEditorButtonContainer>
-              {icons.map((Type, i) => {
-                return (
-                  selected && (
-                    <TextEditorButton key={i} index={i}>
-                      <Type
-                        change={value.change()}
-                        onChange={(change: any) => {
-                          handleOnChange(change, index, "TEXT", "TEXT_CHANGE");
-                        }}
-                        key={i}
-                        className="toolbar-item"
-                        activeClassName="toolbar-item-active"
-                        disableClassName="toolbar-item-disable"
-                        activeStrokeClassName="ql-stroke-active"
-                        activeFillClassName="ql-fill-active"
-                        activeThinClassName="ql-thin-active"
-                        activeEvenClassName="ql-even-active"
-                      />
-                    </TextEditorButton>
-                  )
-                );
-              })}
-            </TextEditorButtonContainer>
-          </div>
+class TextContent extends React.Component<IProps, any> {
+
+  onChange = (change: any) => {
+      this.props.handleOnChange(change, this.props.index, "TEXT_CHANGE");
+    
+  };
+
+
+  public render() {
+    const {
+      contents: { slateData },
+      plugins,
+      handleOnChange,
+      selected,
+      index
+    } = this.props;
+    return (
+      <TextContainer textAlign={"left"} className="markdown-body">
+        {handleOnChange !== undefined ? (
+          <React.Fragment>
+            {selected && (
+              <div className="toolbar">
+                <TextEditorButtonContainer>
+                  {icons.map((Type, i) => {
+                    return (
+                      <TextEditorButton key={i} index={i}>
+                        <Type
+                          change={slateData.change()}
+                          onChange={(change: any) => {
+                            handleOnChange(change, index, "TEXT_CHANGE");
+                          }}
+                          callbackfromparent={this.props.callbackfromparent}
+                          index={index}
+                          key={i}
+                          className="toolbar-item"
+                          activeClassName="toolbar-item-active"
+                          disableClassName="toolbar-item-disable"
+                          activeStrokeClassName="ql-stroke-active"
+                          activeFillClassName="ql-fill-active"
+                          activeThinClassName="ql-thin-active"
+                          activeEvenClassName="ql-even-active"
+                        />
+                      </TextEditorButton>
+                    );
+                  })}
+                </TextEditorButtonContainer>
+              </div>
+            )}
+            <Editor
+              style={{
+                wordBreak: "break-word",
+                fontSize: "16px",
+                color: EditorDefaults.MAIN_TEXT_COLOR
+              }}
+              value={slateData}
+              readOnly={false}
+              onChange={this.onChange}
+              placeholder={"Text"}
+              renderNode={this.renderNode}
+              autoCorrect={false}
+              autoFocus={true}
+              spellCheck={false}
+              plugins={plugins}
+            />
+          </React.Fragment>
+        ) : (
           <Editor
             style={{
               wordBreak: "break-word",
               fontSize: "16px",
               color: EditorDefaults.MAIN_TEXT_COLOR
             }}
-            value={value}
-            readOnly={false}
-            onChange={(change: any) => {
-              handleOnChange(change, index, "TEXT", "TEXT_CHANGE");
-            }}
-            placeholder={"Text"}
-            renderNode={renderNode}
-            renderMark={renderMark}
+            value={slateData}
+            readOnly={true}
+            renderNode={this.renderNode}
             autoCorrect={false}
-            autoFocus={true}
             spellCheck={false}
             plugins={plugins}
           />
-        </React.Fragment>
-      ) : (
-        <Editor
-          style={{
-            wordBreak: "break-word",
-            fontSize: "16px",
-            color: EditorDefaults.MAIN_TEXT_COLOR
-          }}
-          value={value}
-          readOnly={true}
-          renderNode={renderNode}
-          renderMark={renderMark}
-          autoCorrect={false}
-          spellCheck={false}
-          plugins={plugins}
-        />
-      )}
-    </TextContainer>
-  );
-};
+        )}
+      </TextContainer>
+    );
+  }
+  public renderNode = (props: any): JSX.Element | undefined => {
+    const { attributes, children, node, isSelected } = props;
+
+    if (node.object === "block" || node.object === "inline") {
+      switch (node.type) {
+        case "block-quote":
+          return <blockquote {...attributes}>{children}</blockquote>;
+        case "bulleted-list":
+          return <ul {...attributes}>{children}</ul>;
+        case "list-item":
+          return <li {...attributes}>{children}</li>;
+        case "numbered-list":
+          return <ol {...attributes}>{children}</ol>;
+        case "clap-image": {
+          const name = node.data.get("name");
+          const type = node.data.get("type");
+          const id = node.data.get("id");
+          console.log(id);
+          switch (type) {
+            case "TEXT":
+              return (
+                <GetCategoryById
+                  query={CATEGORY}
+                  fetchPolicy={"cache-and-network"}
+                  variables={{ categoryId: id }}
+                >
+                  {({ loading, data, error }) => {
+                    if (loading)
+                      return (
+                        <ClapImageText
+                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                        >
+                          {name}
+                        </ClapImageText>
+                      );
+                    if (error) return `${error.message}`;
+                    if (data !== undefined) {
+                      const { category } = data.GetCategoryById;
+                      return (
+                        category &&
+                        category.topWikiImage && (
+                          <Popover
+                            placement="leftTop"
+                            content={
+                              // <HoverView
+                              //   json={JSON.parse(
+                              //     category.topWikiImage.hoverImage
+                              //   )}
+                              // />
+                              null
+                            }
+                            title={
+                              <>
+                                <ClapImage
+                                  small={true}
+                                  src={category.topWikiImage.shownImage}
+                                  alt={"hover"}
+                                  selected={isSelected}
+                                  {...attributes}
+                                />
+                                <ClapImageText
+                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                                >
+                                  {name}
+                                </ClapImageText>
+                              </>
+                            }
+                            trigger="hover"
+                          >
+                            <Link
+                              target="_blank"
+                              style={{
+                                textDecoration: "none"
+                              }}
+                              rel="noopener noreferrer"
+                              to={`/category/read/${category.id}`}
+                            >
+                              <ClapImageText
+                                color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                              >
+                                {name}
+                              </ClapImageText>
+                            </Link>
+                          </Popover>
+                        )
+                      );
+                    } else {
+                      return null;
+                    }
+                  }}
+                </GetCategoryById>
+              );
+            case "MINI_IMG":
+              return (
+                <GetCategoryById
+                  query={CATEGORY}
+                  fetchPolicy={"cache-and-network"}
+                  variables={{ categoryId: id }}
+                >
+                  {({ loading, data, error }) => {
+                    if (loading)
+                      return (
+                        <ClapImageText
+                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                        >
+                          {name}
+                        </ClapImageText>
+                      );
+                    if (error) return `${error.message}`;
+                    if (data !== undefined) {
+                      const { category } = data.GetCategoryById;
+                      return (
+                        category &&
+                        category.topWikiImage && (
+                          <Popover
+                            placement="leftTop"
+                            content={
+                              // <HoverView
+                              //   json={JSON.parse(
+                              //     category.topWikiImage.hoverImage
+                              //   )}
+                              // />
+                              null
+                            }
+                            title={
+                              <>
+                                <ClapImage
+                                  small={true}
+                                  src={category.topWikiImage.shownImage}
+                                  alt={"hover"}
+                                  selected={isSelected}
+                                  {...attributes}
+                                />
+                                <ClapImageText
+                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                                >
+                                  {name}
+                                </ClapImageText>
+                              </>
+                            }
+                            trigger="hover"
+                          >
+                            <Link
+                              target="_blank"
+                              style={{
+                                textDecoration: "none"
+                              }}
+                              rel="noopener noreferrer"
+                              to={`/category/read/${category.id}`}
+                            >
+                              <ClapImage
+                                small={true}
+                                src={category.topWikiImage.shownImage}
+                                alt={"hover"}
+                                selected={isSelected}
+                                {...attributes}
+                              />
+                              <ClapImageText
+                                color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                              >
+                                {name}
+                              </ClapImageText>
+                            </Link>
+                          </Popover>
+                        )
+                      );
+                    } else {
+                      return null;
+                    }
+                  }}
+                </GetCategoryById>
+              );
+            case "NORMAL_IMG":
+              return (
+                <GetCategoryById
+                  query={CATEGORY}
+                  fetchPolicy={"cache-and-network"}
+                  variables={{ categoryId: id }}
+                >
+                  {({ loading, data, error }) => {
+                    if (loading)
+                      return (
+                        <ClapImageText
+                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                        >
+                          {name}
+                        </ClapImageText>
+                      );
+                    if (error) return `${error.message}`;
+                    if (data !== undefined) {
+                      const { category } = data.GetCategoryById;
+                      return (
+                        category &&
+                        category.topWikiImage && (
+                          <Popover
+                            placement="leftTop"
+                            content={
+                              // <HoverView
+                              //   json={JSON.parse(
+                              //     category.topWikiImage.hoverImage
+                              //   )}
+                              // />
+                              null
+                            }
+                            title={
+                              <>
+                                <ClapImage
+                                  small={true}
+                                  src={category.topWikiImage.shownImage}
+                                  alt={"hover"}
+                                  selected={isSelected}
+                                  {...attributes}
+                                />
+                                <ClapImageText
+                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
+                                >
+                                  {name}
+                                </ClapImageText>
+                              </>
+                            }
+                            trigger="hover"
+                          >
+                            <Link
+                              target="_blank"
+                              style={{
+                                height: "100%",
+                                textDecoration: "none",
+                                display: "inline-flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+
+                                verticalAlign: "top"
+                              }}
+                              rel="noopener noreferrer"
+                              to={`/category/read/${category.id}`}
+                            >
+                              <ClapImage
+                                src={category.topWikiImage.shownImage}
+                                alt={"hover"}
+                                selected={isSelected}
+                                {...attributes}
+                              />
+                            </Link>
+                          </Popover>
+                        )
+                      );
+                    } else {
+                      return null;
+                    }
+                  }}
+                </GetCategoryById>
+              );
+            default:
+              return;
+          }
+        }
+        default:
+          return;
+      }
+    } else {
+      return;
+    }
+  };
+}
 
 export default TextContent;

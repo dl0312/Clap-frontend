@@ -73,6 +73,7 @@ hr{
 
 .blockActive {
   border: 1px solid ${EditorDefaults.BORDER_SELECT_COLOR};
+  /* background-color: rgba(0,0,0,.08); */
 }
 
 .ant-avatar>img {

@@ -34,20 +34,27 @@ const youtubeParser = (url: string) => {
 };
 
 interface IProps {
-  src?: string | false;
+  contents: {
+    videoUrl: string | false | null;
+  };
   autoplay: boolean;
 }
 
-const VideoContent: React.SFC<IProps> = ({ src, autoplay }) => {
-  if (src) {
-    src = youtubeParser(src);
+const VideoContent: React.SFC<IProps> = ({
+  contents: { videoUrl },
+  autoplay
+}) => {
+  if (videoUrl) {
+    videoUrl = youtubeParser(videoUrl);
   }
   return (
     <VideoContainer
       className="content"
-      isEmpty={src === undefined || src === null || src === false}
+      isEmpty={
+        videoUrl === undefined || videoUrl === null || videoUrl === false
+      }
     >
-      {src ? (
+      {videoUrl ? (
         <iframe
           title="youtube"
           style={{
@@ -59,7 +66,7 @@ const VideoContent: React.SFC<IProps> = ({ src, autoplay }) => {
           }}
           width="560"
           height="315"
-          src={`https://www.youtube.com/embed/${src}?${
+          src={`https://www.youtube.com/embed/${videoUrl}?${
             autoplay ? "autoplay=1&mute=1" : null
           }`}
           frameBorder="0"

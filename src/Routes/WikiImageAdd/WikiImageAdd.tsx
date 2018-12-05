@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 import { Mutation } from "react-apollo";
 import { ADD_WIKIIMAGE } from "../../sharedQueries";
-import WikiImageEditor from "src/Components/WikiImageEditor";
+// import WikiImageEditor from "src/Components/WikiImageEditor";
 import EditorDefaults from "../../EditorDefaults";
 
 const WikiImageAddContainer = styled.div`
@@ -107,12 +107,12 @@ class WikiImageAdd extends React.Component<IProps, IState> {
           >
             {(AddWikiImage, { data }) => (
               <HoverImageContainer>
-                <WikiImageEditor
+                {/* <WikiImageEditor
                   state={this.state.hoverJson}
                   type="WIKIIMAGE_ADD"
                   AddWikiImage={AddWikiImage}
                   categoryId={this.props.match.params.categoryId}
-                />
+                /> */}
               </HoverImageContainer>
             )}
           </Mutation>
