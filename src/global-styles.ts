@@ -40,13 +40,12 @@ h1,h2,h3,h4,h5,h6{
 h1{
   font-family:'Maven Pro', sans-serif;
   font-size: 30px;
-    color:inherit;
-    line-height: 25px;
+  color:inherit;
 }
 h2{
   font-family:'Maven Pro', sans-serif;
   font-size: 21px;
-        color:inherit;
+  color:inherit;
 
 }
 

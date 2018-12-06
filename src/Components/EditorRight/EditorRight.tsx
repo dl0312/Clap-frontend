@@ -80,7 +80,7 @@ interface IProps {
   cards: any[];
   view: "EDIT" | "USER" | "JSON";
   title: string;
-  ImageLibrary: any;
+  imageLibrary: any;
 }
 
 interface IState {
@@ -98,7 +98,7 @@ class EditorRight extends Component<IProps, IState> {
   }
 
   public render() {
-    const { ImageLibrary } = this.props;
+    const { imageLibrary } = this.props;
     const { isEditorToolOpen, isLibraryOpen } = this.state;
     return (
       <Fragment>
@@ -125,7 +125,7 @@ class EditorRight extends Component<IProps, IState> {
               <ToggleIcon className="fas fa-angle-up" isOpen={isLibraryOpen} />
             </TitleWrapper>
           </TitleContainer>
-          <Library ImageLibrary={ImageLibrary} />
+          <Library imageLibrary={imageLibrary} />
         </LibraryContainer>
         <HelperContainer>
           <HelperTitle>I can help you</HelperTitle>

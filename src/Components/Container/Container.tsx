@@ -210,6 +210,8 @@ interface IProps {
   setTargetIndex: any;
   pushPresentBlockToTargetIndex: any;
   pushNewBlockToTargetIndex: any;
+  handleOnClickImageChange: any;
+  editorRef: any;
 }
 
 interface ITextContents {
@@ -218,19 +220,20 @@ interface ITextContents {
 
 interface IImageContents {
   slateData?: any;
-  imageUrl: string | null;
-  description: string | null;
+  imageUrl: string;
+  description: string;
   isUploaded: boolean | null;
   link: string | null;
+  libraryIndex: number;
   style:
-    | "Wallpaper"
-    | "AlignLeft"
-    | "AlignCenter"
-    | "AlignRight"
-    | "WithManyTextLeft"
-    | "WithManyTextRight"
-    | "WithLessTextLeft"
-    | "WithLessTextRight";
+    | "fullWidth"
+    | "alignLeft"
+    | "alignCenter"
+    | "alignRight"
+    | "withManyTextLeft"
+    | "withManyTextRight"
+    | "withLessTextLeft"
+    | "withLessTextRight";
 }
 
 interface IVideoContents {
@@ -238,7 +241,7 @@ interface IVideoContents {
   description: string | null;
   width: number;
   height: number;
-  style: "Wallpaper" | "AlignLeft" | "AlignCenter" | "AlignRight";
+  style: "fullWidth" | "alignLeft" | "alignCenter" | "alignRight";
 }
 
 interface IState {
@@ -308,7 +311,17 @@ class Container extends React.Component<
   public showInner = (selected: boolean) => {
     switch (this.props.type) {
       case "Image":
-        return <ImageContent contents={this.props.contents} />;
+        return (
+          <ImageContent
+            index={this.props.index}
+            selected={selected}
+            contents={this.props.contents}
+            handleOnChange={this.props.handleOnChange}
+            callbackfromparent={this.props.callbackfromparent}
+            handleOnClickImageChange={this.props.handleOnClickImageChange}
+            editorRef={this.props.editorRef}
+          />
+        );
       case "Text":
         if (!Value.isValue(this.props.contents.slateData)) {
           const slatifiedData = Value.fromJSON(this.props.contents.slateData);

@@ -7,7 +7,7 @@ import styled from "styled-components";
 import EditorDefaults from "../../EditorDefaults";
 // import JsonView from "../JsonView";
 // import UserView from "../UserView";
-import BlockOptions from "../BlockOptions";
+// import BlockOptions from "../BlockOptions";
 // import EmptyCard from "../EmptyCard";
 import { POST, POSTS, GET_CATEGORIES_BY_GAME_ID } from "../../sharedQueries";
 import update from "immutability-helper";
@@ -135,28 +135,27 @@ const EditorContentContainer = styled.div`
   left: 0px;
 `;
 
-const EditorLeftOuterContainer = styled.div`
-  position: absolute;
-  top: 0;
-  left: 246px;
-  right: 0;
-  bottom: 0;
-  height: 100%;
-  min-width: 360px;
-  background: #f7f7f7;
-  display: flex;
-  justify-content: center;
-  background-color: #f7f7f7;
-
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 6px;
-    background-color: #e5e5e5;
-  }
-  ::-webkit-scrollbar-thumb {
-    background-color: #000000;
-  }
-`;
+// const EditorLeftOuterContainer = styled.div`
+//   position: absolute;
+//   top: 0;
+//   left: 246px;
+//   right: 0;
+//   bottom: 0;
+//   height: 100%;
+//   min-width: 360px;
+//   background: #f7f7f7;
+//   display: flex;
+//   justify-content: center;
+//   background-color: #f7f7f7;
+//   overflow-y: auto;
+//   ::-webkit-scrollbar {
+//     width: 6px;
+//     background-color: #e5e5e5;
+//   }
+//   ::-webkit-scrollbar-thumb {
+//     background-color: #000000;
+//   }
+// `;
 
 interface IEditorLeftContainerProps {
   device: "PHONE" | "TABLET" | "DESKTOP";
@@ -363,13 +362,16 @@ interface IState {
   tags: any[];
   isTitlePosDraggable: boolean;
   isDragging: boolean;
-  ImageLibrary: any;
+  imageLibrary: any;
 }
 
 class Editor extends React.Component<IProps, IState, any> {
   inputElement: any;
+  editorRef: any;
+  handler: any;
   constructor(props: IProps) {
     super(props);
+    this.editorRef = React.createRef();
     this.moveCard = this.moveCard.bind(this);
     this.onUnload = this.onUnload.bind(this);
     this.state = {
@@ -405,7 +407,7 @@ class Editor extends React.Component<IProps, IState, any> {
       inputValue: "",
       isTitlePosDraggable: false,
       isDragging: false,
-      ImageLibrary: [],
+      imageLibrary: [],
       ...props.state
     };
   }
@@ -415,13 +417,17 @@ class Editor extends React.Component<IProps, IState, any> {
     event.returnValue = "Hellooww";
   };
 
-  public componentDidMount() {
+  componentDidMount() {
     window.addEventListener("beforeunload", this.onUnload);
   }
 
-  public componentWillUnmount() {
+  componentWillUnmount() {
     window.removeEventListener("beforeunload", this.onUnload);
   }
+
+  public handleScrollFn = (e: any) => {
+    console.log(e);
+  };
 
   public buttonCallback = (
     type: "mouseover" | "mouseleave" | "select" | "delete",
@@ -487,15 +493,15 @@ class Editor extends React.Component<IProps, IState, any> {
   };
 
   // 오른쪽 버튼 Drop Here에 놨을 때
-  public handleDrop = (hoverItem: any, hoverIndex: number) => {
+  public handleDrop = (dragItem: any, targetIndex: number) => {
     // on column
-    console.log(hoverItem, hoverIndex);
+    console.log(dragItem, targetIndex);
     // on frame
-    if (!!hoverItem) {
+    if (!!dragItem) {
       this.setState(
         update(this.state, {
           cards: {
-            $splice: [[hoverIndex, 0, hoverItem]]
+            $splice: [[targetIndex, 0, dragItem]]
           }
         })
       );
@@ -636,50 +642,6 @@ class Editor extends React.Component<IProps, IState, any> {
     }
   };
 
-  public handleOnChange = (
-    value: any,
-    index: number,
-    type: "TEXT_CHANGE" | "IMAGE_URL" | "VIDEO_URL"
-  ) => {
-    if (type === "TEXT_CHANGE") {
-      this.setState(
-        update(this.state, {
-          cards: {
-            [index]: {
-              contents: {
-                slateData: { $set: value.value }
-              }
-            }
-          }
-        })
-      );
-    } else if (type === "IMAGE_URL") {
-      this.setState(
-        update(this.state, {
-          cards: {
-            [index]: {
-              contents: {
-                imageUrl: { $set: value }
-              }
-            }
-          }
-        })
-      );
-    } else if (type === "VIDEO_URL") {
-      this.setState(
-        update(this.state, {
-          cards: {
-            [index]: {
-              contents: {
-                videoUrl: { $set: value }
-              }
-            }
-          }
-        })
-      );
-    }
-  };
-
   public showSelected = (index: number | null) => {
     const { cards } = this.state;
     if (index !== null) {
@@ -781,7 +743,7 @@ class Editor extends React.Component<IProps, IState, any> {
     const { type, gameId } = this.props;
     const {
       cards,
-      selectedIndex,
+      // selectedIndex,
       view,
       device,
       pos,
@@ -892,7 +854,20 @@ class Editor extends React.Component<IProps, IState, any> {
           <EditorContentContainer>
             <CustomDragLayer comp={this.state.comp} />
             <EditorRightContainer>
-              {!this.state.selectedContent ? (
+              <EditorRight
+                masterCallback={
+                  this.masterCallback // func
+                }
+                rightMenu={
+                  this.state.rightMenu // values
+                }
+                cards={this.state.cards}
+                view={this.state.view}
+                title={this.state.title}
+                onClickPushNewBlock={this.onClickPushNewBlock}
+                imageLibrary={this.state.imageLibrary}
+              />
+              {/* {!this.state.selectedContent ? (
                 <EditorRight
                   masterCallback={
                     this.masterCallback // func
@@ -904,7 +879,7 @@ class Editor extends React.Component<IProps, IState, any> {
                   view={this.state.view}
                   title={this.state.title}
                   onClickPushNewBlock={this.onClickPushNewBlock}
-                  ImageLibrary={this.state.ImageLibrary}
+                  imageLibrary={this.state.imageLibrary}
                 />
               ) : (
                 <BlockOptions
@@ -916,9 +891,25 @@ class Editor extends React.Component<IProps, IState, any> {
                   onBlockOptionDownClick={this.onBlockOptionDownClick}
                   buttonCallback={this.buttonCallback}
                 />
-              )}
+              )} */}
             </EditorRightContainer>
-            <EditorLeftOuterContainer>
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 246,
+                right: 0,
+                bottom: 0,
+                height: "100%",
+                minWidth: 360,
+                background: "#f7f7f7",
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: "#f7f7f7",
+                overflowY: "auto"
+              }}
+              ref={this.editorRef}
+            >
               <EditorLeftContainer view={view} device={device}>
                 {view === "EDIT" ? (
                   <React.Fragment>
@@ -1061,6 +1052,10 @@ class Editor extends React.Component<IProps, IState, any> {
                                   }
                                   hoveredIndex={this.state.hoveredIndex}
                                   selectedIndex={this.state.selectedIndex}
+                                  handleOnClickImageChange={
+                                    this.handleOnClickImageChange
+                                  }
+                                  editorRef={this.editorRef}
                                 />
                                 <Builder
                                   index={index + 1}
@@ -1191,7 +1186,7 @@ class Editor extends React.Component<IProps, IState, any> {
                 ) : view === "USER" ? null : view === "JSON" ? null : null // <UserView json={this.state} /> // <JsonView json={this.state} />
                 }
               </EditorLeftContainer>
-            </EditorLeftOuterContainer>
+            </div>
           </EditorContentContainer>
         </EditorContainer>
         <input
@@ -1224,10 +1219,6 @@ class Editor extends React.Component<IProps, IState, any> {
       selectedContent: null,
       cards: templateContent
     });
-  };
-
-  public handleSetState = (name: string, value: any) => {
-    this.setState({ [name]: value } as any);
   };
 
   public onBlockOptionDownClick = () => {
@@ -1273,10 +1264,8 @@ class Editor extends React.Component<IProps, IState, any> {
     console.log(this.state.targetIndex);
     if (this.state.targetIndex !== null) {
       if (dragItem.type === "Image") {
-        this.inputElement.addEventListener(
-          "change",
-          async (e: any) => await this.handleBlockInputImageChange(e, dragItem)
-        );
+        this.handler = (e: any) => this.handleInputNewImage(e, dragItem);
+        this.inputElement.addEventListener("change", this.handler);
         await this.inputElement.click();
       } else if (dragItem.type === "Video") {
         console.log(`This is Video`);
@@ -1290,10 +1279,29 @@ class Editor extends React.Component<IProps, IState, any> {
 
   public onClickPushNewBlock = (dragItem: any) => {
     console.log(this.state.selectedIndex, this.state.cards, dragItem);
-    if (this.state.selectedIndex) {
-      this.handleDrop(dragItem, this.state.selectedIndex[0] + 1);
+    if (this.state.selectedIndex !== null) {
+      if (dragItem.type === "Image") {
+        this.setState({ targetIndex: this.state.selectedIndex + 1 });
+        this.handler = (e: any) => this.handleInputNewImage(e, dragItem);
+        this.inputElement.addEventListener("change", this.handler);
+        this.inputElement.click();
+      } else if (dragItem.type === "Video") {
+        console.log(`This is Video`);
+      } else {
+        this.handleDrop(dragItem, this.state.selectedIndex + 1);
+      }
+    } else {
+      if (dragItem.type === "Image") {
+        this.setState({ targetIndex: this.state.cards.length });
+        this.handler = (e: any) => this.handleInputNewImage(e, dragItem);
+        this.inputElement.addEventListener("change", this.handler);
+        this.inputElement.click();
+      } else if (dragItem.type === "Video") {
+        console.log(`This is Video`);
+      } else {
+        this.handleDrop(dragItem, this.state.cards.length);
+      }
     }
-    this.handleDrop(dragItem, this.state.cards.length);
   };
 
   public onInputImageChange: React.ChangeEventHandler<
@@ -1329,8 +1337,44 @@ class Editor extends React.Component<IProps, IState, any> {
     } as any);
   };
 
-  public handleBlockInputImageChange = async (event: any, dragItem: any) => {
-    console.log(event);
+  public handleInputNewImage = async (event: any, dragItem: any) => {
+    const {
+      target: { files }
+    } = event;
+    if (files) {
+      const formData = new FormData();
+      formData.append("file", files[0]);
+      formData.append("api_key", "811881451928618");
+      formData.append("upload_preset", "tqecb16q");
+      formData.append("timestamp", String(Date.now() / 1000));
+      const {
+        data: { secure_url }
+      } = await axios.post(
+        "https://api.cloudinary.com/v1_1/djjpx4ror/image/upload",
+        formData
+      );
+      if (secure_url) {
+        await this.setState({
+          imageLibrary: [...this.state.imageLibrary, secure_url]
+        });
+      }
+      dragItem.contents.libraryIndex = this.state.imageLibrary.length - 1;
+      dragItem.contents.imageUrl = this.state.imageLibrary[
+        dragItem.contents.libraryIndex
+      ];
+      console.log(this.state.targetIndex);
+      if (this.state.targetIndex !== null) {
+        this.handleDrop(dragItem, this.state.targetIndex);
+      }
+      this.inputElement.removeEventListener("change", this.handler);
+    }
+  };
+
+  public handleInputImageOnChange = async (
+    event: any,
+    index: number,
+    libraryIndex: number
+  ) => {
     const {
       target: { name, value, files }
     } = event;
@@ -1348,19 +1392,135 @@ class Editor extends React.Component<IProps, IState, any> {
         formData
       );
       if (secure_url) {
-        await this.setState({
-          ImageLibrary: [...this.state.ImageLibrary, secure_url]
-        });
+        this.handleOnChange(secure_url, index, "imageUrl");
+        this.handleOnChange(secure_url, libraryIndex, "imageLibrary");
       }
-      dragItem.contents.imageUrl = this.state.ImageLibrary[
-        this.state.ImageLibrary.length - 1
-      ];
-      console.log(this.state.targetIndex);
-      if (this.state.targetIndex !== null) {
-        this.handleDrop(dragItem, this.state.targetIndex);
-      }
+      this.inputElement.removeEventListener("change", this.handler);
     }
   };
+
+  public handleOnClickImageChange = async (
+    index: number,
+    libraryIndex: number
+  ) => {
+    this.handler = (e: any) =>
+      this.handleInputImageOnChange(e, index, libraryIndex);
+    this.inputElement.addEventListener("change", this.handler);
+    await this.inputElement.click();
+  };
+
+  public handleSetState = (stateName: string, value: any) => {
+    this.setState({ [stateName]: value } as any);
+  };
+
+  public handleOnChange = (
+    value: any,
+    index: number,
+    type:
+      | "slateData"
+      | "description"
+      | "imageUrl"
+      | "videoUrl"
+      | "imageLibrary"
+      | "style"
+      | "libraryIndex"
+  ) => {
+    if (type === "slateData") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                slateData: { $set: value.value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "description") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                description: { $set: value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "imageUrl") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                imageUrl: { $set: value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "videoUrl") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                videoUrl: { $set: value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "libraryIndex") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                libraryIndex: { $set: value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "style") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                style: { $set: value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "imageLibrary") {
+      this.setState(
+        update(this.state, {
+          imageLibrary: {
+            [index]: { $set: value }
+          }
+        })
+      );
+    }
+  };
+
+  // public handleOnChange = (value: any, index: number, contentName: string) => {
+  //   this.setState(
+  //     update(this.state, {
+  //       cards: {
+  //         [index]: {
+  //           contents: {
+  //             [contentName]: { $set: value }
+  //           }
+  //         }
+  //       }
+  //     })
+  //   );
+  // };
 }
 
 export default DragDropContext(HTML5Backend)(Editor);

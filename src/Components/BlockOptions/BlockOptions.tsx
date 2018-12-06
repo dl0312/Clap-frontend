@@ -2,8 +2,8 @@ import * as React from "react";
 import styled from "styled-components";
 import Sketch from "../../Utility/Sketch";
 import MiniWiki from "../MiniWiki";
-import Upload from "../Upload";
-import { Switch } from "antd";
+// import Upload from "../Upload";
+// import { Switch } from "antd";
 // import onClickOutside from "react-onclickoutside";
 
 interface IBlockOptionContainerProps {
@@ -117,9 +117,9 @@ const Input = styled.input`
   }
 `;
 
-const ImageSrc = Input.extend`
-  height: 33px;
-`;
+// const ImageSrc = Input.extend`
+//   height: 33px;
+// `;
 
 // interface IUrlColumnInputProps {
 //   hasRightButton: boolean;
@@ -183,12 +183,12 @@ const Align = styled<IAlignProps, any>("button")`
   }
 `;
 
-const ToggleContainer = styled.label`
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-`;
+// const ToggleContainer = styled.label`
+//   position: relative;
+//   display: inline-block;
+//   width: 40px;
+//   height: 20px;
+// `;
 
 // const Toggle = styled.input`
 //   display: none;
@@ -256,170 +256,171 @@ class BlockOptions extends React.Component<IProps, any> {
       handleOnChange,
       OnChangeCards
     } = this.props;
-    switch (selectedContent.type) {
-      case "Button":
-        return (
-          <OptionRows>
-            <Option>
-              <OptionHeader>
-                <OptionTitle>BUTTON</OptionTitle>
-                <MinimizeButton>
-                  <i className="fas fa-angle-up" />
-                </MinimizeButton>
-              </OptionHeader>
-              <FeatureColumn>
-                <FunctionColumn dir={"column"}>
-                  <FunctionTitleContainer>
-                    <FunctionTitle>Button Link</FunctionTitle>
-                  </FunctionTitleContainer>
-                  <UrlColumn>
-                    <UrlColumnInput
-                      type="text"
-                      value={selectedContent.link}
-                      hasRightButton={false}
-                      onChange={e =>
-                        handleOnChange(
-                          e.target.value,
-                          selectedIndex,
-                          "BUTTON",
-                          "LINK"
-                        )
-                      }
+    if (selectedContent) {
+      switch (selectedContent.type) {
+        case "Button":
+          return (
+            <OptionRows>
+              <Option>
+                <OptionHeader>
+                  <OptionTitle>BUTTON</OptionTitle>
+                  <MinimizeButton>
+                    <i className="fas fa-angle-up" />
+                  </MinimizeButton>
+                </OptionHeader>
+                <FeatureColumn>
+                  <FunctionColumn dir={"column"}>
+                    <FunctionTitleContainer>
+                      <FunctionTitle>Button Link</FunctionTitle>
+                    </FunctionTitleContainer>
+                    <UrlColumn>
+                      <UrlColumnInput
+                        type="text"
+                        value={selectedContent.link}
+                        hasRightButton={false}
+                        onChange={e =>
+                          handleOnChange(
+                            e.target.value,
+                            selectedIndex,
+                            "BUTTON",
+                            "LINK"
+                          )
+                        }
+                      />
+                    </UrlColumn>
+                  </FunctionColumn>
+                  <FunctionColumn>
+                    <FunctionTitle>Background Color</FunctionTitle>
+                    <Sketch
+                      OnChangeCards={OnChangeCards}
+                      selectedIndex={selectedIndex!}
+                      type="ButtonBackgroundColor"
+                      color={selectedContent.backgroundColor}
                     />
-                  </UrlColumn>
-                </FunctionColumn>
-                <FunctionColumn>
-                  <FunctionTitle>Background Color</FunctionTitle>
-                  <Sketch
-                    OnChangeCards={OnChangeCards}
-                    selectedIndex={selectedIndex!}
-                    type="ButtonBackgroundColor"
-                    color={selectedContent.backgroundColor}
-                  />
-                </FunctionColumn>
-                <FunctionColumn>
-                  <FunctionTitle>Hover Color</FunctionTitle>
-                  <Sketch
-                    OnChangeCards={OnChangeCards}
-                    selectedIndex={selectedIndex!}
-                    type="ButtonHoverColor"
-                    color={selectedContent.hoverColor}
-                  />
-                </FunctionColumn>
-                <FunctionColumn>
-                  <FunctionTitle>Alignments</FunctionTitle>
-                  <ActionColumn>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "align", "flex-start")
-                      }
-                      isSelected={selectedContent.align === "flex-start"}
-                    >
-                      <i className="fas fa-align-left" />
-                    </Align>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "align", "center")
-                      }
-                      isSelected={
-                        selectedContent.align === "center" ||
-                        selectedContent.align === undefined
-                      }
-                    >
-                      <i className="fas fa-align-center" />
-                    </Align>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "align", "flex-end")
-                      }
-                      isSelected={selectedContent.align === "flex-end"}
-                    >
-                      <i className="fas fa-align-right" />
-                    </Align>
-                  </ActionColumn>
-                </FunctionColumn>
-                <FunctionColumn isLast={true}>
-                  <FunctionTitle>Text Alignments</FunctionTitle>
-                  <ActionColumn>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "textAlign", "left")
-                      }
-                      isSelected={selectedContent.textAlign === "left"}
-                    >
-                      <i className="fas fa-align-left" />
-                    </Align>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "textAlign", "center")
-                      }
-                      isSelected={
-                        selectedContent.textAlign === "center" ||
-                        selectedContent.textAlign === undefined
-                      }
-                    >
-                      <i className="fas fa-align-center" />
-                    </Align>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "textAlign", "right")
-                      }
-                      isSelected={selectedContent.textAlign === "right"}
-                    >
-                      <i className="fas fa-align-right" />
-                    </Align>
-                  </ActionColumn>
-                </FunctionColumn>
-              </FeatureColumn>
-            </Option>
-          </OptionRows>
-        );
-      case "Html":
-        return (
-          <OptionRows>
-            <Option>
-              <OptionHeader>
-                <OptionTitle>HTML</OptionTitle>
-                <MinimizeButton>
-                  <i className="fas fa-angle-up" />
-                </MinimizeButton>
-              </OptionHeader>
-              <FeatureColumn>
-                <FunctionColumn isLast={true} dir={"column"}>
-                  <FunctionTitleContainer>
-                    <FunctionTitle>Html Code</FunctionTitle>
-                  </FunctionTitleContainer>
-                  <UrlColumn>
-                    <HtmlInput
-                      style={{ height: "250px" }}
-                      value={selectedContent.link}
-                      onChange={e =>
-                        handleOnChange(
-                          e.target.value,
-                          selectedIndex,
-                          "HTML",
-                          "CODE"
-                        )
-                      }
+                  </FunctionColumn>
+                  <FunctionColumn>
+                    <FunctionTitle>Hover Color</FunctionTitle>
+                    <Sketch
+                      OnChangeCards={OnChangeCards}
+                      selectedIndex={selectedIndex!}
+                      type="ButtonHoverColor"
+                      color={selectedContent.hoverColor}
                     />
-                  </UrlColumn>
-                </FunctionColumn>
-              </FeatureColumn>
-            </Option>
-          </OptionRows>
-        );
-      case "Text":
-        return (
-          <OptionRows>
-            <Option>
-              <OptionHeader>
-                <OptionTitle>TEXT</OptionTitle>
-                <MinimizeButton>
-                  <i className="fas fa-angle-up" />
-                </MinimizeButton>
-              </OptionHeader>
-              <FeatureColumn>
-                {/* <FunctionColumn>
+                  </FunctionColumn>
+                  <FunctionColumn>
+                    <FunctionTitle>Alignments</FunctionTitle>
+                    <ActionColumn>
+                      <Align
+                        onClick={() =>
+                          OnChangeCards(selectedIndex, "align", "flex-start")
+                        }
+                        isSelected={selectedContent.align === "flex-start"}
+                      >
+                        <i className="fas fa-align-left" />
+                      </Align>
+                      <Align
+                        onClick={() =>
+                          OnChangeCards(selectedIndex, "align", "center")
+                        }
+                        isSelected={
+                          selectedContent.align === "center" ||
+                          selectedContent.align === undefined
+                        }
+                      >
+                        <i className="fas fa-align-center" />
+                      </Align>
+                      <Align
+                        onClick={() =>
+                          OnChangeCards(selectedIndex, "align", "flex-end")
+                        }
+                        isSelected={selectedContent.align === "flex-end"}
+                      >
+                        <i className="fas fa-align-right" />
+                      </Align>
+                    </ActionColumn>
+                  </FunctionColumn>
+                  <FunctionColumn isLast={true}>
+                    <FunctionTitle>Text Alignments</FunctionTitle>
+                    <ActionColumn>
+                      <Align
+                        onClick={() =>
+                          OnChangeCards(selectedIndex, "textAlign", "left")
+                        }
+                        isSelected={selectedContent.textAlign === "left"}
+                      >
+                        <i className="fas fa-align-left" />
+                      </Align>
+                      <Align
+                        onClick={() =>
+                          OnChangeCards(selectedIndex, "textAlign", "center")
+                        }
+                        isSelected={
+                          selectedContent.textAlign === "center" ||
+                          selectedContent.textAlign === undefined
+                        }
+                      >
+                        <i className="fas fa-align-center" />
+                      </Align>
+                      <Align
+                        onClick={() =>
+                          OnChangeCards(selectedIndex, "textAlign", "right")
+                        }
+                        isSelected={selectedContent.textAlign === "right"}
+                      >
+                        <i className="fas fa-align-right" />
+                      </Align>
+                    </ActionColumn>
+                  </FunctionColumn>
+                </FeatureColumn>
+              </Option>
+            </OptionRows>
+          );
+        case "Html":
+          return (
+            <OptionRows>
+              <Option>
+                <OptionHeader>
+                  <OptionTitle>HTML</OptionTitle>
+                  <MinimizeButton>
+                    <i className="fas fa-angle-up" />
+                  </MinimizeButton>
+                </OptionHeader>
+                <FeatureColumn>
+                  <FunctionColumn isLast={true} dir={"column"}>
+                    <FunctionTitleContainer>
+                      <FunctionTitle>Html Code</FunctionTitle>
+                    </FunctionTitleContainer>
+                    <UrlColumn>
+                      <HtmlInput
+                        style={{ height: "250px" }}
+                        value={selectedContent.link}
+                        onChange={e =>
+                          handleOnChange(
+                            e.target.value,
+                            selectedIndex,
+                            "HTML",
+                            "CODE"
+                          )
+                        }
+                      />
+                    </UrlColumn>
+                  </FunctionColumn>
+                </FeatureColumn>
+              </Option>
+            </OptionRows>
+          );
+        case "Text":
+          return (
+            <OptionRows>
+              <Option>
+                <OptionHeader>
+                  <OptionTitle>TEXT</OptionTitle>
+                  <MinimizeButton>
+                    <i className="fas fa-angle-up" />
+                  </MinimizeButton>
+                </OptionHeader>
+                <FeatureColumn>
+                  {/* <FunctionColumn>
                   <FunctionTitle>Alignments</FunctionTitle>
                   <ActionColumn>
                     <Align
@@ -483,244 +484,247 @@ class BlockOptions extends React.Component<IProps, any> {
                     </Align>
                   </ActionColumn>
                 </FunctionColumn> */}
-                <MiniWiki
-                  handleOnChange={handleOnChange}
-                  selectedIndex={selectedIndex}
-                  selectedContent={selectedContent}
-                />
-              </FeatureColumn>
-            </Option>
-          </OptionRows>
-        );
-      case "Image":
-        return (
-          <OptionRows>
-            <Option>
-              <OptionHeader>
-                <OptionTitle>IMAGE</OptionTitle>
-                <MinimizeButton>
-                  <i className="fas fa-angle-up" />
-                </MinimizeButton>
-              </OptionHeader>
-              <FeatureColumn>
-                <FunctionColumn>
-                  <FunctionTitleContainer style={{ width: "100%" }}>
-                    <FunctionTitle>Image Upload</FunctionTitle>
-                  </FunctionTitleContainer>
-                  <UrlColumn>
-                    <Upload
-                      type="POST_IMAGE"
-                      selectedIndex={selectedIndex!}
-                      exShownImg={{ url: selectedContent.imageSrc }}
-                      handleOnChange={this.props.handleOnChange}
-                    />
-                  </UrlColumn>
-                </FunctionColumn>
-                <FunctionColumn dir={"column"}>
-                  <FunctionTitleContainer>
-                    <FunctionTitle>Image URL</FunctionTitle>
-                  </FunctionTitleContainer>
-                  <UrlColumn>
-                    <ImageSrc
-                      type="text"
-                      value={selectedContent.imageSrc}
-                      onChange={e =>
-                        handleOnChange(
-                          e.target.value,
-                          selectedIndex,
-                          "IMAGE",
-                          "URL"
-                        )
-                      }
-                    />
-                  </UrlColumn>
-                </FunctionColumn>
-                <FunctionColumn>
-                  <FunctionTitle>Alignments</FunctionTitle>
-                  <ActionColumn>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "align", "flex-start")
-                      }
-                      isSelected={selectedContent.align === "flex-start"}
-                    >
-                      <i className="fas fa-align-left" />
-                    </Align>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "align", "center")
-                      }
-                      isSelected={
-                        selectedContent.align === "center" ||
-                        selectedContent.align === undefined
-                      }
-                    >
-                      <i className="fas fa-align-center" />
-                    </Align>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "align", "flex-end")
-                      }
-                      isSelected={selectedContent.align === "flex-end"}
-                    >
-                      <i className="fas fa-align-right" />
-                    </Align>
-                  </ActionColumn>
-                </FunctionColumn>
-                <FunctionColumn>
-                  <FunctionTitle>Full Width</FunctionTitle>
-                  <ActionColumn>
-                    <ToggleContainer>
-                      <Switch
-                        defaultChecked={false}
-                        onChange={e => {
-                          OnChangeCards(selectedIndex, "fullWidth", e);
-                        }}
-                      />
-                      {/* ,
-                        <Toggle
-                          onClick={() =>
-                            OnChangeCards(selectedIndex, "fullWidth", "toggle")
-                          }
-                          type="checkbox"
-                        /> */}
-                      {/* <ToggleRound fullWidth={selectedContent.fullWidth} /> */}
-                    </ToggleContainer>
-                  </ActionColumn>
-                </FunctionColumn>
-                {/* <FunctionColumn dir={"column"}>
+                  <MiniWiki
+                    handleOnChange={handleOnChange}
+                    selectedIndex={selectedIndex}
+                    selectedContent={selectedContent}
+                  />
+                </FeatureColumn>
+              </Option>
+            </OptionRows>
+          );
+        // case "Image":
+        //   return (
+        //     <OptionRows>
+        //       <Option>
+        //         <OptionHeader>
+        //           <OptionTitle>IMAGE</OptionTitle>
+        //           <MinimizeButton>
+        //             <i className="fas fa-angle-up" />
+        //           </MinimizeButton>
+        //         </OptionHeader>
+        //         <FeatureColumn>
+        //           <FunctionColumn>
+        //             <FunctionTitleContainer style={{ width: "100%" }}>
+        //               <FunctionTitle>Image Upload</FunctionTitle>
+        //             </FunctionTitleContainer>
+        //             <UrlColumn>
+        //               <Upload
+        //                 type="POST_IMAGE"
+        //                 selectedIndex={selectedIndex!}
+        //                 exShownImg={{ url: selectedContent.imageSrc }}
+        //                 handleOnChange={this.props.handleOnChange}
+        //               />
+        //             </UrlColumn>
+        //           </FunctionColumn>
+        //           <FunctionColumn dir={"column"}>
+        //             <FunctionTitleContainer>
+        //               <FunctionTitle>Image URL</FunctionTitle>
+        //             </FunctionTitleContainer>
+        //             <UrlColumn>
+        //               <ImageSrc
+        //                 type="text"
+        //                 value={selectedContent.imageSrc}
+        //                 onChange={e =>
+        //                   handleOnChange(
+        //                     e.target.value,
+        //                     selectedIndex,
+        //                     "IMAGE",
+        //                     "URL"
+        //                   )
+        //                 }
+        //               />
+        //             </UrlColumn>
+        //           </FunctionColumn>
+        //           <FunctionColumn>
+        //             <FunctionTitle>Alignments</FunctionTitle>
+        //             <ActionColumn>
+        //               <Align
+        //                 onClick={() =>
+        //                   OnChangeCards(selectedIndex, "align", "flex-start")
+        //                 }
+        //                 isSelected={selectedContent.align === "flex-start"}
+        //               >
+        //                 <i className="fas fa-align-left" />
+        //               </Align>
+        //               <Align
+        //                 onClick={() =>
+        //                   OnChangeCards(selectedIndex, "align", "center")
+        //                 }
+        //                 isSelected={
+        //                   selectedContent.align === "center" ||
+        //                   selectedContent.align === undefined
+        //                 }
+        //               >
+        //                 <i className="fas fa-align-center" />
+        //               </Align>
+        //               <Align
+        //                 onClick={() =>
+        //                   OnChangeCards(selectedIndex, "align", "flex-end")
+        //                 }
+        //                 isSelected={selectedContent.align === "flex-end"}
+        //               >
+        //                 <i className="fas fa-align-right" />
+        //               </Align>
+        //             </ActionColumn>
+        //           </FunctionColumn>
+        //           <FunctionColumn>
+        //             <FunctionTitle>Full Width</FunctionTitle>
+        //             <ActionColumn>
+        //               <ToggleContainer>
+        //                 <Switch
+        //                   defaultChecked={false}
+        //                   onChange={e => {
+        //                     OnChangeCards(selectedIndex, "fullWidth", e);
+        //                   }}
+        //                 />
+        //                 {/* ,
+        //                 <Toggle
+        //                   onClick={() =>
+        //                     OnChangeCards(selectedIndex, "fullWidth", "toggle")
+        //                   }
+        //                   type="checkbox"
+        //                 /> */}
+        //                 {/* <ToggleRound fullWidth={selectedContent.fullWidth} /> */}
+        //               </ToggleContainer>
+        //             </ActionColumn>
+        //           </FunctionColumn>
+        //           {/* <FunctionColumn dir={"column"}>
+        //             <FunctionTitleContainer>
+        //               <FunctionTitle>Alternate Text</FunctionTitle>
+        //             </FunctionTitleContainer>
+        //             <UrlColumn>
+        //               <UrlColumnInput
+        //                 style={{ borderRadius: "5px" }}
+        //                 type="text"
+        //                 value={selectedContent.alt}
+        //                 hasRightButton={false}
+        //                 onChange={e =>
+        //                   handleOnChange(
+        //                     e.target.value,
+        //                     selectedIndex,
+        //                     "IMAGE",
+        //                     "ALT"
+        //                   )
+        //                 }
+        //               />
+        //             </UrlColumn>
+        //           </FunctionColumn> */}
+        //           {/* <FunctionColumn dir={"column"} isLast={"true"}>
+        //             <FunctionTitleContainer>
+        //               <FunctionTitle>Image Link</FunctionTitle>
+        //             </FunctionTitleContainer>
+        //             <UrlColumn>
+        //               <UrlColumnInput
+        //                 type="text"
+        //                 value={selectedContent.link}
+        //                 hasRightButton={false}
+        //                 onChange={e =>
+        //                   handleOnChange(
+        //                     e.target.value,
+        //                     selectedIndex,
+        //                     "IMAGE",
+        //                     "LINK"
+        //                   )
+        //                 }
+        //               />
+        //             </UrlColumn>
+        //           </FunctionColumn> */}
+        //           <FunctionColumn dir={"column"} isLast={"true"}>
+        //             <FunctionTitleContainer>
+        //               <FunctionTitle>History</FunctionTitle>
+        //             </FunctionTitleContainer>
+        //             <UrlColumn>
+        //               <ImageSrc
+        //                 type="text"
+        //                 value={selectedContent.imageSrc}
+        //                 onChange={e =>
+        //                   handleOnChange(
+        //                     e.target.value,
+        //                     selectedIndex,
+        //                     "IMAGE",
+        //                     "URL"
+        //                   )
+        //                 }
+        //               />
+        //             </UrlColumn>
+        //           </FunctionColumn>
+        //         </FeatureColumn>
+        //       </Option>
+        //     </OptionRows>
+        //   );
+        case "Video":
+          return (
+            <OptionRows>
+              <Option>
+                <OptionHeader>
+                  <OptionTitle>VIDEO</OptionTitle>
+                  <MinimizeButton>
+                    <i className="fas fa-angle-up" />
+                  </MinimizeButton>
+                </OptionHeader>
+                <FeatureColumn>
+                  <FunctionColumn dir={"column"}>
                     <FunctionTitleContainer>
-                      <FunctionTitle>Alternate Text</FunctionTitle>
+                      <FunctionTitle>Video URL</FunctionTitle>
                     </FunctionTitleContainer>
                     <UrlColumn>
+                      {/* <button className={styles.btn}>URL</button> */}
                       <UrlColumnInput
-                        style={{ borderRadius: "5px" }}
                         type="text"
-                        value={selectedContent.alt}
+                        value={selectedContent.videoSrc}
                         hasRightButton={false}
                         onChange={e =>
                           handleOnChange(
                             e.target.value,
                             selectedIndex,
-                            "IMAGE",
-                            "ALT"
+                            "VIDEO_URL"
                           )
                         }
                       />
                     </UrlColumn>
-                  </FunctionColumn> */}
-                {/* <FunctionColumn dir={"column"} isLast={"true"}>
-                    <FunctionTitleContainer>
-                      <FunctionTitle>Image Link</FunctionTitle>
-                    </FunctionTitleContainer>
-                    <UrlColumn>
-                      <UrlColumnInput
-                        type="text"
-                        value={selectedContent.link}
-                        hasRightButton={false}
-                        onChange={e =>
-                          handleOnChange(
-                            e.target.value,
-                            selectedIndex,
-                            "IMAGE",
-                            "LINK"
-                          )
+                  </FunctionColumn>
+                  <FunctionColumn>
+                    <FunctionTitle>Alignments</FunctionTitle>
+                    <ActionColumn>
+                      <Align
+                        onClick={() =>
+                          OnChangeCards(selectedIndex, "align", "flex-start")
                         }
-                      />
-                    </UrlColumn>
-                  </FunctionColumn> */}
-                <FunctionColumn dir={"column"} isLast={"true"}>
-                  <FunctionTitleContainer>
-                    <FunctionTitle>History</FunctionTitle>
-                  </FunctionTitleContainer>
-                  <UrlColumn>
-                    <ImageSrc
-                      type="text"
-                      value={selectedContent.imageSrc}
-                      onChange={e =>
-                        handleOnChange(
-                          e.target.value,
-                          selectedIndex,
-                          "IMAGE",
-                          "URL"
-                        )
-                      }
-                    />
-                  </UrlColumn>
-                </FunctionColumn>
-              </FeatureColumn>
-            </Option>
-          </OptionRows>
-        );
-      case "Video":
-        return (
-          <OptionRows>
-            <Option>
-              <OptionHeader>
-                <OptionTitle>VIDEO</OptionTitle>
-                <MinimizeButton>
-                  <i className="fas fa-angle-up" />
-                </MinimizeButton>
-              </OptionHeader>
-              <FeatureColumn>
-                <FunctionColumn dir={"column"}>
-                  <FunctionTitleContainer>
-                    <FunctionTitle>Video URL</FunctionTitle>
-                  </FunctionTitleContainer>
-                  <UrlColumn>
-                    {/* <button className={styles.btn}>URL</button> */}
-                    <UrlColumnInput
-                      type="text"
-                      value={selectedContent.videoSrc}
-                      hasRightButton={false}
-                      onChange={e =>
-                        handleOnChange(
-                          e.target.value,
-                          selectedIndex,
-                          "VIDEO_URL"
-                        )
-                      }
-                    />
-                  </UrlColumn>
-                </FunctionColumn>
-                <FunctionColumn>
-                  <FunctionTitle>Alignments</FunctionTitle>
-                  <ActionColumn>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "align", "flex-start")
-                      }
-                      isSelected={selectedContent.align === "flex-start"}
-                    >
-                      <i className="fas fa-align-left" />
-                    </Align>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "align", "center")
-                      }
-                      isSelected={
-                        selectedContent.align === "center" ||
-                        selectedContent.align === undefined
-                      }
-                    >
-                      <i className="fas fa-align-center" />
-                    </Align>
-                    <Align
-                      onClick={() =>
-                        OnChangeCards(selectedIndex, "align", "flex-end")
-                      }
-                      isSelected={selectedContent.align === "flex-end"}
-                    >
-                      <i className="fas fa-align-right" />
-                    </Align>
-                  </ActionColumn>
-                </FunctionColumn>
-              </FeatureColumn>
-            </Option>
-          </OptionRows>
-        );
-      default:
-        return null;
+                        isSelected={selectedContent.align === "flex-start"}
+                      >
+                        <i className="fas fa-align-left" />
+                      </Align>
+                      <Align
+                        onClick={() =>
+                          OnChangeCards(selectedIndex, "align", "center")
+                        }
+                        isSelected={
+                          selectedContent.align === "center" ||
+                          selectedContent.align === undefined
+                        }
+                      >
+                        <i className="fas fa-align-center" />
+                      </Align>
+                      <Align
+                        onClick={() =>
+                          OnChangeCards(selectedIndex, "align", "flex-end")
+                        }
+                        isSelected={selectedContent.align === "flex-end"}
+                      >
+                        <i className="fas fa-align-right" />
+                      </Align>
+                    </ActionColumn>
+                  </FunctionColumn>
+                </FeatureColumn>
+              </Option>
+            </OptionRows>
+          );
+        default:
+          return null;
+      }
+    } else {
+      return null;
     }
   };
 

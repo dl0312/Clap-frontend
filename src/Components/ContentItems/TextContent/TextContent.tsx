@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import {  Editor, Plugin } from "slate-react";
+import { Editor, Plugin } from "slate-react";
 import EditorDefaults from "../../../EditorDefaults";
 // import { Row, Col } from "antd";
 
@@ -39,7 +39,7 @@ import { getCategoryById, getCategoryByIdVariables } from "src/types/api";
 import { Query } from "react-apollo";
 import { CATEGORY } from "src/sharedQueries";
 import { Popover } from "antd";
-import Delete from "../../Delete";
+import Delete from "src/Components/BlockIcons/Delete";
 import _ from "lodash";
 // import HoverView from "src/Components/HoverView";
 
@@ -148,7 +148,6 @@ interface ITextContents {
   slateData: any;
 }
 
-
 interface IProps {
   index: number;
   contents: ITextContents;
@@ -159,12 +158,9 @@ interface IProps {
 }
 
 class TextContent extends React.Component<IProps, any> {
-
   onChange = (change: any) => {
-      this.props.handleOnChange(change, this.props.index, "TEXT_CHANGE");
-    
+    this.props.handleOnChange(change, this.props.index, "slateData");
   };
-
 
   public render() {
     const {
@@ -186,9 +182,7 @@ class TextContent extends React.Component<IProps, any> {
                       <TextEditorButton key={i} index={i}>
                         <Type
                           change={slateData.change()}
-                          onChange={(change: any) => {
-                            handleOnChange(change, index, "TEXT_CHANGE");
-                          }}
+                          onChange={this.onChange}
                           callbackfromparent={this.props.callbackfromparent}
                           index={index}
                           key={i}
