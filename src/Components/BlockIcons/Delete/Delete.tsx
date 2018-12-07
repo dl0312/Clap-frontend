@@ -7,6 +7,7 @@ const ButtonIcon = styled.i`
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 `;
 
 interface IProps {

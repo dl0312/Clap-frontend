@@ -20,6 +20,7 @@ const ButtonIcon = styled<IButtonIconProps, any>("i")`
   align-items: center;
   justify-content: center;
   color: ${props => (props.imageStyle === "fullWidth" ? "#00bcd4" : null)};
+  cursor: pointer;
 `;
 
 interface IProps {

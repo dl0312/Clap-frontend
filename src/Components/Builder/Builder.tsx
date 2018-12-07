@@ -44,6 +44,7 @@ const BuilderContainer = styled<IBuilderContainerProps, any>("div")`
 
 const OuterBuilder = styled.div`
   width: 100%;
+  margin: 20px 0;
 `;
 
 interface IProps {

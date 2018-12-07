@@ -1,21 +1,16 @@
 import * as React from "react";
-import classnames from "classnames";
+// import classnames from "classnames";
 import ItemTypes from "../../ItemTypes";
 import {
-  DragSource,
   DropTarget,
   ConnectDragSource,
   ConnectDragPreview,
   ConnectDropTarget,
-  DragSourceMonitor,
   DropTargetMonitor,
-  DropTargetConnector,
-  DragSourceConnector
+  DropTargetConnector
 } from "react-dnd";
 
 import { Value } from "slate";
-// import styled from "styled-components";
-import flow from "lodash/flow";
 // import EditorDefaults from "../../EditorDefaults";
 // import ContentBox from "../ContentBox";
 
@@ -75,7 +70,6 @@ import TrailingBlock from "slate-trailing-block";
 import EditTable from "slate-edit-table";
 import { findDOMNode } from "react-dom";
 // import { RenderNodeProps, RenderMarkProps } from "slate-react";
-import { getEmptyImage } from "react-dnd-html5-backend";
 import styled from "styled-components";
 import ImageContent from "../ContentItems/ImageContent";
 import VideoContent from "../ContentItems/VideoContent";
@@ -127,19 +121,6 @@ const plugins = [
   copyPastePlugin()
 ];
 
-const cardSource = {
-  beginDrag(props: IProps, monitor: DragSourceMonitor, component: Container) {
-    props.masterCallback("isDragging", true);
-    props.masterCallback("setComp", component);
-    return { index: props.index };
-  },
-  endDrag(props: IProps, monitor: DragSourceMonitor, component?: Container) {
-    props.masterCallback("isDragging", false);
-    props.masterCallback("setComp", null);
-    return { index: props.index };
-  }
-};
-
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: Container) {
     const isJustOverThisOne = monitor.isOver({ shallow: true });
@@ -183,8 +164,6 @@ const InnerContainer = styled.div`
   max-width: 886px;
   margin: 0 auto;
   position: relative;
-  cursor: grab;
-  padding: 10px;
 `;
 
 interface IProps {
@@ -276,38 +255,6 @@ class Container extends React.Component<
     };
   }
 
-  public setDragImage = () => {
-    const image = new Image();
-    image.src =
-      "https://pbs.twimg.com/profile_images/882259118131523585/jckOG2cP_400x400.jpg";
-    image.onload = () => {
-      image.width = image.height = 20;
-      this.props.connectDragPreview(image);
-    };
-  };
-
-  // public componentDidMount = () => {
-  //   const image = new Image();
-  //   image.src =
-  //     "https://pbs.twimg.com/profile_images/882259118131523585/jckOG2cP_400x400.jpg";
-  //   image.onload = () => {
-  //     this.props.connectDragPreview(image);
-  //   };
-  // };
-
-  public componentDidMount() {
-    const { connectDragPreview } = this.props;
-    if (connectDragPreview) {
-      // Use empty image as a drag preview so browsers don't draw it
-      // and we can draw whatever we want on the custom drag layer instead.
-      connectDragPreview(getEmptyImage(), {
-        // IE fallback: specify that we'd rather screenshot the node
-        // when it already knows it's being dragged so we can hide it with CSS.
-        captureDraggingState: true
-      });
-    }
-  }
-
   public showInner = (selected: boolean) => {
     switch (this.props.type) {
       case "Image":
@@ -315,11 +262,14 @@ class Container extends React.Component<
           <ImageContent
             index={this.props.index}
             selected={selected}
+            hoveredIndex={this.props.hoveredIndex}
+            selectedIndex={this.props.selectedIndex}
             contents={this.props.contents}
             handleOnChange={this.props.handleOnChange}
             callbackfromparent={this.props.callbackfromparent}
             handleOnClickImageChange={this.props.handleOnClickImageChange}
             editorRef={this.props.editorRef}
+            masterCallback={this.props.masterCallback}
           />
         );
       case "Text":
@@ -353,82 +303,59 @@ class Container extends React.Component<
     }
   };
 
-  /* In case, Mouse Over Container */
-  public handleOnMouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
-    this.props.callbackfromparent("mouseover", this.props.index);
-  };
+  // /* In case, Mouse Over Container */
+  // public handleOnMouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
+  //   event.stopPropagation();
+  //   this.props.callbackfromparent("mouseover", this.props.index);
+  // };
 
-  /* In case, Mouse Down Container */
-  public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
-    this.props.callbackfromparent("select", this.props.index);
-  };
+  // /* In case, Mouse Down Container */
+  // public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  //   event.stopPropagation();
+  //   this.props.callbackfromparent("select", this.props.index);
+  // };
 
-  /* In case, Mouse Leave Container */
-  public handleOnMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
-    this.props.callbackfromparent("mouseleave", this.props.index);
-  };
-
-  /* In case, Mouse Over ToolBox */
-  public handleOnMouseOverTool = (event: React.MouseEvent<HTMLDivElement>) => {
-    this.setState({
-      toolHover: true
-    });
-  };
-
-  /* In case, Mouse Leave ToolBox */
-  public handleOnMouseLeaveTool = (event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
-    this.setState({
-      toolHover: false
-    });
-  };
+  // /* In case, Mouse Leave Container */
+  // public handleOnMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+  //   event.stopPropagation();
+  //   this.props.callbackfromparent("mouseleave", this.props.index);
+  // };
 
   public render() {
     const {
       isDragging,
-      connectDragSource,
       connectDropTarget
       // connectDragPreview
     } = this.props;
-    const { index, hoveredIndex, selectedIndex } = this.props;
     const opacity = isDragging ? 0.5 : 1;
-    let hover: boolean = false;
+    const { index, selectedIndex } = this.props;
+    // let hover: boolean = false;
     let active: boolean = false;
-    hover = hoveredIndex === index;
+    // hover = hoveredIndex === index;
     active = selectedIndex === index;
 
     return connectDropTarget(
-      connectDragSource(
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            position: "relative",
-            // padding: "5px",
-            width: "100%",
-            justifyContent: "center",
-            opacity,
-            transition: "border 0.5s ease, opacity 0.5s ease",
-            borderRadius: "2px"
-          }}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          position: "relative",
+          // padding: "5px",
+          width: "100%",
+          justifyContent: "center",
+          opacity,
+          transition: "border 0.5s ease, opacity 0.5s ease",
+          borderRadius: "2px"
+        }}
+      >
+        <InnerContainer
+        // onMouseOver={this.handleOnMouseOver}
+        // onMouseDown={this.handleOnMouseDown}
+        // onMouseLeave={this.handleOnMouseLeave}
         >
-          <InnerContainer
-            className={classnames(
-              "container",
-              hover ? "blockHover" : null,
-              active ? "blockActive" : null
-            )}
-            onMouseOver={this.handleOnMouseOver}
-            onMouseDown={this.handleOnMouseDown}
-            onMouseLeave={this.handleOnMouseLeave}
-          >
-            {this.showInner(active)}
-          </InnerContainer>
-        </div>
-      )
+          {this.showInner(active)}
+        </InnerContainer>
+      </div>
     );
   }
   // public handleClickOutside = () => {
@@ -436,23 +363,11 @@ class Container extends React.Component<
   // };
 }
 
-export default flow(
-  DropTarget<IProps, IDnDTargetProps>(
-    [ItemTypes.CARD, ItemTypes.CONTENT],
-    cardTarget,
-    (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
-      connectDropTarget: connect.dropTarget(),
-      isOver: monitor.isOver()
-    })
-  ),
-  DragSource<IProps, IDnDSourceProps>(
-    ItemTypes.CARD,
-    cardSource,
-    (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
-      item: monitor.getItem(),
-      isDragging: monitor.isDragging(),
-      connectDragSource: connect.dragSource(),
-      connectDragPreview: connect.dragPreview()
-    })
-  )
+export default DropTarget<IProps, IDnDTargetProps>(
+  [ItemTypes.CARD, ItemTypes.CONTENT],
+  cardTarget,
+  (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver()
+  })
 )(Container);

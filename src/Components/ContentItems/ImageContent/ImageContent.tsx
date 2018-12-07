@@ -2,21 +2,50 @@ import * as React from "react";
 import styled from "styled-components";
 import Delete from "src/Components/BlockIcons/Delete";
 import ImageChange from "src/Components/BlockIcons/ImageChange";
+import SizeChange from "src/Components/BlockIcons/SizeChange";
 import FullWidth from "src/Components/BlockIcons/FullWidth";
 import AlignLeft from "src/Components/BlockIcons/AlignLeft";
 import AlignCenter from "src/Components/BlockIcons/AlignCenter";
 import AlignRight from "src/Components/BlockIcons/AlignRight";
 import TextareaAutosize from "react-textarea-autosize";
 import { findDOMNode } from "react-dom";
+import {
+  ConnectDragSource,
+  ConnectDragPreview,
+  DragSourceMonitor,
+  DragSource,
+  DragSourceConnector
+} from "react-dnd";
+import ItemTypes from "src/ItemTypes";
+import classnames from "classnames";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 const icons = [
   ImageChange,
+  SizeChange,
   FullWidth,
   AlignLeft,
   AlignCenter,
   AlignRight,
   Delete
 ];
+
+const cardSource = {
+  beginDrag(
+    props: IProps,
+    monitor: DragSourceMonitor,
+    component: ImageContent
+  ) {
+    props.masterCallback("isDragging", true);
+    props.masterCallback("unselect");
+    return { index: props.index, Comp: component };
+  },
+  endDrag(props: IProps, monitor: DragSourceMonitor, component?: ImageContent) {
+    props.masterCallback("isDragging", false);
+    props.masterCallback("unselect");
+    return { index: props.index, Comp: component };
+  }
+};
 
 interface IToolbarProps {
   isNearbyTop: boolean;
@@ -42,8 +71,8 @@ interface IImageContainerProps {
     | "withManyTextRight"
     | "withLessTextLeft"
     | "withLessTextRight";
-  width: number;
-  height: number;
+  currWidth: number;
+  currHeight: number;
 }
 
 const ImageContainer = styled<IImageContainerProps, any>("div")`
@@ -52,7 +81,7 @@ const ImageContainer = styled<IImageContainerProps, any>("div")`
   border-left: 0 solid transparent;
   border-bottom: 0 solid transparent;
   max-width: ${props =>
-    props.imageStyle === "fullWidth" ? null : `${props.width}px`};
+    props.imageStyle === "fullWidth" ? null : `${props.currWidth}px`};
   margin-left: ${props =>
     props.imageStyle === "alignCenter" || props.imageStyle === "alignRight"
       ? "auto"
@@ -73,10 +102,9 @@ const ImageButtonContainer = styled.div`
   background-color: #fff;
   position: absolute;
   z-index: 100;
-  top: -33px;
-  left: -1.5px;
+  top: -38px;
+  left: -1px;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `;
 
 interface IImageButtonProps {
@@ -88,7 +116,7 @@ const ImageButton = styled<IImageButtonProps, any>("div")`
     background-color: #ebebeb;
   }
   border-right: ${props =>
-    props.index === 0 || props.index === 4
+    props.index === 0 || props.index === 1 || props.index === 5
       ? "1px solid rgba(0, 0, 0, 0.1)"
       : null};
 `;
@@ -131,20 +159,50 @@ const Description = styled(TextareaAutosize)`
   }
 `;
 
+const DragSourceArea = styled.div`
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.08);
+  -webkit-transition-property: opacity, background;
+  transition-property: opacity, background;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+  -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  bottom: -10px;
+  left: -10px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+`;
+
 interface IProps {
   index: number;
   contents: IImageContents;
   handleOnChange?: any;
   selected?: boolean;
+  hoveredIndex: number | null;
+  selectedIndex: number | null;
   callbackfromparent: any;
   handleOnClickImageChange: any;
   editorRef: any;
+  masterCallback: any;
 }
 
 interface IState {
   width: number;
   height: number;
   isNearbyTop: boolean;
+}
+
+interface IDnDSourceProps {
+  // React-dnd props
+  isDragging: boolean;
+  connectDragSource: ConnectDragSource;
+  connectDragPreview: ConnectDragPreview;
 }
 
 interface IImageContents {
@@ -165,9 +223,9 @@ interface IImageContents {
     | "withLessTextRight";
 }
 
-class ImageContent extends React.Component<IProps, IState> {
+class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
   imgEl: any;
-  constructor(props: IProps) {
+  constructor(props: IProps & IDnDSourceProps) {
     super(props);
     this.imgEl = React.createRef();
     this.state = {
@@ -176,6 +234,16 @@ class ImageContent extends React.Component<IProps, IState> {
       isNearbyTop: false
     };
   }
+
+  public handleImageWidth = (value: any) => {
+    this.setState({ width: value });
+    this.imgEl.width = value;
+  };
+
+  public handleImageHeight = (value: any) => {
+    this.setState({ height: value });
+    this.imgEl.height = value;
+  };
 
   public handleScrollFn = () => {
     const rect = (findDOMNode(
@@ -195,28 +263,75 @@ class ImageContent extends React.Component<IProps, IState> {
       "scroll",
       this.handleScrollFn
     );
+    const { connectDragPreview } = this.props;
+    if (connectDragPreview) {
+      // Use empty image as a drag preview so browsers don't draw it
+      // and we can draw whatever we want on the custom drag layer instead.
+      connectDragPreview(getEmptyImage(), {
+        // IE fallback: specify that we'd rather screenshot the node
+        // when it already knows it's being dragged so we can hide it with CSS.
+        captureDraggingState: true
+      });
+    }
   }
 
   componentWillUnmount() {
-    this.props.editorRef.current.removeEventListener(
-      "scroll",
-      this.handleScrollFn
-    );
+    if (this.props.editorRef.current !== null)
+      this.props.editorRef.current.removeEventListener(
+        "scroll",
+        this.handleScrollFn
+      );
   }
+
+  /* In case, Mouse Over Container */
+  public handleOnMouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    this.props.callbackfromparent("mouseover", this.props.index);
+  };
+
+  /* In case, Mouse Down Container */
+  public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    this.props.callbackfromparent("select", this.props.index);
+  };
+
+  /* In case, Mouse Leave Container */
+  public handleOnMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    this.props.callbackfromparent("mouseleave", this.props.index);
+  };
 
   public render() {
     const {
       contents,
       selected,
+      hoveredIndex,
+      selectedIndex,
       index,
       handleOnChange,
       callbackfromparent,
-      handleOnClickImageChange
+      handleOnClickImageChange,
+      connectDragSource,
+      isDragging
     } = this.props;
     const { width, height, isNearbyTop } = this.state;
     const { imageUrl, style, description } = contents;
+
+    const hover: boolean = hoveredIndex === index;
+    const active: boolean = selectedIndex === index;
     return (
       <>
+        <DragSourceArea
+          className={classnames(
+            "container",
+            hover && !isDragging ? "blockHover" : null,
+            active && !isDragging ? "blockActive" : null
+          )}
+          innerRef={(instance: any) => connectDragSource(instance)}
+          onMouseOver={this.handleOnMouseOver}
+          onMouseDown={this.handleOnMouseDown}
+          onMouseLeave={this.handleOnMouseLeave}
+        />
         {selected && (
           <Toolbar isNearbyTop={isNearbyTop} className="toolbar">
             <ImageButtonContainer>
@@ -230,6 +345,10 @@ class ImageContent extends React.Component<IProps, IState> {
                       index={index}
                       key={i}
                       contents={contents}
+                      height={height}
+                      width={width}
+                      handleImageWidth={this.handleImageWidth}
+                      handleImageHeight={this.handleImageHeight}
                       // className="toolbar-item"
                     />
                   </ImageButton>
@@ -241,16 +360,16 @@ class ImageContent extends React.Component<IProps, IState> {
         <ImageContainer
           className="content"
           imageStyle={style}
-          width={width}
-          height={height}
+          currWidth={width}
+          currHeight={height}
         >
           <img
             style={{
               maxWidth: style === "fullWidth" ? "inherit" : "100%",
               position: "relative",
               verticalAlign: "top",
-              height: "auto",
-              width: "100%"
+              height: "100%",
+              width: style === "fullWidth" ? "100%" : "auto"
             }}
             src={imageUrl}
             alt="logo"
@@ -271,6 +390,7 @@ class ImageContent extends React.Component<IProps, IState> {
               );
             }}
           />
+
           {!description && !selected ? null : (
             <DescriptionContainer imageStyle={style}>
               <Description
@@ -288,4 +408,13 @@ class ImageContent extends React.Component<IProps, IState> {
   }
 }
 
-export default ImageContent;
+export default DragSource<IProps, IDnDSourceProps>(
+  ItemTypes.CARD,
+  cardSource,
+  (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
+    item: monitor.getItem(),
+    isDragging: monitor.isDragging(),
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview()
+  })
+)(ImageContent);

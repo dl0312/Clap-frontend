@@ -2,16 +2,7 @@ import * as React from "react";
 import { DragLayer, XYCoord } from "react-dnd";
 // import ItemTypes from "../../ItemTypes";
 import CardDragPreiview from "../CardDragPreview";
-
-const layerStyles: React.CSSProperties = {
-  position: "fixed",
-  pointerEvents: "none",
-  zIndex: 1000,
-  left: 0,
-  top: 0,
-  width: "100%",
-  height: "100%"
-};
+import styled from "src/typed-components";
 
 function getItemStyles(props: ICustomDragLayerProps) {
   const { initialOffset, currentOffset } = props;
@@ -29,8 +20,17 @@ function getItemStyles(props: ICustomDragLayerProps) {
   };
 }
 
+const DragLayerContainer = styled.div`
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+`;
+
 export interface ICustomDragLayerProps {
-  comp: any;
   item?: any;
   itemType?: string;
   initialOffset?: XYCoord;
@@ -42,25 +42,23 @@ class CustomDragLayer extends React.Component<ICustomDragLayerProps, any> {
   constructor(props: ICustomDragLayerProps) {
     super(props);
   }
-  public renderItem = (comp: any, itemType: any) => {
+  public renderItem = (Comp: any, itemType: any) => {
     return (
       this.props.itemType !== undefined && (
-        <CardDragPreiview comp={comp} itemType={itemType} />
+        <CardDragPreiview Comp={Comp} itemType={itemType} />
       )
     );
   };
 
   public render() {
-    const { isDragging, comp, itemType } = this.props;
+    const { isDragging, itemType, item } = this.props;
     if (!isDragging) {
       return null;
     }
     return (
-      <div style={layerStyles}>
-        <div style={getItemStyles(this.props)}>
-          {this.renderItem(comp, itemType)}
-        </div>
-      </div>
+      <DragLayerContainer style={getItemStyles(this.props)}>
+        {item.Comp && this.renderItem(item.Comp, itemType)}
+      </DragLayerContainer>
     );
   }
 }

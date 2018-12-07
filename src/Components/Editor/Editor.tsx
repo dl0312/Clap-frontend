@@ -358,7 +358,6 @@ interface IState {
   titleImg: string;
   titleImgUploading: boolean;
   titleImgPos: number;
-  comp: any;
   tags: any[];
   isTitlePosDraggable: boolean;
   isDragging: boolean;
@@ -401,7 +400,6 @@ class Editor extends React.Component<IProps, IState, any> {
       titleImg: null,
       titleImgUploading: false,
       titleImgPos: 50,
-      comp: null,
       tags: [],
       inputVisible: false,
       inputValue: "",
@@ -433,6 +431,7 @@ class Editor extends React.Component<IProps, IState, any> {
     type: "mouseover" | "mouseleave" | "select" | "delete",
     dataFromChild: number
   ) => {
+    console.log(type, dataFromChild);
     const { cards, hoveredIndex, selectedIndex } = this.state;
     if (type === "mouseover") {
       this.setState({ hoveredIndex: dataFromChild });
@@ -512,27 +511,12 @@ class Editor extends React.Component<IProps, IState, any> {
   // 이동
   // block on column -> block on column ([1,2,1] > [3,1,1])
   // frame -> frame (5 > 7)
-  public moveCard = (
-    dragIndex: number | number[],
-    hoverIndex: number | number[]
-  ) => {
-    console.log(dragIndex, hoverIndex);
-    if (!Array.isArray(dragIndex) && !Array.isArray(hoverIndex)) {
-      // frame => frame
-      const { cards } = this.state;
-      const dragCard = cards[dragIndex];
-      this.setState({ selectedIndex: null, selectedContent: null });
-      if (dragIndex < hoverIndex) {
-        if (dragIndex !== hoverIndex - 1) {
-          this.setState(
-            update(this.state, {
-              cards: {
-                $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]]
-              }
-            })
-          );
-        }
-      } else if (dragIndex > hoverIndex) {
+  public moveCard = (dragIndex: number, hoverIndex: number) => {
+    const { cards } = this.state;
+    const dragCard = cards[dragIndex];
+    this.setState({ selectedIndex: null, selectedContent: null });
+    if (dragIndex < hoverIndex) {
+      if (dragIndex !== hoverIndex - 1) {
         this.setState(
           update(this.state, {
             cards: {
@@ -541,6 +525,15 @@ class Editor extends React.Component<IProps, IState, any> {
           })
         );
       }
+    } else if (dragIndex > hoverIndex) {
+      console.log(dragIndex, hoverIndex);
+      this.setState(
+        update(this.state, {
+          cards: {
+            $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]]
+          }
+        })
+      );
     }
   };
 
@@ -549,7 +542,7 @@ class Editor extends React.Component<IProps, IState, any> {
       | "title"
       | "view"
       | "isDragging"
-      | "rightMenu"
+      | "unselect"
       | "shownImage"
       | "targetIndex"
       | "selectedIndex"
@@ -557,6 +550,7 @@ class Editor extends React.Component<IProps, IState, any> {
     dataFromChild?: any,
     secondDataFromChild?: any
   ) => {
+    console.log(dataFromChild, type);
     if (type === "title") {
       this.setState({ title: dataFromChild });
     } else if (type === "view") {
@@ -564,12 +558,13 @@ class Editor extends React.Component<IProps, IState, any> {
     } else if (type === "targetIndex") {
       this.setState({ targetIndex: dataFromChild });
     } else if (type === "selectedIndex") {
+      console.log(`select ${dataFromChild}`);
       this.setState({ selectedIndex: dataFromChild });
     } else if (type === "hoveredIndex") {
       this.setState({ hoveredIndex: dataFromChild });
-    } else if (type === "rightMenu") {
+    } else if (type === "unselect") {
+      console.log(`unselect`);
       this.setState({
-        rightMenu: dataFromChild,
         selectedIndex: null,
         selectedContent: null
       });
@@ -852,7 +847,7 @@ class Editor extends React.Component<IProps, IState, any> {
             />
           </EditorNavTwo>
           <EditorContentContainer>
-            <CustomDragLayer comp={this.state.comp} />
+            <CustomDragLayer />
             <EditorRightContainer>
               <EditorRight
                 masterCallback={
@@ -1252,7 +1247,7 @@ class Editor extends React.Component<IProps, IState, any> {
   public pushPresentBlockToTargetIndex = (dragIndex: any) => {
     this.masterCallback("isDragging", false);
     console.log(this.state.targetIndex);
-    if (this.state.targetIndex) {
+    if (this.state.targetIndex !== null) {
       this.moveCard(dragIndex, this.state.targetIndex);
     } else {
       console.log(`타겟 인덱스가 없으요`);
