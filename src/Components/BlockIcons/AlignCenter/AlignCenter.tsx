@@ -21,6 +21,11 @@ const ButtonIcon = styled<IButtonIconProps, any>("i")`
   justify-content: center;
   color: ${props => (props.imageStyle === "alignCenter" ? "#00bcd4" : null)};
   cursor: pointer;
+  opacity: ${props => (props.imageStyle === "alignCenter" ? "1" : "0.65")};
+  transition: 0.2s ease;
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 interface IProps {
@@ -37,7 +42,10 @@ class AlignCenter extends React.Component<IProps, any> {
       contents: { style }
     } = this.props;
     return (
-      <div onClick={() => handleOnChange("alignCenter", index, "style")}>
+      <div
+        title={"Align Center"}
+        onClick={() => handleOnChange("alignCenter", index, "style")}
+      >
         <ButtonIcon imageStyle={style} className="fas fa-align-center" />
       </div>
     );

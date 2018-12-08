@@ -145,16 +145,10 @@ const cardTarget = {
   drop(props: IProps, monitor: DropTargetMonitor, component: Container) {
     const type = monitor.getItemType();
     const item = monitor.getItem();
-    props.masterCallback("setComp", null);
-    if (item.type === "Image") {
-      console.log(`Image`);
-    } else if (item.type === "Video") {
-      console.log(`Video`);
-    }
     if (type === ItemTypes.CARD) {
-      props.pushPresentBlockToTargetIndex(monitor.getItem().index);
+      props.pushPresentBlockToTargetIndex(item.index);
     } else if (type === ItemTypes.CONTENT) {
-      props.pushNewBlockToTargetIndex(monitor.getItem());
+      props.pushNewBlockToTargetIndex(item);
     }
   }
 };
@@ -191,6 +185,8 @@ interface IProps {
   pushNewBlockToTargetIndex: any;
   handleOnClickImageChange: any;
   editorRef: any;
+  setInitialImageContents: any;
+  changeImageSizeFromCurrentToTarget: any;
 }
 
 interface ITextContents {
@@ -213,6 +209,10 @@ interface IImageContents {
     | "withManyTextRight"
     | "withLessTextLeft"
     | "withLessTextRight";
+  naturalImageWidth: number;
+  naturalImageHeight: number;
+  currentImageWidth: number;
+  currentImageHeight: number;
 }
 
 interface IVideoContents {
@@ -221,12 +221,6 @@ interface IVideoContents {
   width: number;
   height: number;
   style: "fullWidth" | "alignLeft" | "alignCenter" | "alignRight";
-}
-
-interface IState {
-  hover: boolean;
-  active: boolean;
-  toolHover: boolean;
 }
 
 interface IDnDSourceProps {
@@ -244,15 +238,10 @@ interface IDnDTargetProps {
 
 class Container extends React.Component<
   IProps & IDnDSourceProps & IDnDTargetProps,
-  IState
+  any
 > {
   constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
     super(props);
-    this.state = {
-      hover: false,
-      active: false,
-      toolHover: false
-    };
   }
 
   public showInner = (selected: boolean) => {
@@ -270,6 +259,10 @@ class Container extends React.Component<
             handleOnClickImageChange={this.props.handleOnClickImageChange}
             editorRef={this.props.editorRef}
             masterCallback={this.props.masterCallback}
+            setInitialImageContents={this.props.setInitialImageContents}
+            changeImageSizeFromCurrentToTarget={
+              this.props.changeImageSizeFromCurrentToTarget
+            }
           />
         );
       case "Text":
@@ -303,35 +296,11 @@ class Container extends React.Component<
     }
   };
 
-  // /* In case, Mouse Over Container */
-  // public handleOnMouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
-  //   event.stopPropagation();
-  //   this.props.callbackfromparent("mouseover", this.props.index);
-  // };
-
-  // /* In case, Mouse Down Container */
-  // public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-  //   event.stopPropagation();
-  //   this.props.callbackfromparent("select", this.props.index);
-  // };
-
-  // /* In case, Mouse Leave Container */
-  // public handleOnMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
-  //   event.stopPropagation();
-  //   this.props.callbackfromparent("mouseleave", this.props.index);
-  // };
-
   public render() {
-    const {
-      isDragging,
-      connectDropTarget
-      // connectDragPreview
-    } = this.props;
+    const { isDragging, connectDropTarget } = this.props;
     const opacity = isDragging ? 0.5 : 1;
     const { index, selectedIndex } = this.props;
-    // let hover: boolean = false;
     let active: boolean = false;
-    // hover = hoveredIndex === index;
     active = selectedIndex === index;
 
     return connectDropTarget(
@@ -340,7 +309,6 @@ class Container extends React.Component<
           display: "flex",
           alignItems: "center",
           position: "relative",
-          // padding: "5px",
           width: "100%",
           justifyContent: "center",
           opacity,

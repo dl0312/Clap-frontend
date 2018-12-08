@@ -1,12 +1,14 @@
 import * as React from "react";
 import styled from "styled-components";
-import Delete from "src/Components/BlockIcons/Delete";
 import ImageChange from "src/Components/BlockIcons/ImageChange";
 import SizeChange from "src/Components/BlockIcons/SizeChange";
 import FullWidth from "src/Components/BlockIcons/FullWidth";
 import AlignLeft from "src/Components/BlockIcons/AlignLeft";
 import AlignCenter from "src/Components/BlockIcons/AlignCenter";
 import AlignRight from "src/Components/BlockIcons/AlignRight";
+import Link from "src/Components/BlockIcons/Link";
+import Duplicate from "src/Components/BlockIcons/Duplicate";
+import Delete from "src/Components/BlockIcons/Delete";
 import TextareaAutosize from "react-textarea-autosize";
 import { findDOMNode } from "react-dom";
 import {
@@ -27,6 +29,8 @@ const icons = [
   AlignLeft,
   AlignCenter,
   AlignRight,
+  Link,
+  Duplicate,
   Delete
 ];
 
@@ -36,9 +40,17 @@ const cardSource = {
     monitor: DragSourceMonitor,
     component: ImageContent
   ) {
+    const node = findDOMNode(component) as Element;
+    const rect = node ? (node.getBoundingClientRect() as DOMRect) : null;
+
     props.masterCallback("isDragging", true);
     props.masterCallback("unselect");
-    return { index: props.index, Comp: component };
+    return {
+      index: props.index,
+      Comp: component,
+      width: rect && rect.width,
+      height: rect && rect.height
+    };
   },
   endDrag(props: IProps, monitor: DragSourceMonitor, component?: ImageContent) {
     props.masterCallback("isDragging", false);
@@ -48,14 +60,14 @@ const cardSource = {
 };
 
 interface IToolbarProps {
-  isNearbyTop: boolean;
+  toolbarState: "follow" | "sticky" | "blind";
 }
 
 const Toolbar = styled<IToolbarProps, any>("div")`
-  transform: ${props => (props.isNearbyTop ? "translateX(-10px)" : null)};
-  top: ${props => (props.isNearbyTop ? "125px" : "0px")};
-  position: ${props => (props.isNearbyTop ? "fixed" : "static")};
-  max-width: ${props => (props.isNearbyTop ? "886px" : null)};
+  visibility: ${props => (props.toolbarState === "blind" ? "hidden" : null)};
+  top: ${props => (props.toolbarState === "sticky" ? "130px" : "130px")};
+  position: ${props => (props.toolbarState === "sticky" ? "fixed" : "static")};
+  max-width: ${props => (props.toolbarState === "sticky" ? null : "886px")};
   width: 100%;
   margin: 0 auto;
   z-index: 1000;
@@ -71,8 +83,8 @@ interface IImageContainerProps {
     | "withManyTextRight"
     | "withLessTextLeft"
     | "withLessTextRight";
-  currWidth: number;
-  currHeight: number;
+  currentImageWidth: number;
+  currentImageHeight: number;
 }
 
 const ImageContainer = styled<IImageContainerProps, any>("div")`
@@ -81,7 +93,7 @@ const ImageContainer = styled<IImageContainerProps, any>("div")`
   border-left: 0 solid transparent;
   border-bottom: 0 solid transparent;
   max-width: ${props =>
-    props.imageStyle === "fullWidth" ? null : `${props.currWidth}px`};
+    props.imageStyle === "fullWidth" ? null : `${props.currentImageWidth}px`};
   margin-left: ${props =>
     props.imageStyle === "alignCenter" || props.imageStyle === "alignRight"
       ? "auto"
@@ -102,8 +114,8 @@ const ImageButtonContainer = styled.div`
   background-color: #fff;
   position: absolute;
   z-index: 100;
-  top: -38px;
-  left: -1px;
+  top: -43px;
+  left: -10px;
   border: 1px solid rgba(0, 0, 0, 0.2);
 `;
 
@@ -112,11 +124,11 @@ interface IImageButtonProps {
 }
 
 const ImageButton = styled<IImageButtonProps, any>("div")`
-  &:hover {
-    background-color: #ebebeb;
-  }
   border-right: ${props =>
-    props.index === 0 || props.index === 1 || props.index === 5
+    props.index === 0 ||
+    props.index === 1 ||
+    props.index === 5 ||
+    props.index === 6
       ? "1px solid rgba(0, 0, 0, 0.1)"
       : null};
 `;
@@ -134,6 +146,7 @@ interface IDescriptionContainerProps {
 }
 
 const DescriptionContainer = styled<IDescriptionContainerProps, any>("div")`
+  position: relative;
   text-align: ${props =>
     props.imageStyle === "fullWidth"
       ? "center"
@@ -154,6 +167,7 @@ const Description = styled(TextareaAutosize)`
   margin-left: auto;
   text-align: inherit;
   width: 100%;
+  background-color: transparent;
   &:focus {
     outline: none;
   }
@@ -190,12 +204,12 @@ interface IProps {
   handleOnClickImageChange: any;
   editorRef: any;
   masterCallback: any;
+  setInitialImageContents: any;
+  changeImageSizeFromCurrentToTarget: any;
 }
 
 interface IState {
-  width: number;
-  height: number;
-  isNearbyTop: boolean;
+  toolbarState: "follow" | "sticky" | "blind";
 }
 
 interface IDnDSourceProps {
@@ -221,44 +235,44 @@ interface IImageContents {
     | "withManyTextRight"
     | "withLessTextLeft"
     | "withLessTextRight";
+  naturalImageWidth: number;
+  naturalImageHeight: number;
+  currentImageWidth: number;
+  currentImageHeight: number;
 }
 
 class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
   imgEl: any;
+  dragSource: any;
   constructor(props: IProps & IDnDSourceProps) {
     super(props);
     this.imgEl = React.createRef();
+    this.dragSource = React.createRef();
     this.state = {
-      width: 0,
-      height: 0,
-      isNearbyTop: false
+      toolbarState: "follow"
     };
   }
-
-  public handleImageWidth = (value: any) => {
-    this.setState({ width: value });
-    this.imgEl.width = value;
-  };
-
-  public handleImageHeight = (value: any) => {
-    this.setState({ height: value });
-    this.imgEl.height = value;
-  };
 
   public handleScrollFn = () => {
     const rect = (findDOMNode(
       this.imgEl
     )! as Element).getBoundingClientRect() as DOMRect;
-    console.log(rect);
-    if (rect.top < 150) {
-      this.setState({ isNearbyTop: true });
+    console.log(
+      rect.top,
+      rect.bottom,
+      this.state.toolbarState,
+      rect.bottom < 60
+    );
+    if (rect.bottom < 60) {
+      this.setState({ toolbarState: "blind" });
+    } else if (rect.top < 150) {
+      this.setState({ toolbarState: "sticky" });
     } else {
-      this.setState({ isNearbyTop: false });
+      this.setState({ toolbarState: "follow" });
     }
   };
 
   componentDidMount() {
-    console.log(this.props.editorRef);
     this.props.editorRef.current.addEventListener(
       "scroll",
       this.handleScrollFn
@@ -289,7 +303,7 @@ class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
     this.props.callbackfromparent("mouseover", this.props.index);
   };
 
-  /* In case, Mouse Down Container */
+  /* In case, Mouse Don Container */
   public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     this.props.callbackfromparent("select", this.props.index);
@@ -312,10 +326,19 @@ class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
       callbackfromparent,
       handleOnClickImageChange,
       connectDragSource,
-      isDragging
+      isDragging,
+      setInitialImageContents,
+      changeImageSizeFromCurrentToTarget
     } = this.props;
-    const { width, height, isNearbyTop } = this.state;
-    const { imageUrl, style, description } = contents;
+
+    const { toolbarState } = this.state;
+    const {
+      imageUrl,
+      style,
+      description,
+      currentImageWidth,
+      currentImageHeight
+    } = contents;
 
     const hover: boolean = hoveredIndex === index;
     const active: boolean = selectedIndex === index;
@@ -333,7 +356,7 @@ class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
           onMouseLeave={this.handleOnMouseLeave}
         />
         {selected && (
-          <Toolbar isNearbyTop={isNearbyTop} className="toolbar">
+          <Toolbar toolbarState={toolbarState} className="toolbar">
             <ImageButtonContainer>
               {icons.map((Type, i) => {
                 return (
@@ -345,11 +368,9 @@ class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
                       index={index}
                       key={i}
                       contents={contents}
-                      height={height}
-                      width={width}
-                      handleImageWidth={this.handleImageWidth}
-                      handleImageHeight={this.handleImageHeight}
-                      // className="toolbar-item"
+                      changeImageSizeFromCurrentToTarget={
+                        changeImageSizeFromCurrentToTarget
+                      }
                     />
                   </ImageButton>
                 );
@@ -360,34 +381,38 @@ class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
         <ImageContainer
           className="content"
           imageStyle={style}
-          currWidth={width}
-          currHeight={height}
+          currentImageWidth={currentImageWidth}
+          currentImageHeight={currentImageHeight}
         >
           <img
+            width={currentImageWidth}
+            height={currentImageHeight}
             style={{
               maxWidth: style === "fullWidth" ? "inherit" : "100%",
               position: "relative",
               verticalAlign: "top",
               height: "100%",
-              width: style === "fullWidth" ? "100%" : "auto"
+              width: style === "fullWidth" ? "100%" : "100%"
             }}
             src={imageUrl}
             alt="logo"
             ref={(e: any) => (this.imgEl = e)}
             onLoad={() => {
-              this.setState(
-                {
-                  width: this.imgEl.naturalWidth,
-                  height: this.imgEl.naturalHeight
-                },
-                () => {
-                  if (this.state.width > 886) {
-                    handleOnChange("fullWidth", index, "style");
-                  } else {
-                    handleOnChange("alignLeft", index, "style");
-                  }
-                }
-              );
+              if (this.imgEl.naturalWidth > 886) {
+                setInitialImageContents(
+                  this.imgEl.naturalWidth,
+                  this.imgEl.naturalHeight,
+                  "fullWidth",
+                  index
+                );
+              } else {
+                setInitialImageContents(
+                  this.imgEl.naturalWidth,
+                  this.imgEl.naturalHeight,
+                  "alignLeft",
+                  index
+                );
+              }
             }}
           />
 

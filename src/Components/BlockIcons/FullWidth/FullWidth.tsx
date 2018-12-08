@@ -21,6 +21,11 @@ const ButtonIcon = styled<IButtonIconProps, any>("i")`
   justify-content: center;
   color: ${props => (props.imageStyle === "fullWidth" ? "#00bcd4" : null)};
   cursor: pointer;
+  opacity: ${props => (props.imageStyle === "fullWidth" ? "1" : "0.65")};
+  transition: 0.2s ease;
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 interface IProps {

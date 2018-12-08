@@ -20,15 +20,15 @@ interface IProps {
   index: number;
 }
 
-class Delete extends React.Component<IProps, any> {
+class Duplicate extends React.Component<IProps, any> {
   public render() {
     const { callbackfromparent, index } = this.props;
     return (
-      <div onClick={() => callbackfromparent("delete", index)}>
-        <ButtonIcon className="far fa-trash-alt" />
+      <div onClick={() => callbackfromparent("duplicate", index)}>
+        <ButtonIcon className="far fa-clone" />
       </div>
     );
   }
 }
 
-export default Delete;
+export default Duplicate;

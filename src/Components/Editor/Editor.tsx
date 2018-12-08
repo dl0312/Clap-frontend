@@ -428,7 +428,7 @@ class Editor extends React.Component<IProps, IState, any> {
   };
 
   public buttonCallback = (
-    type: "mouseover" | "mouseleave" | "select" | "delete",
+    type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
     dataFromChild: number
   ) => {
     console.log(type, dataFromChild);
@@ -750,7 +750,7 @@ class Editor extends React.Component<IProps, IState, any> {
       targetIndex,
       isDragging
     } = this.state;
-
+    console.log(cards);
     return (
       <React.Fragment>
         <EditorContainer type={type}>
@@ -1051,6 +1051,12 @@ class Editor extends React.Component<IProps, IState, any> {
                                     this.handleOnClickImageChange
                                   }
                                   editorRef={this.editorRef}
+                                  setInitialImageContents={
+                                    this.setInitialImageContents
+                                  }
+                                  changeImageSizeFromCurrentToTarget={
+                                    this.changeImageSizeFromCurrentToTarget
+                                  }
                                 />
                                 <Builder
                                   index={index + 1}
@@ -1357,6 +1363,7 @@ class Editor extends React.Component<IProps, IState, any> {
       dragItem.contents.imageUrl = this.state.imageLibrary[
         dragItem.contents.libraryIndex
       ];
+      dragItem.contents.style = "alignLeft";
       console.log(this.state.targetIndex);
       if (this.state.targetIndex !== null) {
         this.handleDrop(dragItem, this.state.targetIndex);
@@ -1408,6 +1415,48 @@ class Editor extends React.Component<IProps, IState, any> {
     this.setState({ [stateName]: value } as any);
   };
 
+  public setInitialImageContents = (
+    naturalImageWidth: number,
+    naturalImageHeight: number,
+    style: "fullWidth" | "alignLeft",
+    index: number
+  ) => {
+    this.setState(
+      update(this.state, {
+        cards: {
+          [index]: {
+            contents: {
+              naturalImageWidth: { $set: naturalImageWidth },
+              naturalImageHeight: { $set: naturalImageHeight },
+              currentImageWidth: { $set: naturalImageWidth },
+              currentImageHeight: { $set: naturalImageHeight },
+              style: { $set: style }
+            }
+          }
+        }
+      })
+    );
+  };
+
+  public changeImageSizeFromCurrentToTarget = (
+    currentImageWidth: number,
+    currentImageHeight: number,
+    index: number
+  ) => {
+    this.setState(
+      update(this.state, {
+        cards: {
+          [index]: {
+            contents: {
+              currentImageWidth: { $set: currentImageWidth },
+              currentImageHeight: { $set: currentImageHeight }
+            }
+          }
+        }
+      })
+    );
+  };
+
   public handleOnChange = (
     value: any,
     index: number,
@@ -1416,10 +1465,16 @@ class Editor extends React.Component<IProps, IState, any> {
       | "description"
       | "imageUrl"
       | "videoUrl"
+      | "link"
       | "imageLibrary"
       | "style"
       | "libraryIndex"
+      | "naturalImageWidth"
+      | "naturalImageHeight"
+      | "currentImageWidth"
+      | "currentImageHeight"
   ) => {
+    console.log(value, index, type);
     if (type === "slateData") {
       this.setState(
         update(this.state, {
@@ -1427,6 +1482,55 @@ class Editor extends React.Component<IProps, IState, any> {
             [index]: {
               contents: {
                 slateData: { $set: value.value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "naturalImageWidth") {
+      console.log(value, index, type);
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                naturalImageWidth: { $set: value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "naturalImageHeight") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                naturalImageHeight: { $set: value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "currentImageWidth") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                currentImageWidth: { $set: value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "currentImageHeight") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                currentImageHeight: { $set: value }
               }
             }
           }
@@ -1463,6 +1567,18 @@ class Editor extends React.Component<IProps, IState, any> {
             [index]: {
               contents: {
                 videoUrl: { $set: value }
+              }
+            }
+          }
+        })
+      );
+    } else if (type === "link") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                link: { $set: value }
               }
             }
           }
