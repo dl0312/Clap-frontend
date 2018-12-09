@@ -1,15 +1,4 @@
 import * as React from "react";
-// import classnames from "classnames";
-import ItemTypes from "../../ItemTypes";
-import {
-  DropTarget,
-  ConnectDragSource,
-  ConnectDragPreview,
-  ConnectDropTarget,
-  DropTargetMonitor,
-  DropTargetConnector
-} from "react-dnd";
-
 import { Value } from "slate";
 // import EditorDefaults from "../../EditorDefaults";
 // import ContentBox from "../ContentBox";
@@ -68,9 +57,6 @@ import EditPrism from "slate-prism";
 import EditCode from "slate-edit-code";
 import TrailingBlock from "slate-trailing-block";
 import EditTable from "slate-edit-table";
-import { findDOMNode } from "react-dom";
-// import { RenderNodeProps, RenderMarkProps } from "slate-react";
-import styled from "styled-components";
 import ImageContent from "../ContentItems/ImageContent";
 import VideoContent from "../ContentItems/VideoContent";
 
@@ -121,45 +107,6 @@ const plugins = [
   copyPastePlugin()
 ];
 
-const cardTarget = {
-  hover(props: IProps, monitor: DropTargetMonitor, component: Container) {
-    const isJustOverThisOne = monitor.isOver({ shallow: true });
-    if (isJustOverThisOne) {
-      const dragIndex = monitor.getItem().index;
-      const hoverIndex = props.index;
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-      const hoverBoundingRect = (findDOMNode(
-        component
-      )! as Element).getBoundingClientRect() as DOMRect;
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-      const position =
-        clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-      props.setTargetIndex(props.index, position);
-    }
-  },
-
-  drop(props: IProps, monitor: DropTargetMonitor, component: Container) {
-    const type = monitor.getItemType();
-    const item = monitor.getItem();
-    if (type === ItemTypes.CARD) {
-      props.pushPresentBlockToTargetIndex(item.index);
-    } else if (type === ItemTypes.CONTENT) {
-      props.pushNewBlockToTargetIndex(item);
-    }
-  }
-};
-
-const InnerContainer = styled.div`
-  width: 100%;
-  max-width: 886px;
-  margin: 0 auto;
-  position: relative;
-`;
-
 interface IProps {
   // Action to Parent Component
   callbackfromparent: (
@@ -187,6 +134,7 @@ interface IProps {
   editorRef: any;
   setInitialImageContents: any;
   changeImageSizeFromCurrentToTarget: any;
+  device: "PHONE" | "TABLET" | "DESKTOP";
 }
 
 interface ITextContents {
@@ -223,24 +171,8 @@ interface IVideoContents {
   style: "fullWidth" | "alignLeft" | "alignCenter" | "alignRight";
 }
 
-interface IDnDSourceProps {
-  // React-dnd props
-  isDragging: boolean;
-  connectDragSource: ConnectDragSource;
-  connectDragPreview: ConnectDragPreview;
-}
-
-interface IDnDTargetProps {
-  // React-dnd props
-  connectDropTarget: ConnectDropTarget;
-  isOver: boolean;
-}
-
-class Container extends React.Component<
-  IProps & IDnDSourceProps & IDnDTargetProps,
-  any
-> {
-  constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
+class Container extends React.Component<IProps, any> {
+  constructor(props: IProps) {
     super(props);
   }
 
@@ -250,6 +182,7 @@ class Container extends React.Component<
         return (
           <ImageContent
             index={this.props.index}
+            device={this.props.device}
             selected={selected}
             hoveredIndex={this.props.hoveredIndex}
             selectedIndex={this.props.selectedIndex}
@@ -263,6 +196,11 @@ class Container extends React.Component<
             changeImageSizeFromCurrentToTarget={
               this.props.changeImageSizeFromCurrentToTarget
             }
+            pushPresentBlockToTargetIndex={
+              this.props.pushPresentBlockToTargetIndex
+            }
+            pushNewBlockToTargetIndex={this.props.pushNewBlockToTargetIndex}
+            setTargetIndex={this.props.setTargetIndex}
           />
         );
       case "Text":
@@ -280,11 +218,20 @@ class Container extends React.Component<
         return (
           <TextContent
             index={this.props.index}
+            device={this.props.device}
             contents={this.props.contents}
             plugins={plugins}
             selected={selected}
+            hoveredIndex={this.props.hoveredIndex}
+            selectedIndex={this.props.selectedIndex}
             handleOnChange={this.props.handleOnChange}
             callbackfromparent={this.props.callbackfromparent}
+            masterCallback={this.props.masterCallback}
+            pushPresentBlockToTargetIndex={
+              this.props.pushPresentBlockToTargetIndex
+            }
+            pushNewBlockToTargetIndex={this.props.pushNewBlockToTargetIndex}
+            setTargetIndex={this.props.setTargetIndex}
           />
         );
       case "Video":
@@ -297,45 +244,14 @@ class Container extends React.Component<
   };
 
   public render() {
-    const { isDragging, connectDropTarget } = this.props;
-    const opacity = isDragging ? 0.5 : 1;
     const { index, selectedIndex } = this.props;
     let active: boolean = false;
     active = selectedIndex === index;
-
-    return connectDropTarget(
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          position: "relative",
-          width: "100%",
-          justifyContent: "center",
-          opacity,
-          transition: "border 0.5s ease, opacity 0.5s ease",
-          borderRadius: "2px"
-        }}
-      >
-        <InnerContainer
-        // onMouseOver={this.handleOnMouseOver}
-        // onMouseDown={this.handleOnMouseDown}
-        // onMouseLeave={this.handleOnMouseLeave}
-        >
-          {this.showInner(active)}
-        </InnerContainer>
-      </div>
-    );
+    return <>{this.showInner(active)}</>;
   }
   // public handleClickOutside = () => {
   //   this.props.masterCallback("deselect");
   // };
 }
 
-export default DropTarget<IProps, IDnDTargetProps>(
-  [ItemTypes.CARD, ItemTypes.CONTENT],
-  cardTarget,
-  (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
-    connectDropTarget: connect.dropTarget(),
-    isOver: monitor.isOver()
-  })
-)(Container);
+export default Container;

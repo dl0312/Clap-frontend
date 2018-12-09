@@ -2,6 +2,8 @@ import * as React from "react";
 import styled from "styled-components";
 import { Editor, Plugin } from "slate-react";
 import EditorDefaults from "../../../EditorDefaults";
+import classnames from "classnames";
+
 // import { Row, Col } from "antd";
 
 import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
@@ -41,6 +43,20 @@ import { CATEGORY } from "src/sharedQueries";
 import { Popover } from "antd";
 import Delete from "src/Components/BlockIcons/Delete";
 import _ from "lodash";
+import {
+  DragSourceMonitor,
+  DropTargetMonitor,
+  ConnectDropTarget,
+  ConnectDragSource,
+  ConnectDragPreview,
+  DropTarget,
+  DragSource,
+  DropTargetConnector,
+  DragSourceConnector
+} from "react-dnd";
+import { findDOMNode } from "react-dom";
+import ItemTypes from "src/ItemTypes";
+import flow from "lodash/flow";
 // import HoverView from "src/Components/HoverView";
 
 // const selectors = [FontSize, LetterSpacing, LineHeight];
@@ -75,6 +91,91 @@ const icons = [
   Redo
 ];
 
+const cardTarget = {
+  hover(props: IProps, monitor: DropTargetMonitor, component: TextContent) {
+    const isJustOverThisOne = monitor.isOver({ shallow: true });
+    if (isJustOverThisOne) {
+      const dragIndex = monitor.getItem().index;
+      const hoverIndex = props.index;
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+      const hoverBoundingRect = (findDOMNode(
+        component
+      )! as Element).getBoundingClientRect() as DOMRect;
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      const clientOffset = monitor.getClientOffset();
+      const position =
+        clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
+      props.setTargetIndex(props.index, position);
+    }
+  },
+
+  drop(props: IProps, monitor: DropTargetMonitor, component: TextContent) {
+    const type = monitor.getItemType();
+    const item = monitor.getItem();
+    if (type === ItemTypes.CARD) {
+      props.pushPresentBlockToTargetIndex(item.index);
+    } else if (type === ItemTypes.CONTENT) {
+      props.pushNewBlockToTargetIndex(item);
+    }
+  }
+};
+
+const cardSource = {
+  beginDrag(props: IProps, monitor: DragSourceMonitor, component: TextContent) {
+    const node = findDOMNode(component) as Element;
+    const rect = node ? (node.getBoundingClientRect() as DOMRect) : null;
+
+    props.masterCallback("isDragging", true);
+    props.masterCallback("unselect");
+    return {
+      index: props.index,
+      Comp: component,
+      width: rect && rect.width,
+      height: rect && rect.height
+    };
+  },
+  endDrag(props: IProps, monitor: DragSourceMonitor, component?: TextContent) {
+    props.masterCallback("isDragging", false);
+    props.masterCallback("unselect");
+    return { index: props.index, Comp: component };
+  }
+};
+
+const DragSourceArea = styled.div`
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.08);
+  transition-property: opacity, background;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+  -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  bottom: -10px;
+  left: -10px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+`;
+
+interface IToolbarProps {
+  toolbarState: "follow" | "sticky" | "blind";
+}
+
+const Toolbar = styled<IToolbarProps, any>("div")`
+  visibility: ${props => (props.toolbarState === "blind" ? "hidden" : null)};
+  top: ${props => (props.toolbarState === "sticky" ? "130px" : "130px")};
+  position: ${props => (props.toolbarState === "sticky" ? "fixed" : "static")};
+  max-width: ${props => (props.toolbarState === "sticky" ? null : "886px")};
+  width: 100%;
+  margin: 0 auto;
+  z-index: 1000;
+`;
+
 interface IClapImageProps {
   small: boolean;
   selected: boolean;
@@ -104,10 +205,9 @@ const TextEditorButtonContainer = styled.div`
   background-color: #fff;
   position: absolute;
   z-index: 100;
-  top: -38px;
-  left: -1.5px;
+  top: -43px;
+  left: -10px;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `;
 
 interface ITextEditorButtonProps {
@@ -115,9 +215,6 @@ interface ITextEditorButtonProps {
 }
 
 const TextEditorButton = styled<ITextEditorButtonProps, any>("div")`
-  &:hover {
-    background-color: #ebebeb;
-  }
   border-right: ${props =>
     props.index === 1 ||
     props.index === 7 ||
@@ -127,17 +224,59 @@ const TextEditorButton = styled<ITextEditorButtonProps, any>("div")`
       : null};
 `;
 
-interface ITextContainerProps {
+interface ITextContentFrameProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
+  isFirstBlock: boolean;
+}
+
+const TextContentFrame = styled<ITextContentFrameProps, any>("div")`
+  margin-top: ${props =>
+    props.isFirstBlock ? "0px" : props.device === "PHONE" ? "35px" : "40px"};
+`;
+
+interface ITextContentContainerProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
+}
+
+const TextContentContainer = styled<ITextContentContainerProps, any>("div")`
+  position: relative;
+  max-width: ${props => (props.device === "DESKTOP" ? "886px" : "640px")};
+  width: ${props => (props.device === "PHONE" ? "auto" : "100%")};
+  margin: 0 auto;
+  padding-left: ${props => (props.device === "PHONE" ? "20px" : null)};
+  padding-right: ${props => (props.device === "PHONE" ? "20px" : null)};
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+`;
+
+interface ITextContentWrapperProps {
   textColor: { r: string; g: string; b: string; a: string };
   textAlign: "left" | "center" | "right";
 }
 
-const TextContainer = styled<ITextContainerProps, any>("div")`
+const TextContentWrapper = styled<ITextContentWrapperProps, any>("div")`
+  position: static;
+  display: block;
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+
   text-align: ${props => props.textAlign};
   width: 100%;
   cursor: auto;
   line-height: 1.9;
 `;
+
+// interface ITextContainerProps {
+//   textColor: { r: string; g: string; b: string; a: string };
+//   textAlign: "left" | "center" | "right";
+// }
+
+// const TextContainer = styled<ITextContainerProps, any>("div")`
+//   text-align: ${props => props.textAlign};
+//   width: 100%;
+//   cursor: auto;
+//   line-height: 1.9;
+// `;
 
 class GetCategoryById extends Query<
   getCategoryById,
@@ -150,32 +289,154 @@ interface ITextContents {
 
 interface IProps {
   index: number;
+  device: "PHONE" | "TABLET" | "DESKTOP";
   contents: ITextContents;
   plugins: Plugin[];
-  handleOnChange?: any;
   selected?: boolean;
+  hoveredIndex: number | null;
+  selectedIndex: number | null;
   callbackfromparent: any;
+  masterCallback: any;
+  pushPresentBlockToTargetIndex: any;
+  pushNewBlockToTargetIndex: any;
+  setTargetIndex: any;
+  handleOnChange?: any;
+}
+interface IState {
+  toolbarState: "follow" | "sticky" | "blind";
+  isWriteMode: boolean;
 }
 
-class TextContent extends React.Component<IProps, any> {
+interface IDnDTargetProps {
+  // React-dnd props
+  connectDropTarget: ConnectDropTarget;
+  isOver: boolean;
+}
+
+interface IDnDSourceProps {
+  // React-dnd props
+  isDragging: boolean;
+  connectDragSource: ConnectDragSource;
+  connectDragPreview: ConnectDragPreview;
+}
+
+class TextContent extends React.Component<
+  IProps & IDnDTargetProps & IDnDSourceProps,
+  IState
+> {
+  dragSource: any;
+  wrapperRef: any;
+  constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
+    super(props);
+    this.dragSource = React.createRef();
+
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+    this.state = {
+      toolbarState: "follow",
+      isWriteMode: false
+    };
+  }
+
+  componentDidMount() {
+    document.addEventListener("mousedown", this.handleClickOutside);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", this.handleClickOutside);
+  }
+
+  setWrapperRef(node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: any) {
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      console.log(
+        this.props.selectedIndex === this.props.index,
+        this.state.isWriteMode
+      );
+      if (this.props.selectedIndex === this.props.index) {
+        this.props.masterCallback("unselect");
+      }
+      if (this.state.isWriteMode) {
+        this.setState({ isWriteMode: false });
+      }
+    }
+  }
+
   onChange = (change: any) => {
     this.props.handleOnChange(change, this.props.index, "slateData");
   };
 
+  /* In case, Mouse Over Container */
+  public handleOnMouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    this.props.callbackfromparent("mouseover", this.props.index);
+  };
+
+  /* In case, Mouse Don Container */
+  public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    this.setState({ isWriteMode: false });
+    this.props.callbackfromparent("select", this.props.index);
+  };
+
+  /* In case, Mouse Leave Container */
+  public handleOnMouseLeave = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    this.props.callbackfromparent("mouseleave", this.props.index);
+  };
+
   public render() {
     const {
+      device,
       contents: { slateData },
+      index,
+      hoveredIndex,
+      selectedIndex,
       plugins,
-      handleOnChange,
-      selected,
-      index
+      // handleOnChange,
+      connectDragSource,
+      isDragging
     } = this.props;
+    const { toolbarState, isWriteMode } = this.state;
+    const hover: boolean = hoveredIndex === index;
+    const active: boolean = selectedIndex === index;
+    const textContentState = isWriteMode
+      ? "WRITE"
+      : active
+      ? "ACTIVE"
+      : hover
+      ? "HOVER"
+      : null;
     return (
-      <TextContainer textAlign={"left"} className="markdown-body">
-        {handleOnChange !== undefined ? (
-          <React.Fragment>
-            {selected && (
-              <div className="toolbar">
+      <TextContentFrame isFirstBlock={index === 0} device={device}>
+        <TextContentContainer device={device}>
+          <TextContentWrapper
+            innerRef={(instance: any) => this.setWrapperRef(instance)}
+            textAlign={"left"}
+            className="markdown-body"
+          >
+            <DragSourceArea
+              className={classnames(
+                "container",
+                textContentState === "HOVER" && !isDragging
+                  ? "blockHover"
+                  : null,
+                textContentState === "ACTIVE" && !isDragging
+                  ? "blockActive"
+                  : null
+              )}
+              innerRef={(instance: any) => {
+                connectDragSource(instance);
+              }}
+              onMouseOver={this.handleOnMouseOver}
+              onMouseDown={this.handleOnMouseDown}
+              onMouseLeave={this.handleOnMouseLeave}
+            />
+            {textContentState === "WRITE" && (
+              <Toolbar toolbarState={toolbarState} className="toolbar">
                 <TextEditorButtonContainer>
                   {icons.map((Type, i) => {
                     return (
@@ -198,13 +459,17 @@ class TextContent extends React.Component<IProps, any> {
                     );
                   })}
                 </TextEditorButtonContainer>
-              </div>
+              </Toolbar>
             )}
             <Editor
               style={{
                 wordBreak: "break-word",
                 fontSize: "16px",
                 color: EditorDefaults.MAIN_TEXT_COLOR
+              }}
+              onClick={(e: any) => {
+                e.preventDefault();
+                this.setState({ isWriteMode: true });
               }}
               value={slateData}
               readOnly={false}
@@ -216,23 +481,47 @@ class TextContent extends React.Component<IProps, any> {
               spellCheck={false}
               plugins={plugins}
             />
-          </React.Fragment>
-        ) : (
-          <Editor
-            style={{
-              wordBreak: "break-word",
-              fontSize: "16px",
-              color: EditorDefaults.MAIN_TEXT_COLOR
-            }}
-            value={slateData}
-            readOnly={true}
-            renderNode={this.renderNode}
-            autoCorrect={false}
-            spellCheck={false}
-            plugins={plugins}
-          />
-        )}
-      </TextContainer>
+            {/* {textContentState === "WRITE" ? (
+              <Editor
+                style={{
+                  wordBreak: "break-word",
+                  fontSize: "16px",
+                  color: EditorDefaults.MAIN_TEXT_COLOR
+                }}
+                value={slateData}
+                readOnly={false}
+                onChange={this.onChange}
+                placeholder={"Text"}
+                renderNode={this.renderNode}
+                autoCorrect={false}
+                autoFocus={true}
+                spellCheck={false}
+                plugins={plugins}
+              />
+            ) : (
+              <Editor
+                style={{
+                  wordBreak: "break-word",
+                  fontSize: "16px",
+                  color: EditorDefaults.MAIN_TEXT_COLOR,
+                  cursor: "text"
+                }}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  this.setState({ isWriteMode: true });
+                }}
+                value={slateData}
+                readOnly={false}
+                onChange={this.onChange}
+                renderNode={this.renderNode}
+                autoCorrect={false}
+                spellCheck={false}
+                plugins={plugins}
+              />
+            )} */}
+          </TextContentWrapper>
+        </TextContentContainer>
+      </TextContentFrame>
     );
   }
   public renderNode = (props: any): JSX.Element | undefined => {
@@ -500,4 +789,23 @@ class TextContent extends React.Component<IProps, any> {
   };
 }
 
-export default TextContent;
+export default flow(
+  DropTarget<IProps, IDnDTargetProps>(
+    [ItemTypes.CARD, ItemTypes.CONTENT],
+    cardTarget,
+    (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
+      connectDropTarget: connect.dropTarget(),
+      isOver: monitor.isOver()
+    })
+  ),
+  DragSource<IProps, IDnDSourceProps>(
+    ItemTypes.CARD,
+    cardSource,
+    (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
+      item: monitor.getItem(),
+      isDragging: monitor.isDragging(),
+      connectDragSource: connect.dragSource(),
+      connectDragPreview: connect.dragPreview()
+    })
+  )
+)(TextContent);

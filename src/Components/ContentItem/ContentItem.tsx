@@ -26,7 +26,6 @@ const Item = styled<IItemProps, any>("li")`
   align-items: center;
   transition: 0.2s ease;
   opacity: ${props => props.opacity};
-  background-color: white;
   &:hover {
     color: #00bcd4;
   }

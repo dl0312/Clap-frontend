@@ -16,11 +16,16 @@ import {
   ConnectDragPreview,
   DragSourceMonitor,
   DragSource,
-  DragSourceConnector
+  DragSourceConnector,
+  DropTarget,
+  ConnectDropTarget,
+  DropTargetMonitor,
+  DropTargetConnector
 } from "react-dnd";
 import ItemTypes from "src/ItemTypes";
 import classnames from "classnames";
 import { getEmptyImage } from "react-dnd-html5-backend";
+import flow from "lodash/flow";
 
 const icons = [
   ImageChange,
@@ -33,6 +38,38 @@ const icons = [
   Duplicate,
   Delete
 ];
+
+const cardTarget = {
+  hover(props: IProps, monitor: DropTargetMonitor, component: ImageContent) {
+    const isJustOverThisOne = monitor.isOver({ shallow: true });
+    if (isJustOverThisOne) {
+      const dragIndex = monitor.getItem().index;
+      const hoverIndex = props.index;
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+      const hoverBoundingRect = (findDOMNode(
+        component
+      )! as Element).getBoundingClientRect() as DOMRect;
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      const clientOffset = monitor.getClientOffset();
+      const position =
+        clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
+      props.setTargetIndex(props.index, position);
+    }
+  },
+
+  drop(props: IProps, monitor: DropTargetMonitor, component: ImageContent) {
+    const type = monitor.getItemType();
+    const item = monitor.getItem();
+    if (type === ItemTypes.CARD) {
+      props.pushPresentBlockToTargetIndex(item.index);
+    } else if (type === ItemTypes.CONTENT) {
+      props.pushNewBlockToTargetIndex(item);
+    }
+  }
+};
 
 const cardSource = {
   beginDrag(
@@ -58,6 +95,38 @@ const cardSource = {
     return { index: props.index, Comp: component };
   }
 };
+
+interface IImageContentFrameProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
+  isFirstBlock: boolean;
+}
+
+const ImageContentFrame = styled<IImageContentFrameProps, any>("div")`
+  margin-top: ${props =>
+    props.isFirstBlock ? "0px" : props.device === "PHONE" ? "35px" : "40px"};
+`;
+
+interface IImageContentContainerProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
+}
+
+const ImageContentContainer = styled<IImageContentContainerProps, any>("div")`
+  position: relative;
+  max-width: ${props => (props.device === "DESKTOP" ? "886px" : "640px")};
+  width: ${props => (props.device === "PHONE" ? "auto" : "100%")};
+  margin: 0 auto;
+  padding-left: ${props => (props.device === "PHONE" ? "20px" : null)};
+  padding-right: ${props => (props.device === "PHONE" ? "20px" : null)};
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+`;
+
+const ImageContentWrapper = styled.div`
+  position: static;
+  display: block;
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+`;
 
 interface IToolbarProps {
   toolbarState: "follow" | "sticky" | "blind";
@@ -174,7 +243,7 @@ const Description = styled(TextareaAutosize)`
 `;
 
 const DragSourceArea = styled.div`
-  opacity: 1;
+  z-index: 2;
   background-color: rgba(0, 0, 0, 0.08);
   -webkit-transition-property: opacity, background;
   transition-property: opacity, background;
@@ -195,6 +264,7 @@ const DragSourceArea = styled.div`
 
 interface IProps {
   index: number;
+  device: "PHONE" | "TABLET" | "DESKTOP";
   contents: IImageContents;
   handleOnChange?: any;
   selected?: boolean;
@@ -206,10 +276,19 @@ interface IProps {
   masterCallback: any;
   setInitialImageContents: any;
   changeImageSizeFromCurrentToTarget: any;
+  pushPresentBlockToTargetIndex: any;
+  pushNewBlockToTargetIndex: any;
+  setTargetIndex: any;
 }
 
 interface IState {
   toolbarState: "follow" | "sticky" | "blind";
+}
+
+interface IDnDTargetProps {
+  // React-dnd props
+  connectDropTarget: ConnectDropTarget;
+  isOver: boolean;
 }
 
 interface IDnDSourceProps {
@@ -241,10 +320,13 @@ interface IImageContents {
   currentImageHeight: number;
 }
 
-class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
+class ImageContent extends React.Component<
+  IProps & IDnDSourceProps & IDnDTargetProps,
+  IState
+> {
   imgEl: any;
   dragSource: any;
-  constructor(props: IProps & IDnDSourceProps) {
+  constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
     super(props);
     this.imgEl = React.createRef();
     this.dragSource = React.createRef();
@@ -317,18 +399,20 @@ class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
 
   public render() {
     const {
+      device,
       contents,
       selected,
+      index,
       hoveredIndex,
       selectedIndex,
-      index,
       handleOnChange,
       callbackfromparent,
       handleOnClickImageChange,
       connectDragSource,
       isDragging,
       setInitialImageContents,
-      changeImageSizeFromCurrentToTarget
+      changeImageSizeFromCurrentToTarget,
+      connectDropTarget
     } = this.props;
 
     const { toolbarState } = this.state;
@@ -343,103 +427,121 @@ class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
     const hover: boolean = hoveredIndex === index;
     const active: boolean = selectedIndex === index;
     return (
-      <>
-        <DragSourceArea
-          className={classnames(
-            "container",
-            hover && !isDragging ? "blockHover" : null,
-            active && !isDragging ? "blockActive" : null
-          )}
-          innerRef={(instance: any) => connectDragSource(instance)}
-          onMouseOver={this.handleOnMouseOver}
-          onMouseDown={this.handleOnMouseDown}
-          onMouseLeave={this.handleOnMouseLeave}
-        />
-        {selected && (
-          <Toolbar toolbarState={toolbarState} className="toolbar">
-            <ImageButtonContainer>
-              {icons.map((Type, i) => {
-                return (
-                  <ImageButton key={i} index={i}>
-                    <Type
-                      callbackfromparent={callbackfromparent}
-                      handleOnClickImageChange={handleOnClickImageChange}
-                      handleOnChange={handleOnChange}
-                      index={index}
-                      key={i}
-                      contents={contents}
-                      changeImageSizeFromCurrentToTarget={
-                        changeImageSizeFromCurrentToTarget
-                      }
-                    />
-                  </ImageButton>
-                );
-              })}
-            </ImageButtonContainer>
-          </Toolbar>
-        )}
-        <ImageContainer
-          className="content"
-          imageStyle={style}
-          currentImageWidth={currentImageWidth}
-          currentImageHeight={currentImageHeight}
-        >
-          <img
-            width={currentImageWidth}
-            height={currentImageHeight}
-            style={{
-              maxWidth: style === "fullWidth" ? "inherit" : "100%",
-              position: "relative",
-              verticalAlign: "top",
-              height: "100%",
-              width: style === "fullWidth" ? "100%" : "100%"
-            }}
-            src={imageUrl}
-            alt="logo"
-            ref={(e: any) => (this.imgEl = e)}
-            onLoad={() => {
-              if (this.imgEl.naturalWidth > 886) {
-                setInitialImageContents(
-                  this.imgEl.naturalWidth,
-                  this.imgEl.naturalHeight,
-                  "fullWidth",
-                  index
-                );
-              } else {
-                setInitialImageContents(
-                  this.imgEl.naturalWidth,
-                  this.imgEl.naturalHeight,
-                  "alignLeft",
-                  index
-                );
-              }
-            }}
-          />
-
-          {!description && !selected ? null : (
-            <DescriptionContainer imageStyle={style}>
-              <Description
-                value={description}
-                onChange={(e: any) =>
-                  handleOnChange(e.target.value, index, "description")
-                }
-                placeholder="Image Description"
+      <ImageContentFrame
+        isFirstBlock={index === 0}
+        device={device}
+        innerRef={(instance: any) => connectDropTarget(instance)}
+      >
+        <ImageContentContainer device={device}>
+          <ImageContentWrapper>
+            <DragSourceArea
+              className={classnames(
+                "container",
+                hover && !isDragging ? "blockHover" : null,
+                active && !isDragging ? "blockActive" : null
+              )}
+              innerRef={(instance: any) => connectDragSource(instance)}
+              onMouseOver={this.handleOnMouseOver}
+              onMouseDown={this.handleOnMouseDown}
+              onMouseLeave={this.handleOnMouseLeave}
+            />
+            {selected && (
+              <Toolbar toolbarState={toolbarState} className="toolbar">
+                <ImageButtonContainer>
+                  {icons.map((Type, i) => {
+                    return (
+                      <ImageButton key={i} index={i}>
+                        <Type
+                          callbackfromparent={callbackfromparent}
+                          handleOnClickImageChange={handleOnClickImageChange}
+                          handleOnChange={handleOnChange}
+                          index={index}
+                          key={i}
+                          contents={contents}
+                          changeImageSizeFromCurrentToTarget={
+                            changeImageSizeFromCurrentToTarget
+                          }
+                        />
+                      </ImageButton>
+                    );
+                  })}
+                </ImageButtonContainer>
+              </Toolbar>
+            )}
+            <ImageContainer
+              className="content"
+              imageStyle={style}
+              currentImageWidth={currentImageWidth}
+              currentImageHeight={currentImageHeight}
+            >
+              <img
+                width={currentImageWidth}
+                height={currentImageHeight}
+                style={{
+                  maxWidth: style === "fullWidth" ? "inherit" : "100%",
+                  position: "relative",
+                  verticalAlign: "top",
+                  height: "100%",
+                  width: style === "fullWidth" ? "100%" : "100%"
+                }}
+                src={imageUrl}
+                alt="logo"
+                ref={(e: any) => (this.imgEl = e)}
+                onLoad={() => {
+                  if (this.imgEl.naturalWidth > 886) {
+                    setInitialImageContents(
+                      this.imgEl.naturalWidth,
+                      this.imgEl.naturalHeight,
+                      "fullWidth",
+                      index
+                    );
+                  } else {
+                    setInitialImageContents(
+                      this.imgEl.naturalWidth,
+                      this.imgEl.naturalHeight,
+                      "alignLeft",
+                      index
+                    );
+                  }
+                }}
               />
-            </DescriptionContainer>
-          )}
-        </ImageContainer>
-      </>
+
+              {!description && !selected ? null : (
+                <DescriptionContainer imageStyle={style}>
+                  <Description
+                    value={description}
+                    onChange={(e: any) =>
+                      handleOnChange(e.target.value, index, "description")
+                    }
+                    placeholder="Image Description"
+                  />
+                </DescriptionContainer>
+              )}
+            </ImageContainer>
+          </ImageContentWrapper>
+        </ImageContentContainer>
+      </ImageContentFrame>
     );
   }
 }
 
-export default DragSource<IProps, IDnDSourceProps>(
-  ItemTypes.CARD,
-  cardSource,
-  (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
-    item: monitor.getItem(),
-    isDragging: monitor.isDragging(),
-    connectDragSource: connect.dragSource(),
-    connectDragPreview: connect.dragPreview()
-  })
+export default flow(
+  DropTarget<IProps, IDnDTargetProps>(
+    [ItemTypes.CARD, ItemTypes.CONTENT],
+    cardTarget,
+    (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
+      connectDropTarget: connect.dropTarget(),
+      isOver: monitor.isOver()
+    })
+  ),
+  DragSource<IProps, IDnDSourceProps>(
+    ItemTypes.CARD,
+    cardSource,
+    (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
+      item: monitor.getItem(),
+      isDragging: monitor.isDragging(),
+      connectDragSource: connect.dragSource(),
+      connectDragPreview: connect.dragPreview()
+    })
+  )
 )(ImageContent);

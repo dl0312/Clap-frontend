@@ -1,6 +1,6 @@
 import * as React from "react";
-import EditorLeft from "../EditorLeft";
-import EditorRight from "../EditorRight";
+import EditorContent from "../EditorContent";
+import EditorSideBar from "../EditorSideBar";
 import { DragDropContext } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 import styled from "styled-components";
@@ -102,19 +102,19 @@ const Device = styled<IDeviceProps, any>("svg")`
 
 const EditorButtonContainer = styled.div``;
 
-const EditorUtilButtonContainer = styled.div`
-  justify-self: auto;
-  position: absolute;
-  top: 49px;
-  left: 50%;
-  height: 34px;
-  width: 200px;
-  margin-left: -136px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
+// const EditorUtilButtonContainer = styled.div`
+//   justify-self: auto;
+//   position: absolute;
+//   top: 49px;
+//   left: 50%;
+//   height: 34px;
+//   width: 200px;
+//   margin-left: -136px;
+//   text-align: center;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// `;
 
 const EditorNavTwo = styled.div`
   height: 43px;
@@ -133,6 +133,7 @@ const EditorContentContainer = styled.div`
   bottom: 0px;
   right: 0px;
   left: 0px;
+  z-index: 80;
 `;
 
 // const EditorLeftOuterContainer = styled.div`
@@ -157,25 +158,22 @@ const EditorContentContainer = styled.div`
 //   }
 // `;
 
-interface IEditorLeftContainerProps {
+const TitleFrame = styled.div`
+  position: relative;
+`;
+
+interface ITitleWrapperProps {
   device: "PHONE" | "TABLET" | "DESKTOP";
 }
 
-const EditorLeftContainer = styled<IEditorLeftContainerProps, any>("div")`
+const TitleWrapper = styled<ITitleWrapperProps, any>("div")`
+  margin-left: ${props => (props.device === "PHONE" ? "0" : null)};
+  margin-right: ${props => (props.device === "PHONE" ? "0" : null)};
+  margin-bottom: ${props => (props.device === "PHONE" ? "25px" : null)};
+  margin-top: 0;
   position: relative;
-  width: ${props =>
-    props.device === "PHONE"
-      ? "425px"
-      : props.device === "TABLET"
-      ? "767px"
-      : props.device === "DESKTOP"
-      ? "100%"
-      : "100%"};
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: flex-start;
-  transition: width 0.2s ease;
+  margin-bottom: 40px;
+  padding: 0;
 `;
 
 interface ITitleContainer {
@@ -186,13 +184,14 @@ interface ITitleContainer {
 }
 
 const TitleContainer = styled<ITitleContainer, any>("div")`
-  width: 100%;
-  max-width: 886px;
-  padding-top: 116px;
-  padding-bottom: ${props => (props.device === "PHONE" ? "40px" : "70px")};
-  margin-bottom: 30px;
-  display: flex;
-  justify-content: center;
+  width: auto;
+  max-width: ${props => (props.device === "PHONE" ? "640px" : "886px")};
+  padding-top: 83px;
+  padding-bottom: ${props => (props.device === "PHONE" ? "25px" : "31px")};
+  cursor: auto;
+  padding-right: 0;
+  padding-left: 0;
+  margin: 0 auto;
   position: relative;
   background-image: ${props =>
     props.titleImg &&
@@ -203,7 +202,6 @@ const TitleContainer = styled<ITitleContainer, any>("div")`
  url(${props.titleImg});`};
   background-position: ${props => `50% ${props.titleImgPos}%`};
   background-size: 100% auto;
-
   color: ${props => (props.titleImg ? "white" : null)};
 `;
 
@@ -222,8 +220,6 @@ const TitleInput = styled<ITitleInputProps, any>(Textarea)`
   overflow: hidden;
   font-size: ${props => (props.device === "PHONE" ? "26px" : "32px")};
   line-height: ${props => (props.device === "PHONE" ? "36px" : "42px")};
-  margin: 0 10px;
-  margin-right: 60px;
   font-weight: 400;
   background-color: transparent;
   border: none;
@@ -236,37 +232,13 @@ const TitleInput = styled<ITitleInputProps, any>(Textarea)`
   }
 `;
 
-const EditorRightContainer = styled.div`
-  background-color: white;
-  transition: width 1s ease;
-  overflow-y: hidden;
-  overflow-x: hidden;
-  height: 100%;
-  width: 245px !important;
-  border-right: 1px solid rgba(0, 0, 0, 0.2);
-  ::-webkit-scrollbar {
-    width: 6px;
-    background-color: #e5e5e5;
-  }
-  ::-webkit-scrollbar-thumb {
-    background-color: #000000;
-  }
-`;
-
-interface IViewIconProps {
-  isSelected: boolean;
+interface IEditorCanvasProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
 }
 
-const ViewIcon = styled<IViewIconProps, any>("i")`
-  font-size: 18px;
-  width: 25px;
-  transition: opacity 0.5s ease;
-  opacity: ${props => (props.isSelected ? "1" : "0.2")};
-  color: black;
-  margin: 0 13px;
-  &:hover {
-    opacity: ${props => (props.isSelected ? null : "0.5")};
-  }
+const EditorCanvas = styled<IEditorCanvasProps, any>("div")`
+  min-height: ${props => (props.device === "PHONE" ? "551px" : "662px")};
+  padding-bottom: 80px;
 `;
 
 interface ITagContainerProps {
@@ -367,6 +339,7 @@ interface IState {
 class Editor extends React.Component<IProps, IState, any> {
   inputElement: any;
   editorRef: any;
+  titleImageButton: any;
   handler: any;
   constructor(props: IProps) {
     super(props);
@@ -739,7 +712,6 @@ class Editor extends React.Component<IProps, IState, any> {
     const {
       cards,
       // selectedIndex,
-      view,
       device,
       pos,
       titleImg,
@@ -824,7 +796,7 @@ class Editor extends React.Component<IProps, IState, any> {
           </EditorNavOne>
           <EditorNavTwo>
             <div />
-            <EditorUtilButtonContainer>
+            {/* <EditorUtilButtonContainer>
               <ViewIcon
                 onClick={() => this.setState({ view: "EDIT" })}
                 isSelected={view === "EDIT"}
@@ -840,7 +812,7 @@ class Editor extends React.Component<IProps, IState, any> {
                 isSelected={view === "JSON"}
                 className="fas fa-file-alt"
               />
-            </EditorUtilButtonContainer>
+            </EditorUtilButtonContainer> */}
             <Template
               onTemplateClick={this.onTemplateClick}
               handleSetState={this.handleSetState}
@@ -848,46 +820,19 @@ class Editor extends React.Component<IProps, IState, any> {
           </EditorNavTwo>
           <EditorContentContainer>
             <CustomDragLayer />
-            <EditorRightContainer>
-              <EditorRight
-                masterCallback={
-                  this.masterCallback // func
-                }
-                rightMenu={
-                  this.state.rightMenu // values
-                }
-                cards={this.state.cards}
-                view={this.state.view}
-                title={this.state.title}
-                onClickPushNewBlock={this.onClickPushNewBlock}
-                imageLibrary={this.state.imageLibrary}
-              />
-              {/* {!this.state.selectedContent ? (
-                <EditorRight
-                  masterCallback={
-                    this.masterCallback // func
-                  }
-                  rightMenu={
-                    this.state.rightMenu // values
-                  }
-                  cards={this.state.cards}
-                  view={this.state.view}
-                  title={this.state.title}
-                  onClickPushNewBlock={this.onClickPushNewBlock}
-                  imageLibrary={this.state.imageLibrary}
-                />
-              ) : (
-                <BlockOptions
-                  type={this.props.type}
-                  handleOnChange={this.handleOnChange}
-                  selectedIndex={selectedIndex}
-                  selectedContent={this.showSelected(selectedIndex)}
-                  OnChangeCards={this.OnChangeCards}
-                  onBlockOptionDownClick={this.onBlockOptionDownClick}
-                  buttonCallback={this.buttonCallback}
-                />
-              )} */}
-            </EditorRightContainer>
+            <EditorSideBar
+              masterCallback={
+                this.masterCallback // func
+              }
+              rightMenu={
+                this.state.rightMenu // values
+              }
+              cards={this.state.cards}
+              view={this.state.view}
+              title={this.state.title}
+              onClickPushNewBlock={this.onClickPushNewBlock}
+              imageLibrary={this.state.imageLibrary}
+            />
             <div
               style={{
                 position: "absolute",
@@ -901,14 +846,20 @@ class Editor extends React.Component<IProps, IState, any> {
                 display: "flex",
                 justifyContent: "center",
                 backgroundColor: "#f7f7f7",
-                overflowY: "auto"
+                overflowY: "auto",
+                minHeight: "100%",
+                transformOrigin: "right, top",
+                transform: "translate3d(0, 0, 0)",
+                transitionProperty: "left, right",
+                transitionDuration: "0.4s",
+                transitionTimingFunction: "cubic-bezier(0.19, 1, 0.22, 1)"
               }}
               ref={this.editorRef}
             >
-              <EditorLeftContainer view={view} device={device}>
-                {view === "EDIT" ? (
-                  <React.Fragment>
-                    <EditorLeft view="EDIT" device={device}>
+              <EditorContent device={device}>
+                <EditorCanvas device={device}>
+                  <TitleFrame>
+                    <TitleWrapper device={device}>
                       <TitleContainer
                         titleImg={titleImg}
                         titleImgUploading={titleImgUploading}
@@ -935,8 +886,10 @@ class Editor extends React.Component<IProps, IState, any> {
                             }}
                           >
                             <Button style={{ padding: "0 8px" }}>
-                              <ImageButton onChange={this.onInputImageChange} />
-                              <span style={{ marginLeft: 5 }}>Title Image</span>
+                              <ImageButton
+                                withText={true}
+                                onChange={this.onInputImageChange}
+                              />
                             </Button>
                           </ButtonGroup>
                         ) : (
@@ -950,6 +903,7 @@ class Editor extends React.Component<IProps, IState, any> {
                             >
                               <Button style={{ padding: "0 8px" }}>
                                 <ImageButton
+                                  withText={false}
                                   onChange={this.onInputImageChange}
                                 />
                               </Button>
@@ -1013,187 +967,181 @@ class Editor extends React.Component<IProps, IState, any> {
                           </>
                         )}
                       </TitleContainer>
-                      {cards.length !== 0 ? (
-                        <React.Fragment>
-                          <Builder
-                            index={0}
-                            state={
-                              isDragging
-                                ? 0 === targetIndex
-                                  ? "ISOVER"
-                                  : "ONDRAG"
-                                : "NOTHING"
+                    </TitleWrapper>
+                  </TitleFrame>
+
+                  {cards.length !== 0 ? (
+                    <React.Fragment>
+                      <Builder
+                        index={0}
+                        state={
+                          isDragging
+                            ? 0 === targetIndex
+                              ? "ISOVER"
+                              : "ONDRAG"
+                            : "NOTHING"
+                        }
+                        handleDrop={this.handleDrop}
+                      />
+                      {cards.map((item, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <Container
+                              callbackfromparent={this.buttonCallback}
+                              masterCallback={this.masterCallback}
+                              moveCard={this.moveCard}
+                              handleDrop={this.handleDrop}
+                              handleOnChange={this.handleOnChange}
+                              index={index}
+                              type={item.type}
+                              contents={item.contents}
+                              setTargetIndex={this.setTargetIndex}
+                              pushPresentBlockToTargetIndex={
+                                this.pushPresentBlockToTargetIndex
+                              }
+                              pushNewBlockToTargetIndex={
+                                this.pushNewBlockToTargetIndex
+                              }
+                              hoveredIndex={this.state.hoveredIndex}
+                              selectedIndex={this.state.selectedIndex}
+                              handleOnClickImageChange={
+                                this.handleOnClickImageChange
+                              }
+                              editorRef={this.editorRef}
+                              setInitialImageContents={
+                                this.setInitialImageContents
+                              }
+                              changeImageSizeFromCurrentToTarget={
+                                this.changeImageSizeFromCurrentToTarget
+                              }
+                              device={device}
+                            />
+                            <Builder
+                              index={index + 1}
+                              state={
+                                isDragging
+                                  ? index + 1 === targetIndex
+                                    ? "ISOVER"
+                                    : "ONDRAG"
+                                  : "NOTHING"
+                              }
+                              handleDrop={this.handleDrop}
+                            />
+                          </React.Fragment>
+                        );
+                      })}
+                    </React.Fragment>
+                  ) : null}
+                </EditorCanvas>
+                <TagContainer>
+                  <InnerTagContainer>
+                    <Icon
+                      style={{ fontSize: 16, marginRight: 5 }}
+                      type="tags"
+                    />
+                    <TagLabel>Tag</TagLabel>
+                    <TagArea>
+                      <TagInputHolder>
+                        <GetCategoriesByGameIdQuery
+                          query={GET_CATEGORIES_BY_GAME_ID}
+                          variables={{ gameId }}
+                        >
+                          {({ loading, error, data }) => {
+                            if (loading) {
+                              return (
+                                <Select
+                                  mode="tags"
+                                  style={{ width: "100%" }}
+                                  placeholder="Tags Mode"
+                                  onChange={(value: any) =>
+                                    console.log(`selected ${value}`)
+                                  }
+                                />
+                              );
                             }
-                            handleDrop={this.handleDrop}
-                          />
-                          {cards.map((item, index) => {
-                            return (
-                              <React.Fragment key={index}>
-                                <Container
-                                  callbackfromparent={this.buttonCallback}
-                                  masterCallback={this.masterCallback}
-                                  moveCard={this.moveCard}
-                                  handleDrop={this.handleDrop}
-                                  handleOnChange={this.handleOnChange}
-                                  index={index}
-                                  type={item.type}
-                                  contents={item.contents}
-                                  setTargetIndex={this.setTargetIndex}
-                                  pushPresentBlockToTargetIndex={
-                                    this.pushPresentBlockToTargetIndex
-                                  }
-                                  pushNewBlockToTargetIndex={
-                                    this.pushNewBlockToTargetIndex
-                                  }
-                                  hoveredIndex={this.state.hoveredIndex}
-                                  selectedIndex={this.state.selectedIndex}
-                                  handleOnClickImageChange={
-                                    this.handleOnClickImageChange
-                                  }
-                                  editorRef={this.editorRef}
-                                  setInitialImageContents={
-                                    this.setInitialImageContents
-                                  }
-                                  changeImageSizeFromCurrentToTarget={
-                                    this.changeImageSizeFromCurrentToTarget
-                                  }
-                                />
-                                <Builder
-                                  index={index + 1}
-                                  state={
-                                    isDragging
-                                      ? index + 1 === targetIndex
-                                        ? "ISOVER"
-                                        : "ONDRAG"
-                                      : "NOTHING"
-                                  }
-                                  handleDrop={this.handleDrop}
-                                />
-                              </React.Fragment>
-                            );
-                          })}
-                        </React.Fragment>
-                      ) : null}
-                    </EditorLeft>
-                    <TagContainer>
-                      <InnerTagContainer>
-                        <Icon
-                          style={{ fontSize: 16, marginRight: 5 }}
-                          type="tags"
-                        />
-                        <TagLabel>Tag</TagLabel>
-                        <TagArea>
-                          <TagInputHolder>
-                            <GetCategoriesByGameIdQuery
-                              query={GET_CATEGORIES_BY_GAME_ID}
-                              variables={{ gameId }}
-                            >
-                              {({ loading, error, data }) => {
-                                if (loading) {
-                                  return (
-                                    <Select
-                                      mode="tags"
-                                      style={{ width: "100%" }}
-                                      placeholder="Tags Mode"
-                                      onChange={(value: any) =>
-                                        console.log(`selected ${value}`)
-                                      }
-                                    />
-                                  );
-                                }
-                                if (error) return `${error}`;
-                                if (data !== undefined) {
-                                  const {
-                                    categories
-                                  } = data.GetCategoriesByGameId;
-                                  return (
-                                    <Select
-                                      mode="tags"
-                                      allowClear={true}
-                                      style={{ width: "100%" }}
-                                      placeholder="Tags"
-                                      onChange={(values: any) => {
-                                        this.setState({
-                                          tags: values.map(
-                                            (value: any) => value
-                                          )
-                                        });
-                                      }}
-                                      value={tags.map((tag: any) => {
-                                        return tag;
-                                      })}
-                                      optionFilterProp="Tags"
-                                      filterOption={(input, option: any) => {
-                                        return (
-                                          option.props.children.props.children[1].props.children
-                                            .toLowerCase()
-                                            .indexOf(input.toLowerCase()) >= 0
-                                        );
-                                      }}
-                                    >
-                                      {categories &&
-                                        categories.map((category, index) => {
-                                          return (
-                                            category && (
-                                              <Option
-                                                value={category.name}
-                                                key={JSON.stringify(
-                                                  category.id
-                                                )}
-                                              >
-                                                <span
+                            if (error) return `${error}`;
+                            if (data !== undefined) {
+                              const { categories } = data.GetCategoriesByGameId;
+                              return (
+                                <Select
+                                  mode="tags"
+                                  allowClear={true}
+                                  style={{ width: "100%" }}
+                                  placeholder="Tags"
+                                  onChange={(values: any) => {
+                                    this.setState({
+                                      tags: values.map((value: any) => value)
+                                    });
+                                  }}
+                                  value={tags.map((tag: any) => {
+                                    return tag;
+                                  })}
+                                  optionFilterProp="Tags"
+                                  filterOption={(input, option: any) => {
+                                    return (
+                                      option.props.children.props.children[1].props.children
+                                        .toLowerCase()
+                                        .indexOf(input.toLowerCase()) >= 0
+                                    );
+                                  }}
+                                >
+                                  {categories &&
+                                    categories.map((category, index) => {
+                                      return (
+                                        category && (
+                                          <Option
+                                            value={category.name}
+                                            key={JSON.stringify(category.id)}
+                                          >
+                                            <span
+                                              style={{
+                                                display: "flex",
+                                                justifyContent: "flex-start",
+                                                alignItems: "center",
+                                                verticalAlign: "top"
+                                              }}
+                                            >
+                                              {category.topWikiImage && (
+                                                <img
                                                   style={{
-                                                    display: "flex",
-                                                    justifyContent:
-                                                      "flex-start",
-                                                    alignItems: "center",
-                                                    verticalAlign: "top"
+                                                    height: "20px",
+                                                    borderRadius: 4
                                                   }}
-                                                >
-                                                  {category.topWikiImage && (
-                                                    <img
-                                                      style={{
-                                                        height: "20px",
-                                                        borderRadius: 4
-                                                      }}
-                                                      src={
-                                                        category.topWikiImage
-                                                          .shownImage
-                                                      }
-                                                    />
-                                                  )}
-                                                  <span
-                                                    style={{ padding: "0 7px" }}
-                                                  >
-                                                    {category.name}
-                                                  </span>
-                                                </span>
-                                              </Option>
-                                            )
-                                          );
-                                        })}
-                                    </Select>
-                                  );
-                                } else {
-                                  return null;
-                                }
-                              }}
-                            </GetCategoriesByGameIdQuery>
-                          </TagInputHolder>
-                        </TagArea>
-                      </InnerTagContainer>
-                    </TagContainer>
-                  </React.Fragment>
-                ) : view === "USER" ? null : view === "JSON" ? null : null // <UserView json={this.state} /> // <JsonView json={this.state} />
-                }
-              </EditorLeftContainer>
+                                                  src={
+                                                    category.topWikiImage
+                                                      .shownImage
+                                                  }
+                                                />
+                                              )}
+                                              <span
+                                                style={{ padding: "0 7px" }}
+                                              >
+                                                {category.name}
+                                              </span>
+                                            </span>
+                                          </Option>
+                                        )
+                                      );
+                                    })}
+                                </Select>
+                              );
+                            } else {
+                              return null;
+                            }
+                          }}
+                        </GetCategoriesByGameIdQuery>
+                      </TagInputHolder>
+                    </TagArea>
+                  </InnerTagContainer>
+                </TagContainer>
+              </EditorContent>
             </div>
           </EditorContentContainer>
         </EditorContainer>
         <input
           type="file"
           accept="image/*"
-          ref={input => (this.inputElement = input)}
+          ref={el => (this.inputElement = el)}
           // multiple={true}
         />
       </React.Fragment>

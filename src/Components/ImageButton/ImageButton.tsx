@@ -19,14 +19,16 @@ const IconContainer = styled.label`
 `;
 
 interface IProps {
+  withText: boolean;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ImageButton: React.SFC<IProps> = ({ onChange }) => (
+const ImageButton: React.SFC<IProps> = ({ withText, onChange }) => (
   <React.Fragment>
     <ImageInput id={"photo"} type="file" accept="image/*" onChange={onChange} />
     <IconContainer htmlFor="photo">
       <Button className="far fa-image" />
+      {withText && <span style={{ marginLeft: 5 }}>TITLE IMAGE</span>}
     </IconContainer>
   </React.Fragment>
 );
