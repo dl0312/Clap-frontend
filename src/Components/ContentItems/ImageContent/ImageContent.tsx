@@ -96,6 +96,23 @@ const cardSource = {
   }
 };
 
+const DragSourceArea = styled.div`
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.08);
+  transition-property: opacity, background;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  bottom: -10px;
+  left: -10px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+`;
+
 interface IImageContentFrameProps {
   device: "PHONE" | "TABLET" | "DESKTOP";
   isFirstBlock: boolean;
@@ -126,20 +143,6 @@ const ImageContentWrapper = styled.div`
   display: block;
   cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
     url(../img/se_cursor_drag_grab.png), auto;
-`;
-
-interface IToolbarProps {
-  toolbarState: "follow" | "sticky" | "blind";
-}
-
-const Toolbar = styled<IToolbarProps, any>("div")`
-  visibility: ${props => (props.toolbarState === "blind" ? "hidden" : null)};
-  top: ${props => (props.toolbarState === "sticky" ? "130px" : "130px")};
-  position: ${props => (props.toolbarState === "sticky" ? "fixed" : "static")};
-  max-width: ${props => (props.toolbarState === "sticky" ? null : "886px")};
-  width: 100%;
-  margin: 0 auto;
-  z-index: 1000;
 `;
 
 interface IImageContainerProps {
@@ -174,25 +177,77 @@ const ImageContainer = styled<IImageContainerProps, any>("div")`
   width: ${props => (props.imageStyle === "fullWidth" ? "100%" : null)};
 `;
 
-const ImageButtonContainer = styled.div`
+interface IToolbarWrapperProps {
+  toolbarState: "follow" | "sticky" | "blind";
+}
+
+const ToolbarWrapper = styled<IToolbarWrapperProps, any>("div")`
+  visibility: ${props => (props.toolbarState === "blind" ? "hidden" : null)};
+  max-width: ${props => (props.toolbarState === "sticky" ? null : "886px")};
+  position: ${props => (props.toolbarState === "sticky" ? "sticky" : "static")};
+  top: 0px;
+  width: 100%;
+  margin: 0 auto;
+  z-index: 1000;
+`;
+
+interface IToolbarProps {
+  toolbarState: "follow" | "sticky" | "blind";
+}
+
+const Toolbar = styled<IToolbarProps, any>("div")`
+  width: 100%;
+  position: absolute;
+  top: ${props => (props.toolbarState === "sticky" ? "-1px" : "-43px")};
+  left: -10px;
+  height: 0;
+  margin: auto;
+  z-index: 1000;
+  display: block;
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+  word-break: normal;
+`;
+
+const ButtonContainer = styled.div`
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  transition-duration: 70ms;
+  transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  transition-property: visibility, opacity, clip, transform;
+  transition-duration: 0.1s;
+  transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+  position: absolute;
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+
+  word-break: normal;
+`;
+
+interface IButtonWrapperProps {
+  toolbarState: "follow" | "sticky" | "blind";
+}
+
+const ButtonWrapper = styled<IButtonWrapperProps, any>("ul")`
+  transform: ${props =>
+    props.toolbarState === "sticky" ? "translateY(0)" : null};
+  visibility: visible;
+  opacity: 1;
+  background-color: #fff;
+  border: 1px solid #cecece;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.06);
+  list-style: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 2px 2px 0 0;
-  line-height: 0px !important;
-  background-color: #fff;
-  position: absolute;
-  z-index: 100;
-  top: -43px;
-  left: -10px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
 `;
 
-interface IImageButtonProps {
+interface IButtonItemProps {
   index: number;
 }
 
-const ImageButton = styled<IImageButtonProps, any>("div")`
+const ButtonItem = styled<IButtonItemProps, any>("div")`
   border-right: ${props =>
     props.index === 0 ||
     props.index === 1 ||
@@ -240,26 +295,6 @@ const Description = styled(TextareaAutosize)`
   &:focus {
     outline: none;
   }
-`;
-
-const DragSourceArea = styled.div`
-  z-index: 2;
-  background-color: rgba(0, 0, 0, 0.08);
-  -webkit-transition-property: opacity, background;
-  transition-property: opacity, background;
-  -webkit-transition-duration: 0.3s;
-  transition-duration: 0.3s;
-  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
-  -webkit-transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  bottom: -10px;
-  left: -10px;
-  background-color: transparent;
-  border: 1px solid transparent;
-  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
-    url(../img/se_cursor_drag_grab.png), auto;
 `;
 
 interface IProps {
@@ -326,10 +361,13 @@ class ImageContent extends React.Component<
 > {
   imgEl: any;
   dragSource: any;
+  wrapperRef: any;
   constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
     super(props);
     this.imgEl = React.createRef();
     this.dragSource = React.createRef();
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
     this.state = {
       toolbarState: "follow"
     };
@@ -337,7 +375,7 @@ class ImageContent extends React.Component<
 
   public handleScrollFn = () => {
     const rect = (findDOMNode(
-      this.imgEl
+      this.wrapperRef
     )! as Element).getBoundingClientRect() as DOMRect;
     console.log(
       rect.top,
@@ -355,6 +393,8 @@ class ImageContent extends React.Component<
   };
 
   componentDidMount() {
+    console.log(`mount textcontent`);
+    document.addEventListener("mousedown", this.handleClickOutside);
     this.props.editorRef.current.addEventListener(
       "scroll",
       this.handleScrollFn
@@ -372,11 +412,27 @@ class ImageContent extends React.Component<
   }
 
   componentWillUnmount() {
+    console.log(`unmount textcontent`);
+    document.removeEventListener("mousedown", this.handleClickOutside);
     if (this.props.editorRef.current !== null)
       this.props.editorRef.current.removeEventListener(
         "scroll",
         this.handleScrollFn
       );
+  }
+
+  setWrapperRef(node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: any) {
+    console.log(this.wrapperRef);
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      console.log(this.props.selectedIndex === this.props.index);
+      if (this.props.selectedIndex === this.props.index) {
+        this.props.masterCallback("unselect");
+      }
+    }
   }
 
   /* In case, Mouse Over Container */
@@ -426,6 +482,20 @@ class ImageContent extends React.Component<
 
     const hover: boolean = hoveredIndex === index;
     const active: boolean = selectedIndex === index;
+    if (selected) {
+      document.addEventListener("mousedown", this.handleClickOutside);
+      this.props.editorRef.current.addEventListener(
+        "scroll",
+        this.handleScrollFn
+      );
+    } else {
+      document.removeEventListener("mousedown", this.handleClickOutside);
+      if (this.props.editorRef.current !== null)
+        this.props.editorRef.current.removeEventListener(
+          "scroll",
+          this.handleScrollFn
+        );
+    }
     return (
       <ImageContentFrame
         isFirstBlock={index === 0}
@@ -433,7 +503,9 @@ class ImageContent extends React.Component<
         innerRef={(instance: any) => connectDropTarget(instance)}
       >
         <ImageContentContainer device={device}>
-          <ImageContentWrapper>
+          <ImageContentWrapper
+            innerRef={(instance: any) => this.setWrapperRef(instance)}
+          >
             <DragSourceArea
               className={classnames(
                 "container",
@@ -446,27 +518,33 @@ class ImageContent extends React.Component<
               onMouseLeave={this.handleOnMouseLeave}
             />
             {selected && (
-              <Toolbar toolbarState={toolbarState} className="toolbar">
-                <ImageButtonContainer>
-                  {icons.map((Type, i) => {
-                    return (
-                      <ImageButton key={i} index={i}>
-                        <Type
-                          callbackfromparent={callbackfromparent}
-                          handleOnClickImageChange={handleOnClickImageChange}
-                          handleOnChange={handleOnChange}
-                          index={index}
-                          key={i}
-                          contents={contents}
-                          changeImageSizeFromCurrentToTarget={
-                            changeImageSizeFromCurrentToTarget
-                          }
-                        />
-                      </ImageButton>
-                    );
-                  })}
-                </ImageButtonContainer>
-              </Toolbar>
+              <ToolbarWrapper toolbarState={toolbarState}>
+                <Toolbar toolbarState={toolbarState}>
+                  <ButtonContainer>
+                    <ButtonWrapper toolbarState={toolbarState}>
+                      {icons.map((Type, i) => {
+                        return (
+                          <ButtonItem key={i} index={i}>
+                            <Type
+                              callbackfromparent={callbackfromparent}
+                              handleOnClickImageChange={
+                                handleOnClickImageChange
+                              }
+                              handleOnChange={handleOnChange}
+                              index={index}
+                              key={i}
+                              contents={contents}
+                              changeImageSizeFromCurrentToTarget={
+                                changeImageSizeFromCurrentToTarget
+                              }
+                            />
+                          </ButtonItem>
+                        );
+                      })}
+                    </ButtonWrapper>
+                  </ButtonContainer>
+                </Toolbar>
+              </ToolbarWrapper>
             )}
             <ImageContainer
               className="content"

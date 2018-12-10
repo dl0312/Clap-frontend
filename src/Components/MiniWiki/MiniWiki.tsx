@@ -4,16 +4,14 @@ import { Helmet } from "react-helmet";
 import { Query } from "react-apollo";
 import ImagePopup from "../ImagePopup";
 import { CATEGORIES_KEYWORD } from "../../sharedQueries";
-import { GetPos } from "../../Utility/GetPos";
 import { Change } from "slate";
 import {
   getCategoriesByKeyword,
   getCategoriesByKeywordVariables
 } from "../../types/api";
-import { LOST_IMAGE_URL } from "../../constants";
+import { Tag } from "antd";
 
 const WikiContainer = styled.div`
-  padding-top: 15px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -30,7 +28,7 @@ const InputContainer = styled.div`
 `;
 
 const SearchInput = styled.input`
-  width: 60%;
+  width: 200px;
   padding: 0 10px;
   height: 25px;
   border: 1px solid #ced4da;
@@ -57,18 +55,16 @@ const InputIcon = styled<IInputIconProps, any>("i")`
   font-size: ${props => (props.small ? "15px" : "20px")};
   transition: opacity 0.5s ease;
   opacity: ${props => (props.isSelected ? "1" : "0.2")};
-  color: black;
+  color: white;
+  cursor: pointer;
   &:hover {
     opacity: ${props => (props.isSelected ? null : "0.5")};
   }
 `;
 
 const ListContainer = styled.div`
+  line-height: 30px;
   overflow-y: auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 75px;
-  grid-gap: 5px;
   ::-webkit-scrollbar {
     width: 6px;
     background-color: #e5e5e5;
@@ -79,24 +75,19 @@ const ListContainer = styled.div`
 `;
 
 const WikiImage = styled.img`
-  object-fit: fill;
-  width: 50px;
-  height: 50px;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5));
+  height: 100%;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-right: 1px solid #d9d9d9;
 `;
 
 const DataContainer = styled.div`
-  display: flex;
+  height: 100%;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-start;
-  flex-direction: column;
-`;
-
-const CategoryName = styled.div`
-  margin-top: 5px;
-  text-transform: uppercase;
-  font-size: 10px;
-  text-align: center;
+  vertical-align: top;
 `;
 
 function insertImage(
@@ -209,62 +200,44 @@ class MiniWiki extends React.Component<IProps, IState> {
                 <ListContainer>
                   {data!.GetCategoriesByKeyword.categories!.map(
                     (category: any, index: number) => (
-                      <React.Fragment key={index}>
-                        <DataContainer>
-                          {category.topWikiImage ? (
+                      <Tag
+                        key={index}
+                        style={{
+                          padding: "0"
+                        }}
+                      >
+                        <DataContainer
+                          onClick={() => {
+                            console.log(this.props);
+                            const id = category.id;
+                            const change = this.props.selectedContent.contents.slateData
+                              .change()
+                              .call(
+                                insertImage,
+                                id,
+                                category.name,
+                                this.state.inputType
+                              )
+                              .moveToStartOfNextText()
+                              .focus();
+                            this.props.handleOnChange(
+                              change,
+                              this.props.selectedIndex,
+                              "slateData"
+                            );
+                          }}
+                        >
+                          {category.topWikiImage && (
                             <WikiImage
                               src={category.topWikiImage.shownImage}
                               alt={category.name}
-                              onMouseOver={(e: any) => {
-                                this.setState({
-                                  hoverImgJson:
-                                    category.topWikiImage.hoverImage,
-                                  onImage: true,
-                                  pos: GetPos(e)
-                                });
-                              }}
-                              onMouseMove={e =>
-                                this.setState({
-                                  pos: GetPos(e)
-                                })
-                              }
-                              onMouseOut={() => {
-                                this.setState({
-                                  onImage: false
-                                });
-                              }}
-                              onClick={() => {
-                                const id = category.id;
-                                const represent =
-                                  category.topWikiImage.shownImage;
-                                const hover = category.topWikiImage.hoverImage;
-                                const change = this.props.selectedContent.value
-                                  .change()
-                                  .call(
-                                    insertImage,
-                                    id,
-                                    represent,
-                                    hover,
-                                    category.name,
-                                    this.state.inputType
-                                  )
-                                  .moveToStartOfNextText()
-                                  .focus();
-
-                                this.props.handleOnChange(
-                                  change,
-                                  this.props.selectedIndex,
-                                  "TEXT",
-                                  "TEXT_CHANGE"
-                                );
-                              }}
                             />
-                          ) : (
-                            <WikiImage src={LOST_IMAGE_URL} />
                           )}
-                          <CategoryName>{category.name}</CategoryName>
+                          <span style={{ padding: "0 7px" }}>
+                            {category.name}
+                          </span>
                         </DataContainer>
-                      </React.Fragment>
+                      </Tag>
                     )
                   )}
                 </ListContainer>

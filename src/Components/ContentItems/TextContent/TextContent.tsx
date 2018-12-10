@@ -57,6 +57,7 @@ import {
 import { findDOMNode } from "react-dom";
 import ItemTypes from "src/ItemTypes";
 import flow from "lodash/flow";
+import { getEmptyImage } from "react-dnd-html5-backend";
 // import HoverView from "src/Components/HoverView";
 
 // const selectors = [FontSize, LetterSpacing, LineHeight];
@@ -145,7 +146,6 @@ const cardSource = {
 };
 
 const DragSourceArea = styled.div`
-  opacity: 1;
   background-color: rgba(0, 0, 0, 0.08);
   transition-property: opacity, background;
   transition-duration: 0.3s;
@@ -160,20 +160,6 @@ const DragSourceArea = styled.div`
   border: 1px solid transparent;
   cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
     url(../img/se_cursor_drag_grab.png), auto;
-`;
-
-interface IToolbarProps {
-  toolbarState: "follow" | "sticky" | "blind";
-}
-
-const Toolbar = styled<IToolbarProps, any>("div")`
-  visibility: ${props => (props.toolbarState === "blind" ? "hidden" : null)};
-  top: ${props => (props.toolbarState === "sticky" ? "130px" : "130px")};
-  position: ${props => (props.toolbarState === "sticky" ? "fixed" : "static")};
-  max-width: ${props => (props.toolbarState === "sticky" ? null : "886px")};
-  width: 100%;
-  margin: 0 auto;
-  z-index: 1000;
 `;
 
 interface IClapImageProps {
@@ -196,25 +182,79 @@ const ClapImageText = styled.span`
   color: ${props => props.color};
 `;
 
-const TextEditorButtonContainer = styled.div`
+interface IToolbarWrapperProps {
+  toolbarState: "follow" | "sticky" | "blind";
+}
+
+const ToolbarWrapper = styled<IToolbarWrapperProps, any>("div")`
+  visibility: ${props => (props.toolbarState === "blind" ? "hidden" : null)};
+  max-width: ${props => (props.toolbarState === "sticky" ? null : "886px")};
+  position: ${props => (props.toolbarState === "sticky" ? "sticky" : "static")};
+  top: 0px;
+  width: 100%;
+  margin: 0 auto;
+  z-index: 1000;
+`;
+
+interface IToolbarProps {
+  toolbarState: "follow" | "sticky" | "blind";
+}
+
+const Toolbar = styled<IToolbarProps, any>("div")`
+  width: 100%;
+  position: absolute;
+  top: ${props => (props.toolbarState === "sticky" ? "-16px" : "-54px")};
+  left: -10px;
+  height: 0;
+  margin: auto;
+  z-index: 1000;
+  display: block;
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+  word-break: normal;
+`;
+
+const ButtonContainer = styled.div`
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  transition-duration: 70ms;
+  transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  transform: translateY(15px);
+  transition-property: visibility, opacity, clip, transform;
+  transition-duration: 0.1s;
+  transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+  position: absolute;
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+
+  word-break: normal;
+`;
+
+interface IButtonWrapperProps {
+  toolbarState: "follow" | "sticky" | "blind";
+}
+
+const ButtonWrapper = styled<IButtonWrapperProps, any>("ul")`
+  height: 32px;
+  transform: ${props =>
+    props.toolbarState === "sticky" ? "translateY(0)" : null};
+  visibility: visible;
+  opacity: 1;
+  background-color: #fff;
+  border: 1px solid #cecece;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.06);
+  list-style: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 2px 2px 0 0;
-  line-height: 0px !important;
-  background-color: #fff;
-  position: absolute;
-  z-index: 100;
-  top: -43px;
-  left: -10px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
 `;
 
-interface ITextEditorButtonProps {
+interface IButtonItemProps {
   index: number;
 }
 
-const TextEditorButton = styled<ITextEditorButtonProps, any>("div")`
+const ButtonItem = styled<IButtonItemProps, any>("li")`
   border-right: ${props =>
     props.index === 1 ||
     props.index === 7 ||
@@ -222,6 +262,7 @@ const TextEditorButton = styled<ITextEditorButtonProps, any>("div")`
     props.index === 15
       ? "1px solid rgba(0, 0, 0, 0.1)"
       : null};
+  height: 100%;
 `;
 
 interface ITextContentFrameProps {
@@ -296,11 +337,13 @@ interface IProps {
   hoveredIndex: number | null;
   selectedIndex: number | null;
   callbackfromparent: any;
+  editorRef: any;
   masterCallback: any;
   pushPresentBlockToTargetIndex: any;
   pushNewBlockToTargetIndex: any;
   setTargetIndex: any;
   handleOnChange?: any;
+  wikiRef: any;
 }
 interface IState {
   toolbarState: "follow" | "sticky" | "blind";
@@ -329,7 +372,6 @@ class TextContent extends React.Component<
   constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
     super(props);
     this.dragSource = React.createRef();
-
     this.setWrapperRef = this.setWrapperRef.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.state = {
@@ -338,12 +380,53 @@ class TextContent extends React.Component<
     };
   }
 
+  public handleScrollFn = () => {
+    const rect = (findDOMNode(
+      this.wrapperRef
+    )! as Element).getBoundingClientRect() as DOMRect;
+    console.log(
+      this.props.index,
+      rect.top,
+      rect.bottom,
+      this.state.toolbarState,
+      rect.bottom < 60
+    );
+    if (rect.bottom < 100) {
+      this.setState({ toolbarState: "blind" });
+    } else if (rect.top < 150) {
+      this.setState({ toolbarState: "sticky" });
+    } else {
+      this.setState({ toolbarState: "follow" });
+    }
+  };
+
   componentDidMount() {
+    console.log(`mount textcontent`);
     document.addEventListener("mousedown", this.handleClickOutside);
+    this.props.editorRef.current.addEventListener(
+      "scroll",
+      this.handleScrollFn
+    );
+    const { connectDragPreview } = this.props;
+    if (connectDragPreview) {
+      // Use empty image as a drag preview so browsers don't draw it
+      // and we can draw whatever we want on the custom drag layer instead.
+      connectDragPreview(getEmptyImage(), {
+        // IE fallback: specify that we'd rather screenshot the node
+        // when it already knows it's being dragged so we can hide it with CSS.
+        captureDraggingState: true
+      });
+    }
   }
 
   componentWillUnmount() {
+    console.log(`unmount textcontent`);
     document.removeEventListener("mousedown", this.handleClickOutside);
+    if (this.props.editorRef.current !== null)
+      this.props.editorRef.current.removeEventListener(
+        "scroll",
+        this.handleScrollFn
+      );
   }
 
   setWrapperRef(node: any) {
@@ -351,7 +434,12 @@ class TextContent extends React.Component<
   }
 
   handleClickOutside(event: any) {
-    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+    event.preventDefault();
+    if (
+      this.wrapperRef &&
+      !this.wrapperRef.contains(event.target) &&
+      !this.props.wikiRef.current.contains(event.target)
+    ) {
       console.log(
         this.props.selectedIndex === this.props.index,
         this.state.isWriteMode
@@ -396,7 +484,6 @@ class TextContent extends React.Component<
       hoveredIndex,
       selectedIndex,
       plugins,
-      // handleOnChange,
       connectDragSource,
       isDragging
     } = this.props;
@@ -410,6 +497,20 @@ class TextContent extends React.Component<
       : hover
       ? "HOVER"
       : null;
+    if (textContentState === "WRITE") {
+      document.addEventListener("mousedown", this.handleClickOutside);
+      this.props.editorRef.current.addEventListener(
+        "scroll",
+        this.handleScrollFn
+      );
+    } else {
+      document.removeEventListener("mousedown", this.handleClickOutside);
+      if (this.props.editorRef.current !== null)
+        this.props.editorRef.current.removeEventListener(
+          "scroll",
+          this.handleScrollFn
+        );
+    }
     return (
       <TextContentFrame isFirstBlock={index === 0} device={device}>
         <TextContentContainer device={device}>
@@ -436,30 +537,34 @@ class TextContent extends React.Component<
               onMouseLeave={this.handleOnMouseLeave}
             />
             {textContentState === "WRITE" && (
-              <Toolbar toolbarState={toolbarState} className="toolbar">
-                <TextEditorButtonContainer>
-                  {icons.map((Type, i) => {
-                    return (
-                      <TextEditorButton key={i} index={i}>
-                        <Type
-                          change={slateData.change()}
-                          onChange={this.onChange}
-                          callbackfromparent={this.props.callbackfromparent}
-                          index={index}
-                          key={i}
-                          className="toolbar-item"
-                          activeClassName="toolbar-item-active"
-                          disableClassName="toolbar-item-disable"
-                          activeStrokeClassName="ql-stroke-active"
-                          activeFillClassName="ql-fill-active"
-                          activeThinClassName="ql-thin-active"
-                          activeEvenClassName="ql-even-active"
-                        />
-                      </TextEditorButton>
-                    );
-                  })}
-                </TextEditorButtonContainer>
-              </Toolbar>
+              <ToolbarWrapper toolbarState={toolbarState}>
+                <Toolbar toolbarState={toolbarState}>
+                  <ButtonContainer>
+                    <ButtonWrapper toolbarState={toolbarState}>
+                      {icons.map((Type, i) => {
+                        return (
+                          <ButtonItem key={i} index={i}>
+                            <Type
+                              change={slateData.change()}
+                              onChange={this.onChange}
+                              callbackfromparent={this.props.callbackfromparent}
+                              index={index}
+                              key={i}
+                              className="toolbar-item"
+                              activeClassName="toolbar-item-active"
+                              disableClassName="toolbar-item-disable"
+                              activeStrokeClassName="ql-stroke-active"
+                              activeFillClassName="ql-fill-active"
+                              activeThinClassName="ql-thin-active"
+                              activeEvenClassName="ql-even-active"
+                            />
+                          </ButtonItem>
+                        );
+                      })}
+                    </ButtonWrapper>
+                  </ButtonContainer>
+                </Toolbar>
+              </ToolbarWrapper>
             )}
             <Editor
               style={{
@@ -470,6 +575,7 @@ class TextContent extends React.Component<
               onClick={(e: any) => {
                 e.preventDefault();
                 this.setState({ isWriteMode: true });
+                this.props.callbackfromparent("select", this.props.index);
               }}
               value={slateData}
               readOnly={false}
@@ -538,10 +644,10 @@ class TextContent extends React.Component<
         case "numbered-list":
           return <ol {...attributes}>{children}</ol>;
         case "clap-image": {
+          const id = node.data.get("id");
           const name = node.data.get("name");
           const type = node.data.get("type");
-          const id = node.data.get("id");
-          console.log(id);
+          console.log(id, type);
           switch (type) {
             case "TEXT":
               return (
@@ -560,6 +666,7 @@ class TextContent extends React.Component<
                         </ClapImageText>
                       );
                     if (error) return `${error.message}`;
+                    console.log(data);
                     if (data !== undefined) {
                       const { category } = data.GetCategoryById;
                       return (
@@ -573,7 +680,7 @@ class TextContent extends React.Component<
                               //     category.topWikiImage.hoverImage
                               //   )}
                               // />
-                              null
+                              `hello`
                             }
                             title={
                               <>
@@ -593,20 +700,20 @@ class TextContent extends React.Component<
                             }
                             trigger="hover"
                           >
-                            <Link
+                            {/* <Link
                               target="_blank"
                               style={{
                                 textDecoration: "none"
                               }}
                               rel="noopener noreferrer"
                               to={`/category/read/${category.id}`}
+                            > */}
+                            <ClapImageText
+                              color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
                             >
-                              <ClapImageText
-                                color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                              >
-                                {name}
-                              </ClapImageText>
-                            </Link>
+                              {name}
+                            </ClapImageText>
+                            {/* </Link> */}
                           </Popover>
                         )
                       );
@@ -633,6 +740,7 @@ class TextContent extends React.Component<
                         </ClapImageText>
                       );
                     if (error) return `${error.message}`;
+                    console.log(data);
                     if (data !== undefined) {
                       const { category } = data.GetCategoryById;
                       return (
@@ -646,7 +754,7 @@ class TextContent extends React.Component<
                               //     category.topWikiImage.hoverImage
                               //   )}
                               // />
-                              null
+                              `null`
                             }
                             title={
                               <>
@@ -666,27 +774,27 @@ class TextContent extends React.Component<
                             }
                             trigger="hover"
                           >
-                            <Link
+                            {/* <Link
                               target="_blank"
                               style={{
                                 textDecoration: "none"
                               }}
                               rel="noopener noreferrer"
                               to={`/category/read/${category.id}`}
+                            > */}
+                            <ClapImage
+                              small={true}
+                              src={category.topWikiImage.shownImage}
+                              alt={"hover"}
+                              selected={isSelected}
+                              {...attributes}
+                            />
+                            <ClapImageText
+                              color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
                             >
-                              <ClapImage
-                                small={true}
-                                src={category.topWikiImage.shownImage}
-                                alt={"hover"}
-                                selected={isSelected}
-                                {...attributes}
-                              />
-                              <ClapImageText
-                                color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                              >
-                                {name}
-                              </ClapImageText>
-                            </Link>
+                              {name}
+                            </ClapImageText>
+                            {/* </Link> */}
                           </Popover>
                         )
                       );

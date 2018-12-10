@@ -1,32 +1,84 @@
 import React from "react";
 import styled from "src/typed-components";
+import MiniWiki from "../MiniWiki";
 
-const WikiWindowContainer = styled.div`
+interface IWikiWindowContainerProps {
+  isWikiWindowOpen: boolean;
+}
+
+const WikiWindowContainer = styled<IWikiWindowContainerProps, any>("div")`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   position: absolute;
-  bottom: 0;
+  bottom: ${props => (props.isWikiWindowOpen ? "0" : "-400px")};
+  transition: 0.5s ease;
 `;
 
-const WikiWindowButton = styled.button``;
+const WikiWindowButton = styled.div`
+  width: 100px;
+  cursor: pointer;
+  background-color: black;
+  color: white;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 5px;
+`;
 
 const WikiWindowButtonIcon = styled.i``;
+
+interface IWikiContainerProps {
+  isWikiWindowOpen: boolean;
+}
+
+const WikiContainer = styled<IWikiContainerProps, any>("div")`
+  width: 100%;
+  height: 400px;
+  padding: 15px;
+  background-color: black;
+`;
+
+interface IProps {
+  handleOnChange: any;
+  selectedIndex: number | null;
+  selectedContent: any;
+}
 
 interface IState {
   isWikiWindowOpen: boolean;
 }
 
-class WikiWindow extends React.Component<any, IState> {
-  constructor(props: any) {
+class WikiWindow extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       isWikiWindowOpen: true
     };
   }
+
+  public toggleWikiWindow = () => {
+    this.setState({
+      isWikiWindowOpen: !this.state.isWikiWindowOpen
+    });
+  };
+
   public render() {
+    const { handleOnChange, selectedIndex, selectedContent } = this.props;
+    const { isWikiWindowOpen } = this.state;
     return (
-      <WikiWindowContainer>
-        <WikiWindowButton>
+      <WikiWindowContainer isWikiWindowOpen={isWikiWindowOpen}>
+        <WikiWindowButton onClick={this.toggleWikiWindow}>
           <WikiWindowButtonIcon className="fas fa-book-open" /> WIKI
         </WikiWindowButton>
+        <WikiContainer isWikiWindowOpen={isWikiWindowOpen}>
+          <MiniWiki
+            handleOnChange={handleOnChange}
+            selectedIndex={selectedIndex}
+            selectedContent={selectedContent}
+          />
+        </WikiContainer>
       </WikiWindowContainer>
     );
   }

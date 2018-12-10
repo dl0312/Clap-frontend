@@ -135,6 +135,7 @@ interface IProps {
   setInitialImageContents: any;
   changeImageSizeFromCurrentToTarget: any;
   device: "PHONE" | "TABLET" | "DESKTOP";
+  wikiRef: any;
 }
 
 interface ITextContents {
@@ -226,12 +227,14 @@ class Container extends React.Component<IProps, any> {
             selectedIndex={this.props.selectedIndex}
             handleOnChange={this.props.handleOnChange}
             callbackfromparent={this.props.callbackfromparent}
+            editorRef={this.props.editorRef}
             masterCallback={this.props.masterCallback}
             pushPresentBlockToTargetIndex={
               this.props.pushPresentBlockToTargetIndex
             }
             pushNewBlockToTargetIndex={this.props.pushNewBlockToTargetIndex}
             setTargetIndex={this.props.setTargetIndex}
+            wikiRef={this.props.wikiRef}
           />
         );
       case "Video":

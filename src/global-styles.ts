@@ -175,13 +175,15 @@ hr{
 .toolbar-item {
   width: 15px;
   height: 15px;
-  margin: 8px;
+  margin:8px;
+  cursor: pointer;
 }
 
 .toolbar-item-active {
   width: 15px;
   height: 15px;
   margin: 8px;
+  cursor: pointer;
 }
 
 .toolbar-select {

@@ -1,5 +1,4 @@
 import * as React from "react";
-import EditorContent from "../EditorContent";
 import EditorSideBar from "../EditorSideBar";
 import { DragDropContext } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
@@ -31,6 +30,8 @@ import { Select, Button, Icon, Slider } from "antd";
 import ButtonGroup from "antd/lib/button/button-group";
 import Container from "../Container";
 import Builder from "../Builder";
+import { media } from "src/config/_mixin";
+import WikiWindow from "../WikiWindow";
 const Option = Select.Option;
 
 interface IEditorContainerProps {
@@ -102,20 +103,6 @@ const Device = styled<IDeviceProps, any>("svg")`
 
 const EditorButtonContainer = styled.div``;
 
-// const EditorUtilButtonContainer = styled.div`
-//   justify-self: auto;
-//   position: absolute;
-//   top: 49px;
-//   left: 50%;
-//   height: 34px;
-//   width: 200px;
-//   margin-left: -136px;
-//   text-align: center;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-// `;
-
 const EditorNavTwo = styled.div`
   height: 43px;
   background-color: ${EditorDefaults.MAIN_BACKGROUND_COLOR};
@@ -126,7 +113,7 @@ const EditorNavTwo = styled.div`
   padding: 5px 10px;
 `;
 
-const EditorContentContainer = styled.div`
+const EditorContentSection = styled.div`
   overflow: hidden;
   position: absolute;
   top: 88px;
@@ -135,28 +122,6 @@ const EditorContentContainer = styled.div`
   left: 0px;
   z-index: 80;
 `;
-
-// const EditorLeftOuterContainer = styled.div`
-//   position: absolute;
-//   top: 0;
-//   left: 246px;
-//   right: 0;
-//   bottom: 0;
-//   height: 100%;
-//   min-width: 360px;
-//   background: #f7f7f7;
-//   display: flex;
-//   justify-content: center;
-//   background-color: #f7f7f7;
-//   overflow-y: auto;
-//   ::-webkit-scrollbar {
-//     width: 6px;
-//     background-color: #e5e5e5;
-//   }
-//   ::-webkit-scrollbar-thumb {
-//     background-color: #000000;
-//   }
-// `;
 
 const TitleFrame = styled.div`
   position: relative;
@@ -230,6 +195,86 @@ const TitleInput = styled<ITitleInputProps, any>(Textarea)`
     color: ${props => (props.titleImg ? "white" : null)};
     opacity: 0.5;
   }
+`;
+
+const EditorContentLayer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 246px;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  min-width: 360px;
+  background: #f7f7f7;
+  display: flex;
+  justify-content: center;
+  background-color: #f7f7f7;
+  overflow-y: auto;
+  min-height: 100%;
+  transform-origin: right, top;
+  transform: translate3d(0, 0, 0);
+  transition-property: left, right;
+  transition-duration: 0.4s;
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+`;
+
+const EditorContentFrameLayer = styled.div`
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  display: block;
+  min-width: 1024px;
+  min-height: 100%;
+  overflow: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+`;
+
+interface IEditorContentCanvasProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
+}
+
+const EditorContentCanvas = styled<IEditorContentCanvasProps, any>("div")`
+  display: block;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  border: 0;
+  max-width: ${props =>
+    props.device === "PHONE"
+      ? "425px"
+      : props.device === "TABLET"
+      ? "768px"
+      : "100%"};
+  min-width: ${props => (props.device === "DESKTOP" ? "778px" : null)};
+  transform: translate3d(0, 0, 0);
+  transition-property: all;
+  transition-duration: 0.4s;
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+  overflow-x: hidden;
+  overflow-y: auto;
+`;
+
+const EditorContentFrame = styled.div`
+  height: 100%;
+`;
+
+const EditorContentContainer = styled.div`
+  min-width: 320px;
+  transition: 0.3s;
+  height: 100%;
+  font-size: 14px;
+  word-break: break-all;
+  ${media.tablet`
+    padding: 0 0 0 40px;
+  `}
+`;
+
+const EditorContentWrapper = styled.div`
+  min-height: 100%;
+  padding-bottom: 100px;
+  box-sizing: border-box;
+  background-color: #fff;
 `;
 
 interface IEditorCanvasProps {
@@ -341,9 +386,11 @@ class Editor extends React.Component<IProps, IState, any> {
   editorRef: any;
   titleImageButton: any;
   handler: any;
+  wikiRef: any;
   constructor(props: IProps) {
     super(props);
     this.editorRef = React.createRef();
+    this.wikiRef = React.createRef();
     this.moveCard = this.moveCard.bind(this);
     this.onUnload = this.onUnload.bind(this);
     this.state = {
@@ -404,7 +451,6 @@ class Editor extends React.Component<IProps, IState, any> {
     type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
     dataFromChild: number
   ) => {
-    console.log(type, dataFromChild);
     const { cards, hoveredIndex, selectedIndex } = this.state;
     if (type === "mouseover") {
       this.setState({ hoveredIndex: dataFromChild });
@@ -711,7 +757,8 @@ class Editor extends React.Component<IProps, IState, any> {
     const { type, gameId } = this.props;
     const {
       cards,
-      // selectedIndex,
+      selectedIndex,
+      selectedContent,
       device,
       pos,
       titleImg,
@@ -722,7 +769,6 @@ class Editor extends React.Component<IProps, IState, any> {
       targetIndex,
       isDragging
     } = this.state;
-    console.log(cards);
     return (
       <React.Fragment>
         <EditorContainer type={type}>
@@ -818,7 +864,7 @@ class Editor extends React.Component<IProps, IState, any> {
               handleSetState={this.handleSetState}
             />
           </EditorNavTwo>
-          <EditorContentContainer>
+          <EditorContentSection>
             <CustomDragLayer />
             <EditorSideBar
               masterCallback={
@@ -833,310 +879,327 @@ class Editor extends React.Component<IProps, IState, any> {
               onClickPushNewBlock={this.onClickPushNewBlock}
               imageLibrary={this.state.imageLibrary}
             />
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 246,
-                right: 0,
-                bottom: 0,
-                height: "100%",
-                minWidth: 360,
-                background: "#f7f7f7",
-                display: "flex",
-                justifyContent: "center",
-                backgroundColor: "#f7f7f7",
-                overflowY: "auto",
-                minHeight: "100%",
-                transformOrigin: "right, top",
-                transform: "translate3d(0, 0, 0)",
-                transitionProperty: "left, right",
-                transitionDuration: "0.4s",
-                transitionTimingFunction: "cubic-bezier(0.19, 1, 0.22, 1)"
-              }}
-              ref={this.editorRef}
-            >
-              <EditorContent device={device}>
-                <EditorCanvas device={device}>
-                  <TitleFrame>
-                    <TitleWrapper device={device}>
-                      <TitleContainer
-                        titleImg={titleImg}
-                        titleImgUploading={titleImgUploading}
-                        titleImgPos={titleImgPos}
-                        device={device}
-                      >
-                        <TitleInput
-                          type={"text"}
-                          value={this.state.title}
-                          onChange={(e: any) =>
-                            this.onInputChange("title", e.target.value)
-                          }
-                          placeholder="Title"
-                          name={"title"}
-                          device={device}
-                          titleImg={titleImg}
-                        />
-                        {!titleImg ? (
-                          <ButtonGroup
-                            style={{
-                              position: "absolute",
-                              right: 20,
-                              top: 20
-                            }}
-                          >
-                            <Button style={{ padding: "0 8px" }}>
-                              <ImageButton
-                                withText={true}
-                                onChange={this.onInputImageChange}
-                              />
-                            </Button>
-                          </ButtonGroup>
-                        ) : (
-                          !isTitlePosDraggable && (
-                            <ButtonGroup
-                              style={{
-                                position: "absolute",
-                                right: 20,
-                                top: 20
-                              }}
-                            >
-                              <Button style={{ padding: "0 8px" }}>
-                                <ImageButton
-                                  withText={false}
-                                  onChange={this.onInputImageChange}
-                                />
-                              </Button>
-                              <Button icon="cloud-upload" />
-                              <Button icon="edit" />
-                              <Button
-                                onClick={() => {
-                                  this.setState({ isTitlePosDraggable: true });
-                                }}
-                                icon="drag"
-                              />
-                              <Button
-                                onClick={() => {
-                                  this.setState({
-                                    titleImg: "",
-                                    isTitlePosDraggable: false,
-                                    titleImgPos: 0
-                                  });
-                                }}
-                                icon="delete"
-                              />
-                            </ButtonGroup>
-                          )
-                        )}
-                        {isTitlePosDraggable && (
-                          <>
-                            <div
-                              style={{
-                                right: "15px",
-                                top: "40px",
-                                height: "100px",
-                                position: "absolute"
-                              }}
-                            >
-                              <Slider
-                                defaultValue={titleImgPos}
-                                vertical={true}
-                                onChange={(value: any) =>
-                                  this.onInputChange("titleImgPos", value)
-                                }
-                              />
-                            </div>
-                            <div
-                              style={{
-                                display: "flex",
-                                position: "absolute",
-                                right: "20px",
-                                bottom: "20px"
-                              }}
-                            >
-                              <Button
-                                style={{ margin: "0 5px" }}
-                                type="primary"
-                                onClick={() =>
-                                  this.setState({ isTitlePosDraggable: false })
-                                }
+            <EditorContentLayer>
+              <EditorContentFrameLayer>
+                <EditorContentCanvas device={device} innerRef={this.editorRef}>
+                  <EditorContentFrame>
+                    <EditorContentContainer>
+                      <EditorContentWrapper id="container">
+                        <EditorCanvas device={device}>
+                          <TitleFrame>
+                            <TitleWrapper device={device}>
+                              <TitleContainer
+                                titleImg={titleImg}
+                                titleImgUploading={titleImgUploading}
+                                titleImgPos={titleImgPos}
+                                device={device}
                               >
-                                Ok
-                              </Button>
-                            </div>
-                          </>
-                        )}
-                      </TitleContainer>
-                    </TitleWrapper>
-                  </TitleFrame>
-
-                  {cards.length !== 0 ? (
-                    <React.Fragment>
-                      <Builder
-                        index={0}
-                        state={
-                          isDragging
-                            ? 0 === targetIndex
-                              ? "ISOVER"
-                              : "ONDRAG"
-                            : "NOTHING"
-                        }
-                        handleDrop={this.handleDrop}
-                      />
-                      {cards.map((item, index) => {
-                        return (
-                          <React.Fragment key={index}>
-                            <Container
-                              callbackfromparent={this.buttonCallback}
-                              masterCallback={this.masterCallback}
-                              moveCard={this.moveCard}
-                              handleDrop={this.handleDrop}
-                              handleOnChange={this.handleOnChange}
-                              index={index}
-                              type={item.type}
-                              contents={item.contents}
-                              setTargetIndex={this.setTargetIndex}
-                              pushPresentBlockToTargetIndex={
-                                this.pushPresentBlockToTargetIndex
-                              }
-                              pushNewBlockToTargetIndex={
-                                this.pushNewBlockToTargetIndex
-                              }
-                              hoveredIndex={this.state.hoveredIndex}
-                              selectedIndex={this.state.selectedIndex}
-                              handleOnClickImageChange={
-                                this.handleOnClickImageChange
-                              }
-                              editorRef={this.editorRef}
-                              setInitialImageContents={
-                                this.setInitialImageContents
-                              }
-                              changeImageSizeFromCurrentToTarget={
-                                this.changeImageSizeFromCurrentToTarget
-                              }
-                              device={device}
-                            />
-                            <Builder
-                              index={index + 1}
-                              state={
-                                isDragging
-                                  ? index + 1 === targetIndex
-                                    ? "ISOVER"
-                                    : "ONDRAG"
-                                  : "NOTHING"
-                              }
-                              handleDrop={this.handleDrop}
-                            />
-                          </React.Fragment>
-                        );
-                      })}
-                    </React.Fragment>
-                  ) : null}
-                </EditorCanvas>
-                <TagContainer>
-                  <InnerTagContainer>
-                    <Icon
-                      style={{ fontSize: 16, marginRight: 5 }}
-                      type="tags"
-                    />
-                    <TagLabel>Tag</TagLabel>
-                    <TagArea>
-                      <TagInputHolder>
-                        <GetCategoriesByGameIdQuery
-                          query={GET_CATEGORIES_BY_GAME_ID}
-                          variables={{ gameId }}
-                        >
-                          {({ loading, error, data }) => {
-                            if (loading) {
-                              return (
-                                <Select
-                                  mode="tags"
-                                  style={{ width: "100%" }}
-                                  placeholder="Tags Mode"
-                                  onChange={(value: any) =>
-                                    console.log(`selected ${value}`)
+                                <TitleInput
+                                  type={"text"}
+                                  value={this.state.title}
+                                  onChange={(e: any) =>
+                                    this.onInputChange("title", e.target.value)
                                   }
+                                  placeholder="Title"
+                                  name={"title"}
+                                  device={device}
+                                  titleImg={titleImg}
                                 />
-                              );
-                            }
-                            if (error) return `${error}`;
-                            if (data !== undefined) {
-                              const { categories } = data.GetCategoriesByGameId;
-                              return (
-                                <Select
-                                  mode="tags"
-                                  allowClear={true}
-                                  style={{ width: "100%" }}
-                                  placeholder="Tags"
-                                  onChange={(values: any) => {
-                                    this.setState({
-                                      tags: values.map((value: any) => value)
-                                    });
-                                  }}
-                                  value={tags.map((tag: any) => {
-                                    return tag;
-                                  })}
-                                  optionFilterProp="Tags"
-                                  filterOption={(input, option: any) => {
-                                    return (
-                                      option.props.children.props.children[1].props.children
-                                        .toLowerCase()
-                                        .indexOf(input.toLowerCase()) >= 0
-                                    );
-                                  }}
+                                {!titleImg ? (
+                                  <ButtonGroup
+                                    style={{
+                                      position: "absolute",
+                                      right: 20,
+                                      top: 20
+                                    }}
+                                  >
+                                    <Button style={{ padding: "0 8px" }}>
+                                      <ImageButton
+                                        withText={true}
+                                        onChange={this.onInputImageChange}
+                                      />
+                                    </Button>
+                                  </ButtonGroup>
+                                ) : (
+                                  !isTitlePosDraggable && (
+                                    <ButtonGroup
+                                      style={{
+                                        position: "absolute",
+                                        right: 20,
+                                        top: 20
+                                      }}
+                                    >
+                                      <Button style={{ padding: "0 8px" }}>
+                                        <ImageButton
+                                          withText={false}
+                                          onChange={this.onInputImageChange}
+                                        />
+                                      </Button>
+                                      <Button icon="cloud-upload" />
+                                      <Button icon="edit" />
+                                      <Button
+                                        onClick={() => {
+                                          this.setState({
+                                            isTitlePosDraggable: true
+                                          });
+                                        }}
+                                        icon="drag"
+                                      />
+                                      <Button
+                                        onClick={() => {
+                                          this.setState({
+                                            titleImg: "",
+                                            isTitlePosDraggable: false,
+                                            titleImgPos: 0
+                                          });
+                                        }}
+                                        icon="delete"
+                                      />
+                                    </ButtonGroup>
+                                  )
+                                )}
+                                {isTitlePosDraggable && (
+                                  <>
+                                    <div
+                                      style={{
+                                        right: "15px",
+                                        top: "40px",
+                                        height: "100px",
+                                        position: "absolute"
+                                      }}
+                                    >
+                                      <Slider
+                                        defaultValue={titleImgPos}
+                                        vertical={true}
+                                        onChange={(value: any) =>
+                                          this.onInputChange(
+                                            "titleImgPos",
+                                            value
+                                          )
+                                        }
+                                      />
+                                    </div>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        position: "absolute",
+                                        right: "20px",
+                                        bottom: "20px"
+                                      }}
+                                    >
+                                      <Button
+                                        style={{ margin: "0 5px" }}
+                                        type="primary"
+                                        onClick={() =>
+                                          this.setState({
+                                            isTitlePosDraggable: false
+                                          })
+                                        }
+                                      >
+                                        Ok
+                                      </Button>
+                                    </div>
+                                  </>
+                                )}
+                              </TitleContainer>
+                            </TitleWrapper>
+                          </TitleFrame>
+
+                          {cards.length !== 0 ? (
+                            <React.Fragment>
+                              <Builder
+                                index={0}
+                                state={
+                                  isDragging
+                                    ? 0 === targetIndex
+                                      ? "ISOVER"
+                                      : "ONDRAG"
+                                    : "NOTHING"
+                                }
+                                handleDrop={this.handleDrop}
+                              />
+                              {cards.map((item, index) => {
+                                return (
+                                  <React.Fragment key={index}>
+                                    <Container
+                                      callbackfromparent={this.buttonCallback}
+                                      masterCallback={this.masterCallback}
+                                      moveCard={this.moveCard}
+                                      handleDrop={this.handleDrop}
+                                      handleOnChange={this.handleOnChange}
+                                      index={index}
+                                      type={item.type}
+                                      contents={item.contents}
+                                      setTargetIndex={this.setTargetIndex}
+                                      pushPresentBlockToTargetIndex={
+                                        this.pushPresentBlockToTargetIndex
+                                      }
+                                      pushNewBlockToTargetIndex={
+                                        this.pushNewBlockToTargetIndex
+                                      }
+                                      hoveredIndex={this.state.hoveredIndex}
+                                      selectedIndex={this.state.selectedIndex}
+                                      handleOnClickImageChange={
+                                        this.handleOnClickImageChange
+                                      }
+                                      editorRef={this.editorRef}
+                                      setInitialImageContents={
+                                        this.setInitialImageContents
+                                      }
+                                      changeImageSizeFromCurrentToTarget={
+                                        this.changeImageSizeFromCurrentToTarget
+                                      }
+                                      device={device}
+                                      wikiRef={this.wikiRef}
+                                    />
+                                    <Builder
+                                      index={index + 1}
+                                      state={
+                                        isDragging
+                                          ? index + 1 === targetIndex
+                                            ? "ISOVER"
+                                            : "ONDRAG"
+                                          : "NOTHING"
+                                      }
+                                      handleDrop={this.handleDrop}
+                                    />
+                                  </React.Fragment>
+                                );
+                              })}
+                            </React.Fragment>
+                          ) : null}
+                        </EditorCanvas>
+                        <TagContainer>
+                          <InnerTagContainer>
+                            <Icon
+                              style={{ fontSize: 16, marginRight: 5 }}
+                              type="tags"
+                            />
+                            <TagLabel>Tag</TagLabel>
+                            <TagArea>
+                              <TagInputHolder>
+                                <GetCategoriesByGameIdQuery
+                                  query={GET_CATEGORIES_BY_GAME_ID}
+                                  variables={{ gameId }}
                                 >
-                                  {categories &&
-                                    categories.map((category, index) => {
+                                  {({ loading, error, data }) => {
+                                    if (loading) {
                                       return (
-                                        category && (
-                                          <Option
-                                            value={category.name}
-                                            key={JSON.stringify(category.id)}
-                                          >
-                                            <span
-                                              style={{
-                                                display: "flex",
-                                                justifyContent: "flex-start",
-                                                alignItems: "center",
-                                                verticalAlign: "top"
-                                              }}
-                                            >
-                                              {category.topWikiImage && (
-                                                <img
-                                                  style={{
-                                                    height: "20px",
-                                                    borderRadius: 4
-                                                  }}
-                                                  src={
-                                                    category.topWikiImage
-                                                      .shownImage
-                                                  }
-                                                />
-                                              )}
-                                              <span
-                                                style={{ padding: "0 7px" }}
-                                              >
-                                                {category.name}
-                                              </span>
-                                            </span>
-                                          </Option>
-                                        )
+                                        <Select
+                                          mode="tags"
+                                          style={{ width: "100%" }}
+                                          placeholder="Tags Mode"
+                                          onChange={(value: any) =>
+                                            console.log(`selected ${value}`)
+                                          }
+                                        />
                                       );
-                                    })}
-                                </Select>
-                              );
-                            } else {
-                              return null;
-                            }
-                          }}
-                        </GetCategoriesByGameIdQuery>
-                      </TagInputHolder>
-                    </TagArea>
-                  </InnerTagContainer>
-                </TagContainer>
-              </EditorContent>
-            </div>
-          </EditorContentContainer>
+                                    }
+                                    if (error) return `${error}`;
+                                    if (data !== undefined) {
+                                      const {
+                                        categories
+                                      } = data.GetCategoriesByGameId;
+                                      return (
+                                        <Select
+                                          mode="tags"
+                                          allowClear={true}
+                                          style={{ width: "100%" }}
+                                          placeholder="Tags"
+                                          onChange={(values: any) => {
+                                            this.setState({
+                                              tags: values.map(
+                                                (value: any) => value
+                                              )
+                                            });
+                                          }}
+                                          value={tags.map((tag: any) => {
+                                            return tag;
+                                          })}
+                                          optionFilterProp="Tags"
+                                          filterOption={(
+                                            input,
+                                            option: any
+                                          ) => {
+                                            return (
+                                              option.props.children.props.children[1].props.children
+                                                .toLowerCase()
+                                                .indexOf(input.toLowerCase()) >=
+                                              0
+                                            );
+                                          }}
+                                        >
+                                          {categories &&
+                                            categories.map(
+                                              (category, index) => {
+                                                return (
+                                                  category && (
+                                                    <Option
+                                                      value={category.name}
+                                                      key={JSON.stringify(
+                                                        category.id
+                                                      )}
+                                                    >
+                                                      <span
+                                                        style={{
+                                                          display: "flex",
+                                                          justifyContent:
+                                                            "flex-start",
+                                                          alignItems: "center",
+                                                          verticalAlign: "top"
+                                                        }}
+                                                      >
+                                                        {category.topWikiImage && (
+                                                          <img
+                                                            style={{
+                                                              height: "20px",
+                                                              borderRadius: 4
+                                                            }}
+                                                            src={
+                                                              category
+                                                                .topWikiImage
+                                                                .shownImage
+                                                            }
+                                                          />
+                                                        )}
+                                                        <span
+                                                          style={{
+                                                            padding: "0 7px"
+                                                          }}
+                                                        >
+                                                          {category.name}
+                                                        </span>
+                                                      </span>
+                                                    </Option>
+                                                  )
+                                                );
+                                              }
+                                            )}
+                                        </Select>
+                                      );
+                                    } else {
+                                      return null;
+                                    }
+                                  }}
+                                </GetCategoriesByGameIdQuery>
+                              </TagInputHolder>
+                            </TagArea>
+                          </InnerTagContainer>
+                        </TagContainer>
+                      </EditorContentWrapper>
+                    </EditorContentContainer>
+                  </EditorContentFrame>
+                </EditorContentCanvas>
+                <div ref={this.wikiRef}>
+                  <WikiWindow
+                    handleOnChange={this.handleOnChange}
+                    selectedIndex={selectedIndex}
+                    selectedContent={selectedContent}
+                  />
+                </div>
+              </EditorContentFrameLayer>
+            </EditorContentLayer>
+          </EditorContentSection>
         </EditorContainer>
         <input
           type="file"
