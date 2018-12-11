@@ -8,10 +8,9 @@ import {
   DragSourceConnector,
   ConnectDragPreview
 } from "react-dnd";
-import { Value } from "slate";
 import styled from "styled-components";
-import Plain from "slate-plain-serializer";
 import { getEmptyImage } from "react-dnd-html5-backend";
+import { EditorState } from "draft-js";
 
 interface IItemProps {
   opacity: number;
@@ -51,7 +50,7 @@ const itemSource = {
     const item: {
       type: "Text" | "Image" | "Video" | "Divider" | "Table";
       contents: {
-        slateData?: any;
+        editorState?: any;
         imageUrl?: string | null;
         videoUrl?: string | null;
         style?: string | null;
@@ -59,7 +58,7 @@ const itemSource = {
     } = {
       type: props.item.name,
       contents: {
-        slateData: null,
+        editorState: null,
         imageUrl: null,
         videoUrl: null,
         style: null
@@ -71,7 +70,7 @@ const itemSource = {
       case "Video":
         break;
       case "Text":
-        item.contents.slateData = Plain.deserialize("");
+        item.contents.editorState = EditorState.createEmpty();
         break;
       default:
         break;
@@ -147,45 +146,19 @@ class ContentItem extends Component<IProps & IDnDProps> {
           backgroundColor: EditorDefaults.BUTTON_BACKGROUND_COLOR,
           hoverColor: EditorDefaults.BUTTON_HOVER_COLOR,
           link: "http://localhost:3000",
-          value: Value.fromJSON({
-            object: "value",
-            document: {
-              object: "document",
-              data: {},
-              nodes: [
-                {
-                  object: "block",
-                  type: "paragraph",
-                  isVoid: false,
-                  data: {},
-                  nodes: [
-                    {
-                      object: "text",
-                      leaves: [
-                        {
-                          object: "leaf",
-                          text: "BUTTON",
-                          marks: []
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          })
+          editorState: EditorState.createEmpty()
         };
       case "Text":
         return {
-          slateData: Plain.deserialize("")
+          editorState: EditorState.createEmpty()
         };
       case "Html":
         return {
-          value: Plain.deserialize("html code")
+          value: EditorState.createEmpty()
         };
       case "Table":
         return {
-          value: Plain.deserialize("html code")
+          value: EditorState.createEmpty()
         };
       default:
         return null;

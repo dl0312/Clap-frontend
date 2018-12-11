@@ -1,46 +1,15 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Editor, Plugin } from "slate-react";
-import EditorDefaults from "../../../EditorDefaults";
 import classnames from "classnames";
-
-// import { Row, Col } from "antd";
-
-import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
-// import { AlignCenter, AlignLeft, AlignRight } from "@canner/slate-icon-align";
-import Blockquote from "@canner/slate-icon-blockquote";
-import Bold from "@canner/slate-icon-bold";
-// import Clean from "@canner/slate-icon-clean";
-// import Code from "@canner/slate-icon-code";
-// import CodeBlock from "@canner/slate-icon-codeblock";
-// import Emoji, {EmojiPlugin} from '@canner/slate-icon-emoji';
-import FontBgColor from "@canner/slate-icon-fontbgcolor";
-import FontColor from "@canner/slate-icon-fontcolor";
-import { Header1, Header2 } from "@canner/slate-icon-header";
-import Hr from "@canner/slate-icon-hr";
-// import Image from "@canner/slate-icon-image";
-// import { Indent, Outdent } from "@canner/slate-icon-indent";
-import Italic from "@canner/slate-icon-italic";
-import Table from "@canner/slate-icon-table";
-import Link from "@canner/slate-icon-link";
-// import { OlList, UlList } from "@canner/slate-icon-list";
-import StrikeThrough from "@canner/slate-icon-strikethrough";
-import Underline from "@canner/slate-icon-underline";
-import Undo from "@canner/slate-icon-undo";
-import Redo from "@canner/slate-icon-redo";
-import Video from "@canner/slate-icon-video";
-
-// select
-// import FontSize from "@canner/slate-select-fontsize";
-// import LetterSpacing from "@canner/slate-select-letterspacing";
-// import LineHeight from "@canner/slate-select-lineheight";
+import { Editor, EditorState } from "draft-js";
+// import EditorDefaults from "../../../EditorDefaults";
 
 // plugins
-import "prismjs/themes/prism.css";
-import { getCategoryById, getCategoryByIdVariables } from "src/types/api";
-import { Query } from "react-apollo";
-import { CATEGORY } from "src/sharedQueries";
-import { Popover } from "antd";
+// import { getCategoryById, getCategoryByIdVariables } from "src/types/api";
+// import { Query } from "react-apollo";
+// import { CATEGORY } from "src/sharedQueries";
+// import { Popover } from "antd";
+import Bold from "src/Components/BlockIcons/Bold";
 import Delete from "src/Components/BlockIcons/Delete";
 import _ from "lodash";
 import {
@@ -58,38 +27,38 @@ import { findDOMNode } from "react-dom";
 import ItemTypes from "src/ItemTypes";
 import flow from "lodash/flow";
 import { getEmptyImage } from "react-dnd-html5-backend";
+// import { Link } from "react-router-dom";
 // import HoverView from "src/Components/HoverView";
 
-// const selectors = [FontSize, LetterSpacing, LineHeight];
 const icons = [
-  Header1,
-  Header2,
+  // Header1,
+  // Header2,
   Bold,
-  Italic,
-  Underline,
-  StrikeThrough,
-  FontBgColor,
-  FontColor,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Blockquote,
-  // Clean,
-  // Code,
-  // CodeBlock,
-  // Emoji,
-  Hr,
-  // Image,
-  Video,
-  // Indent,
-  // Outdent,
-  Link,
-  // OlList,
-  // UlList,
-  Table,
-  Delete,
-  Undo,
-  Redo
+  // Italic,
+  // Underline,
+  // StrikeThrough,
+  // FontBgColor,
+  // FontColor,
+  // AlignLeft,
+  // AlignCenter,
+  // AlignRight,
+  // Blockquote,
+  // // Clean,
+  // // Code,
+  // // CodeBlock,
+  // // Emoji,
+  // Hr,
+  // // Image,
+  // Video,
+  // // Indent,
+  // // Outdent,
+  // Link,
+  // // OlList,
+  // // UlList,
+  // Table,
+  Delete
+  // Undo,
+  // Redo
 ];
 
 const cardTarget = {
@@ -162,25 +131,23 @@ const DragSourceArea = styled.div`
     url(../img/se_cursor_drag_grab.png), auto;
 `;
 
-interface IClapImageProps {
-  small: boolean;
-  selected: boolean;
-}
+// interface IClapImageProps {
+//   small: boolean;
+// }
 
-const ClapImage = styled<IClapImageProps, any>("img")`
-  width: ${props => (props.small ? "20px" : null)};
-  margin-left: ${props => (props.small ? "2px" : null)};
-  margin-right: ${props => (props.small ? "2px" : null)};
-  max-width: 100%;
-  max-height: 20em;
-  margin-bottom: ${props => (props.small ? "-4px" : null)};
-  box-shadow: ${props => (props.selected ? "0 0 0 2px blue;" : "none")};
-`;
+// const ClapImage = styled<IClapImageProps, any>("img")`
+//   width: ${props => (props.small ? "20px" : null)};
+//   margin-left: ${props => (props.small ? "2px" : null)};
+//   margin-right: ${props => (props.small ? "2px" : null)};
+//   max-width: 100%;
+//   max-height: 20em;
+//   margin-bottom: ${props => (props.small ? "-4px" : null)};
+// `;
 
-const ClapImageText = styled.span`
-  font-weight: bolder;
-  color: ${props => props.color};
-`;
+// const ClapImageText = styled.span`
+//   font-weight: bolder;
+//   color: ${props => props.color};
+// `;
 
 interface IToolbarWrapperProps {
   toolbarState: "follow" | "sticky" | "blind";
@@ -319,31 +286,31 @@ const TextContentWrapper = styled<ITextContentWrapperProps, any>("div")`
 //   line-height: 1.9;
 // `;
 
-class GetCategoryById extends Query<
-  getCategoryById,
-  getCategoryByIdVariables
-> {}
+// class GetCategoryById extends Query<
+//   getCategoryById,
+//   getCategoryByIdVariables
+// > {}
 
 interface ITextContents {
-  slateData: any;
+  editorState: EditorState;
 }
 
 interface IProps {
   index: number;
   device: "PHONE" | "TABLET" | "DESKTOP";
   contents: ITextContents;
-  plugins: Plugin[];
   selected?: boolean;
   hoveredIndex: number | null;
   selectedIndex: number | null;
   callbackfromparent: any;
-  editorRef: any;
   masterCallback: any;
   pushPresentBlockToTargetIndex: any;
   pushNewBlockToTargetIndex: any;
   setTargetIndex: any;
   handleOnChange?: any;
   wikiRef: any;
+  scrollWrapperRef: any;
+  activeEditorRef: any;
 }
 interface IState {
   toolbarState: "follow" | "sticky" | "blind";
@@ -369,11 +336,25 @@ class TextContent extends React.Component<
 > {
   dragSource: any;
   wrapperRef: any;
+  editorRef: any;
+  setEditor: any;
+  focusEditor: any;
   constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
     super(props);
     this.dragSource = React.createRef();
+    this.editorRef = React.createRef();
     this.setWrapperRef = this.setWrapperRef.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
+    this.setEditor = (editor: any) => {
+      this.editorRef = editor;
+    };
+    this.focusEditor = (e: any) => {
+      e.preventDefault();
+      this.setState({ isWriteMode: true });
+      // if (this.editorRef) {
+      //   this.editorRef.focus();
+      // }
+    };
     this.state = {
       toolbarState: "follow",
       isWriteMode: false
@@ -403,7 +384,7 @@ class TextContent extends React.Component<
   componentDidMount() {
     console.log(`mount textcontent`);
     document.addEventListener("mousedown", this.handleClickOutside);
-    this.props.editorRef.current.addEventListener(
+    this.props.scrollWrapperRef.current.addEventListener(
       "scroll",
       this.handleScrollFn
     );
@@ -422,8 +403,8 @@ class TextContent extends React.Component<
   componentWillUnmount() {
     console.log(`unmount textcontent`);
     document.removeEventListener("mousedown", this.handleClickOutside);
-    if (this.props.editorRef.current !== null)
-      this.props.editorRef.current.removeEventListener(
+    if (this.props.scrollWrapperRef.current !== null)
+      this.props.scrollWrapperRef.current.removeEventListener(
         "scroll",
         this.handleScrollFn
       );
@@ -448,13 +429,13 @@ class TextContent extends React.Component<
         this.props.masterCallback("unselect");
       }
       if (this.state.isWriteMode) {
-        this.setState({ isWriteMode: false });
+        this.editorRef.blur();
       }
     }
   }
 
-  onChange = (change: any) => {
-    this.props.handleOnChange(change, this.props.index, "slateData");
+  onChange = (editorState: any) => {
+    this.props.handleOnChange(editorState, this.props.index, "editorState");
   };
 
   /* In case, Mouse Over Container */
@@ -466,7 +447,7 @@ class TextContent extends React.Component<
   /* In case, Mouse Don Container */
   public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    this.setState({ isWriteMode: false });
+    this.editorRef.blur();
     this.props.callbackfromparent("select", this.props.index);
   };
 
@@ -479,11 +460,11 @@ class TextContent extends React.Component<
   public render() {
     const {
       device,
-      contents: { slateData },
+      contents: { editorState },
       index,
       hoveredIndex,
       selectedIndex,
-      plugins,
+      // plugins,
       connectDragSource,
       isDragging
     } = this.props;
@@ -499,14 +480,14 @@ class TextContent extends React.Component<
       : null;
     if (textContentState === "WRITE") {
       document.addEventListener("mousedown", this.handleClickOutside);
-      this.props.editorRef.current.addEventListener(
+      this.props.scrollWrapperRef.current.addEventListener(
         "scroll",
         this.handleScrollFn
       );
     } else {
       document.removeEventListener("mousedown", this.handleClickOutside);
-      if (this.props.editorRef.current !== null)
-        this.props.editorRef.current.removeEventListener(
+      if (this.props.scrollWrapperRef.current !== null)
+        this.props.scrollWrapperRef.current.removeEventListener(
           "scroll",
           this.handleScrollFn
         );
@@ -536,365 +517,48 @@ class TextContent extends React.Component<
               onMouseDown={this.handleOnMouseDown}
               onMouseLeave={this.handleOnMouseLeave}
             />
-            {textContentState === "WRITE" && (
-              <ToolbarWrapper toolbarState={toolbarState}>
-                <Toolbar toolbarState={toolbarState}>
-                  <ButtonContainer>
-                    <ButtonWrapper toolbarState={toolbarState}>
-                      {icons.map((Type, i) => {
-                        return (
-                          <ButtonItem key={i} index={i}>
-                            <Type
-                              change={slateData.change()}
-                              onChange={this.onChange}
-                              callbackfromparent={this.props.callbackfromparent}
-                              index={index}
-                              key={i}
-                              className="toolbar-item"
-                              activeClassName="toolbar-item-active"
-                              disableClassName="toolbar-item-disable"
-                              activeStrokeClassName="ql-stroke-active"
-                              activeFillClassName="ql-fill-active"
-                              activeThinClassName="ql-thin-active"
-                              activeEvenClassName="ql-even-active"
-                            />
-                          </ButtonItem>
-                        );
-                      })}
-                    </ButtonWrapper>
-                  </ButtonContainer>
-                </Toolbar>
-              </ToolbarWrapper>
-            )}
-            <Editor
-              style={{
-                wordBreak: "break-word",
-                fontSize: "16px",
-                color: EditorDefaults.MAIN_TEXT_COLOR
-              }}
-              onClick={(e: any) => {
-                e.preventDefault();
-                this.setState({ isWriteMode: true });
-                this.props.callbackfromparent("select", this.props.index);
-              }}
-              value={slateData}
-              readOnly={false}
-              onChange={this.onChange}
-              placeholder={"Text"}
-              renderNode={this.renderNode}
-              autoCorrect={false}
-              autoFocus={true}
-              spellCheck={false}
-              plugins={plugins}
-            />
-            {/* {textContentState === "WRITE" ? (
+            <ToolbarWrapper toolbarState={toolbarState}>
+              <Toolbar toolbarState={toolbarState}>
+                <ButtonContainer>
+                  <ButtonWrapper toolbarState={toolbarState}>
+                    {icons.map((Type, i) => {
+                      return (
+                        <ButtonItem key={i} index={i}>
+                          <Type
+                            // change={this.props.slateEditorRef.current.change()}
+                            // onChange={this.onChange}
+                            handleOnChange={this.props.handleOnChange}
+                            callbackfromparent={this.props.callbackfromparent}
+                            index={index}
+                            editorState={editorState}
+                          />
+                        </ButtonItem>
+                      );
+                    })}
+                  </ButtonWrapper>
+                </ButtonContainer>
+              </Toolbar>
+            </ToolbarWrapper>
+            <div style={{ position: "relative", zIndex: 2 }}>
               <Editor
-                style={{
-                  wordBreak: "break-word",
-                  fontSize: "16px",
-                  color: EditorDefaults.MAIN_TEXT_COLOR
-                }}
-                value={slateData}
                 readOnly={false}
+                editorState={editorState}
                 onChange={this.onChange}
-                placeholder={"Text"}
-                renderNode={this.renderNode}
-                autoCorrect={false}
-                autoFocus={true}
-                spellCheck={false}
-                plugins={plugins}
-              />
-            ) : (
-              <Editor
-                style={{
-                  wordBreak: "break-word",
-                  fontSize: "16px",
-                  color: EditorDefaults.MAIN_TEXT_COLOR,
-                  cursor: "text"
+                ref={this.setEditor}
+                onFocus={e => {
+                  // e.preventDefault();
+                  // if (!this.state.isWriteMode) {
+                  //   this.setState({ isWriteMode: true });
+                  // }
                 }}
-                onClick={(e: any) => {
-                  e.preventDefault();
-                  this.setState({ isWriteMode: true });
-                }}
-                value={slateData}
-                readOnly={false}
-                onChange={this.onChange}
-                renderNode={this.renderNode}
-                autoCorrect={false}
-                spellCheck={false}
-                plugins={plugins}
+                onBlur={() => this.setState({ isWriteMode: false })}
               />
-            )} */}
+            </div>
           </TextContentWrapper>
         </TextContentContainer>
       </TextContentFrame>
     );
   }
-  public renderNode = (props: any): JSX.Element | undefined => {
-    const { attributes, children, node, isSelected } = props;
-
-    if (node.object === "block" || node.object === "inline") {
-      switch (node.type) {
-        case "block-quote":
-          return <blockquote {...attributes}>{children}</blockquote>;
-        case "bulleted-list":
-          return <ul {...attributes}>{children}</ul>;
-        case "list-item":
-          return <li {...attributes}>{children}</li>;
-        case "numbered-list":
-          return <ol {...attributes}>{children}</ol>;
-        case "clap-image": {
-          const id = node.data.get("id");
-          const name = node.data.get("name");
-          const type = node.data.get("type");
-          console.log(id, type);
-          switch (type) {
-            case "TEXT":
-              return (
-                <GetCategoryById
-                  query={CATEGORY}
-                  fetchPolicy={"cache-and-network"}
-                  variables={{ categoryId: id }}
-                >
-                  {({ loading, data, error }) => {
-                    if (loading)
-                      return (
-                        <ClapImageText
-                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                        >
-                          {name}
-                        </ClapImageText>
-                      );
-                    if (error) return `${error.message}`;
-                    console.log(data);
-                    if (data !== undefined) {
-                      const { category } = data.GetCategoryById;
-                      return (
-                        category &&
-                        category.topWikiImage && (
-                          <Popover
-                            placement="leftTop"
-                            content={
-                              // <HoverView
-                              //   json={JSON.parse(
-                              //     category.topWikiImage.hoverImage
-                              //   )}
-                              // />
-                              `hello`
-                            }
-                            title={
-                              <>
-                                <ClapImage
-                                  small={true}
-                                  src={category.topWikiImage.shownImage}
-                                  alt={"hover"}
-                                  selected={isSelected}
-                                  {...attributes}
-                                />
-                                <ClapImageText
-                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                                >
-                                  {name}
-                                </ClapImageText>
-                              </>
-                            }
-                            trigger="hover"
-                          >
-                            {/* <Link
-                              target="_blank"
-                              style={{
-                                textDecoration: "none"
-                              }}
-                              rel="noopener noreferrer"
-                              to={`/category/read/${category.id}`}
-                            > */}
-                            <ClapImageText
-                              color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                            >
-                              {name}
-                            </ClapImageText>
-                            {/* </Link> */}
-                          </Popover>
-                        )
-                      );
-                    } else {
-                      return null;
-                    }
-                  }}
-                </GetCategoryById>
-              );
-            case "MINI_IMG":
-              return (
-                <GetCategoryById
-                  query={CATEGORY}
-                  fetchPolicy={"cache-and-network"}
-                  variables={{ categoryId: id }}
-                >
-                  {({ loading, data, error }) => {
-                    if (loading)
-                      return (
-                        <ClapImageText
-                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                        >
-                          {name}
-                        </ClapImageText>
-                      );
-                    if (error) return `${error.message}`;
-                    console.log(data);
-                    if (data !== undefined) {
-                      const { category } = data.GetCategoryById;
-                      return (
-                        category &&
-                        category.topWikiImage && (
-                          <Popover
-                            placement="leftTop"
-                            content={
-                              // <HoverView
-                              //   json={JSON.parse(
-                              //     category.topWikiImage.hoverImage
-                              //   )}
-                              // />
-                              `null`
-                            }
-                            title={
-                              <>
-                                <ClapImage
-                                  small={true}
-                                  src={category.topWikiImage.shownImage}
-                                  alt={"hover"}
-                                  selected={isSelected}
-                                  {...attributes}
-                                />
-                                <ClapImageText
-                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                                >
-                                  {name}
-                                </ClapImageText>
-                              </>
-                            }
-                            trigger="hover"
-                          >
-                            {/* <Link
-                              target="_blank"
-                              style={{
-                                textDecoration: "none"
-                              }}
-                              rel="noopener noreferrer"
-                              to={`/category/read/${category.id}`}
-                            > */}
-                            <ClapImage
-                              small={true}
-                              src={category.topWikiImage.shownImage}
-                              alt={"hover"}
-                              selected={isSelected}
-                              {...attributes}
-                            />
-                            <ClapImageText
-                              color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                            >
-                              {name}
-                            </ClapImageText>
-                            {/* </Link> */}
-                          </Popover>
-                        )
-                      );
-                    } else {
-                      return null;
-                    }
-                  }}
-                </GetCategoryById>
-              );
-            case "NORMAL_IMG":
-              return (
-                <GetCategoryById
-                  query={CATEGORY}
-                  fetchPolicy={"cache-and-network"}
-                  variables={{ categoryId: id }}
-                >
-                  {({ loading, data, error }) => {
-                    if (loading)
-                      return (
-                        <ClapImageText
-                          color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                        >
-                          {name}
-                        </ClapImageText>
-                      );
-                    if (error) return `${error.message}`;
-                    if (data !== undefined) {
-                      const { category } = data.GetCategoryById;
-                      return (
-                        category &&
-                        category.topWikiImage && (
-                          <Popover
-                            placement="leftTop"
-                            content={
-                              // <HoverView
-                              //   json={JSON.parse(
-                              //     category.topWikiImage.hoverImage
-                              //   )}
-                              // />
-                              null
-                            }
-                            title={
-                              <>
-                                <ClapImage
-                                  small={true}
-                                  src={category.topWikiImage.shownImage}
-                                  alt={"hover"}
-                                  selected={isSelected}
-                                  {...attributes}
-                                />
-                                <ClapImageText
-                                  color={EditorDefaults.CLAP_IMG_TEXT_COLOR}
-                                >
-                                  {name}
-                                </ClapImageText>
-                              </>
-                            }
-                            trigger="hover"
-                          >
-                            <Link
-                              target="_blank"
-                              style={{
-                                height: "100%",
-                                textDecoration: "none",
-                                display: "inline-flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-
-                                verticalAlign: "top"
-                              }}
-                              rel="noopener noreferrer"
-                              to={`/category/read/${category.id}`}
-                            >
-                              <ClapImage
-                                src={category.topWikiImage.shownImage}
-                                alt={"hover"}
-                                selected={isSelected}
-                                {...attributes}
-                              />
-                            </Link>
-                          </Popover>
-                        )
-                      );
-                    } else {
-                      return null;
-                    }
-                  }}
-                </GetCategoryById>
-              );
-            default:
-              return;
-          }
-        }
-        default:
-          return;
-      }
-    } else {
-      return;
-    }
-  };
 }
 
 export default flow(

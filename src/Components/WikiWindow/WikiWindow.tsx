@@ -44,6 +44,7 @@ interface IProps {
   handleOnChange: any;
   selectedIndex: number | null;
   selectedContent: any;
+  activeEditorRef: any;
 }
 
 interface IState {
@@ -54,7 +55,7 @@ class WikiWindow extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      isWikiWindowOpen: true
+      isWikiWindowOpen: false
     };
   }
 
@@ -77,6 +78,7 @@ class WikiWindow extends React.Component<IProps, IState> {
             handleOnChange={handleOnChange}
             selectedIndex={selectedIndex}
             selectedContent={selectedContent}
+            activeEditorRef={this.props.activeEditorRef}
           />
         </WikiContainer>
       </WikiWindowContainer>

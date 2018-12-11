@@ -1,7 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
 import Sketch from "../../Utility/Sketch";
-import MiniWiki from "../MiniWiki";
 // import Upload from "../Upload";
 // import { Switch } from "antd";
 // import onClickOutside from "react-onclickoutside";
@@ -484,11 +483,6 @@ class BlockOptions extends React.Component<IProps, any> {
                     </Align>
                   </ActionColumn>
                 </FunctionColumn> */}
-                  <MiniWiki
-                    handleOnChange={handleOnChange}
-                    selectedIndex={selectedIndex}
-                    selectedContent={selectedContent}
-                  />
                 </FeatureColumn>
               </Option>
             </OptionRows>

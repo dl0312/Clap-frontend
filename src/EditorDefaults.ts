@@ -1,4 +1,4 @@
-import Plain from "slate-plain-serializer";
+import { EditorState } from "draft-js";
 
 export default {
   // Content
@@ -33,7 +33,7 @@ export default {
     {
       type: "Text",
       contents: {
-        slateData: Plain.deserialize("")
+        editorState: EditorState.createEmpty()
       }
     }
   ],

@@ -4,7 +4,6 @@ import { Helmet } from "react-helmet";
 import { Query } from "react-apollo";
 import ImagePopup from "../ImagePopup";
 import { CATEGORIES_KEYWORD } from "../../sharedQueries";
-import { Change } from "slate";
 import {
   getCategoriesByKeyword,
   getCategoriesByKeywordVariables
@@ -90,28 +89,11 @@ const DataContainer = styled.div`
   vertical-align: top;
 `;
 
-function insertImage(
-  change: Change,
-  id: number,
-  name: string,
-  type: string,
-  target: any
-) {
-  if (target) {
-    change.select(target);
-  }
-  change.insertInline({
-    data: { id, name, type },
-    key: JSON.stringify(id),
-    type: "clap-image",
-    isVoid: true
-  });
-}
-
 interface IProps {
   handleOnChange: any;
   selectedIndex: number | number[] | null;
   selectedContent: any;
+  activeEditorRef: any;
 }
 
 interface IState {
@@ -207,24 +189,25 @@ class MiniWiki extends React.Component<IProps, IState> {
                         }}
                       >
                         <DataContainer
-                          onClick={() => {
-                            console.log(this.props);
+                          onClick={e => {
+                            e.preventDefault();
+                            console.log(this.props.activeEditorRef.current);
                             const id = category.id;
-                            const change = this.props.selectedContent.contents.slateData
-                              .change()
-                              .call(
-                                insertImage,
-                                id,
-                                category.name,
-                                this.state.inputType
-                              )
+                            const type = this.state.inputType;
+                            this.props.activeEditorRef.current
+                              .insertInline({
+                                data: { id, name, type },
+                                key: JSON.stringify(id),
+                                type: "clap-image",
+                                isVoid: true
+                              })
                               .moveToStartOfNextText()
                               .focus();
-                            this.props.handleOnChange(
-                              change,
-                              this.props.selectedIndex,
-                              "slateData"
-                            );
+                            // this.props.handleOnChange(
+                            //   change,
+                            //   this.props.selectedIndex,
+                            //   "slateData"
+                            // );
                           }}
                         >
                           {category.topWikiImage && (

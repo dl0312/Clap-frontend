@@ -32,6 +32,7 @@ import Container from "../Container";
 import Builder from "../Builder";
 import { media } from "src/config/_mixin";
 import WikiWindow from "../WikiWindow";
+import { EditorState } from "draft-js";
 const Option = Select.Option;
 
 interface IEditorContainerProps {
@@ -383,14 +384,16 @@ interface IState {
 
 class Editor extends React.Component<IProps, IState, any> {
   inputElement: any;
-  editorRef: any;
   titleImageButton: any;
   handler: any;
   wikiRef: any;
+  scrollWrapperRef: any;
+  activeEditorRef: any;
   constructor(props: IProps) {
     super(props);
-    this.editorRef = React.createRef();
+    this.scrollWrapperRef = React.createRef();
     this.wikiRef = React.createRef();
+    this.activeEditorRef = React.createRef();
     this.moveCard = this.moveCard.bind(this);
     this.onUnload = this.onUnload.bind(this);
     this.state = {
@@ -488,16 +491,46 @@ class Editor extends React.Component<IProps, IState, any> {
       }
     } else if (type === "delete") {
       // frame
-      if (selectedIndex === dataFromChild) {
-        this.setState({ selectedIndex: null, selectedContent: null });
+      this.setState({ selectedIndex: null, selectedContent: null });
+      if (this.state.cards.length === 1) {
+        this.setState(
+          update(this.state, {
+            cards: {
+              $splice: [[dataFromChild, 1]]
+            }
+          }),
+          () =>
+            this.setState({
+              cards: [
+                {
+                  type: "Text",
+                  contents: {
+                    editorState: EditorState.createEmpty()
+                  }
+                }
+              ]
+            })
+        );
+      } else {
+        this.setState(
+          update(this.state, {
+            cards: {
+              $splice: [[dataFromChild, 1]]
+            }
+          })
+        );
       }
-      this.setState(
-        update(this.state, {
-          cards: {
-            $splice: [[dataFromChild, 1]]
+
+      this.setState({
+        cards: [
+          {
+            type: "Text",
+            contents: {
+              editorState: EditorState.createEmpty()
+            }
           }
-        })
-      );
+        ]
+      });
     } else if (type === "duplicate") {
       const targetCard = JSON.parse(JSON.stringify(cards[dataFromChild]));
       this.setState(
@@ -769,6 +802,7 @@ class Editor extends React.Component<IProps, IState, any> {
       targetIndex,
       isDragging
     } = this.state;
+
     return (
       <React.Fragment>
         <EditorContainer type={type}>
@@ -881,7 +915,10 @@ class Editor extends React.Component<IProps, IState, any> {
             />
             <EditorContentLayer>
               <EditorContentFrameLayer>
-                <EditorContentCanvas device={device} innerRef={this.editorRef}>
+                <EditorContentCanvas
+                  device={device}
+                  innerRef={this.scrollWrapperRef}
+                >
                   <EditorContentFrame>
                     <EditorContentContainer>
                       <EditorContentWrapper id="container">
@@ -1004,7 +1041,6 @@ class Editor extends React.Component<IProps, IState, any> {
                               </TitleContainer>
                             </TitleWrapper>
                           </TitleFrame>
-
                           {cards.length !== 0 ? (
                             <React.Fragment>
                               <Builder
@@ -1042,7 +1078,6 @@ class Editor extends React.Component<IProps, IState, any> {
                                       handleOnClickImageChange={
                                         this.handleOnClickImageChange
                                       }
-                                      editorRef={this.editorRef}
                                       setInitialImageContents={
                                         this.setInitialImageContents
                                       }
@@ -1051,6 +1086,8 @@ class Editor extends React.Component<IProps, IState, any> {
                                       }
                                       device={device}
                                       wikiRef={this.wikiRef}
+                                      scrollWrapperRef={this.scrollWrapperRef}
+                                      activeEditorRef={this.activeEditorRef}
                                     />
                                     <Builder
                                       index={index + 1}
@@ -1195,6 +1232,7 @@ class Editor extends React.Component<IProps, IState, any> {
                     handleOnChange={this.handleOnChange}
                     selectedIndex={selectedIndex}
                     selectedContent={selectedContent}
+                    activeEditorRef={this.activeEditorRef}
                   />
                 </div>
               </EditorContentFrameLayer>
@@ -1472,7 +1510,7 @@ class Editor extends React.Component<IProps, IState, any> {
     value: any,
     index: number,
     type:
-      | "slateData"
+      | "editorState"
       | "description"
       | "imageUrl"
       | "videoUrl"
@@ -1486,13 +1524,13 @@ class Editor extends React.Component<IProps, IState, any> {
       | "currentImageHeight"
   ) => {
     console.log(value, index, type);
-    if (type === "slateData") {
+    if (type === "editorState") {
       this.setState(
         update(this.state, {
           cards: {
             [index]: {
               contents: {
-                slateData: { $set: value.value }
+                editorState: { $set: value }
               }
             }
           }

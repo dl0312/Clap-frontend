@@ -307,13 +307,13 @@ interface IProps {
   selectedIndex: number | null;
   callbackfromparent: any;
   handleOnClickImageChange: any;
-  editorRef: any;
   masterCallback: any;
   setInitialImageContents: any;
   changeImageSizeFromCurrentToTarget: any;
   pushPresentBlockToTargetIndex: any;
   pushNewBlockToTargetIndex: any;
   setTargetIndex: any;
+  scrollWrapperRef: any;
 }
 
 interface IState {
@@ -395,7 +395,7 @@ class ImageContent extends React.Component<
   componentDidMount() {
     console.log(`mount textcontent`);
     document.addEventListener("mousedown", this.handleClickOutside);
-    this.props.editorRef.current.addEventListener(
+    this.props.scrollWrapperRef.current.addEventListener(
       "scroll",
       this.handleScrollFn
     );
@@ -414,8 +414,8 @@ class ImageContent extends React.Component<
   componentWillUnmount() {
     console.log(`unmount textcontent`);
     document.removeEventListener("mousedown", this.handleClickOutside);
-    if (this.props.editorRef.current !== null)
-      this.props.editorRef.current.removeEventListener(
+    if (this.props.scrollWrapperRef.current !== null)
+      this.props.scrollWrapperRef.current.removeEventListener(
         "scroll",
         this.handleScrollFn
       );
@@ -484,14 +484,14 @@ class ImageContent extends React.Component<
     const active: boolean = selectedIndex === index;
     if (selected) {
       document.addEventListener("mousedown", this.handleClickOutside);
-      this.props.editorRef.current.addEventListener(
+      this.props.scrollWrapperRef.current.addEventListener(
         "scroll",
         this.handleScrollFn
       );
     } else {
       document.removeEventListener("mousedown", this.handleClickOutside);
-      if (this.props.editorRef.current !== null)
-        this.props.editorRef.current.removeEventListener(
+      if (this.props.scrollWrapperRef.current !== null)
+        this.props.scrollWrapperRef.current.removeEventListener(
           "scroll",
           this.handleScrollFn
         );

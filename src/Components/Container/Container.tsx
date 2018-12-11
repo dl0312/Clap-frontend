@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Value } from "slate";
 // import EditorDefaults from "../../EditorDefaults";
 // import ContentBox from "../ContentBox";
 
@@ -11,101 +10,9 @@ import TextContent from "../ContentItems/TextContent";
 // import VideoContent from "../ContentItems/VideoContent";
 // import SocialMediaContent from "../ContentItems/SocialMediaContent";
 
-import {
-  AlignCenterPlugin,
-  AlignLeftPlugin,
-  AlignRightPlugin
-} from "@canner/slate-icon-align";
-import { BlockquotePlugin } from "@canner/slate-icon-blockquote";
-import { BoldPlugin } from "@canner/slate-icon-bold";
-import { CleanPlugin } from "@canner/slate-icon-clean";
-import { CodePlugin } from "@canner/slate-icon-code";
-import { CodeBlockPlugin } from "@canner/slate-icon-codeblock";
-// import Emoji, {EmojiPlugin} from '@canner/slate-icon-emoji';
-import { FontBgColorPlugin } from "@canner/slate-icon-fontbgcolor";
-import { FontColorPlugin } from "@canner/slate-icon-fontcolor";
-import {
-  HeaderOnePlugin,
-  HeaderTwoPlugin,
-  HeaderThreePlugin
-} from "@canner/slate-icon-header";
-import { HrPlugin } from "@canner/slate-icon-hr";
-import { ImagePlugin } from "@canner/slate-icon-image";
-import { ItalicPlugin } from "@canner/slate-icon-italic";
-import { TablePlugin } from "@canner/slate-icon-table";
-// import { TablePlugin } from "@canner/slate-icon-table";
-import { LinkPlugin } from "@canner/slate-icon-link";
-import { ListPlugin } from "@canner/slate-icon-list";
-import { StrikeThroughPlugin } from "@canner/slate-icon-strikethrough";
-import { UnderlinePlugin } from "@canner/slate-icon-underline";
-import { RedoPlugin } from "@canner/slate-icon-redo";
-import { VideoPlugin } from "@canner/slate-icon-video";
-
-// select
-// import { FontSizePlugin } from "@canner/slate-select-fontsize";
-// import { LetterSpacingPlugin } from "@canner/slate-select-letterspacing";
-
-// plugins
-import { DEFAULT as DEFAULTLIST } from "@canner/slate-helper-block-list";
-import { DEFAULT as DEFAULTBLOCKQUOTE } from "@canner/slate-helper-block-quote";
-import EditList from "slate-edit-list";
-import EditBlockquote from "slate-edit-blockquote";
-import { ParagraphPlugin } from "@canner/slate-icon-shared";
-import copyPastePlugin from "@canner/slate-paste-html-plugin";
-
-import EditPrism from "slate-prism";
-import EditCode from "slate-edit-code";
-import TrailingBlock from "slate-trailing-block";
-import EditTable from "slate-edit-table";
 import ImageContent from "../ContentItems/ImageContent";
 import VideoContent from "../ContentItems/VideoContent";
-
-const plugins = [
-  EditPrism({
-    onlyIn: (node: any) => node.type === "code_block",
-    getSyntax: (node: any) => node.data.get("syntax")
-  }),
-  EditCode({
-    onlyIn: (node: any) => node.type === "code_block"
-  }),
-  TrailingBlock(),
-  EditTable(),
-  EditList(DEFAULTLIST),
-  EditBlockquote(DEFAULTBLOCKQUOTE),
-  AlignCenterPlugin(),
-  AlignRightPlugin(),
-  AlignLeftPlugin(),
-  ParagraphPlugin(),
-  BlockquotePlugin(),
-  BoldPlugin(),
-  CleanPlugin(),
-  CodePlugin(),
-  CodeBlockPlugin(),
-  FontBgColorPlugin({
-    backgroundColor: (mark: any) =>
-      mark.data.get("color") && mark.data.get("color").color
-  }),
-  FontColorPlugin({
-    color: (mark: any) => mark.data.get("color") && mark.data.get("color").color
-  }),
-  ItalicPlugin(),
-  StrikeThroughPlugin(),
-  UnderlinePlugin(),
-  // FontSizePlugin(),
-  // LetterSpacingPlugin(),
-  TablePlugin(),
-  // EmojiPlugin(),
-  HeaderOnePlugin(),
-  HeaderTwoPlugin(),
-  HeaderThreePlugin(),
-  RedoPlugin(),
-  HrPlugin(),
-  ImagePlugin(),
-  LinkPlugin(),
-  ListPlugin(),
-  VideoPlugin(),
-  copyPastePlugin()
-];
+import { EditorState } from "draft-js";
 
 interface IProps {
   // Action to Parent Component
@@ -131,15 +38,16 @@ interface IProps {
   pushPresentBlockToTargetIndex: any;
   pushNewBlockToTargetIndex: any;
   handleOnClickImageChange: any;
-  editorRef: any;
   setInitialImageContents: any;
   changeImageSizeFromCurrentToTarget: any;
   device: "PHONE" | "TABLET" | "DESKTOP";
   wikiRef: any;
+  scrollWrapperRef: any;
+  activeEditorRef: any;
 }
 
 interface ITextContents {
-  slateData: any;
+  editorState: EditorState;
 }
 
 interface IImageContents {
@@ -191,7 +99,6 @@ class Container extends React.Component<IProps, any> {
             handleOnChange={this.props.handleOnChange}
             callbackfromparent={this.props.callbackfromparent}
             handleOnClickImageChange={this.props.handleOnClickImageChange}
-            editorRef={this.props.editorRef}
             masterCallback={this.props.masterCallback}
             setInitialImageContents={this.props.setInitialImageContents}
             changeImageSizeFromCurrentToTarget={
@@ -202,32 +109,20 @@ class Container extends React.Component<IProps, any> {
             }
             pushNewBlockToTargetIndex={this.props.pushNewBlockToTargetIndex}
             setTargetIndex={this.props.setTargetIndex}
+            scrollWrapperRef={this.props.scrollWrapperRef}
           />
         );
       case "Text":
-        if (!Value.isValue(this.props.contents.slateData)) {
-          const slatifiedData = Value.fromJSON(this.props.contents.slateData);
-          console.log(slatifiedData);
-          this.props.handleOnChange(
-            { slatifiedData },
-            this.props.index,
-            "TEXT_CHANGE"
-          );
-        } else {
-          // console.log(`data is slate friendly`);
-        }
         return (
           <TextContent
             index={this.props.index}
             device={this.props.device}
             contents={this.props.contents}
-            plugins={plugins}
             selected={selected}
             hoveredIndex={this.props.hoveredIndex}
             selectedIndex={this.props.selectedIndex}
             handleOnChange={this.props.handleOnChange}
             callbackfromparent={this.props.callbackfromparent}
-            editorRef={this.props.editorRef}
             masterCallback={this.props.masterCallback}
             pushPresentBlockToTargetIndex={
               this.props.pushPresentBlockToTargetIndex
@@ -235,6 +130,8 @@ class Container extends React.Component<IProps, any> {
             pushNewBlockToTargetIndex={this.props.pushNewBlockToTargetIndex}
             setTargetIndex={this.props.setTargetIndex}
             wikiRef={this.props.wikiRef}
+            scrollWrapperRef={this.props.scrollWrapperRef}
+            activeEditorRef={this.props.activeEditorRef}
           />
         );
       case "Video":
