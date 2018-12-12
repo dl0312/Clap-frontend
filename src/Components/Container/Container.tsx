@@ -40,6 +40,7 @@ interface IProps {
   handleOnClickImageChange: any;
   setInitialImageContents: any;
   changeImageSizeFromCurrentToTarget: any;
+  gameId: number;
   device: "PHONE" | "TABLET" | "DESKTOP";
   wikiRef: any;
   scrollWrapperRef: any;
@@ -129,6 +130,7 @@ class Container extends React.Component<IProps, any> {
             }
             pushNewBlockToTargetIndex={this.props.pushNewBlockToTargetIndex}
             setTargetIndex={this.props.setTargetIndex}
+            gameId={this.props.gameId}
             wikiRef={this.props.wikiRef}
             scrollWrapperRef={this.props.scrollWrapperRef}
             activeEditorRef={this.props.activeEditorRef}

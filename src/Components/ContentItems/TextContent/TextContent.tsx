@@ -1,7 +1,14 @@
 import * as React from "react";
 import styled from "styled-components";
 import classnames from "classnames";
-import { Editor, EditorState } from "draft-js";
+import { EditorState } from "draft-js";
+import Editor from "draft-js-plugins-editor";
+import createMentionPlugin, {
+  defaultSuggestionsFilter
+} from "draft-js-mention-plugin";
+import createEmojiPlugin from "draft-js-emoji-plugin";
+const mentionPlugin = createMentionPlugin();
+const emojiPlugin = createEmojiPlugin();
 // import EditorDefaults from "../../../EditorDefaults";
 
 // plugins
@@ -10,6 +17,11 @@ import { Editor, EditorState } from "draft-js";
 // import { CATEGORY } from "src/sharedQueries";
 // import { Popover } from "antd";
 import Bold from "src/Components/BlockIcons/Bold";
+import Italic from "src/Components/BlockIcons/Italic";
+import Underline from "src/Components/BlockIcons/Underline";
+import StrikeThrough from "src/Components/BlockIcons/StrikeThrough";
+import Emoji from "src/Components/BlockIcons/Emoji";
+
 import Delete from "src/Components/BlockIcons/Delete";
 import _ from "lodash";
 import {
@@ -27,6 +39,13 @@ import { findDOMNode } from "react-dom";
 import ItemTypes from "src/ItemTypes";
 import flow from "lodash/flow";
 import { getEmptyImage } from "react-dnd-html5-backend";
+import {
+  getCategoriesByGameId,
+  getCategoriesByGameIdVariables
+} from "src/types/api";
+import { Query } from "react-apollo";
+import { GET_CATEGORIES_BY_GAME_ID } from "src/sharedQueries";
+
 // import { Link } from "react-router-dom";
 // import HoverView from "src/Components/HoverView";
 
@@ -34,9 +53,10 @@ const icons = [
   // Header1,
   // Header2,
   Bold,
-  // Italic,
-  // Underline,
-  // StrikeThrough,
+  Italic,
+  Underline,
+  StrikeThrough,
+  Emoji,
   // FontBgColor,
   // FontColor,
   // AlignLeft,
@@ -60,6 +80,8 @@ const icons = [
   // Undo,
   // Redo
 ];
+
+const plugins = [mentionPlugin, emojiPlugin];
 
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: TextContent) {
@@ -170,7 +192,7 @@ interface IToolbarProps {
 const Toolbar = styled<IToolbarProps, any>("div")`
   width: 100%;
   position: absolute;
-  top: ${props => (props.toolbarState === "sticky" ? "-16px" : "-54px")};
+  top: ${props => (props.toolbarState === "sticky" ? "-16px" : "-56px")};
   left: -10px;
   height: 0;
   margin: auto;
@@ -223,8 +245,8 @@ interface IButtonItemProps {
 
 const ButtonItem = styled<IButtonItemProps, any>("li")`
   border-right: ${props =>
-    props.index === 1 ||
-    props.index === 7 ||
+    props.index === 3 ||
+    props.index === 4 ||
     props.index === 11 ||
     props.index === 15
       ? "1px solid rgba(0, 0, 0, 0.1)"
@@ -295,6 +317,11 @@ interface ITextContents {
   editorState: EditorState;
 }
 
+class GetCategoriesByGameIdQuery extends Query<
+  getCategoriesByGameId,
+  getCategoriesByGameIdVariables
+> {}
+
 interface IProps {
   index: number;
   device: "PHONE" | "TABLET" | "DESKTOP";
@@ -311,10 +338,13 @@ interface IProps {
   wikiRef: any;
   scrollWrapperRef: any;
   activeEditorRef: any;
+  gameId: any;
 }
 interface IState {
   toolbarState: "follow" | "sticky" | "blind";
   isWriteMode: boolean;
+  suggestions: any;
+  mentions: any;
 }
 
 interface IDnDTargetProps {
@@ -345,6 +375,7 @@ class TextContent extends React.Component<
     this.editorRef = React.createRef();
     this.setWrapperRef = this.setWrapperRef.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
+
     this.setEditor = (editor: any) => {
       this.editorRef = editor;
     };
@@ -357,7 +388,9 @@ class TextContent extends React.Component<
     };
     this.state = {
       toolbarState: "follow",
-      isWriteMode: false
+      isWriteMode: false,
+      suggestions: [],
+      mentions: []
     };
   }
 
@@ -438,6 +471,16 @@ class TextContent extends React.Component<
     this.props.handleOnChange(editorState, this.props.index, "editorState");
   };
 
+  onSearchChange = ({ value }: any) => {
+    this.setState({
+      suggestions: defaultSuggestionsFilter(value, this.state.mentions)
+    });
+  };
+
+  onAddMention = () => {
+    // get the mention object selected
+  };
+
   /* In case, Mouse Over Container */
   public handleOnMouseOver = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -458,12 +501,14 @@ class TextContent extends React.Component<
   };
 
   public render() {
+    const { MentionSuggestions } = mentionPlugin;
     const {
       device,
       contents: { editorState },
       index,
       hoveredIndex,
       selectedIndex,
+      gameId,
       // plugins,
       connectDragSource,
       isDragging
@@ -525,12 +570,14 @@ class TextContent extends React.Component<
                       return (
                         <ButtonItem key={i} index={i}>
                           <Type
-                            // change={this.props.slateEditorRef.current.change()}
-                            // onChange={this.onChange}
                             handleOnChange={this.props.handleOnChange}
                             callbackfromparent={this.props.callbackfromparent}
                             index={index}
                             editorState={editorState}
+                            plugins={plugins}
+                            active={editorState
+                              .getCurrentInlineStyle()
+                              .has(Type.name.toUpperCase())}
                           />
                         </ButtonItem>
                       );
@@ -545,13 +592,51 @@ class TextContent extends React.Component<
                 editorState={editorState}
                 onChange={this.onChange}
                 ref={this.setEditor}
-                onFocus={e => {
-                  // e.preventDefault();
-                  // if (!this.state.isWriteMode) {
-                  //   this.setState({ isWriteMode: true });
-                  // }
-                }}
+                textAlignment={"Right"}
+                // onFocus={(e: any) => {
+                // e.preventDefault();
+                // if (!this.state.isWriteMode) {
+                //   this.setState({ isWriteMode: true });
+                // }
+                // }}
+                plugins={plugins}
                 onBlur={() => this.setState({ isWriteMode: false })}
+              />
+              <GetCategoriesByGameIdQuery
+                query={GET_CATEGORIES_BY_GAME_ID}
+                variables={{ gameId }}
+                onCompleted={data => {
+                  if ("GetCategoriesByGameId" in data) {
+                    const {
+                      GetCategoriesByGameId: { categories }
+                    } = data;
+                    if (categories !== null) {
+                      this.setState({
+                        mentions: categories.map((category, index) => {
+                          return {
+                            name: category && category.name,
+                            avatar:
+                              category &&
+                              category.topWikiImage &&
+                              category.topWikiImage.shownImage
+                          };
+                        })
+                      });
+                    }
+                  }
+                }}
+              >
+                {({ loading, error, data }) => {
+                  if (loading) {
+                    return `Loading`;
+                  }
+                  if (error) return `${error}`;
+                  return null;
+                }}
+              </GetCategoriesByGameIdQuery>
+              <MentionSuggestions
+                onSearchChange={this.onSearchChange}
+                suggestions={this.state.suggestions}
               />
             </div>
           </TextContentWrapper>

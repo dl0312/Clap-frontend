@@ -28,10 +28,10 @@ interface IProps {
   active: boolean;
 }
 
-class Bold extends React.Component<IProps, any> {
-  onBoldClick = () => {
+class StrikeThrough extends React.Component<IProps, any> {
+  onStrikeThroughClick = () => {
     this.props.handleOnChange(
-      RichUtils.toggleInlineStyle(this.props.editorState, "BOLD"),
+      RichUtils.toggleInlineStyle(this.props.editorState, "STRIKETHROUGH"),
       this.props.index,
       "editorState"
     );
@@ -39,11 +39,14 @@ class Bold extends React.Component<IProps, any> {
 
   public render() {
     return (
-      <div title={"Bold"} onClick={this.onBoldClick}>
-        <ButtonIcon active={this.props.active} className="fas fa-bold" />
+      <div title={"StrikeThrough"} onClick={this.onStrikeThroughClick}>
+        <ButtonIcon
+          active={this.props.active}
+          className="fas fa-strikethrough"
+        />
       </div>
     );
   }
 }
 
-export default Bold;
+export default StrikeThrough;

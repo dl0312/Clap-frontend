@@ -28,10 +28,10 @@ interface IProps {
   active: boolean;
 }
 
-class Bold extends React.Component<IProps, any> {
-  onBoldClick = () => {
+class Italic extends React.Component<IProps, any> {
+  onItalicClick = () => {
     this.props.handleOnChange(
-      RichUtils.toggleInlineStyle(this.props.editorState, "BOLD"),
+      RichUtils.toggleInlineStyle(this.props.editorState, "ITALIC"),
       this.props.index,
       "editorState"
     );
@@ -39,11 +39,11 @@ class Bold extends React.Component<IProps, any> {
 
   public render() {
     return (
-      <div title={"Bold"} onClick={this.onBoldClick}>
-        <ButtonIcon active={this.props.active} className="fas fa-bold" />
+      <div title={"Italic"} onClick={this.onItalicClick}>
+        <ButtonIcon active={this.props.active} className="fas fa-italic" />
       </div>
     );
   }
 }
 
-export default Bold;
+export default Italic;

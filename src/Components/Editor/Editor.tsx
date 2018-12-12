@@ -1084,6 +1084,7 @@ class Editor extends React.Component<IProps, IState, any> {
                                       changeImageSizeFromCurrentToTarget={
                                         this.changeImageSizeFromCurrentToTarget
                                       }
+                                      gameId={gameId}
                                       device={device}
                                       wikiRef={this.wikiRef}
                                       scrollWrapperRef={this.scrollWrapperRef}
@@ -1523,7 +1524,6 @@ class Editor extends React.Component<IProps, IState, any> {
       | "currentImageWidth"
       | "currentImageHeight"
   ) => {
-    console.log(value, index, type);
     if (type === "editorState") {
       this.setState(
         update(this.state, {

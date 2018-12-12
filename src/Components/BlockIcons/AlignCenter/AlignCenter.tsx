@@ -19,8 +19,8 @@ const ButtonIcon = styled<IButtonIconProps, any>("i")`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => (props.imageStyle === "alignCenter" ? "#00bcd4" : null)};
   cursor: pointer;
+  color: ${props => (props.imageStyle === "alignCenter" ? "#00bcd4" : null)};
   opacity: ${props => (props.imageStyle === "alignCenter" ? "1" : "0.65")};
   transition: 0.2s ease;
   &:hover {

@@ -25,7 +25,7 @@ class Delete extends React.Component<IProps, any> {
     const { callbackfromparent, index } = this.props;
     return (
       <div onClick={() => callbackfromparent("delete", index)}>
-        <ButtonIcon className="far fa-trash-alt" />
+        <ButtonIcon title={"Delete"} className="far fa-trash-alt" />
       </div>
     );
   }

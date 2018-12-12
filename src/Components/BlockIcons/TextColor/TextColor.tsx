@@ -28,8 +28,8 @@ interface IProps {
   active: boolean;
 }
 
-class Bold extends React.Component<IProps, any> {
-  onBoldClick = () => {
+class TextColor extends React.Component<IProps, any> {
+  onTextColorClick = () => {
     this.props.handleOnChange(
       RichUtils.toggleInlineStyle(this.props.editorState, "BOLD"),
       this.props.index,
@@ -39,11 +39,11 @@ class Bold extends React.Component<IProps, any> {
 
   public render() {
     return (
-      <div title={"Bold"} onClick={this.onBoldClick}>
+      <div title={"TextColor"} onClick={this.onTextColorClick}>
         <ButtonIcon active={this.props.active} className="fas fa-bold" />
       </div>
     );
   }
 }
 
-export default Bold;
+export default TextColor;
