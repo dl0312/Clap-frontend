@@ -24,7 +24,6 @@ interface IProps {
   handleOnChange: any;
   index: number;
   editorState: EditorState;
-  active: boolean;
   plugins: any;
 }
 

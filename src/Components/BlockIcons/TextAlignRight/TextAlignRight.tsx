@@ -23,30 +23,24 @@ const ButtonIcon = styled<IButtonIconProps, any>("i")`
 interface IProps {
   handleOnChange: any;
   index: number;
-  contents: any;
+  style: string;
+  active: boolean;
 }
 
-class AlignCenter extends React.Component<IProps, any> {
+class TextAlignRight extends React.Component<IProps, any> {
   public render() {
-    const {
-      handleOnChange,
-      index,
-      contents: { style }
-    } = this.props;
-    const active = style === "alignCenter";
+    const { handleOnChange, index, style } = this.props;
+    const active = style === "right";
     return (
-      <div
-        title={"Align Center"}
-        onClick={() => handleOnChange("alignCenter", index, "style")}
-      >
+      <div onClick={() => handleOnChange("right", index, "style")}>
         <ButtonIcon
-          title={"AlignCenter"}
+          title={"AlignRight"}
           active={active}
-          className="fas fa-align-center"
+          className="fas fa-align-right"
         />
       </div>
     );
   }
 }
 
-export default AlignCenter;
+export default TextAlignRight;

@@ -25,7 +25,6 @@ interface IProps {
   handleOnChange: any;
   index: number;
   editorState: EditorState;
-  active: boolean;
 }
 
 class Bold extends React.Component<IProps, any> {
@@ -38,9 +37,10 @@ class Bold extends React.Component<IProps, any> {
   };
 
   public render() {
+    const active = this.props.editorState.getCurrentInlineStyle().has("BOLD");
     return (
       <div title={"Bold"} onClick={this.onBoldClick}>
-        <ButtonIcon active={this.props.active} className="fas fa-bold" />
+        <ButtonIcon active={active} className="fas fa-bold" />
       </div>
     );
   }

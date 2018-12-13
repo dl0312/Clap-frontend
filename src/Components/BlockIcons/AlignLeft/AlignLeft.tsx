@@ -2,15 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 interface IButtonIconProps {
-  imageStyle:
-    | "fullWidth"
-    | "alignLeft"
-    | "alignCenter"
-    | "alignRight"
-    | "withManyTextLeft"
-    | "withManyTextRight"
-    | "withLessTextLeft"
-    | "withLessTextRight";
+  active: boolean;
 }
 
 const ButtonIcon = styled<IButtonIconProps, any>("i")`
@@ -19,9 +11,9 @@ const ButtonIcon = styled<IButtonIconProps, any>("i")`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => (props.imageStyle === "alignLeft" ? "#00bcd4" : null)};
+  color: ${props => (props.active ? "#00bcd4" : null)};
   cursor: pointer;
-  opacity: ${props => (props.imageStyle === "alignLeft" ? "1" : "0.65")};
+  opacity: ${props => (props.active ? "1" : "0.65")};
   transition: 0.2s ease;
   &:hover {
     opacity: 1;
@@ -41,9 +33,15 @@ class AlignLeft extends React.Component<IProps, any> {
       index,
       contents: { style }
     } = this.props;
+    console.log(style);
+    const active = style === "alignLeft";
     return (
       <div onClick={() => handleOnChange("alignLeft", index, "style")}>
-        <ButtonIcon imageStyle={style} className="fas fa-align-left" />
+        <ButtonIcon
+          title={"AlignLeft"}
+          active={active}
+          className="fas fa-align-left"
+        />
       </div>
     );
   }

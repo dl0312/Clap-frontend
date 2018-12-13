@@ -16,11 +16,16 @@ const emojiPlugin = createEmojiPlugin();
 // import { Query } from "react-apollo";
 // import { CATEGORY } from "src/sharedQueries";
 // import { Popover } from "antd";
+import FontSize from "src/Components/BlockIcons/FontSize";
 import Bold from "src/Components/BlockIcons/Bold";
 import Italic from "src/Components/BlockIcons/Italic";
 import Underline from "src/Components/BlockIcons/Underline";
 import StrikeThrough from "src/Components/BlockIcons/StrikeThrough";
 import Emoji from "src/Components/BlockIcons/Emoji";
+import TextAlignLeft from "src/Components/BlockIcons/TextAlignLeft";
+import TextAlignCenter from "src/Components/BlockIcons/TextAlignCenter";
+import TextAlignRight from "src/Components/BlockIcons/TextAlignRight";
+import TextAlignJustify from "src/Components/BlockIcons/TextAlignJustify";
 
 import Delete from "src/Components/BlockIcons/Delete";
 import _ from "lodash";
@@ -52,16 +57,18 @@ import { GET_CATEGORIES_BY_GAME_ID } from "src/sharedQueries";
 const icons = [
   // Header1,
   // Header2,
+  FontSize,
   Bold,
   Italic,
   Underline,
   StrikeThrough,
-  Emoji,
   // FontBgColor,
   // FontColor,
-  // AlignLeft,
-  // AlignCenter,
-  // AlignRight,
+  TextAlignJustify,
+  TextAlignLeft,
+  TextAlignCenter,
+  TextAlignRight,
+  Emoji,
   // Blockquote,
   // // Clean,
   // // Code,
@@ -82,6 +89,24 @@ const icons = [
 ];
 
 const plugins = [mentionPlugin, emojiPlugin];
+
+const fontSizeStyleMap = {
+  size1: {
+    fontSize: "28px"
+  },
+  size2: {
+    fontSize: "19px"
+  },
+  size3: {
+    fontSize: "16px"
+  },
+  size4: {
+    fontSize: "13px"
+  },
+  size5: {
+    fontSize: "11px"
+  }
+};
 
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: TextContent) {
@@ -245,9 +270,10 @@ interface IButtonItemProps {
 
 const ButtonItem = styled<IButtonItemProps, any>("li")`
   border-right: ${props =>
-    props.index === 3 ||
+    props.index === 0 ||
     props.index === 4 ||
-    props.index === 11 ||
+    props.index === 8 ||
+    props.index === 9 ||
     props.index === 15
       ? "1px solid rgba(0, 0, 0, 0.1)"
       : null};
@@ -296,6 +322,16 @@ const TextContentWrapper = styled<ITextContentWrapperProps, any>("div")`
   line-height: 1.9;
 `;
 
+interface IEditorWrapperProps {
+  textStyle: "alignLeft" | "alignCenter" | "alignRight" | "alignJustify";
+}
+
+const EditorWrapper = styled<IEditorWrapperProps, any>("div")`
+  position: relative;
+  z-index: 2;
+  text-align: ${props => props.textStyle};
+`;
+
 // interface ITextContainerProps {
 //   textColor: { r: string; g: string; b: string; a: string };
 //   textAlign: "left" | "center" | "right";
@@ -315,6 +351,7 @@ const TextContentWrapper = styled<ITextContentWrapperProps, any>("div")`
 
 interface ITextContents {
   editorState: EditorState;
+  style: "alignLeft" | "alignCenter" | "alignRight" | "alignJustify";
 }
 
 class GetCategoriesByGameIdQuery extends Query<
@@ -504,7 +541,7 @@ class TextContent extends React.Component<
     const { MentionSuggestions } = mentionPlugin;
     const {
       device,
-      contents: { editorState },
+      contents: { editorState, style },
       index,
       hoveredIndex,
       selectedIndex,
@@ -575,9 +612,7 @@ class TextContent extends React.Component<
                             index={index}
                             editorState={editorState}
                             plugins={plugins}
-                            active={editorState
-                              .getCurrentInlineStyle()
-                              .has(Type.name.toUpperCase())}
+                            style={style}
                           />
                         </ButtonItem>
                       );
@@ -586,8 +621,9 @@ class TextContent extends React.Component<
                 </ButtonContainer>
               </Toolbar>
             </ToolbarWrapper>
-            <div style={{ position: "relative", zIndex: 2 }}>
+            <EditorWrapper id={"editor_wrapper"} textStyle={style}>
               <Editor
+                customStyleMap={fontSizeStyleMap}
                 readOnly={false}
                 editorState={editorState}
                 onChange={this.onChange}
@@ -628,7 +664,7 @@ class TextContent extends React.Component<
               >
                 {({ loading, error, data }) => {
                   if (loading) {
-                    return `Loading`;
+                    return null;
                   }
                   if (error) return `${error}`;
                   return null;
@@ -638,7 +674,7 @@ class TextContent extends React.Component<
                 onSearchChange={this.onSearchChange}
                 suggestions={this.state.suggestions}
               />
-            </div>
+            </EditorWrapper>
           </TextContentWrapper>
         </TextContentContainer>
       </TextContentFrame>

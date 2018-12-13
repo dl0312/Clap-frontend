@@ -49,6 +49,7 @@ interface IProps {
 
 interface ITextContents {
   editorState: EditorState;
+  style: "alignLeft" | "alignCenter" | "alignRight" | "alignJustify";
 }
 
 interface IImageContents {

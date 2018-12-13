@@ -25,7 +25,6 @@ interface IProps {
   handleOnChange: any;
   index: number;
   editorState: EditorState;
-  active: boolean;
 }
 
 class Italic extends React.Component<IProps, any> {
@@ -38,9 +37,10 @@ class Italic extends React.Component<IProps, any> {
   };
 
   public render() {
+    const active = this.props.editorState.getCurrentInlineStyle().has("ITALIC");
     return (
       <div title={"Italic"} onClick={this.onItalicClick}>
-        <ButtonIcon active={this.props.active} className="fas fa-italic" />
+        <ButtonIcon active={active} className="fas fa-italic" />
       </div>
     );
   }

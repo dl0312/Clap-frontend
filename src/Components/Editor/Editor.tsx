@@ -32,7 +32,6 @@ import Container from "../Container";
 import Builder from "../Builder";
 import { media } from "src/config/_mixin";
 import WikiWindow from "../WikiWindow";
-import { EditorState } from "draft-js";
 const Option = Select.Option;
 
 interface IEditorContainerProps {
@@ -501,14 +500,7 @@ class Editor extends React.Component<IProps, IState, any> {
           }),
           () =>
             this.setState({
-              cards: [
-                {
-                  type: "Text",
-                  contents: {
-                    editorState: EditorState.createEmpty()
-                  }
-                }
-              ]
+              cards: EditorDefaults.DEFAULT_EDITOR_BLOCK
             })
         );
       } else {
@@ -520,17 +512,6 @@ class Editor extends React.Component<IProps, IState, any> {
           })
         );
       }
-
-      this.setState({
-        cards: [
-          {
-            type: "Text",
-            contents: {
-              editorState: EditorState.createEmpty()
-            }
-          }
-        ]
-      });
     } else if (type === "duplicate") {
       const targetCard = JSON.parse(JSON.stringify(cards[dataFromChild]));
       this.setState(

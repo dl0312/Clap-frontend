@@ -33,7 +33,8 @@ export default {
     {
       type: "Text",
       contents: {
-        editorState: EditorState.createEmpty()
+        editorState: EditorState.createEmpty(),
+        style: "justify"
       }
     }
   ],

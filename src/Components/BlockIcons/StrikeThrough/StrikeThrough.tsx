@@ -25,7 +25,6 @@ interface IProps {
   handleOnChange: any;
   index: number;
   editorState: EditorState;
-  active: boolean;
 }
 
 class StrikeThrough extends React.Component<IProps, any> {
@@ -38,12 +37,13 @@ class StrikeThrough extends React.Component<IProps, any> {
   };
 
   public render() {
+    const active = this.props.editorState
+      .getCurrentInlineStyle()
+      .has("STRIKETHROUGH");
+
     return (
       <div title={"StrikeThrough"} onClick={this.onStrikeThroughClick}>
-        <ButtonIcon
-          active={this.props.active}
-          className="fas fa-strikethrough"
-        />
+        <ButtonIcon active={active} className="fas fa-strikethrough" />
       </div>
     );
   }

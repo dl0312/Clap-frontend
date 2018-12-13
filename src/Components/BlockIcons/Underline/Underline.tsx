@@ -38,9 +38,12 @@ class Underline extends React.Component<IProps, any> {
   };
 
   public render() {
+    const active = this.props.editorState
+      .getCurrentInlineStyle()
+      .has("UNDERLINE");
     return (
       <div title={"Underline"} onClick={this.onUnderlineClick}>
-        <ButtonIcon active={this.props.active} className="fas fa-underline" />
+        <ButtonIcon active={active} className="fas fa-underline" />
       </div>
     );
   }
