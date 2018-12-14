@@ -49,30 +49,30 @@ const CurrentFontSize = styled<ICurrentFontSizeProps, any>("div")`
 
 const Dropdown = styled.div`
   position: absolute;
-  left: 0;
+  left: -1px;
 `;
 
 const DropdownItemsContainer = styled.ul`
   z-index: 100;
   position: relative;
   border: 1px solid #cecece;
-  width: 100%;
+  width: 110px;
   background: white;
   border-radius: 2px;
   margin: 0;
   padding: 0;
   max-height: 250px;
-  padding-top: 13px;
-  padding-bottom: 22px;
+  padding-top: 8px;
+  padding-bottom: 10px;
 `;
 
 interface IDropdownItem {
   textStyle: string;
+  active: boolean;
 }
 
 const DropdownItem = styled<IDropdownItem, any>("li")`
   padding: 5px 14px 5px 7px;
-
   line-height: 1;
   font-size: ${props =>
     props.textStyle === "size1"
@@ -85,6 +85,7 @@ const DropdownItem = styled<IDropdownItem, any>("li")`
       ? "13px"
       : "11px"};
   cursor: pointer;
+  color: ${props => (props.active ? "#00bcd4" : null)};
   &:hover {
     background: #f1f1f1;
   }
@@ -137,12 +138,10 @@ class FontSize extends React.Component<IProps, IState> {
       }, nextEditorState);
     }
     // If the color is being toggled on, apply it.
-    if (!currentStyle.has(toggledFontSize)) {
-      nextEditorState = RichUtils.toggleInlineStyle(
-        nextEditorState,
-        toggledFontSize
-      );
-    }
+    nextEditorState = RichUtils.toggleInlineStyle(
+      nextEditorState,
+      toggledFontSize
+    );
     this.props.handleOnChange(nextEditorState, this.props.index, "editorState");
   };
 
@@ -153,8 +152,8 @@ class FontSize extends React.Component<IProps, IState> {
       style.includes("size")
     );
     const currentFontSize = sizeArray.size
-      ? "Text " + sizeArray.first().substring(4)
-      : "Text 3";
+      ? "TEXT " + sizeArray.first().substring(4)
+      : "TEXT 3";
     return (
       <>
         <CurrentFontSize
@@ -174,6 +173,7 @@ class FontSize extends React.Component<IProps, IState> {
                   }}
                   key={type.label}
                   textStyle={type.style}
+                  active={currentFontSize === type.label}
                 >
                   {type.label}
                 </DropdownItem>

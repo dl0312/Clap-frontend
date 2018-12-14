@@ -16,6 +16,7 @@ const emojiPlugin = createEmojiPlugin();
 // import { Query } from "react-apollo";
 // import { CATEGORY } from "src/sharedQueries";
 // import { Popover } from "antd";
+import FontFamily from "src/Components/BlockIcons/FontFamily";
 import FontSize from "src/Components/BlockIcons/FontSize";
 import Bold from "src/Components/BlockIcons/Bold";
 import Italic from "src/Components/BlockIcons/Italic";
@@ -59,6 +60,7 @@ import { GET_CATEGORIES_BY_GAME_ID } from "src/sharedQueries";
 const icons = [
   // Header1,
   // Header2,
+  FontFamily,
   FontSize,
   Bold,
   Italic,
@@ -94,6 +96,18 @@ const icons = [
 const plugins = [mentionPlugin, emojiPlugin];
 
 const customStyleMap = {
+  fontFamily1: {
+    fontFamily: "Gothic A1, sans-serif"
+  },
+  fontFamily2: {
+    fontFamily: "Nanum Myeongjo, serif"
+  },
+  fontFamily3: {
+    fontFamily: "Nanum Gothic, sans-serif"
+  },
+  fontFamily4: {
+    fontFamily: "Nanum Pen Script, cursive"
+  },
   size1: {
     fontSize: "28px"
   },
@@ -370,9 +384,10 @@ interface IButtonItemProps {
 const ButtonItem = styled<IButtonItemProps, any>("li")`
   border-right: ${props =>
     props.index === 0 ||
-    props.index === 6 ||
-    props.index === 10 ||
+    props.index === 1 ||
+    props.index === 7 ||
     props.index === 11 ||
+    props.index === 12 ||
     props.index === 16
       ? "1px solid rgba(0, 0, 0, 0.1)"
       : null};
