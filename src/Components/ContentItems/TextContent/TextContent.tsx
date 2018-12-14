@@ -21,6 +21,8 @@ import Bold from "src/Components/BlockIcons/Bold";
 import Italic from "src/Components/BlockIcons/Italic";
 import Underline from "src/Components/BlockIcons/Underline";
 import StrikeThrough from "src/Components/BlockIcons/StrikeThrough";
+import FontColor from "src/Components/BlockIcons/FontColor";
+import BackgroundColor from "src/Components/BlockIcons/BackgroundColor";
 import Emoji from "src/Components/BlockIcons/Emoji";
 import TextAlignLeft from "src/Components/BlockIcons/TextAlignLeft";
 import TextAlignCenter from "src/Components/BlockIcons/TextAlignCenter";
@@ -62,8 +64,9 @@ const icons = [
   Italic,
   Underline,
   StrikeThrough,
+  FontColor,
+  BackgroundColor,
   // FontBgColor,
-  // FontColor,
   TextAlignJustify,
   TextAlignLeft,
   TextAlignCenter,
@@ -90,7 +93,7 @@ const icons = [
 
 const plugins = [mentionPlugin, emojiPlugin];
 
-const fontSizeStyleMap = {
+const customStyleMap = {
   size1: {
     fontSize: "28px"
   },
@@ -105,6 +108,102 @@ const fontSizeStyleMap = {
   },
   size5: {
     fontSize: "11px"
+  },
+  colorb80000: {
+    color: "#B80000"
+  },
+  colordb3e00: {
+    color: "#DB3E00"
+  },
+  colorfccb00: {
+    color: "#FCCB00"
+  },
+  color008b02: {
+    color: "#008B02"
+  },
+  color006b76: {
+    color: "#006B76"
+  },
+  color1273de: {
+    color: "#1273DE"
+  },
+  color004dcf: {
+    color: "#004DCF"
+  },
+  color5300eb: {
+    color: "#5300EB"
+  },
+  coloreb9694: {
+    color: "#EB9694"
+  },
+  colorfad0c3: {
+    color: "#FAD0C3"
+  },
+  colorfef3bd: {
+    color: "#FEF3BD"
+  },
+  colorc1e1c5: {
+    color: "#C1E1C5"
+  },
+  colorbedadc: {
+    color: "#BEDADC"
+  },
+  colorc4def6: {
+    color: "#C4DEF6"
+  },
+  colorbed3f3: {
+    color: "#BED3F3"
+  },
+  colord4c4fb: {
+    color: "#D4C4FB"
+  },
+  backgroundColorb80000: {
+    backgroundColor: "#B80000"
+  },
+  backgroundColordb3e00: {
+    backgroundColor: "#DB3E00"
+  },
+  backgroundColorfccb00: {
+    backgroundColor: "#FCCB00"
+  },
+  backgroundColor008b02: {
+    backgroundColor: "#008B02"
+  },
+  backgroundColor006b76: {
+    backgroundColor: "#006B76"
+  },
+  backgroundColor1273de: {
+    backgroundColor: "#1273DE"
+  },
+  backgroundColor004dcf: {
+    backgroundColor: "#004DCF"
+  },
+  backgroundColor5300eb: {
+    backgroundColor: "#5300EB"
+  },
+  backgroundColoreb9694: {
+    backgroundColor: "#EB9694"
+  },
+  backgroundColorfad0c3: {
+    backgroundColor: "#FAD0C3"
+  },
+  backgroundColorfef3bd: {
+    backgroundColor: "#FEF3BD"
+  },
+  backgroundColorc1e1c5: {
+    backgroundColor: "#C1E1C5"
+  },
+  backgroundColorbedadc: {
+    backgroundColor: "#BEDADC"
+  },
+  backgroundColorc4def6: {
+    backgroundColor: "#C4DEF6"
+  },
+  backgroundColorbed3f3: {
+    backgroundColor: "#BED3F3"
+  },
+  backgroundColord4c4fb: {
+    backgroundColor: "#D4C4FB"
   }
 };
 
@@ -271,13 +370,14 @@ interface IButtonItemProps {
 const ButtonItem = styled<IButtonItemProps, any>("li")`
   border-right: ${props =>
     props.index === 0 ||
-    props.index === 4 ||
-    props.index === 8 ||
-    props.index === 9 ||
-    props.index === 15
+    props.index === 6 ||
+    props.index === 10 ||
+    props.index === 11 ||
+    props.index === 16
       ? "1px solid rgba(0, 0, 0, 0.1)"
       : null};
   height: 100%;
+  position: relative;
 `;
 
 interface ITextContentFrameProps {
@@ -623,7 +723,7 @@ class TextContent extends React.Component<
             </ToolbarWrapper>
             <EditorWrapper id={"editor_wrapper"} textStyle={style}>
               <Editor
-                customStyleMap={fontSizeStyleMap}
+                customStyleMap={customStyleMap}
                 readOnly={false}
                 editorState={editorState}
                 onChange={this.onChange}

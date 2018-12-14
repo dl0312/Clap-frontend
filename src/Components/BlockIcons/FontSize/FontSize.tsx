@@ -115,7 +115,6 @@ class FontSize extends React.Component<IProps, IState> {
   };
 
   public toggleFontSize = (toggledFontSize: string) => {
-    console.log(toggledFontSize);
     const { editorState } = this.props;
     const selection = editorState.getSelection();
     // Let's just allow one color at a time. Turn off all active colors.
@@ -134,13 +133,11 @@ class FontSize extends React.Component<IProps, IState> {
     // Unset style override for current color.
     if (selection.isCollapsed()) {
       nextEditorState = currentStyle.reduce((state: any, fontSize: any) => {
-        console.log(state, fontSize);
         return RichUtils.toggleInlineStyle(state, fontSize);
       }, nextEditorState);
     }
     // If the color is being toggled on, apply it.
     if (!currentStyle.has(toggledFontSize)) {
-      console.log(currentStyle.has(toggledFontSize));
       nextEditorState = RichUtils.toggleInlineStyle(
         nextEditorState,
         toggledFontSize
@@ -152,11 +149,12 @@ class FontSize extends React.Component<IProps, IState> {
   public render() {
     const { isFontSizeWindowOpen } = this.state;
     const currentStyle = this.props.editorState.getCurrentInlineStyle();
-    const currentFontSize = "Text 3";
     const sizeArray = currentStyle.filter((style: string) =>
       style.includes("size")
     );
-    console.log(sizeArray);
+    const currentFontSize = sizeArray.size
+      ? "Text " + sizeArray.first().substring(4)
+      : "Text 3";
     return (
       <>
         <CurrentFontSize
