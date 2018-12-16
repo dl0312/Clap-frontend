@@ -95,7 +95,6 @@ class Link extends React.Component<IProps, IState> {
   }
 
   handleClickOutside(event: any) {
-    event.preventDefault();
     if (
       this.wrapperRef &&
       this.wrapperRef.current !== null &&

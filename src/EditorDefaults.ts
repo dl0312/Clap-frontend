@@ -36,6 +36,12 @@ export default {
       style: "justify"
     }
   },
+  DEFAULT_DIVIDER_BLOCK: {
+    type: "Divider",
+    contents: {
+      style: null
+    }
+  },
   DEFAULT_EDITOR_BLOCK: [
     {
       type: "Text",

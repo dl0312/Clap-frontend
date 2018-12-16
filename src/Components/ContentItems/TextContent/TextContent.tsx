@@ -226,6 +226,7 @@ const customStyleMap = {
 
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: TextContent) {
+    console.log(`hover`);
     const isJustOverThisOne = monitor.isOver({ shallow: true });
     if (isJustOverThisOne) {
       const dragIndex = monitor.getItem().index;
@@ -239,6 +240,7 @@ const cardTarget = {
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
+      console.log(hoverBoundingRect);
       const position =
         clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
       props.setTargetIndex(props.index, position);
@@ -586,7 +588,6 @@ class TextContent extends React.Component<
   };
 
   handleClickOutside(event: any) {
-    event.preventDefault();
     console.log(this.wrapperRef, this.wrapperRef.contains(event.target));
     console.log(this.props.wikiRef, this.props.wikiRef.contains(event.target));
     console.log(this.toolbarRef, this.toolbarRef.contains(event.target));
@@ -634,7 +635,6 @@ class TextContent extends React.Component<
   /* In case, Mouse Don Container */
   public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    console.log(`mousedown`);
     this.props.callbackfromparent("select", this.props.index);
     document.addEventListener("mousedown", this.handleClickOutside);
     this.setState({ isWriteMode: false }, () => this.editorRef.blur());
@@ -656,6 +656,7 @@ class TextContent extends React.Component<
       selectedIndex,
       gameId,
       // plugins,
+      connectDropTarget,
       connectDragSource,
       isDragging
     } = this.props;
@@ -669,7 +670,6 @@ class TextContent extends React.Component<
       : hover
       ? "HOVER"
       : null;
-    console.log(isWriteMode, active, hover, selectedIndex);
     if (textContentState === "WRITE") {
       this.props.scrollWrapperRef.current.addEventListener(
         "scroll",
@@ -683,7 +683,13 @@ class TextContent extends React.Component<
         );
     }
     return (
-      <TextContentFrame isFirstBlock={index === 0} device={device}>
+      <TextContentFrame
+        innerRef={(instance: any) => {
+          connectDropTarget(instance);
+        }}
+        isFirstBlock={index === 0}
+        device={device}
+      >
         <TextContentContainer device={device}>
           <TextContentWrapper
             innerRef={(instance: any) => this.setWrapperRef(instance)}
@@ -742,7 +748,6 @@ class TextContent extends React.Component<
                 onChange={this.onChange}
                 ref={this.setEditor}
                 onFocus={(e: any) => {
-                  e.preventDefault();
                   this.setState({ isWriteMode: true });
                   document.addEventListener(
                     "mousedown",

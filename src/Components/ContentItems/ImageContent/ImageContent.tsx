@@ -26,6 +26,7 @@ import ItemTypes from "src/ItemTypes";
 import classnames from "classnames";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import flow from "lodash/flow";
+import { Icon } from "antd";
 
 const icons = [
   ImageChange,
@@ -42,6 +43,7 @@ const icons = [
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: ImageContent) {
     const isJustOverThisOne = monitor.isOver({ shallow: true });
+    console.log(`hover`);
     if (isJustOverThisOne) {
       const dragIndex = monitor.getItem().index;
       const hoverIndex = props.index;
@@ -54,6 +56,7 @@ const cardTarget = {
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
+      console.log(hoverBoundingRect);
       const position =
         clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
       props.setTargetIndex(props.index, position);
@@ -318,6 +321,7 @@ interface IProps {
 
 interface IState {
   toolbarState: "follow" | "sticky" | "blind";
+  isOnLoad: boolean;
 }
 
 interface IDnDTargetProps {
@@ -369,7 +373,8 @@ class ImageContent extends React.Component<
     this.setWrapperRef = this.setWrapperRef.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
     this.state = {
-      toolbarState: "follow"
+      toolbarState: "follow",
+      isOnLoad: false
     };
   }
 
@@ -393,12 +398,7 @@ class ImageContent extends React.Component<
   };
 
   componentDidMount() {
-    console.log(`mount textcontent`);
-    document.addEventListener("mousedown", this.handleClickOutside);
-    this.props.scrollWrapperRef.current.addEventListener(
-      "scroll",
-      this.handleScrollFn
-    );
+    console.log(`didmount`);
     const { connectDragPreview } = this.props;
     if (connectDragPreview) {
       // Use empty image as a drag preview so browsers don't draw it
@@ -412,12 +412,7 @@ class ImageContent extends React.Component<
   }
 
   componentWillUnmount() {
-    document.removeEventListener("mousedown", this.handleClickOutside);
-    if (this.props.scrollWrapperRef.current !== null)
-      this.props.scrollWrapperRef.current.removeEventListener(
-        "scroll",
-        this.handleScrollFn
-      );
+    console.log(`unmount`);
   }
 
   setWrapperRef(node: any) {
@@ -430,6 +425,12 @@ class ImageContent extends React.Component<
       console.log(this.props.selectedIndex === this.props.index);
       if (this.props.selectedIndex === this.props.index) {
         this.props.masterCallback("unselect");
+        document.removeEventListener("mousedown", this.handleClickOutside);
+        if (this.props.scrollWrapperRef.current !== null)
+          this.props.scrollWrapperRef.current.removeEventListener(
+            "scroll",
+            this.handleScrollFn
+          );
       }
     }
   }
@@ -444,6 +445,11 @@ class ImageContent extends React.Component<
   public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     this.props.callbackfromparent("select", this.props.index);
+    document.addEventListener("mousedown", this.handleClickOutside);
+    this.props.scrollWrapperRef.current.addEventListener(
+      "scroll",
+      this.handleScrollFn
+    );
   };
 
   /* In case, Mouse Leave Container */
@@ -470,7 +476,7 @@ class ImageContent extends React.Component<
       connectDropTarget
     } = this.props;
 
-    const { toolbarState } = this.state;
+    const { toolbarState, isOnLoad } = this.state;
     const {
       imageUrl,
       style,
@@ -478,23 +484,23 @@ class ImageContent extends React.Component<
       currentImageWidth,
       currentImageHeight
     } = contents;
-
     const hover: boolean = hoveredIndex === index;
     const active: boolean = selectedIndex === index;
-    if (selected) {
-      document.addEventListener("mousedown", this.handleClickOutside);
-      this.props.scrollWrapperRef.current.addEventListener(
-        "scroll",
-        this.handleScrollFn
-      );
-    } else {
-      document.removeEventListener("mousedown", this.handleClickOutside);
-      if (this.props.scrollWrapperRef.current !== null)
-        this.props.scrollWrapperRef.current.removeEventListener(
-          "scroll",
-          this.handleScrollFn
-        );
-    }
+    // if (selected) {
+    //   document.addEventListener("mousedown", this.handleClickOutside);
+    //   this.props.scrollWrapperRef.current.addEventListener(
+    //     "scroll",
+    //     this.handleScrollFn
+    //   );
+    // } else {
+    //   document.removeEventListener("mousedown", this.handleClickOutside);
+    //   if (this.props.scrollWrapperRef.current !== null)
+    //     this.props.scrollWrapperRef.current.removeEventListener(
+    //       "scroll",
+    //       this.handleScrollFn
+    //     );
+    // }
+    console.log(currentImageWidth, currentImageHeight);
     return (
       <ImageContentFrame
         isFirstBlock={index === 0}
@@ -513,7 +519,7 @@ class ImageContent extends React.Component<
               )}
               innerRef={(instance: any) => connectDragSource(instance)}
               onMouseOver={this.handleOnMouseOver}
-              onMouseDown={this.handleOnMouseDown}
+              onMouseDown={isOnLoad ? this.handleOnMouseDown : undefined}
               onMouseLeave={this.handleOnMouseLeave}
             />
             {selected && (
@@ -559,12 +565,14 @@ class ImageContent extends React.Component<
                   position: "relative",
                   verticalAlign: "top",
                   height: "100%",
-                  width: style === "fullWidth" ? "100%" : "100%"
+                  width: style === "fullWidth" ? "100%" : undefined,
+                  opacity: isOnLoad ? 1 : 0.5
                 }}
                 src={imageUrl}
                 alt="logo"
                 ref={(e: any) => (this.imgEl = e)}
                 onLoad={() => {
+                  console.log(this.imgEl);
                   if (this.imgEl.naturalWidth > 886) {
                     setInitialImageContents(
                       this.imgEl.naturalWidth,
@@ -580,9 +588,22 @@ class ImageContent extends React.Component<
                       index
                     );
                   }
+                  this.setState({ isOnLoad: true });
                 }}
               />
-
+              {!isOnLoad && (
+                <Icon
+                  style={{
+                    top: "35%",
+                    left: "50%",
+                    position: "absolute",
+                    zIndex: 4,
+                    fontSize: 50,
+                    marginLeft: -25
+                  }}
+                  type="loading"
+                />
+              )}
               {!description && !selected ? null : (
                 <DescriptionContainer imageStyle={style}>
                   <Description

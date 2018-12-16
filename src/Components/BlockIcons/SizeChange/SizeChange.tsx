@@ -88,14 +88,11 @@ class SizeChange extends React.Component<IProps, IState> {
   }
 
   handleClickOutside(event: any) {
-    event.preventDefault();
-    if (
-      this.wrapperRef &&
-      this.wrapperRef.current !== null &&
-      !this.wrapperRef.contains(event.target)
-    ) {
-      this.setState({ isSizeChangeWindowOpen: false });
-      document.removeEventListener("mousedown", this.handleClickOutside);
+    console.log(this.wrapperRef);
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      this.setState({ isSizeChangeWindowOpen: false }, () =>
+        document.removeEventListener("mousedown", this.handleClickOutside)
+      );
     }
   }
 
@@ -153,7 +150,7 @@ class SizeChange extends React.Component<IProps, IState> {
               <InputContainer>
                 <InputNumber
                   min={0}
-                  max={886}
+                  max={naturalImageWidth > 886 ? undefined : 886}
                   style={{ width: 65 }}
                   size="small"
                   prefix={"W"}
@@ -168,7 +165,11 @@ class SizeChange extends React.Component<IProps, IState> {
                 />
                 <InputNumber
                   min={0}
-                  max={Math.floor(886 / ratio)}
+                  max={
+                    naturalImageWidth > 886
+                      ? undefined
+                      : Math.floor(886 / ratio)
+                  }
                   style={{ width: 65 }}
                   size="small"
                   prefix={"H"}

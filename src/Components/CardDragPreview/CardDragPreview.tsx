@@ -42,8 +42,6 @@ class CardDragPreiview extends React.Component<
   // private interval: any;
 
   public componentDidMount() {
-    // this.interval = setInterval(this.tick, 500);
-    // clearInterval(this.interval);
     setTimeout(() => {
       this.setState({ tickTock: false });
     }, 0);
@@ -52,13 +50,7 @@ class CardDragPreiview extends React.Component<
   public render() {
     const { Comp, itemType } = this.props;
     const previewProps = Object.assign({}, Comp.props, Comp.state);
-    // const { tickTock } = this.state;
-
-    console.log(Comp);
     if (Comp) {
-      // const node = findDOMNode(Comp) as Element;
-      // const rect = node ? (node.getBoundingClientRect() as DOMRect) : null;
-      // console.log(Comp.props, Comp.state);
       return (
         itemType && (
           <ImageContentPreview {...previewProps} />

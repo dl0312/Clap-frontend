@@ -453,7 +453,6 @@ class Editor extends React.Component<IProps, IState, any> {
     type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
     dataFromChild: number
   ) => {
-    console.log(type, dataFromChild);
     const { cards, hoveredIndex, selectedIndex } = this.state;
     if (type === "mouseover") {
       this.setState({ hoveredIndex: dataFromChild });
@@ -462,7 +461,6 @@ class Editor extends React.Component<IProps, IState, any> {
         this.setState({ hoveredIndex: null });
       }
     } else if (type === "select") {
-      console.log(type, dataFromChild);
       if (selectedIndex !== null) {
         if (selectedIndex === dataFromChild) {
           console.log("same index");
@@ -479,7 +477,6 @@ class Editor extends React.Component<IProps, IState, any> {
           });
         }
       } else {
-        console.log(type, dataFromChild);
         this.setState(
           {
             selectedIndex: dataFromChild,
@@ -784,7 +781,6 @@ class Editor extends React.Component<IProps, IState, any> {
       targetIndex,
       isDragging
     } = this.state;
-    console.log(selectedIndex);
     return (
       <React.Fragment>
         <EditorContainer type={type}>
@@ -1375,6 +1371,7 @@ class Editor extends React.Component<IProps, IState, any> {
       target: { files }
     } = event;
     if (files) {
+      console.log(dragItem, this.state);
       const formData = new FormData();
       formData.append("file", files[0]);
       formData.append("api_key", "811881451928618");

@@ -87,7 +87,6 @@ class ImageContentPreview extends React.Component<IProps, any> {
   public render() {
     const { contents, width, height } = this.props;
     const { imageUrl, style } = contents;
-    console.log(this.props);
     return (
       <>
         <DragSourceArea />

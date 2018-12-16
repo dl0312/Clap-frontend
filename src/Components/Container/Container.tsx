@@ -12,6 +12,8 @@ import TextContent from "../ContentItems/TextContent";
 
 import ImageContent from "../ContentItems/ImageContent";
 import VideoContent from "../ContentItems/VideoContent";
+import DividerContent from "../ContentItems/DividerContent";
+
 import { EditorState } from "draft-js";
 
 interface IProps {
@@ -26,7 +28,7 @@ interface IProps {
   handleOnChange: any;
   index: number;
   type: "Text" | "Image" | "Video" | "Table" | "Divider";
-  contents: ITextContents & IImageContents & IVideoContents;
+  contents: ITextContents & IImageContents & IVideoContents & IDividerContents;
   // // For Content Render
   selectedIndex: number | null;
   hoveredIndex: number | null;
@@ -79,6 +81,10 @@ interface IVideoContents {
   description: string | null;
   width: number;
   height: number;
+  style: "fullWidth" | "alignLeft" | "alignCenter" | "alignRight";
+}
+
+interface IDividerContents {
   style: "fullWidth" | "alignLeft" | "alignCenter" | "alignRight";
 }
 
@@ -139,6 +145,25 @@ class Container extends React.Component<IProps, any> {
         );
       case "Video":
         return <VideoContent contents={this.props.contents} autoplay={false} />;
+      case "Divider":
+        return (
+          <DividerContent
+            index={this.props.index}
+            device={this.props.device}
+            contents={this.props.contents}
+            masterCallback={this.props.masterCallback}
+            pushPresentBlockToTargetIndex={
+              this.props.pushPresentBlockToTargetIndex
+            }
+            pushNewBlockToTargetIndex={this.props.pushNewBlockToTargetIndex}
+            setTargetIndex={this.props.setTargetIndex}
+            selected={selected}
+            hoveredIndex={this.props.hoveredIndex}
+            selectedIndex={this.props.selectedIndex}
+            callbackfromparent={this.props.callbackfromparent}
+            scrollWrapperRef={this.props.scrollWrapperRef}
+          />
+        );
       // case "Social":
       //   return <SocialMediaContent />;
       default:

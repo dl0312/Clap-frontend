@@ -134,7 +134,6 @@ class ContentItem extends Component<IProps & IDnDProps> {
       case "Image":
         this.handleInputImage();
         return {
-          fullWidth: false,
           alt: "Image"
         };
       case "Video":
@@ -158,6 +157,8 @@ class ContentItem extends Component<IProps & IDnDProps> {
         return {
           value: EditorState.createEmpty()
         };
+      case "Divider":
+        return EditorDefaults.DEFAULT_DIVIDER_BLOCK.contents;
       default:
         return null;
     }
