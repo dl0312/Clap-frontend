@@ -8,7 +8,10 @@ import createMentionPlugin, {
 } from "draft-js-mention-plugin";
 import createEmojiPlugin from "draft-js-emoji-plugin";
 const mentionPlugin = createMentionPlugin();
-const emojiPlugin = createEmojiPlugin();
+const emojiPlugin = createEmojiPlugin({
+  useNativeArt: true
+});
+
 // import EditorDefaults from "../../../EditorDefaults";
 
 // plugins
@@ -69,10 +72,10 @@ const icons = [
   FontColor,
   BackgroundColor,
   // FontBgColor,
-  TextAlignJustify,
   TextAlignLeft,
   TextAlignCenter,
   TextAlignRight,
+  TextAlignJustify,
   Emoji,
   // Blockquote,
   // // Clean,
@@ -430,7 +433,6 @@ const TextContentWrapper = styled<ITextContentWrapperProps, any>("div")`
   display: block;
   cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
     url(../img/se_cursor_drag_grab.png), auto;
-
   text-align: ${props => props.textAlign};
   width: 100%;
   cursor: auto;
@@ -519,25 +521,18 @@ class TextContent extends React.Component<
   dragSource: any;
   wrapperRef: any;
   editorRef: any;
-  setEditor: any;
-  focusEditor: any;
+  toolbarRef: any;
   constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
     super(props);
     this.dragSource = React.createRef();
     this.editorRef = React.createRef();
+    this.wrapperRef = React.createRef();
+    this.toolbarRef = React.createRef();
     this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.setEditor = this.setEditor.bind(this);
+    this.setToolbar = this.setToolbar.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
 
-    this.setEditor = (editor: any) => {
-      this.editorRef = editor;
-    };
-    this.focusEditor = (e: any) => {
-      e.preventDefault();
-      this.setState({ isWriteMode: true });
-      // if (this.editorRef) {
-      //   this.editorRef.focus();
-      // }
-    };
     this.state = {
       toolbarState: "follow",
       isWriteMode: false,
@@ -567,12 +562,6 @@ class TextContent extends React.Component<
   };
 
   componentDidMount() {
-    console.log(`mount textcontent`);
-    document.addEventListener("mousedown", this.handleClickOutside);
-    this.props.scrollWrapperRef.current.addEventListener(
-      "scroll",
-      this.handleScrollFn
-    );
     const { connectDragPreview } = this.props;
     if (connectDragPreview) {
       // Use empty image as a drag preview so browsers don't draw it
@@ -585,36 +574,39 @@ class TextContent extends React.Component<
     }
   }
 
-  componentWillUnmount() {
-    console.log(`unmount textcontent`);
-    document.removeEventListener("mousedown", this.handleClickOutside);
-    if (this.props.scrollWrapperRef.current !== null)
-      this.props.scrollWrapperRef.current.removeEventListener(
-        "scroll",
-        this.handleScrollFn
-      );
-  }
-
   setWrapperRef(node: any) {
     this.wrapperRef = node;
   }
 
+  setEditor = (editor: any) => {
+    this.editorRef = editor;
+  };
+  setToolbar = (toolbar: any) => {
+    this.toolbarRef = toolbar;
+  };
+
   handleClickOutside(event: any) {
     event.preventDefault();
+    console.log(this.wrapperRef, this.wrapperRef.contains(event.target));
+    console.log(this.props.wikiRef, this.props.wikiRef.contains(event.target));
+    console.log(this.toolbarRef, this.toolbarRef.contains(event.target));
     if (
       this.wrapperRef &&
       !this.wrapperRef.contains(event.target) &&
-      !this.props.wikiRef.current.contains(event.target)
+      (this.props.wikiRef && !this.props.wikiRef.contains(event.target)) &&
+      (this.toolbarRef && !this.toolbarRef.contains(event.target))
     ) {
       console.log(
         this.props.selectedIndex === this.props.index,
         this.state.isWriteMode
       );
+      document.removeEventListener("mousedown", this.handleClickOutside);
       if (this.props.selectedIndex === this.props.index) {
         this.props.masterCallback("unselect");
       }
       if (this.state.isWriteMode) {
         this.editorRef.blur();
+        this.setState({ isWriteMode: false });
       }
     }
   }
@@ -642,8 +634,10 @@ class TextContent extends React.Component<
   /* In case, Mouse Don Container */
   public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    this.editorRef.blur();
+    console.log(`mousedown`);
     this.props.callbackfromparent("select", this.props.index);
+    document.addEventListener("mousedown", this.handleClickOutside);
+    this.setState({ isWriteMode: false }, () => this.editorRef.blur());
   };
 
   /* In case, Mouse Leave Container */
@@ -675,14 +669,13 @@ class TextContent extends React.Component<
       : hover
       ? "HOVER"
       : null;
+    console.log(isWriteMode, active, hover, selectedIndex);
     if (textContentState === "WRITE") {
-      document.addEventListener("mousedown", this.handleClickOutside);
       this.props.scrollWrapperRef.current.addEventListener(
         "scroll",
         this.handleScrollFn
       );
     } else {
-      document.removeEventListener("mousedown", this.handleClickOutside);
       if (this.props.scrollWrapperRef.current !== null)
         this.props.scrollWrapperRef.current.removeEventListener(
           "scroll",
@@ -695,7 +688,7 @@ class TextContent extends React.Component<
           <TextContentWrapper
             innerRef={(instance: any) => this.setWrapperRef(instance)}
             textAlign={"left"}
-            className="markdown-body"
+            className={"markdown-body"}
           >
             <DragSourceArea
               className={classnames(
@@ -714,27 +707,32 @@ class TextContent extends React.Component<
               onMouseDown={this.handleOnMouseDown}
               onMouseLeave={this.handleOnMouseLeave}
             />
-            <ToolbarWrapper toolbarState={toolbarState}>
-              <Toolbar toolbarState={toolbarState}>
-                <ButtonContainer>
-                  <ButtonWrapper toolbarState={toolbarState}>
-                    {icons.map((Type, i) => {
-                      return (
-                        <ButtonItem key={i} index={i}>
-                          <Type
-                            handleOnChange={this.props.handleOnChange}
-                            callbackfromparent={this.props.callbackfromparent}
-                            index={index}
-                            editorState={editorState}
-                            plugins={plugins}
-                            style={style}
-                          />
-                        </ButtonItem>
-                      );
-                    })}
-                  </ButtonWrapper>
-                </ButtonContainer>
-              </Toolbar>
+            <ToolbarWrapper
+              innerRef={(instance: any) => this.setToolbar(instance)}
+              toolbarState={toolbarState}
+            >
+              {isWriteMode && (
+                <Toolbar toolbarState={toolbarState}>
+                  <ButtonContainer>
+                    <ButtonWrapper toolbarState={toolbarState}>
+                      {icons.map((Type, i) => {
+                        return (
+                          <ButtonItem key={i} index={i}>
+                            <Type
+                              handleOnChange={this.props.handleOnChange}
+                              callbackfromparent={this.props.callbackfromparent}
+                              index={index}
+                              editorState={editorState}
+                              plugins={plugins}
+                              style={style}
+                            />
+                          </ButtonItem>
+                        );
+                      })}
+                    </ButtonWrapper>
+                  </ButtonContainer>
+                </Toolbar>
+              )}
             </ToolbarWrapper>
             <EditorWrapper id={"editor_wrapper"} textStyle={style}>
               <Editor
@@ -743,15 +741,19 @@ class TextContent extends React.Component<
                 editorState={editorState}
                 onChange={this.onChange}
                 ref={this.setEditor}
-                textAlignment={"Right"}
-                // onFocus={(e: any) => {
-                // e.preventDefault();
-                // if (!this.state.isWriteMode) {
-                //   this.setState({ isWriteMode: true });
-                // }
-                // }}
+                onFocus={(e: any) => {
+                  e.preventDefault();
+                  this.setState({ isWriteMode: true });
+                  document.addEventListener(
+                    "mousedown",
+                    this.handleClickOutside
+                  );
+                }}
                 plugins={plugins}
-                onBlur={() => this.setState({ isWriteMode: false })}
+                // onBlur={() => {
+                //   console.log(`onblur`);
+                //   // this.setState({ isWriteMode: false });
+                // }}
               />
               <GetCategoriesByGameIdQuery
                 query={GET_CATEGORIES_BY_GAME_ID}

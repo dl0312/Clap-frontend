@@ -29,6 +29,13 @@ export default {
   BORDER_SELECT_COLOR: "#000",
   BORDER_ISOVER_COLOR: "rgba(0,0,0,.12)",
   CLAP_IMG_TEXT_COLOR: "GoldenRod",
+  DEFAULT_TEXT_BLOCK: {
+    type: "Text",
+    contents: {
+      editorState: EditorState.createEmpty(),
+      style: "justify"
+    }
+  },
   DEFAULT_EDITOR_BLOCK: [
     {
       type: "Text",

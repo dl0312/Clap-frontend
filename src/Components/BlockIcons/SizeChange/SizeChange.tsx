@@ -30,8 +30,8 @@ const SizeContainer = styled.div`
   box-sizing: border-box;
   z-index: 1000;
   position: absolute;
-  top: 31px;
-  left: 31px;
+  top: 32px;
+  left: 32px;
   background-color: #fafafa;
   border: 1px solid #cecece;
   border-bottom-left-radius: 5px;
@@ -70,8 +70,12 @@ interface IState {
 }
 
 class SizeChange extends React.Component<IProps, IState> {
+  wrapperRef: any;
   constructor(props: IProps) {
     super(props);
+    this.wrapperRef = React.createRef();
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
     this.state = {
       isSizeChangeWindowOpen: false,
       targetImageWidth: this.props.contents.currentImageWidth,
@@ -79,10 +83,34 @@ class SizeChange extends React.Component<IProps, IState> {
     };
   }
 
+  setWrapperRef(node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: any) {
+    event.preventDefault();
+    if (
+      this.wrapperRef &&
+      this.wrapperRef.current !== null &&
+      !this.wrapperRef.contains(event.target)
+    ) {
+      this.setState({ isSizeChangeWindowOpen: false });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
+  }
+
   public toggleSizeChangeWindow = () => {
-    this.setState({
-      isSizeChangeWindowOpen: !this.state.isSizeChangeWindowOpen
-    });
+    if (!this.state.isSizeChangeWindowOpen) {
+      this.setState({
+        isSizeChangeWindowOpen: true
+      });
+      document.addEventListener("mousedown", this.handleClickOutside);
+    } else {
+      this.setState({
+        isSizeChangeWindowOpen: false
+      });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
   };
 
   public validate = (event: any) => {
@@ -113,7 +141,7 @@ class SizeChange extends React.Component<IProps, IState> {
     const { naturalImageWidth, naturalImageHeight } = contents;
     const ratio = naturalImageWidth / naturalImageHeight;
     return (
-      <div>
+      <div ref={(instance: any) => this.setWrapperRef(instance)}>
         <ButtonIcon
           onClick={this.toggleSizeChangeWindow}
           isSizeChangeWindowOpen={isSizeChangeWindowOpen}

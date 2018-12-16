@@ -104,17 +104,45 @@ interface IState {
 }
 
 class FontColor extends React.Component<IProps, IState> {
+  wrapperRef: any;
   constructor(props: IProps) {
     super(props);
+    this.wrapperRef = React.createRef();
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
     this.state = {
       isFontColorWindowOpen: false
     };
   }
 
+  setWrapperRef(node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: any) {
+    event.preventDefault();
+    if (
+      this.wrapperRef &&
+      this.wrapperRef.current !== null &&
+      !this.wrapperRef.contains(event.target)
+    ) {
+      this.setState({ isFontColorWindowOpen: false });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
+  }
+
   public toggleFontColorChangeWindow = () => {
-    this.setState({
-      isFontColorWindowOpen: !this.state.isFontColorWindowOpen
-    });
+    if (!this.state.isFontColorWindowOpen) {
+      this.setState({
+        isFontColorWindowOpen: true
+      });
+      document.addEventListener("mousedown", this.handleClickOutside);
+    } else {
+      this.setState({
+        isFontColorWindowOpen: false
+      });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
   };
 
   public toggleFontColor = (toggledFontColor: string) => {
@@ -143,13 +171,10 @@ class FontColor extends React.Component<IProps, IState> {
     }
 
     // If the color is being toggled on, apply it.
-    if (!currentStyle.has(toggledFontColor)) {
-      console.log(currentStyle.has(toggledFontColor));
-      nextEditorState = RichUtils.toggleInlineStyle(
-        nextEditorState,
-        toggledFontColor
-      );
-    }
+    nextEditorState = RichUtils.toggleInlineStyle(
+      nextEditorState,
+      toggledFontColor
+    );
     this.props.handleOnChange(nextEditorState, this.props.index, "editorState");
   };
 
@@ -162,9 +187,8 @@ class FontColor extends React.Component<IProps, IState> {
     const currentFontColor = sizeArray.size
       ? "#" + sizeArray.first().substring(5)
       : "#000000";
-    console.log(currentFontColor);
     return (
-      <>
+      <div ref={(instance: any) => this.setWrapperRef(instance)}>
         <ButtonIcon
           className="fas fa-font"
           onClick={this.toggleFontColorChangeWindow}
@@ -178,11 +202,12 @@ class FontColor extends React.Component<IProps, IState> {
               onChange={(color: any) => {
                 console.log(color);
                 this.toggleFontColor("color" + color.hex.substring(1));
+                this.setState({ isFontColorWindowOpen: false });
               }}
             />
           </ColorPickerContainer>
         ) : null}
-      </>
+      </div>
     );
   }
 }

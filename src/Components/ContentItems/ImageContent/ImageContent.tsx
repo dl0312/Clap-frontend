@@ -412,7 +412,6 @@ class ImageContent extends React.Component<
   }
 
   componentWillUnmount() {
-    console.log(`unmount textcontent`);
     document.removeEventListener("mousedown", this.handleClickOutside);
     if (this.props.scrollWrapperRef.current !== null)
       this.props.scrollWrapperRef.current.removeEventListener(

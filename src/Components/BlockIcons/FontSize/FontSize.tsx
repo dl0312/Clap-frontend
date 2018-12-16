@@ -102,17 +102,45 @@ interface IState {
 }
 
 class FontSize extends React.Component<IProps, IState> {
+  wrapperRef: any;
   constructor(props: IProps) {
     super(props);
+    this.wrapperRef = React.createRef();
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
     this.state = {
       isFontSizeWindowOpen: false
     };
   }
 
+  setWrapperRef(node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: any) {
+    event.preventDefault();
+    if (
+      this.wrapperRef &&
+      this.wrapperRef.current !== null &&
+      !this.wrapperRef.contains(event.target)
+    ) {
+      this.setState({ isFontSizeWindowOpen: false });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
+  }
+
   public toggleSizeChangeWindow = () => {
-    this.setState({
-      isFontSizeWindowOpen: !this.state.isFontSizeWindowOpen
-    });
+    if (!this.state.isFontSizeWindowOpen) {
+      this.setState({
+        isFontSizeWindowOpen: true
+      });
+      document.addEventListener("mousedown", this.handleClickOutside);
+    } else {
+      this.setState({
+        isFontSizeWindowOpen: false
+      });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
   };
 
   public toggleFontSize = (toggledFontSize: string) => {
@@ -155,7 +183,7 @@ class FontSize extends React.Component<IProps, IState> {
       ? "TEXT " + sizeArray.first().substring(4)
       : "TEXT 3";
     return (
-      <>
+      <div ref={(instance: any) => this.setWrapperRef(instance)}>
         <CurrentFontSize
           onClick={this.toggleSizeChangeWindow}
           isFontSizeWindowOpen={isFontSizeWindowOpen}
@@ -170,6 +198,7 @@ class FontSize extends React.Component<IProps, IState> {
                   onClick={(e: any) => {
                     e.preventDefault();
                     this.toggleFontSize(type.style);
+                    this.setState({ isFontSizeWindowOpen: false });
                   }}
                   key={type.label}
                   textStyle={type.style}
@@ -181,7 +210,7 @@ class FontSize extends React.Component<IProps, IState> {
             </DropdownItemsContainer>
           </Dropdown>
         ) : null}
-      </>
+      </div>
     );
   }
 }

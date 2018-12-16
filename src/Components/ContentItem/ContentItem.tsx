@@ -149,9 +149,7 @@ class ContentItem extends Component<IProps & IDnDProps> {
           editorState: EditorState.createEmpty()
         };
       case "Text":
-        return {
-          editorState: EditorState.createEmpty()
-        };
+        return EditorDefaults.DEFAULT_TEXT_BLOCK.contents;
       case "Html":
         return {
           value: EditorState.createEmpty()

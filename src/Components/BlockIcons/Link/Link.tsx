@@ -78,25 +78,53 @@ interface IState {
 }
 
 class Link extends React.Component<IProps, IState> {
+  wrapperRef: any;
   constructor(props: IProps) {
     super(props);
+    this.wrapperRef = React.createRef();
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
     this.state = {
       isLinkChangeWindowOpen: false,
       targetLink: this.props.contents.link
     };
   }
 
+  setWrapperRef(node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: any) {
+    event.preventDefault();
+    if (
+      this.wrapperRef &&
+      this.wrapperRef.current !== null &&
+      !this.wrapperRef.contains(event.target)
+    ) {
+      this.setState({ isLinkChangeWindowOpen: false });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
+  }
+
   public toggleLinkChangeWindow = () => {
-    this.setState({
-      isLinkChangeWindowOpen: !this.state.isLinkChangeWindowOpen
-    });
+    if (!this.state.isLinkChangeWindowOpen) {
+      this.setState({
+        isLinkChangeWindowOpen: true
+      });
+      document.addEventListener("mousedown", this.handleClickOutside);
+    } else {
+      this.setState({
+        isLinkChangeWindowOpen: false
+      });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
   };
 
   public render() {
     const { handleOnChange, index } = this.props;
     const { isLinkChangeWindowOpen, targetLink } = this.state;
     return (
-      <div>
+      <div ref={(instance: any) => this.setWrapperRef(instance)}>
         <ButtonIcon
           onClick={this.toggleLinkChangeWindow}
           isLinkChangeWindowOpen={isLinkChangeWindowOpen}

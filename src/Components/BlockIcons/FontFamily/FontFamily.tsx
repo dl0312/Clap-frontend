@@ -31,7 +31,7 @@ interface ICurrentFontFamilyProps {
 
 const CurrentFontFamily = styled<ICurrentFontFamilyProps, any>("div")`
   height: 30px;
-  width: 80px;
+  width: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,7 +69,7 @@ const DropdownItemsContainer = styled.ul`
   padding: 0;
   max-height: 250px;
 
-  width: 95px;
+  width: 92px;
   padding: 7px 0;
 `;
 
@@ -108,17 +108,45 @@ interface IState {
 }
 
 class FontFamily extends React.Component<IProps, IState> {
+  wrapperRef: any;
   constructor(props: IProps) {
     super(props);
+    this.wrapperRef = React.createRef();
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
     this.state = {
       isFontFamilyWindowOpen: false
     };
   }
 
+  setWrapperRef(node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: any) {
+    event.preventDefault();
+    if (
+      this.wrapperRef &&
+      this.wrapperRef.current !== null &&
+      !this.wrapperRef.contains(event.target)
+    ) {
+      this.setState({ isFontFamilyWindowOpen: false });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
+  }
+
   public toggleFontFamilyChangeWindow = () => {
-    this.setState({
-      isFontFamilyWindowOpen: !this.state.isFontFamilyWindowOpen
-    });
+    if (!this.state.isFontFamilyWindowOpen) {
+      this.setState({
+        isFontFamilyWindowOpen: true
+      });
+      document.addEventListener("mousedown", this.handleClickOutside);
+    } else {
+      this.setState({
+        isFontFamilyWindowOpen: false
+      });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
   };
 
   public toggleFontFamily = (toggledFontFamily: string) => {
@@ -162,7 +190,7 @@ class FontFamily extends React.Component<IProps, IState> {
           .label
       : "나눔고딕";
     return (
-      <>
+      <div ref={(instance: any) => this.setWrapperRef(instance)}>
         <CurrentFontFamily
           onClick={this.toggleFontFamilyChangeWindow}
           isFontFamilyWindowOpen={isFontFamilyWindowOpen}
@@ -178,6 +206,7 @@ class FontFamily extends React.Component<IProps, IState> {
                   onClick={(e: any) => {
                     e.preventDefault();
                     this.toggleFontFamily(type.style);
+                    this.setState({ isFontFamilyWindowOpen: false });
                   }}
                   key={type.label}
                   textStyle={type.style}
@@ -189,7 +218,7 @@ class FontFamily extends React.Component<IProps, IState> {
             </DropdownItemsContainer>
           </Dropdown>
         ) : null}
-      </>
+      </div>
     );
   }
 }

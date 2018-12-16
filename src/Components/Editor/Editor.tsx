@@ -453,6 +453,7 @@ class Editor extends React.Component<IProps, IState, any> {
     type: "mouseover" | "mouseleave" | "select" | "delete" | "duplicate",
     dataFromChild: number
   ) => {
+    console.log(type, dataFromChild);
     const { cards, hoveredIndex, selectedIndex } = this.state;
     if (type === "mouseover") {
       this.setState({ hoveredIndex: dataFromChild });
@@ -461,6 +462,7 @@ class Editor extends React.Component<IProps, IState, any> {
         this.setState({ hoveredIndex: null });
       }
     } else if (type === "select") {
+      console.log(type, dataFromChild);
       if (selectedIndex !== null) {
         if (selectedIndex === dataFromChild) {
           console.log("same index");
@@ -477,16 +479,15 @@ class Editor extends React.Component<IProps, IState, any> {
           });
         }
       } else {
-        this.setState({
-          selectedIndex: null,
-          selectedContent: null,
-          rightMenu: null
-        });
-        this.setState({
-          selectedIndex: dataFromChild,
-          selectedContent: this.showSelected(dataFromChild),
-          rightMenu: null
-        });
+        console.log(type, dataFromChild);
+        this.setState(
+          {
+            selectedIndex: dataFromChild,
+            selectedContent: this.showSelected(dataFromChild),
+            rightMenu: null
+          },
+          () => console.log(this.state.selectedIndex)
+        );
       }
     } else if (type === "delete") {
       // frame
@@ -783,7 +784,7 @@ class Editor extends React.Component<IProps, IState, any> {
       targetIndex,
       isDragging
     } = this.state;
-
+    console.log(selectedIndex);
     return (
       <React.Fragment>
         <EditorContainer type={type}>
@@ -1209,7 +1210,7 @@ class Editor extends React.Component<IProps, IState, any> {
                     </EditorContentContainer>
                   </EditorContentFrame>
                 </EditorContentCanvas>
-                <div ref={this.wikiRef}>
+                <div ref={el => (this.wikiRef = el)}>
                   <WikiWindow
                     handleOnChange={this.handleOnChange}
                     selectedIndex={selectedIndex}
@@ -1505,6 +1506,7 @@ class Editor extends React.Component<IProps, IState, any> {
       | "currentImageWidth"
       | "currentImageHeight"
   ) => {
+    // console.log(value, index, type);
     if (type === "editorState") {
       this.setState(
         update(this.state, {

@@ -87,21 +87,49 @@ interface IState {
 }
 
 class BackgroundColor extends React.Component<IProps, IState> {
+  wrapperRef: any;
   constructor(props: IProps) {
     super(props);
+    this.wrapperRef = React.createRef();
+    this.setWrapperRef = this.setWrapperRef.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+
     this.state = {
       isBackgroundColorWindowOpen: false
     };
   }
 
+  setWrapperRef(node: any) {
+    this.wrapperRef = node;
+  }
+
+  handleClickOutside(event: any) {
+    event.preventDefault();
+    if (
+      this.wrapperRef &&
+      this.wrapperRef.current !== null &&
+      !this.wrapperRef.contains(event.target)
+    ) {
+      this.setState({ isBackgroundColorWindowOpen: false });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
+  }
+
   public toggleBackgroundColorChangeWindow = () => {
-    this.setState({
-      isBackgroundColorWindowOpen: !this.state.isBackgroundColorWindowOpen
-    });
+    if (!this.state.isBackgroundColorWindowOpen) {
+      this.setState({
+        isBackgroundColorWindowOpen: true
+      });
+      document.addEventListener("mousedown", this.handleClickOutside);
+    } else {
+      this.setState({
+        isBackgroundColorWindowOpen: false
+      });
+      document.removeEventListener("mousedown", this.handleClickOutside);
+    }
   };
 
   public toggleBackgroundColor = (toggledBackgroundColor: string) => {
-    console.log(toggledBackgroundColor);
     const { editorState } = this.props;
     const selection = editorState.getSelection();
     // Let's just allow one color at a time. Turn off all active colors.
@@ -133,13 +161,10 @@ class BackgroundColor extends React.Component<IProps, IState> {
     }
 
     // If the color is being toggled on, apply it.
-    if (!currentStyle.has(toggledBackgroundColor)) {
-      console.log(currentStyle.has(toggledBackgroundColor));
-      nextEditorState = RichUtils.toggleInlineStyle(
-        nextEditorState,
-        toggledBackgroundColor
-      );
-    }
+    nextEditorState = RichUtils.toggleInlineStyle(
+      nextEditorState,
+      toggledBackgroundColor
+    );
     this.props.handleOnChange(nextEditorState, this.props.index, "editorState");
   };
 
@@ -152,9 +177,8 @@ class BackgroundColor extends React.Component<IProps, IState> {
     const currentFontColor = backgroundColorArray.size
       ? "#" + backgroundColorArray.first().substring(15)
       : null;
-    console.log(currentFontColor);
     return (
-      <>
+      <div ref={(instance: any) => this.setWrapperRef(instance)}>
         <ButtonIcon
           className="fas fa-font"
           onClick={this.toggleBackgroundColorChangeWindow}
@@ -175,11 +199,12 @@ class BackgroundColor extends React.Component<IProps, IState> {
                 this.toggleBackgroundColor(
                   "backgroundColor" + color.hex.substring(1)
                 );
+                this.setState({ isBackgroundColorWindowOpen: false });
               }}
             />
           </ColorPickerContainer>
         ) : null}
-      </>
+      </div>
     );
   }
 }
