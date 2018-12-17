@@ -32,6 +32,7 @@ import Container from "../Container";
 import Builder from "../Builder";
 import { media } from "src/config/_mixin";
 import WikiWindow from "../WikiWindow";
+import CustomModal from "../CustomModal";
 const Option = Select.Option;
 
 interface IEditorContainerProps {
@@ -379,6 +380,7 @@ interface IState {
   isTitlePosDraggable: boolean;
   isDragging: boolean;
   imageLibrary: any;
+  isVideoModalOpen: boolean;
 }
 
 class Editor extends React.Component<IProps, IState, any> {
@@ -428,6 +430,7 @@ class Editor extends React.Component<IProps, IState, any> {
       isTitlePosDraggable: false,
       isDragging: false,
       imageLibrary: [],
+      isVideoModalOpen: false,
       ...props.state
     };
   }
@@ -1224,6 +1227,14 @@ class Editor extends React.Component<IProps, IState, any> {
           ref={el => (this.inputElement = el)}
           // multiple={true}
         />
+        {this.state.isVideoModalOpen && (
+          <CustomModal
+            handleSetState={this.handleSetState}
+            handleDrop={this.handleDrop}
+            selectedIndex={selectedIndex}
+cards={cards}
+          />
+        )}
       </React.Fragment>
     );
   }
@@ -1290,14 +1301,13 @@ class Editor extends React.Component<IProps, IState, any> {
 
   public pushNewBlockToTargetIndex = async (dragItem: any) => {
     this.masterCallback("isDragging", false);
-    console.log(this.state.targetIndex);
     if (this.state.targetIndex !== null) {
       if (dragItem.type === "Image") {
         this.handler = (e: any) => this.handleInputNewImage(e, dragItem);
         this.inputElement.addEventListener("change", this.handler);
         await this.inputElement.click();
       } else if (dragItem.type === "Video") {
-        console.log(`This is Video`);
+        this.setState({ isVideoModalOpen: true });
       } else {
         this.handleDrop(dragItem, this.state.targetIndex);
       }
@@ -1307,26 +1317,25 @@ class Editor extends React.Component<IProps, IState, any> {
   };
 
   public onClickPushNewBlock = (dragItem: any) => {
-    console.log(this.state.selectedIndex, this.state.cards, dragItem);
     if (this.state.selectedIndex !== null) {
       if (dragItem.type === "Image") {
-        this.setState({ targetIndex: this.state.selectedIndex + 1 });
         this.handler = (e: any) => this.handleInputNewImage(e, dragItem);
         this.inputElement.addEventListener("change", this.handler);
         this.inputElement.click();
       } else if (dragItem.type === "Video") {
-        console.log(`This is Video`);
+        this.setState({ isVideoModalOpen: true });
       } else {
         this.handleDrop(dragItem, this.state.selectedIndex + 1);
       }
     } else {
+      this.setState({ targetIndex: this.state.cards.length });
       if (dragItem.type === "Image") {
-        this.setState({ targetIndex: this.state.cards.length });
         this.handler = (e: any) => this.handleInputNewImage(e, dragItem);
         this.inputElement.addEventListener("change", this.handler);
         this.inputElement.click();
       } else if (dragItem.type === "Video") {
-        console.log(`This is Video`);
+        console.log(`isVideoModalOpen`);
+        this.setState({ isVideoModalOpen: true });
       } else {
         this.handleDrop(dragItem, this.state.cards.length);
       }

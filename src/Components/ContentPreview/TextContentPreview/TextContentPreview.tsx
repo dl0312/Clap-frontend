@@ -148,7 +148,6 @@ const DragSourceArea = styled.div`
   right: -10px;
   bottom: -10px;
   left: -10px;
-  background-color: transparent;
   border: 1px solid transparent;
   cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
     url(../img/se_cursor_drag_grab.png), auto;
@@ -162,6 +161,7 @@ const EditorWrapper = styled<IEditorWrapperProps, any>("div")`
   position: relative;
   z-index: 2;
   text-align: ${props => props.textStyle};
+  line-height: 1.9;
 `;
 
 interface ITextContents {
@@ -215,7 +215,7 @@ class TextContentPreview extends React.Component<IProps, IState> {
         <EditorWrapper id={"editor_wrapper"} textStyle={style}>
           <Editor
             customStyleMap={customStyleMap}
-            readOnly={true}
+            readOnly={false}
             editorState={editorState}
             plugins={plugins}
           />

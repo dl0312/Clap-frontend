@@ -1,15 +1,10 @@
 import * as React from "react";
 import styled from "styled-components";
-import flow from "lodash/flow";
 import Delete from "src/Components/BlockIcons/Delete";
 import {
-  DropTarget,
   DragSource,
   DragSourceConnector,
-  DropTargetConnector,
   DragSourceMonitor,
-  DropTargetMonitor,
-  ConnectDropTarget,
   ConnectDragSource,
   ConnectDragPreview
 } from "react-dnd";
@@ -18,40 +13,6 @@ import classnames from "classnames";
 import { findDOMNode } from "react-dom";
 
 const icons = [Delete];
-
-const cardTarget = {
-  hover(props: IProps, monitor: DropTargetMonitor, component: DividerContent) {
-    const isJustOverThisOne = monitor.isOver({ shallow: true });
-    console.log(`hover`);
-    if (isJustOverThisOne) {
-      const dragIndex = monitor.getItem().index;
-      const hoverIndex = props.index;
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-      const hoverBoundingRect = (findDOMNode(
-        component
-      )! as Element).getBoundingClientRect() as DOMRect;
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-      console.log(hoverBoundingRect);
-      const position =
-        clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-      props.setTargetIndex(props.index, position);
-    }
-  },
-
-  drop(props: IProps, monitor: DropTargetMonitor, component: DividerContent) {
-    const type = monitor.getItemType();
-    const item = monitor.getItem();
-    if (type === ItemTypes.CARD) {
-      props.pushPresentBlockToTargetIndex(item.index);
-    } else if (type === ItemTypes.CONTENT) {
-      props.pushNewBlockToTargetIndex(item);
-    }
-  }
-};
 
 const cardSource = {
   beginDrag(
@@ -66,6 +27,7 @@ const cardSource = {
     props.masterCallback("unselect");
     return {
       index: props.index,
+      type: "Divider",
       Comp: component,
       width: rect && rect.width,
       height: rect && rect.height
@@ -95,33 +57,6 @@ const DragSourceArea = styled.div`
   left: -10px;
   background-color: transparent;
   border: 1px solid transparent;
-  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
-    url(../img/se_cursor_drag_grab.png), auto;
-`;
-
-interface IDividerContentFrameProps {
-  device: "PHONE" | "TABLET" | "DESKTOP";
-  isFirstBlock: boolean;
-}
-
-const DividerContentFrame = styled<IDividerContentFrameProps, any>("div")`
-  margin-top: ${props =>
-    props.isFirstBlock ? "0px" : props.device === "PHONE" ? "35px" : "40px"};
-`;
-
-interface IDividerContentContainerProps {
-  device: "PHONE" | "TABLET" | "DESKTOP";
-}
-
-const DividerContentContainer = styled<IDividerContentContainerProps, any>(
-  "div"
-)`
-  position: relative;
-  max-width: ${props => (props.device === "DESKTOP" ? "886px" : "640px")};
-  width: ${props => (props.device === "PHONE" ? "auto" : "100%")};
-  margin: 0 auto;
-  padding-left: ${props => (props.device === "PHONE" ? "20px" : null)};
-  padding-right: ${props => (props.device === "PHONE" ? "20px" : null)};
   cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
     url(../img/se_cursor_drag_grab.png), auto;
 `;
@@ -245,26 +180,17 @@ interface IDividerContents {
 }
 
 interface IProps {
-  // 공통
   masterCallback: any;
   pushPresentBlockToTargetIndex: any;
   pushNewBlockToTargetIndex: any;
   contents: IDividerContents;
   index: number;
-  device: "PHONE" | "TABLET" | "DESKTOP";
   setTargetIndex: any;
   selected: boolean;
   hoveredIndex: number | null;
   selectedIndex: number | null;
   scrollWrapperRef: any;
   callbackfromparent: any;
-  // 개별
-}
-
-interface IDnDTargetProps {
-  // React-dnd props
-  connectDropTarget: ConnectDropTarget;
-  isOver: boolean;
 }
 
 interface IDnDSourceProps {
@@ -274,13 +200,10 @@ interface IDnDSourceProps {
   connectDragPreview: ConnectDragPreview;
 }
 
-class DividerContent extends React.Component<
-  IProps & IDnDTargetProps & IDnDSourceProps,
-  any
-> {
+class DividerContent extends React.Component<IProps & IDnDSourceProps, any> {
   dragSource: any;
   wrapperRef: any;
-  constructor(props: IProps & IDnDTargetProps & IDnDSourceProps) {
+  constructor(props: IProps & IDnDSourceProps) {
     super(props);
     this.dragSource = React.createRef();
     this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -355,87 +278,68 @@ class DividerContent extends React.Component<
   public render() {
     const {
       index,
-      device,
       hoveredIndex,
       selectedIndex,
       callbackfromparent,
       selected,
       contents
     } = this.props;
-    const { connectDropTarget, isDragging, connectDragSource } = this.props;
+    const { isDragging, connectDragSource } = this.props;
     const { toolbarState } = this.state;
     const { style } = contents;
     const hover: boolean = hoveredIndex === index;
     const active: boolean = selectedIndex === index;
     return (
-      <DividerContentFrame
-        isFirstBlock={index === 0}
-        device={device}
-        innerRef={(instance: any) => connectDropTarget(instance)}
+      <DividerContentWrapper
+        innerRef={(instance: any) => this.setWrapperRef(instance)}
       >
-        <DividerContentContainer device={device}>
-          <DividerContentWrapper
-            innerRef={(instance: any) => this.setWrapperRef(instance)}
-          >
-            <DragSourceArea
-              className={classnames(
-                "container",
-                hover && !isDragging ? "blockHover" : null,
-                active && !isDragging ? "blockActive" : null
-              )}
-              innerRef={(instance: any) => connectDragSource(instance)}
-              onMouseOver={this.handleOnMouseOver}
-              onMouseDown={this.handleOnMouseDown}
-              onMouseLeave={this.handleOnMouseLeave}
-            />
-            {selected && (
-              <ToolbarWrapper toolbarState={toolbarState}>
-                <Toolbar toolbarState={toolbarState}>
-                  <ButtonContainer>
-                    <ButtonWrapper toolbarState={toolbarState}>
-                      {icons.map((Type, i) => {
-                        return (
-                          <ButtonItem key={i} index={i}>
-                            <Type
-                              callbackfromparent={callbackfromparent}
-                              index={index}
-                              key={i}
-                            />
-                          </ButtonItem>
-                        );
-                      })}
-                    </ButtonWrapper>
-                  </ButtonContainer>
-                </Toolbar>
-              </ToolbarWrapper>
-            )}
-            <DividerContainer className="content" DividerStyle={style}>
-              <DividerLine />
-            </DividerContainer>
-          </DividerContentWrapper>
-        </DividerContentContainer>
-      </DividerContentFrame>
+        <DragSourceArea
+          className={classnames(
+            "container",
+            hover && !isDragging ? "blockHover" : null,
+            active && !isDragging ? "blockActive" : null
+          )}
+          innerRef={(instance: any) => connectDragSource(instance)}
+          onMouseOver={this.handleOnMouseOver}
+          onMouseDown={this.handleOnMouseDown}
+          onMouseLeave={this.handleOnMouseLeave}
+        />
+        {selected && (
+          <ToolbarWrapper toolbarState={toolbarState}>
+            <Toolbar toolbarState={toolbarState}>
+              <ButtonContainer>
+                <ButtonWrapper toolbarState={toolbarState}>
+                  {icons.map((Type, i) => {
+                    return (
+                      <ButtonItem key={i} index={i}>
+                        <Type
+                          callbackfromparent={callbackfromparent}
+                          index={index}
+                          key={i}
+                        />
+                      </ButtonItem>
+                    );
+                  })}
+                </ButtonWrapper>
+              </ButtonContainer>
+            </Toolbar>
+          </ToolbarWrapper>
+        )}
+        <DividerContainer className="content" DividerStyle={style}>
+          <DividerLine />
+        </DividerContainer>
+      </DividerContentWrapper>
     );
   }
 }
 
-export default flow(
-  DropTarget<IProps, IDnDTargetProps>(
-    [ItemTypes.CARD, ItemTypes.CONTENT],
-    cardTarget,
-    (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
-      connectDropTarget: connect.dropTarget(),
-      isOver: monitor.isOver()
-    })
-  ),
-  DragSource<IProps, IDnDSourceProps>(
-    ItemTypes.CARD,
-    cardSource,
-    (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
-      item: monitor.getItem(),
-      isDragging: monitor.isDragging(),
-      connectDragSource: connect.dragSource(),
-      connectDragPreview: connect.dragPreview()
-    })
-  )
+export default DragSource<IProps, IDnDSourceProps>(
+  ItemTypes.CARD,
+  cardSource,
+  (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
+    item: monitor.getItem(),
+    isDragging: monitor.isDragging(),
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview()
+  })
 )(DividerContent);

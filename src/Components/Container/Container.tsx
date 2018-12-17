@@ -1,20 +1,77 @@
 import * as React from "react";
-// import EditorDefaults from "../../EditorDefaults";
-// import ContentBox from "../ContentBox";
-
-// import ButtonContent from "../ContentItems/ButtonContent";
 import TextContent from "../ContentItems/TextContent";
-// import DividerContent from "../ContentItems/DividerContent";
-// import HtmlContent from "../ContentItems/HtmlContent";
-// import ImageContent from "../ContentItems/ImageContent";
-// import VideoContent from "../ContentItems/VideoContent";
-// import SocialMediaContent from "../ContentItems/SocialMediaContent";
-
 import ImageContent from "../ContentItems/ImageContent";
 import VideoContent from "../ContentItems/VideoContent";
 import DividerContent from "../ContentItems/DividerContent";
 
 import { EditorState } from "draft-js";
+import styled from "styled-components";
+import {
+  ConnectDropTarget,
+  DropTarget,
+  DropTargetConnector,
+  DropTargetMonitor
+} from "react-dnd";
+import ItemTypes from "src/ItemTypes";
+import { findDOMNode } from "react-dom";
+
+const cardTarget = {
+  hover(props: IProps, monitor: DropTargetMonitor, component: Container) {
+    const isJustOverThisOne = monitor.isOver({ shallow: true });
+    console.log(`hover`);
+    if (isJustOverThisOne) {
+      const dragIndex = monitor.getItem().index;
+      const hoverIndex = props.index;
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+      const hoverBoundingRect = (findDOMNode(
+        component
+      )! as Element).getBoundingClientRect() as DOMRect;
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      const clientOffset = monitor.getClientOffset();
+      console.log(hoverBoundingRect);
+      const position =
+        clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
+      props.setTargetIndex(props.index, position);
+    }
+  },
+
+  drop(props: IProps, monitor: DropTargetMonitor, component: Container) {
+    const type = monitor.getItemType();
+    const item = monitor.getItem();
+    if (type === ItemTypes.CARD) {
+      props.pushPresentBlockToTargetIndex(item.index);
+    } else if (type === ItemTypes.CONTENT) {
+      props.pushNewBlockToTargetIndex(item);
+    }
+  }
+};
+
+interface IContentFrameProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
+  isFirstBlock: boolean;
+}
+
+const ContentFrame = styled<IContentFrameProps, any>("div")`
+  padding: ${props => (props.device === "PHONE" ? "7px 0" : "10px 0")};
+`;
+
+interface IContentContainerProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
+}
+
+const ContentContainer = styled<IContentContainerProps, any>("div")`
+  position: relative;
+  max-width: ${props => (props.device === "DESKTOP" ? "886px" : "640px")};
+  width: ${props => (props.device === "PHONE" ? "auto" : "100%")};
+  margin: 0 auto;
+  padding-left: ${props => (props.device === "PHONE" ? "20px" : null)};
+  padding-right: ${props => (props.device === "PHONE" ? "20px" : null)};
+  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto;
+`;
 
 interface IProps {
   // Action to Parent Component
@@ -49,6 +106,12 @@ interface IProps {
   activeEditorRef: any;
 }
 
+interface IDnDTargetProps {
+  // React-dnd props
+  connectDropTarget: ConnectDropTarget;
+  isOver: boolean;
+}
+
 interface ITextContents {
   editorState: EditorState;
   style: "alignLeft" | "alignCenter" | "alignRight" | "alignJustify";
@@ -77,10 +140,9 @@ interface IImageContents {
 }
 
 interface IVideoContents {
-  videoUrl: string | null;
-  description: string | null;
-  width: number;
-  height: number;
+  slateData?: any;
+  videoUrl: string;
+  description: string;
   style: "fullWidth" | "alignLeft" | "alignCenter" | "alignRight";
 }
 
@@ -88,8 +150,8 @@ interface IDividerContents {
   style: "fullWidth" | "alignLeft" | "alignCenter" | "alignRight";
 }
 
-class Container extends React.Component<IProps, any> {
-  constructor(props: IProps) {
+class Container extends React.Component<IProps & IDnDTargetProps, any> {
+  constructor(props: IProps & IDnDTargetProps) {
     super(props);
   }
 
@@ -99,7 +161,6 @@ class Container extends React.Component<IProps, any> {
         return (
           <ImageContent
             index={this.props.index}
-            device={this.props.device}
             selected={selected}
             hoveredIndex={this.props.hoveredIndex}
             selectedIndex={this.props.selectedIndex}
@@ -124,7 +185,6 @@ class Container extends React.Component<IProps, any> {
         return (
           <TextContent
             index={this.props.index}
-            device={this.props.device}
             contents={this.props.contents}
             selected={selected}
             hoveredIndex={this.props.hoveredIndex}
@@ -144,12 +204,28 @@ class Container extends React.Component<IProps, any> {
           />
         );
       case "Video":
-        return <VideoContent contents={this.props.contents} autoplay={false} />;
+        return (
+          <VideoContent
+            index={this.props.index}
+            contents={this.props.contents}
+            handleOnChange={this.props.handleOnChange}
+            selected={selected}
+            hoveredIndex={this.props.hoveredIndex}
+            selectedIndex={this.props.selectedIndex}
+            callbackfromparent={this.props.callbackfromparent}
+            masterCallback={this.props.masterCallback}
+            pushPresentBlockToTargetIndex={
+              this.props.pushPresentBlockToTargetIndex
+            }
+            pushNewBlockToTargetIndex={this.props.pushNewBlockToTargetIndex}
+            setTargetIndex={this.props.setTargetIndex}
+            scrollWrapperRef={this.props.scrollWrapperRef}
+          />
+        );
       case "Divider":
         return (
           <DividerContent
             index={this.props.index}
-            device={this.props.device}
             contents={this.props.contents}
             masterCallback={this.props.masterCallback}
             pushPresentBlockToTargetIndex={
@@ -172,14 +248,31 @@ class Container extends React.Component<IProps, any> {
   };
 
   public render() {
-    const { index, selectedIndex } = this.props;
+    const { index, selectedIndex, device, connectDropTarget } = this.props;
     let active: boolean = false;
     active = selectedIndex === index;
-    return <>{this.showInner(active)}</>;
+    return (
+      <ContentFrame
+        isFirstBlock={index === 0}
+        device={device}
+        innerRef={(instance: any) => connectDropTarget(instance)}
+      >
+        <ContentContainer device={device}>
+          {this.showInner(active)}
+        </ContentContainer>
+      </ContentFrame>
+    );
   }
   // public handleClickOutside = () => {
   //   this.props.masterCallback("deselect");
   // };
 }
 
-export default Container;
+export default DropTarget<IProps, IDnDTargetProps>(
+  [ItemTypes.CARD, ItemTypes.CONTENT],
+  cardTarget,
+  (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver()
+  })
+)(Container);

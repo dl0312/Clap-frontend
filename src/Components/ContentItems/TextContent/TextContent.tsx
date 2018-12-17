@@ -37,18 +37,13 @@ import Delete from "src/Components/BlockIcons/Delete";
 import _ from "lodash";
 import {
   DragSourceMonitor,
-  DropTargetMonitor,
-  ConnectDropTarget,
   ConnectDragSource,
   ConnectDragPreview,
-  DropTarget,
   DragSource,
-  DropTargetConnector,
   DragSourceConnector
 } from "react-dnd";
 import { findDOMNode } from "react-dom";
 import ItemTypes from "src/ItemTypes";
-import flow from "lodash/flow";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import {
   getCategoriesByGameId,
@@ -224,40 +219,6 @@ const customStyleMap = {
   }
 };
 
-const cardTarget = {
-  hover(props: IProps, monitor: DropTargetMonitor, component: TextContent) {
-    console.log(`hover`);
-    const isJustOverThisOne = monitor.isOver({ shallow: true });
-    if (isJustOverThisOne) {
-      const dragIndex = monitor.getItem().index;
-      const hoverIndex = props.index;
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-      const hoverBoundingRect = (findDOMNode(
-        component
-      )! as Element).getBoundingClientRect() as DOMRect;
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-      console.log(hoverBoundingRect);
-      const position =
-        clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
-      props.setTargetIndex(props.index, position);
-    }
-  },
-
-  drop(props: IProps, monitor: DropTargetMonitor, component: TextContent) {
-    const type = monitor.getItemType();
-    const item = monitor.getItem();
-    if (type === ItemTypes.CARD) {
-      props.pushPresentBlockToTargetIndex(item.index);
-    } else if (type === ItemTypes.CONTENT) {
-      props.pushNewBlockToTargetIndex(item);
-    }
-  }
-};
-
 const cardSource = {
   beginDrag(props: IProps, monitor: DragSourceMonitor, component: TextContent) {
     const node = findDOMNode(component) as Element;
@@ -401,31 +362,6 @@ const ButtonItem = styled<IButtonItemProps, any>("li")`
   position: relative;
 `;
 
-interface ITextContentFrameProps {
-  device: "PHONE" | "TABLET" | "DESKTOP";
-  isFirstBlock: boolean;
-}
-
-const TextContentFrame = styled<ITextContentFrameProps, any>("div")`
-  margin-top: ${props =>
-    props.isFirstBlock ? "0px" : props.device === "PHONE" ? "35px" : "40px"};
-`;
-
-interface ITextContentContainerProps {
-  device: "PHONE" | "TABLET" | "DESKTOP";
-}
-
-const TextContentContainer = styled<ITextContentContainerProps, any>("div")`
-  position: relative;
-  max-width: ${props => (props.device === "DESKTOP" ? "886px" : "640px")};
-  width: ${props => (props.device === "PHONE" ? "auto" : "100%")};
-  margin: 0 auto;
-  padding-left: ${props => (props.device === "PHONE" ? "20px" : null)};
-  padding-right: ${props => (props.device === "PHONE" ? "20px" : null)};
-  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
-    url(../img/se_cursor_drag_grab.png), auto;
-`;
-
 interface ITextContentWrapperProps {
   textColor: { r: string; g: string; b: string; a: string };
   textAlign: "left" | "center" | "right";
@@ -481,7 +417,6 @@ class GetCategoriesByGameIdQuery extends Query<
 
 interface IProps {
   index: number;
-  device: "PHONE" | "TABLET" | "DESKTOP";
   contents: ITextContents;
   selected?: boolean;
   hoveredIndex: number | null;
@@ -504,12 +439,6 @@ interface IState {
   mentions: any;
 }
 
-interface IDnDTargetProps {
-  // React-dnd props
-  connectDropTarget: ConnectDropTarget;
-  isOver: boolean;
-}
-
 interface IDnDSourceProps {
   // React-dnd props
   isDragging: boolean;
@@ -517,15 +446,12 @@ interface IDnDSourceProps {
   connectDragPreview: ConnectDragPreview;
 }
 
-class TextContent extends React.Component<
-  IProps & IDnDTargetProps & IDnDSourceProps,
-  IState
-> {
+class TextContent extends React.Component<IProps & IDnDSourceProps, IState> {
   dragSource: any;
   wrapperRef: any;
   editorRef: any;
   toolbarRef: any;
-  constructor(props: IProps & IDnDSourceProps & IDnDTargetProps) {
+  constructor(props: IProps & IDnDSourceProps) {
     super(props);
     this.dragSource = React.createRef();
     this.editorRef = React.createRef();
@@ -650,14 +576,12 @@ class TextContent extends React.Component<
   public render() {
     const { MentionSuggestions } = mentionPlugin;
     const {
-      device,
       contents: { editorState, style },
       index,
       hoveredIndex,
       selectedIndex,
       gameId,
       // plugins,
-      connectDropTarget,
       connectDragSource,
       isDragging
     } = this.props;
@@ -678,142 +602,117 @@ class TextContent extends React.Component<
         );
     }
     return (
-      <TextContentFrame
-        innerRef={(instance: any) => {
-          connectDropTarget(instance);
-        }}
-        isFirstBlock={index === 0}
-        device={device}
+      <TextContentWrapper
+        innerRef={(instance: any) => this.setWrapperRef(instance)}
+        textAlign={"left"}
+        className={"markdown-body"}
       >
-        <TextContentContainer device={device}>
-          <TextContentWrapper
-            innerRef={(instance: any) => this.setWrapperRef(instance)}
-            textAlign={"left"}
-            className={"markdown-body"}
+        <DragSourceArea
+          className={classnames(
+            "container",
+            hover && !isDragging ? "blockHover" : null,
+            textContentState === "ACTIVE" && !isDragging ? "blockActive" : null
+          )}
+          innerRef={(instance: any) => {
+            connectDragSource(instance);
+          }}
+          onMouseOver={this.handleOnMouseOver}
+          onMouseDown={this.handleOnMouseDown}
+          onMouseLeave={this.handleOnMouseLeave}
+        />
+        <ToolbarWrapper
+          innerRef={(instance: any) => this.setToolbar(instance)}
+          toolbarState={toolbarState}
+        >
+          {isWriteMode && (
+            <Toolbar toolbarState={toolbarState}>
+              <ButtonContainer>
+                <ButtonWrapper toolbarState={toolbarState}>
+                  {icons.map((Type, i) => {
+                    return (
+                      <ButtonItem key={i} index={i}>
+                        <Type
+                          handleOnChange={this.props.handleOnChange}
+                          callbackfromparent={this.props.callbackfromparent}
+                          index={index}
+                          editorState={editorState}
+                          plugins={plugins}
+                          style={style}
+                        />
+                      </ButtonItem>
+                    );
+                  })}
+                </ButtonWrapper>
+              </ButtonContainer>
+            </Toolbar>
+          )}
+        </ToolbarWrapper>
+        <EditorWrapper id={"editor_wrapper"} textStyle={style}>
+          <Editor
+            customStyleMap={customStyleMap}
+            readOnly={false}
+            editorState={editorState}
+            onChange={this.onChange}
+            ref={this.setEditor}
+            onFocus={(e: any) => {
+              this.setState({ isWriteMode: true });
+              document.addEventListener("mousedown", this.handleClickOutside);
+            }}
+            plugins={plugins}
+            // onBlur={() => {
+            //   console.log(`onblur`);
+            //   // this.setState({ isWriteMode: false });
+            // }}
+          />
+          <GetCategoriesByGameIdQuery
+            query={GET_CATEGORIES_BY_GAME_ID}
+            variables={{ gameId }}
+            onCompleted={data => {
+              if ("GetCategoriesByGameId" in data) {
+                const {
+                  GetCategoriesByGameId: { categories }
+                } = data;
+                if (categories !== null) {
+                  this.setState({
+                    mentions: categories.map((category, index) => {
+                      return {
+                        name: category && category.name,
+                        avatar:
+                          category &&
+                          category.topWikiImage &&
+                          category.topWikiImage.shownImage
+                      };
+                    })
+                  });
+                }
+              }
+            }}
           >
-            <DragSourceArea
-              className={classnames(
-                "container",
-                hover && !isDragging ? "blockHover" : null,
-                textContentState === "ACTIVE" && !isDragging
-                  ? "blockActive"
-                  : null
-              )}
-              innerRef={(instance: any) => {
-                connectDragSource(instance);
-              }}
-              onMouseOver={this.handleOnMouseOver}
-              onMouseDown={this.handleOnMouseDown}
-              onMouseLeave={this.handleOnMouseLeave}
-            />
-            <ToolbarWrapper
-              innerRef={(instance: any) => this.setToolbar(instance)}
-              toolbarState={toolbarState}
-            >
-              {isWriteMode && (
-                <Toolbar toolbarState={toolbarState}>
-                  <ButtonContainer>
-                    <ButtonWrapper toolbarState={toolbarState}>
-                      {icons.map((Type, i) => {
-                        return (
-                          <ButtonItem key={i} index={i}>
-                            <Type
-                              handleOnChange={this.props.handleOnChange}
-                              callbackfromparent={this.props.callbackfromparent}
-                              index={index}
-                              editorState={editorState}
-                              plugins={plugins}
-                              style={style}
-                            />
-                          </ButtonItem>
-                        );
-                      })}
-                    </ButtonWrapper>
-                  </ButtonContainer>
-                </Toolbar>
-              )}
-            </ToolbarWrapper>
-            <EditorWrapper id={"editor_wrapper"} textStyle={style}>
-              <Editor
-                customStyleMap={customStyleMap}
-                readOnly={false}
-                editorState={editorState}
-                onChange={this.onChange}
-                ref={this.setEditor}
-                onFocus={(e: any) => {
-                  this.setState({ isWriteMode: true });
-                  document.addEventListener(
-                    "mousedown",
-                    this.handleClickOutside
-                  );
-                }}
-                plugins={plugins}
-                // onBlur={() => {
-                //   console.log(`onblur`);
-                //   // this.setState({ isWriteMode: false });
-                // }}
-              />
-              <GetCategoriesByGameIdQuery
-                query={GET_CATEGORIES_BY_GAME_ID}
-                variables={{ gameId }}
-                onCompleted={data => {
-                  if ("GetCategoriesByGameId" in data) {
-                    const {
-                      GetCategoriesByGameId: { categories }
-                    } = data;
-                    if (categories !== null) {
-                      this.setState({
-                        mentions: categories.map((category, index) => {
-                          return {
-                            name: category && category.name,
-                            avatar:
-                              category &&
-                              category.topWikiImage &&
-                              category.topWikiImage.shownImage
-                          };
-                        })
-                      });
-                    }
-                  }
-                }}
-              >
-                {({ loading, error, data }) => {
-                  if (loading) {
-                    return null;
-                  }
-                  if (error) return `${error}`;
-                  return null;
-                }}
-              </GetCategoriesByGameIdQuery>
-              <MentionSuggestions
-                onSearchChange={this.onSearchChange}
-                suggestions={this.state.suggestions}
-              />
-            </EditorWrapper>
-          </TextContentWrapper>
-        </TextContentContainer>
-      </TextContentFrame>
+            {({ loading, error, data }) => {
+              if (loading) {
+                return null;
+              }
+              if (error) return `${error}`;
+              return null;
+            }}
+          </GetCategoriesByGameIdQuery>
+          <MentionSuggestions
+            onSearchChange={this.onSearchChange}
+            suggestions={this.state.suggestions}
+          />
+        </EditorWrapper>
+      </TextContentWrapper>
     );
   }
 }
 
-export default flow(
-  DropTarget<IProps, IDnDTargetProps>(
-    [ItemTypes.CARD, ItemTypes.CONTENT],
-    cardTarget,
-    (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
-      connectDropTarget: connect.dropTarget(),
-      isOver: monitor.isOver()
-    })
-  ),
-  DragSource<IProps, IDnDSourceProps>(
-    ItemTypes.CARD,
-    cardSource,
-    (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
-      item: monitor.getItem(),
-      isDragging: monitor.isDragging(),
-      connectDragSource: connect.dragSource(),
-      connectDragPreview: connect.dragPreview()
-    })
-  )
+export default DragSource<IProps, IDnDSourceProps>(
+  ItemTypes.CARD,
+  cardSource,
+  (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
+    item: monitor.getItem(),
+    isDragging: monitor.isDragging(),
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview()
+  })
 )(TextContent);

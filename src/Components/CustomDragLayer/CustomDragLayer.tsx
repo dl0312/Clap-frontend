@@ -15,7 +15,7 @@ function getItemStyles(props: ICustomDragLayerProps) {
   const { x, y } = currentOffset;
 
   const transform = `translate(${x - width / 2}px, ${y -
-    height / 2}px) scale(0.5)`;
+    height / 2}px) scale(0.25)`;
   return {
     transform,
     WebkitTransform: transform,

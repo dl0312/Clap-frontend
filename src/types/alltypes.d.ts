@@ -5,3 +5,4 @@ declare module "react-facebook-login/dist/facebook-login-render-props";
 declare module "draft-js-plugins-editor";
 declare module "draft-js-mention-plugin";
 declare module "draft-js-emoji-plugin";
+declare module "react-player";
