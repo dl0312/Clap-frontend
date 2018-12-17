@@ -152,19 +152,7 @@ const DividerContainer = styled<IDividerContainerProps, any>("div")`
   border-right: 0 solid transparent;
   border-left: 0 solid transparent;
   border-bottom: 0 solid transparent;
-  max-width: ${props =>
-    props.DividerStyle === "fullWidth"
-      ? null
-      : `${props.currentDividerWidth}px`};
-  margin-left: ${props =>
-    props.DividerStyle === "alignCenter" || props.DividerStyle === "alignRight"
-      ? "auto"
-      : null};
-  margin-right: ${props =>
-    props.DividerStyle === "alignCenter" || props.DividerStyle === "alignLeft"
-      ? "auto"
-      : null};
-  width: ${props => (props.DividerStyle === "fullWidth" ? "100%" : null)};
+  padding: 5px 0;
 `;
 
 interface IToolbarWrapperProps {
@@ -247,9 +235,9 @@ const ButtonItem = styled<IButtonItemProps, any>("div")`
       : null};
 `;
 
-const DividerLine = styled.div`
+const DividerLine = styled.hr`
   width: 100%;
-  border: 1px solid grey;
+  border-top: 1px solid grey;
 `;
 
 interface IDividerContents {

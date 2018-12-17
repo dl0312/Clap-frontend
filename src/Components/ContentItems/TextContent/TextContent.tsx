@@ -267,6 +267,7 @@ const cardSource = {
     props.masterCallback("unselect");
     return {
       index: props.index,
+      type: "Text",
       Comp: component,
       width: rect && rect.width,
       height: rect && rect.height
@@ -588,9 +589,9 @@ class TextContent extends React.Component<
   };
 
   handleClickOutside(event: any) {
-    console.log(this.wrapperRef, this.wrapperRef.contains(event.target));
-    console.log(this.props.wikiRef, this.props.wikiRef.contains(event.target));
-    console.log(this.toolbarRef, this.toolbarRef.contains(event.target));
+    // console.log(this.wrapperRef, this.wrapperRef.contains(event.target));
+    // console.log(this.props.wikiRef, this.props.wikiRef.contains(event.target));
+    // console.log(this.toolbarRef, this.toolbarRef.contains(event.target));
     if (
       this.wrapperRef &&
       !this.wrapperRef.contains(event.target) &&
@@ -663,13 +664,7 @@ class TextContent extends React.Component<
     const { toolbarState, isWriteMode } = this.state;
     const hover: boolean = hoveredIndex === index;
     const active: boolean = selectedIndex === index;
-    const textContentState = isWriteMode
-      ? "WRITE"
-      : active
-      ? "ACTIVE"
-      : hover
-      ? "HOVER"
-      : null;
+    const textContentState = isWriteMode ? "WRITE" : active ? "ACTIVE" : null;
     if (textContentState === "WRITE") {
       this.props.scrollWrapperRef.current.addEventListener(
         "scroll",
@@ -699,9 +694,7 @@ class TextContent extends React.Component<
             <DragSourceArea
               className={classnames(
                 "container",
-                textContentState === "HOVER" && !isDragging
-                  ? "blockHover"
-                  : null,
+                hover && !isDragging ? "blockHover" : null,
                 textContentState === "ACTIVE" && !isDragging
                   ? "blockActive"
                   : null

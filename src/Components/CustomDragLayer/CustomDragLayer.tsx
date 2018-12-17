@@ -45,22 +45,23 @@ class CustomDragLayer extends React.Component<ICustomDragLayerProps, any> {
   constructor(props: ICustomDragLayerProps) {
     super(props);
   }
-  public renderItem = (Comp: any, itemType: any) => {
+  public renderItem = (Comp: any, type: "Text" | "Image", itemType: any) => {
     return (
       this.props.itemType !== undefined && (
-        <CardDragPreiview Comp={Comp} itemType={itemType} />
+        <CardDragPreiview Comp={Comp} type={type} itemType={itemType} />
       )
     );
   };
 
   public render() {
     const { isDragging, itemType, item } = this.props;
+    console.log(item);
     if (!isDragging) {
       return null;
     }
     return (
       <DragLayerContainer style={getItemStyles(this.props)}>
-        {item.Comp && this.renderItem(item.Comp, itemType)}
+        {item.Comp && this.renderItem(item.Comp, item.type, itemType)}
       </DragLayerContainer>
     );
   }

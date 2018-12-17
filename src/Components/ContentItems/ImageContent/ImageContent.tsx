@@ -80,6 +80,7 @@ const cardSource = {
     monitor: DragSourceMonitor,
     component: ImageContent
   ) {
+    console.log(component);
     const node = findDOMNode(component) as Element;
     const rect = node ? (node.getBoundingClientRect() as DOMRect) : null;
 
@@ -87,6 +88,7 @@ const cardSource = {
     props.masterCallback("unselect");
     return {
       index: props.index,
+      type: "Image",
       Comp: component,
       width: rect && rect.width,
       height: rect && rect.height

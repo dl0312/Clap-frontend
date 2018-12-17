@@ -89,7 +89,7 @@ const DropdownItem = styled<IDropdownItem, any>("li")`
       ? "Nanum Myeongjo, serif"
       : props.textStyle === "fontFamily3"
       ? "Nanum Gothic, sans-serif"
-      : "Noto Sans KR, sans-serif"};
+      : "Nanum Pen Script, cursive"};
   cursor: pointer;
   color: ${props => (props.active ? "#00bcd4" : null)};
   &:hover {
