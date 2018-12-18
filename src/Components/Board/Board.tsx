@@ -419,10 +419,7 @@ class Board extends React.Component<IProps, IState> {
                             >
                               <Link
                                 to={{
-                                  pathname: "/post/add",
-                                  state: {
-                                    gameId
-                                  }
+                                  pathname: `/game/${gameId}/post/add`
                                 }}
                                 style={{ textDecoration: "none" }}
                               >
@@ -510,10 +507,7 @@ class Board extends React.Component<IProps, IState> {
                             >
                               <Link
                                 to={{
-                                  pathname: "/post/add",
-                                  state: {
-                                    gameId
-                                  }
+                                  pathname: `/game/${gameId}/post/add`
                                 }}
                                 style={{ textDecoration: "none" }}
                               >
@@ -598,10 +592,7 @@ class Board extends React.Component<IProps, IState> {
                             >
                               <Link
                                 to={{
-                                  pathname: "/post/add",
-                                  state: {
-                                    gameId
-                                  }
+                                  pathname: `/game/${gameId}/post/add`
                                 }}
                                 style={{ textDecoration: "none" }}
                               >

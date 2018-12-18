@@ -86,13 +86,13 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn, changeLocale }) => (
     />
     <PrivateRoute
       isLoggedIn={isLoggedIn}
-      path="/post/add"
+      path="/game/:gameId/post/add/"
       exact={true}
       component={PostAdd}
     />
     <PrivateRoute
       isLoggedIn={isLoggedIn}
-      path="/post/edit/:postId"
+      path="/game/:gameId/post/edit/:postId"
       exact={true}
       component={PostEdit}
     />

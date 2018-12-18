@@ -57,6 +57,7 @@ interface IProps {
   handleSetState: any;
   handleDrop: any;
   selectedIndex: number | null;
+  targetIndex: number | null;
   cards: any;
 }
 
@@ -100,13 +101,18 @@ class VideoModal extends React.Component<IProps, IState> {
       type: "Video",
       contents: {
         videoUrl: this.state.videoUrl,
-        style: "AlignLeft"
+        style: "fullWidth"
       }
     };
-    if (this.props.selectedIndex !== null) {
-      this.props.handleDrop(dragItem, this.props.selectedIndex + 1);
+    console.log(this.props);
+    if (this.props.targetIndex !== null) {
+      this.props.handleDrop(dragItem, this.props.targetIndex);
     } else {
-      this.props.handleDrop(dragItem, this.props.cards.length);
+      if (this.props.selectedIndex !== null) {
+        this.props.handleDrop(dragItem, this.props.selectedIndex + 1);
+      } else {
+        this.props.handleDrop(dragItem, this.props.cards.length);
+      }
     }
     this.props.handleSetState("isVideoModalOpen", false);
   };

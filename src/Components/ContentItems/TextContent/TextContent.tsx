@@ -628,7 +628,7 @@ class TextContent extends React.Component<IProps & IDnDSourceProps, IState> {
             <Toolbar toolbarState={toolbarState}>
               <ButtonContainer>
                 <ButtonWrapper toolbarState={toolbarState}>
-                  {icons.map((Type, i) => {
+                  {icons.map((Type: any, i) => {
                     return (
                       <ButtonItem key={i} index={i}>
                         <Type

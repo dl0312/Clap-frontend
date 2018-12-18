@@ -7,6 +7,7 @@ import EditorDefaults from "src/EditorDefaults";
 interface IBuilderContainerProps {
   state: "ISOVER" | "ONDRAG" | "NOTHING";
   type: "content" | "columnList";
+  device: "PHONE" | "TABLET" | "DESKTOP";
   isOpen: boolean;
 }
 
@@ -36,7 +37,12 @@ const BuilderContainer = styled<IBuilderContainerProps, any>("div")`
   }};
   transition: background-color 0.2s ease, height 0.1s ease;
   width: 100%;
-  max-width: 886px;
+  max-width: ${props =>
+    props.device === "DESKTOP"
+      ? "886px"
+      : props.device === "TABLET"
+      ? "640px"
+      : "360px"};
   width: 100%;
   margin: 0 auto;
   position: relative;
@@ -44,12 +50,12 @@ const BuilderContainer = styled<IBuilderContainerProps, any>("div")`
 
 const OuterBuilder = styled.div`
   width: 100%;
-  margin: 20px 0;
 `;
 
 interface IProps {
   index: number;
   state: "ISOVER" | "ONDRAG" | "NOTHING";
+  device: "PHONE" | "TABLET" | "DESKTOP";
   handleDrop?: any;
 }
 
@@ -66,11 +72,16 @@ class Builder extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { index, state, handleDrop } = this.props;
+    const { index, state, device, handleDrop } = this.props;
     const { isOpen } = this.state;
     return (
       <OuterBuilder>
-        <BuilderContainer className={"Builder"} state={state} isOpen={isOpen}>
+        <BuilderContainer
+          className={"Builder"}
+          state={state}
+          device={device}
+          isOpen={isOpen}
+        >
           <ContentBox
             state={state}
             index={index}

@@ -196,6 +196,7 @@ const ButtonItem = styled<IButtonItemProps, any>("div")`
     props.index === 6
       ? "1px solid rgba(0, 0, 0, 0.1)"
       : null};
+  position: relative;
 `;
 
 interface IDescriptionContainerProps {
@@ -447,7 +448,7 @@ class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
             <Toolbar toolbarState={toolbarState}>
               <ButtonContainer>
                 <ButtonWrapper toolbarState={toolbarState}>
-                  {icons.map((Type, i) => {
+                  {icons.map((Type: any, i) => {
                     return (
                       <ButtonItem key={i} index={i}>
                         <Type

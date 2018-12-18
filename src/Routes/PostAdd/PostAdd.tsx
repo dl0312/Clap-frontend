@@ -10,7 +10,7 @@ import Loading from "src/Components/Loading";
 
 interface IProps {
   history: any;
-  location: { state: { gameId: number } };
+  match: { params: { gameId: number; postId: number } };
 }
 
 interface IState {
@@ -79,7 +79,7 @@ class PostAdd extends React.Component<IProps, IState> {
   public render() {
     const { body } = this.state;
     console.log(this.props);
-    const { gameId } = this.props.location.state;
+    const { gameId } = this.props.match.params;
     return (
       <AddPostQuery
         mutation={ADD_POST}

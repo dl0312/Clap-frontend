@@ -24,7 +24,7 @@ const LinkContainer = styled.div`
   width: 200px;
   height: 30px;
   top: 31px;
-  left: 188px;
+  left: -1px;
   right: 34px;
   z-index: 1;
   position: absolute;
@@ -61,6 +61,7 @@ const CheckButton = styled.i`
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
   &:hover {
     color: #00bcd4;
   }

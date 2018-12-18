@@ -75,6 +75,7 @@ const itemSource = {
       default:
         break;
     }
+
     return { type: props.item.name, contents: item.contents };
   },
   endDrag(props: IProps, monitor: DragSourceMonitor, component: ContentItem) {
@@ -82,7 +83,7 @@ const itemSource = {
       type: "Text",
       contents: props.item.name
     };
-
+    props.masterCallback("isDragging", false);
     return item;
   }
 };

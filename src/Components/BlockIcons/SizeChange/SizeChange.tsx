@@ -25,13 +25,12 @@ const SizeContainer = styled.div`
   display: flex;
   visibility: visible;
   width: 100px;
-  left: 0;
   padding: 6px 8px;
   box-sizing: border-box;
   z-index: 1000;
   position: absolute;
-  top: 32px;
-  left: 32px;
+  top: 31px;
+  left: -1px;
   background-color: #fafafa;
   border: 1px solid #cecece;
   border-bottom-left-radius: 5px;

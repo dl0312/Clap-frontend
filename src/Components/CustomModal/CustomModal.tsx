@@ -59,12 +59,19 @@ interface IProps {
   handleSetState: any;
   handleDrop: any;
   selectedIndex: number | null;
+  targetIndex: number | null;
   cards: any;
 }
 
 class CustomModal extends React.Component<IProps, any> {
   public render() {
-    const { handleSetState, handleDrop, selectedIndex, cards } = this.props;
+    const {
+      handleSetState,
+      handleDrop,
+      selectedIndex,
+      targetIndex,
+      cards
+    } = this.props;
     return (
       <ModalContainer>
         <DisableBackground />
@@ -73,6 +80,7 @@ class CustomModal extends React.Component<IProps, any> {
             handleSetState={handleSetState}
             handleDrop={handleDrop}
             selectedIndex={selectedIndex}
+            targetIndex={targetIndex}
             cards={cards}
           />
         </ModalWrapper>

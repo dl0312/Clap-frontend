@@ -93,7 +93,7 @@ const VideoContainer = styled<IVideoContainerProps, any>("div")`
     props.VideoStyle === "alignCenter" || props.VideoStyle === "alignLeft"
       ? "auto"
       : null};
-  width: ${props => (props.VideoStyle === "fullWidth" ? "100%" : null)};
+  width: ${props => (props.VideoStyle === "fullWidth" ? "100%" : "66.7%")};
 `;
 
 interface IToolbarWrapperProps {
@@ -168,12 +168,7 @@ interface IButtonItemProps {
 
 const ButtonItem = styled<IButtonItemProps, any>("div")`
   border-right: ${props =>
-    props.index === 0 ||
-    props.index === 1 ||
-    props.index === 5 ||
-    props.index === 6
-      ? "1px solid rgba(0, 0, 0, 0.1)"
-      : null};
+    props.index === 3 ? "1px solid rgba(0, 0, 0, 0.1)" : null};
 `;
 
 interface IDescriptionContainerProps {
@@ -371,7 +366,7 @@ class VideoContent extends React.Component<IProps & IDnDSourceProps, IState> {
             <Toolbar toolbarState={toolbarState}>
               <ButtonContainer>
                 <ButtonWrapper toolbarState={toolbarState}>
-                  {icons.map((Type, i) => {
+                  {icons.map((Type: any, i) => {
                     return (
                       <ButtonItem key={i} index={i}>
                         <Type

@@ -55,7 +55,8 @@ interface IContentFrameProps {
 }
 
 const ContentFrame = styled<IContentFrameProps, any>("div")`
-  padding: ${props => (props.device === "PHONE" ? "7px 0" : "10px 0")};
+  /* padding: ${props => (props.device === "PHONE" ? "7px 0" : "10px 0")}; */
+  padding :10px 0;
 `;
 
 interface IContentContainerProps {
@@ -64,7 +65,12 @@ interface IContentContainerProps {
 
 const ContentContainer = styled<IContentContainerProps, any>("div")`
   position: relative;
-  max-width: ${props => (props.device === "DESKTOP" ? "886px" : "640px")};
+  max-width: ${props =>
+    props.device === "DESKTOP"
+      ? "886px"
+      : props.device === "TABLET"
+      ? "640px"
+      : "360px"};
   width: ${props => (props.device === "PHONE" ? "auto" : "100%")};
   margin: 0 auto;
   padding-left: ${props => (props.device === "PHONE" ? "20px" : null)};

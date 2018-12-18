@@ -26,7 +26,7 @@ import ImageButton from "../ImageButton";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import CustomDragLayer from "../CustomDragLayer";
-import { Select, Button, Icon, Slider } from "antd";
+import { Select, Button, Slider, Icon } from "antd";
 import ButtonGroup from "antd/lib/button/button-group";
 import Container from "../Container";
 import Builder from "../Builder";
@@ -129,6 +129,9 @@ const TitleFrame = styled.div`
 `;
 
 interface ITitleWrapperProps {
+  titleImg: string;
+  titleImgUploading: boolean;
+  titleImgPos: number;
   device: "PHONE" | "TABLET" | "DESKTOP";
 }
 
@@ -140,25 +143,6 @@ const TitleWrapper = styled<ITitleWrapperProps, any>("div")`
   position: relative;
   margin-bottom: 40px;
   padding: 0;
-`;
-
-interface ITitleContainer {
-  titleImg: string;
-  titleImgUploading: boolean;
-  titleImgPos: number;
-  device: "PHONE" | "TABLET" | "DESKTOP";
-}
-
-const TitleContainer = styled<ITitleContainer, any>("div")`
-  width: auto;
-  max-width: ${props => (props.device === "PHONE" ? "640px" : "886px")};
-  padding-top: 83px;
-  padding-bottom: ${props => (props.device === "PHONE" ? "25px" : "31px")};
-  cursor: auto;
-  padding-right: 0;
-  padding-left: 0;
-  margin: 0 auto;
-  position: relative;
   background-image: ${props =>
     props.titleImg &&
     `linear-gradient(
@@ -169,6 +153,28 @@ const TitleContainer = styled<ITitleContainer, any>("div")`
   background-position: ${props => `50% ${props.titleImgPos}%`};
   background-size: 100% auto;
   color: ${props => (props.titleImg ? "white" : null)};
+`;
+
+interface ITitleContainer {
+  titleImg: string;
+  device: "PHONE" | "TABLET" | "DESKTOP";
+}
+
+const TitleContainer = styled<ITitleContainer, any>("div")`
+  width: auto;
+  max-width: ${props =>
+    props.device === "DESKTOP"
+      ? "886px"
+      : props.device === "TABLET"
+      ? "640px"
+      : "360px"};
+  padding-top: ${props => (props.titleImg ? "150px" : "85px")};
+  padding-bottom: ${props => (props.titleImg ? "70px" : "30px")};
+  cursor: auto;
+  padding-right: 0;
+  padding-left: 0;
+  margin: 0 auto;
+  position: relative;
 `;
 
 interface ITitleInputProps {
@@ -201,7 +207,6 @@ const TitleInput = styled<ITitleInputProps, any>(Textarea)`
 const EditorContentLayer = styled.div`
   position: absolute;
   top: 0;
-  left: 246px;
   right: 0;
   bottom: 0;
   height: 100%;
@@ -214,9 +219,19 @@ const EditorContentLayer = styled.div`
   min-height: 100%;
   transform-origin: right, top;
   transform: translate3d(0, 0, 0);
-  transition-property: left, right;
-  transition-duration: 0.4s;
+  transition-duration: 0.4s, 0.4s, 0s;
+  transition-delay: 0s, 0s, 0.4s;
   transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+`;
+
+const HideEditorToolButton = styled(Icon)`
+  cursor: pointer;
+  position: absolute;
+  z-index: 1;
+  font-size: 25px;
+  left: 10px;
+  top: 10px;
+  transition: 0.2s ease;
 `;
 
 const EditorContentFrameLayer = styled.div`
@@ -246,7 +261,7 @@ const EditorContentCanvas = styled<IEditorContentCanvasProps, any>("div")`
       ? "425px"
       : props.device === "TABLET"
       ? "768px"
-      : "100%"};
+      : "1046px"};
   min-width: ${props => (props.device === "DESKTOP" ? "778px" : null)};
   transform: translate3d(0, 0, 0);
   transition-property: all;
@@ -254,6 +269,13 @@ const EditorContentCanvas = styled<IEditorContentCanvasProps, any>("div")`
   transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
   overflow-x: hidden;
   overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 6px;
+    background-color: #e5e5e5;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #000000;
+  }
 `;
 
 const EditorContentFrame = styled.div`
@@ -300,8 +322,17 @@ const TagContainer = styled<ITagContainerProps, any>("div")`
   transition: 0.2s ease;
 `;
 
-const InnerTagContainer = styled.div`
-  max-width: 886px;
+interface IInnerTagContainerProps {
+  device: "PHONE" | "TABLET" | "DESKTOP";
+}
+
+const InnerTagContainer = styled<IInnerTagContainerProps, any>("div")`
+  max-width: ${props =>
+    props.device === "DESKTOP"
+      ? "886px"
+      : props.device === "TABLET"
+      ? "640px"
+      : "360px"};
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -315,8 +346,8 @@ const InnerTagContainer = styled.div`
 
 const TagLabel = styled.span`
   display: inline-block;
-  padding: 2px 0;
-  width: 35px;
+  margin-right: 10px;
+  min-width: 33px;
   vertical-align: top;
   color: #000;
   font-size: 16px;
@@ -381,6 +412,7 @@ interface IState {
   isDragging: boolean;
   imageLibrary: any;
   isVideoModalOpen: boolean;
+  hideEditorTool: boolean;
 }
 
 class Editor extends React.Component<IProps, IState, any> {
@@ -431,6 +463,7 @@ class Editor extends React.Component<IProps, IState, any> {
       isDragging: false,
       imageLibrary: [],
       isVideoModalOpen: false,
+      hideEditorTool: false,
       ...props.state
     };
   }
@@ -538,7 +571,11 @@ class Editor extends React.Component<IProps, IState, any> {
           }
         })
       );
-      this.setState({ isDragging: false, targetIndex: null });
+      this.setState({
+        isDragging: false,
+        selectedIndex: null,
+        targetIndex: null
+      });
     }
   };
 
@@ -893,8 +930,19 @@ class Editor extends React.Component<IProps, IState, any> {
               title={this.state.title}
               onClickPushNewBlock={this.onClickPushNewBlock}
               imageLibrary={this.state.imageLibrary}
+              hideEditorTool={this.state.hideEditorTool}
             />
-            <EditorContentLayer>
+            <EditorContentLayer
+              style={{ left: this.state.hideEditorTool ? 0 : 246 }}
+            >
+              <HideEditorToolButton
+                onClick={() =>
+                  this.setState({ hideEditorTool: !this.state.hideEditorTool })
+                }
+                type={
+                  this.state.hideEditorTool ? "right-circle" : "left-circle"
+                }
+              />
               <EditorContentFrameLayer>
                 <EditorContentCanvas
                   device={device}
@@ -905,11 +953,14 @@ class Editor extends React.Component<IProps, IState, any> {
                       <EditorContentWrapper id="container">
                         <EditorCanvas device={device}>
                           <TitleFrame>
-                            <TitleWrapper device={device}>
+                            <TitleWrapper
+                              titleImg={titleImg}
+                              titleImgUploading={titleImgUploading}
+                              titleImgPos={titleImgPos}
+                              device={device}
+                            >
                               <TitleContainer
                                 titleImg={titleImg}
-                                titleImgUploading={titleImgUploading}
-                                titleImgPos={titleImgPos}
                                 device={device}
                               >
                                 <TitleInput
@@ -980,8 +1031,9 @@ class Editor extends React.Component<IProps, IState, any> {
                                   <>
                                     <div
                                       style={{
-                                        right: "15px",
-                                        top: "40px",
+                                        right: "-25px",
+                                        top: "50%",
+                                        marginTop: "-57px",
                                         height: "100px",
                                         position: "absolute"
                                       }}
@@ -1001,7 +1053,7 @@ class Editor extends React.Component<IProps, IState, any> {
                                       style={{
                                         display: "flex",
                                         position: "absolute",
-                                        right: "20px",
+                                        right: "-18px",
                                         bottom: "20px"
                                       }}
                                     >
@@ -1033,6 +1085,7 @@ class Editor extends React.Component<IProps, IState, any> {
                                       : "ONDRAG"
                                     : "NOTHING"
                                 }
+                                device={device}
                                 handleDrop={this.handleDrop}
                               />
                               {cards.map((item, index) => {
@@ -1080,6 +1133,7 @@ class Editor extends React.Component<IProps, IState, any> {
                                             : "ONDRAG"
                                           : "NOTHING"
                                       }
+                                      device={device}
                                       handleDrop={this.handleDrop}
                                     />
                                   </React.Fragment>
@@ -1089,12 +1143,12 @@ class Editor extends React.Component<IProps, IState, any> {
                           ) : null}
                         </EditorCanvas>
                         <TagContainer>
-                          <InnerTagContainer>
-                            <Icon
+                          <InnerTagContainer device={device}>
+                            {/* <Icon
                               style={{ fontSize: 16, marginRight: 5 }}
                               type="tags"
-                            />
-                            <TagLabel>Tag</TagLabel>
+                            /> */}
+                            <TagLabel>TAG</TagLabel>
                             <TagArea>
                               <TagInputHolder>
                                 <GetCategoriesByGameIdQuery
@@ -1107,7 +1161,7 @@ class Editor extends React.Component<IProps, IState, any> {
                                         <Select
                                           mode="tags"
                                           style={{ width: "100%" }}
-                                          placeholder="Tags Mode"
+                                          placeholder="Loading..."
                                           onChange={(value: any) =>
                                             console.log(`selected ${value}`)
                                           }
@@ -1124,7 +1178,7 @@ class Editor extends React.Component<IProps, IState, any> {
                                           mode="tags"
                                           allowClear={true}
                                           style={{ width: "100%" }}
-                                          placeholder="Tags"
+                                          placeholder="Input game tags"
                                           onChange={(values: any) => {
                                             this.setState({
                                               tags: values.map(
@@ -1225,6 +1279,7 @@ class Editor extends React.Component<IProps, IState, any> {
           type="file"
           accept="image/*"
           ref={el => (this.inputElement = el)}
+          style={{ visibility: "hidden" }}
           // multiple={true}
         />
         {this.state.isVideoModalOpen && (
@@ -1232,7 +1287,8 @@ class Editor extends React.Component<IProps, IState, any> {
             handleSetState={this.handleSetState}
             handleDrop={this.handleDrop}
             selectedIndex={selectedIndex}
-cards={cards}
+            targetIndex={targetIndex}
+            cards={cards}
           />
         )}
       </React.Fragment>
@@ -1303,6 +1359,7 @@ cards={cards}
     this.masterCallback("isDragging", false);
     if (this.state.targetIndex !== null) {
       if (dragItem.type === "Image") {
+        this.inputElement.removeEventListener("change", this.handler);
         this.handler = (e: any) => this.handleInputNewImage(e, dragItem);
         this.inputElement.addEventListener("change", this.handler);
         await this.inputElement.click();
@@ -1319,6 +1376,7 @@ cards={cards}
   public onClickPushNewBlock = (dragItem: any) => {
     if (this.state.selectedIndex !== null) {
       if (dragItem.type === "Image") {
+        this.inputElement.removeEventListener("change", this.handler);
         this.handler = (e: any) => this.handleInputNewImage(e, dragItem);
         this.inputElement.addEventListener("change", this.handler);
         this.inputElement.click();
@@ -1330,6 +1388,7 @@ cards={cards}
     } else {
       this.setState({ targetIndex: this.state.cards.length });
       if (dragItem.type === "Image") {
+        this.inputElement.removeEventListener("change", this.handler);
         this.handler = (e: any) => this.handleInputNewImage(e, dragItem);
         this.inputElement.addEventListener("change", this.handler);
         this.inputElement.click();
@@ -1376,11 +1435,12 @@ cards={cards}
   };
 
   public handleInputNewImage = async (event: any, dragItem: any) => {
+    console.log(event);
     const {
       target: { files }
     } = event;
     if (files) {
-      console.log(dragItem, this.state);
+      console.log(dragItem, this.state, files);
       const formData = new FormData();
       formData.append("file", files[0]);
       formData.append("api_key", "811881451928618");

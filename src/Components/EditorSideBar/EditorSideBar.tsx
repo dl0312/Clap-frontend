@@ -4,18 +4,16 @@ import Library from "../Library";
 import styled from "styled-components";
 
 const EditorSideBarContainer = styled.div`
-  transform: inherit;
-  transition-property: margin, transform;
   transition-duration: 0.4s, 0.4s, 0s;
   transition-delay: 0s, 0s, 0.4s;
   transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
   bottom: 46px;
+  width: 245px !important;
   height: auto;
   left: 0;
   border-right: 1px solid #dcdcdc;
-  width: 245px !important;
   background-color: #fafafa;
-  overflow: visible;
+  overflow: hidden;
   z-index: 10;
   position: absolute;
   top: 0;
@@ -106,6 +104,7 @@ interface IProps {
   view: "EDIT" | "USER" | "JSON";
   title: string;
   imageLibrary: any;
+  hideEditorTool: boolean;
 }
 
 interface IState {
@@ -123,10 +122,13 @@ class EditorSideBar extends Component<IProps, IState> {
   }
 
   public render() {
-    const { imageLibrary } = this.props;
+    const { imageLibrary, hideEditorTool } = this.props;
     const { isEditorToolOpen, isLibraryOpen } = this.state;
+    console.log(hideEditorTool);
     return (
-      <EditorSideBarContainer>
+      <EditorSideBarContainer
+        style={{ transform: hideEditorTool ? "translateX(-245px)" : undefined }}
+      >
         <EditorToolContainer>
           <TitleContainer onClick={this.handleOnClickEditorToolToggleButton}>
             <TitleWrapper>
