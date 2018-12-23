@@ -14,12 +14,17 @@ class CategoriesByKeyword extends Query<
   getCategoriesByKeywordVariables
 > {}
 
+interface IProps {
+  history: any;
+  gameId: number;
+}
+
 interface IState {
   categoryId: number | null;
   suggestions: any[];
 }
 
-class AutoSuggestInput extends React.Component<any, IState> {
+class AutoSuggestInput extends React.Component<IProps, IState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -29,11 +34,11 @@ class AutoSuggestInput extends React.Component<any, IState> {
   }
 
   public render() {
-    const { history } = this.props;
+    const { history, gameId } = this.props;
     return (
       <CategoriesByKeyword
         query={CATEGORIES_KEYWORD}
-        variables={{ keyword: "" }}
+        variables={{ gameId, keyword: "" }}
       >
         {({ loading, error, data }) => {
           if (loading) {

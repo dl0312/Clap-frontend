@@ -155,9 +155,7 @@ class ContentItem extends Component<IProps & IDnDProps> {
           value: EditorState.createEmpty()
         };
       case "Table":
-        return {
-          value: EditorState.createEmpty()
-        };
+        return EditorDefaults.DEFAULT_TABLE_BLOCK.contents;
       case "Divider":
         return EditorDefaults.DEFAULT_DIVIDER_BLOCK.contents;
       default:

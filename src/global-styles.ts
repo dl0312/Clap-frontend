@@ -368,14 +368,16 @@ hr{
   display: inline-block;
   width: 24px;
   height: 24px;
-  border-radius: 12px;
+  border-radius: 2px;
 }
 .draftJsMentionPlugin__mentionSuggestions__2DWjA {
   border: 1px solid #eee;
   margin-top: 0.4em;
   position: absolute;
-  min-width: 220px;
+  min-width: 200px;
   max-width: 440px;
+  max-height: 400px;
+  overflow-y: auto;
   background: #fff;
   border-radius: 2px;
   box-shadow: 0px 4px 30px 0px rgba(220,220,220,1);
@@ -391,6 +393,13 @@ hr{
   box-sizing: border-box;
   -webkit-transform: scale(0);
           transform: scale(0);
+  ::-webkit-scrollbar {
+    width: 6px;
+    background-color: #e5e5e5;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #000000;
+  }
 }
 
 
@@ -428,7 +437,7 @@ hr{
   }
   
   .draftJsEmojiPlugin__emojiSelectButtonPressed__2Tezu {
-    color: #00bcd4
+    color: #00bcd4;
     opacity: 1;
   }
   

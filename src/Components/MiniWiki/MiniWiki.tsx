@@ -94,6 +94,7 @@ interface IProps {
   selectedIndex: number | number[] | null;
   selectedContent: any;
   activeEditorRef: any;
+  gameId: number;
 }
 
 interface IState {
@@ -122,6 +123,7 @@ class MiniWiki extends React.Component<IProps, IState> {
   }
 
   public render() {
+    const { gameId } = this.props;
     const { inputType, pos, hoverImgJson, onImage } = this.state;
     return (
       <React.Fragment>
@@ -169,7 +171,7 @@ class MiniWiki extends React.Component<IProps, IState> {
           </InputContainer>
           <GetCategoriesByKeywordQuery
             query={CATEGORIES_KEYWORD}
-            variables={{ keyword: this.state.keyword }}
+            variables={{ gameId, keyword: this.state.keyword }}
           >
             {({ loading, data, error }) => {
               if (loading) {

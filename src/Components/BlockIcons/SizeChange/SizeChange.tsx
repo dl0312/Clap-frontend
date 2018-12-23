@@ -101,11 +101,13 @@ class SizeChange extends React.Component<IProps, IState> {
         isSizeChangeWindowOpen: true
       });
       document.addEventListener("mousedown", this.handleClickOutside);
+      document.addEventListener("keydown", this.handleOnKeydown);
     } else {
       this.setState({
         isSizeChangeWindowOpen: false
       });
       document.removeEventListener("mousedown", this.handleClickOutside);
+      document.removeEventListener("keydown", this.handleOnKeydown);
     }
   };
 
@@ -127,6 +129,27 @@ class SizeChange extends React.Component<IProps, IState> {
     }
   };
 
+  public handleOnKeydown = (event: any) => {
+    console.log(event);
+    if (event.key === "Enter") {
+      this.props.changeImageSizeFromCurrentToTarget(
+        this.state.targetImageWidth,
+        this.state.targetImageHeight,
+        this.props.index
+      );
+      this.toggleSizeChangeWindow();
+    }
+  };
+
+  public changeImageSize = () => {
+    this.props.changeImageSizeFromCurrentToTarget(
+      this.state.targetImageWidth,
+      this.state.targetImageHeight,
+      this.props.index
+    );
+    this.toggleSizeChangeWindow();
+  };
+
   public render() {
     const { index, contents } = this.props;
     const {
@@ -136,6 +159,7 @@ class SizeChange extends React.Component<IProps, IState> {
     } = this.state;
     const { naturalImageWidth, naturalImageHeight } = contents;
     const ratio = naturalImageWidth / naturalImageHeight;
+    console.log(this.props);
     return (
       <div ref={(instance: any) => this.setWrapperRef(instance)}>
         <ButtonIcon
@@ -200,14 +224,7 @@ class SizeChange extends React.Component<IProps, IState> {
                 className="fas fa-undo-alt"
               />
               <WindowButtonIcon
-                onClick={() => {
-                  this.props.changeImageSizeFromCurrentToTarget(
-                    targetImageWidth,
-                    targetImageHeight,
-                    index
-                  );
-                  this.toggleSizeChangeWindow();
-                }}
+                onClick={this.changeImageSize}
                 className="fas fa-check"
               />
             </ButtonContainer>

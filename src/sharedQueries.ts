@@ -360,8 +360,8 @@ export const DELETE_COMMENT = gql`
 `;
 
 export const CATEGORIES_KEYWORD = gql`
-  query getCategoriesByKeyword($keyword: String!) {
-    GetCategoriesByKeyword(keyword: $keyword) {
+  query getCategoriesByKeyword($gameId: Int!, $keyword: String!) {
+    GetCategoriesByKeyword(gameId: $gameId, keyword: $keyword) {
       ok
       error
       categories {

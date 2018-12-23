@@ -41,7 +41,6 @@ const cardSource = {
     monitor: DragSourceMonitor,
     component: ImageContent
   ) {
-    console.log(component);
     const node = findDOMNode(component) as Element;
     const rect = node ? (node.getBoundingClientRect() as DOMRect) : null;
 
@@ -213,6 +212,7 @@ interface IDescriptionContainerProps {
 
 const DescriptionContainer = styled<IDescriptionContainerProps, any>("div")`
   position: relative;
+  z-index: 2;
   text-align: ${props =>
     props.imageStyle === "fullWidth"
       ? "center"
@@ -427,7 +427,7 @@ class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
     //       this.handleScrollFn
     //     );
     // }
-    console.log(currentImageWidth, currentImageHeight);
+    console.log(this.props);
     return (
       <ImageContentWrapper
         innerRef={(instance: any) => this.setWrapperRef(instance)}
@@ -477,13 +477,11 @@ class ImageContent extends React.Component<IProps & IDnDSourceProps, IState> {
           currentImageHeight={currentImageHeight}
         >
           <img
-            width={currentImageWidth}
-            height={currentImageHeight}
             style={{
               maxWidth: style === "fullWidth" ? "inherit" : "100%",
               position: "relative",
               verticalAlign: "top",
-              height: "100%",
+              // height: "100%",
               width: style === "fullWidth" ? "100%" : undefined,
               opacity: isOnLoad ? 1 : 0.5
             }}

@@ -1123,6 +1123,7 @@ class Editor extends React.Component<IProps, IState, any> {
                                       wikiRef={this.wikiRef}
                                       scrollWrapperRef={this.scrollWrapperRef}
                                       activeEditorRef={this.activeEditorRef}
+                                      handleTableData={this.handleTableData}
                                     />
                                     <Builder
                                       index={index + 1}
@@ -1265,6 +1266,7 @@ class Editor extends React.Component<IProps, IState, any> {
                 </EditorContentCanvas>
                 <div ref={el => (this.wikiRef = el)}>
                   <WikiWindow
+                    gameId={gameId}
                     handleOnChange={this.handleOnChange}
                     selectedIndex={selectedIndex}
                     selectedContent={selectedContent}
@@ -1519,21 +1521,26 @@ class Editor extends React.Component<IProps, IState, any> {
     style: "fullWidth" | "alignLeft",
     index: number
   ) => {
-    this.setState(
-      update(this.state, {
-        cards: {
-          [index]: {
-            contents: {
-              naturalImageWidth: { $set: naturalImageWidth },
-              naturalImageHeight: { $set: naturalImageHeight },
-              currentImageWidth: { $set: naturalImageWidth },
-              currentImageHeight: { $set: naturalImageHeight },
-              style: { $set: style }
+    // console.log(index);
+    // console.log(this.state.cards[index]);
+    // console.log(this.state.cards[index].currentImageWidth);
+    if (this.state.cards[index].contents.currentImageWidth === undefined) {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                naturalImageWidth: { $set: naturalImageWidth },
+                naturalImageHeight: { $set: naturalImageHeight },
+                currentImageWidth: { $set: naturalImageWidth },
+                currentImageHeight: { $set: naturalImageHeight },
+                style: { $set: style }
+              }
             }
           }
-        }
-      })
-    );
+        })
+      );
+    }
   };
 
   public changeImageSizeFromCurrentToTarget = (
@@ -1541,6 +1548,7 @@ class Editor extends React.Component<IProps, IState, any> {
     currentImageHeight: number,
     index: number
   ) => {
+    console.log(`image size change`);
     this.setState(
       update(this.state, {
         cards: {
@@ -1555,6 +1563,36 @@ class Editor extends React.Component<IProps, IState, any> {
     );
   };
 
+  public handleTableData = (
+    type: "editorState",
+    index: number,
+    tableRow: number,
+    tableCol: number,
+    value: any
+  ) => {
+    console.log(this.state.cards[index]);
+    console.log(type, index, tableRow, tableCol, value);
+    if (type === "editorState") {
+      this.setState(
+        update(this.state, {
+          cards: {
+            [index]: {
+              contents: {
+                tableMatrix: {
+                  [tableRow]: {
+                    [tableCol]: {
+                      editorState: { $set: value }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        })
+      );
+    }
+  };
+
   public handleOnChange = (
     value: any,
     index: number,
@@ -1567,10 +1605,6 @@ class Editor extends React.Component<IProps, IState, any> {
       | "imageLibrary"
       | "style"
       | "libraryIndex"
-      | "naturalImageWidth"
-      | "naturalImageHeight"
-      | "currentImageWidth"
-      | "currentImageHeight"
   ) => {
     // console.log(value, index, type);
     if (type === "editorState") {
@@ -1580,55 +1614,6 @@ class Editor extends React.Component<IProps, IState, any> {
             [index]: {
               contents: {
                 editorState: { $set: value }
-              }
-            }
-          }
-        })
-      );
-    } else if (type === "naturalImageWidth") {
-      console.log(value, index, type);
-      this.setState(
-        update(this.state, {
-          cards: {
-            [index]: {
-              contents: {
-                naturalImageWidth: { $set: value }
-              }
-            }
-          }
-        })
-      );
-    } else if (type === "naturalImageHeight") {
-      this.setState(
-        update(this.state, {
-          cards: {
-            [index]: {
-              contents: {
-                naturalImageHeight: { $set: value }
-              }
-            }
-          }
-        })
-      );
-    } else if (type === "currentImageWidth") {
-      this.setState(
-        update(this.state, {
-          cards: {
-            [index]: {
-              contents: {
-                currentImageWidth: { $set: value }
-              }
-            }
-          }
-        })
-      );
-    } else if (type === "currentImageHeight") {
-      this.setState(
-        update(this.state, {
-          cards: {
-            [index]: {
-              contents: {
-                currentImageHeight: { $set: value }
               }
             }
           }

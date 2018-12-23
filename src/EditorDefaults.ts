@@ -1,5 +1,17 @@
 import { EditorState } from "draft-js";
 
+const matrix: any = [];
+for (let i = 0; i < 3; i++) {
+  matrix[i] = [];
+  for (let j = 0; j < 3; j++) {
+    matrix[i][j] = {
+      width: "33.33%",
+      height: "43px",
+      editorState: EditorState.createEmpty()
+    };
+  }
+}
+
 export default {
   // Content
   MAIN_TEXT_COLOR: "#000",
@@ -34,6 +46,13 @@ export default {
     contents: {
       editorState: EditorState.createEmpty(),
       style: "justify"
+    }
+  },
+  DEFAULT_TABLE_BLOCK: {
+    type: "Table",
+    contents: {
+      tableMatrix: matrix,
+      style: null
     }
   },
   DEFAULT_DIVIDER_BLOCK: {

@@ -78,7 +78,12 @@ class GameHome extends React.Component<IProps, any> {
                       />
                       <Route
                         render={({ history }) => {
-                          return <AutoSuggestInput history={history} />;
+                          return (
+                            <AutoSuggestInput
+                              gameId={gameId}
+                              history={history}
+                            />
+                          );
                         }}
                       />
                     </>

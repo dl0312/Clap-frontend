@@ -3,11 +3,67 @@ import styled from "styled-components";
 import classnames from "classnames";
 import { EditorState } from "draft-js";
 import Editor from "draft-js-plugins-editor";
-import createMentionPlugin, {
-  defaultSuggestionsFilter
-} from "draft-js-mention-plugin";
+import createMentionPlugin from "draft-js-mention-plugin";
 import createEmojiPlugin from "draft-js-emoji-plugin";
-const mentionPlugin = createMentionPlugin();
+const mentionPlugin = createMentionPlugin({
+  entityMutability: "IMMUTABLE",
+  mentionComponent: (mentionProps: any) => {
+    console.log(mentionProps);
+    const { name } = mentionProps.mention;
+    return (
+      <GetCategoryById
+        query={CATEGORY}
+        fetchPolicy={"cache-and-network"}
+        variables={{ categoryId: mentionProps.mention.id }}
+      >
+        {({ loading, data, error }) => {
+          if (loading)
+            return (
+              <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
+                {name}
+              </ClapImageText>
+            );
+          if (error) return `${error.message}`;
+          if (data !== undefined) {
+            const { category } = data.GetCategoryById;
+            return (
+              category &&
+              category.topWikiImage && (
+                <Popover
+                  placement="leftTop"
+                  content={
+                    `ekko`
+                    // <HoverView
+                    //   json={JSON.parse(
+                    //     category.topWikiImage.hoverImage
+                    //   )}
+                    // />
+                  }
+                  title={
+                    <>
+                      <ClapImage
+                        src={category.topWikiImage.shownImage}
+                        alt={"hover"}
+                      />
+                      <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
+                        {category.name}
+                      </ClapImageText>
+                    </>
+                  }
+                  trigger="hover"
+                >
+                  <ClapImageText color={EditorDefaults.CLAP_IMG_TEXT_COLOR}>
+                    {mentionProps.children}
+                  </ClapImageText>
+                </Popover>
+              )
+            );
+          } else return null;
+        }}
+      </GetCategoryById>
+    );
+  }
+});
 const emojiPlugin = createEmojiPlugin({
   useNativeArt: true
 });
@@ -46,11 +102,15 @@ import { findDOMNode } from "react-dom";
 import ItemTypes from "src/ItemTypes";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import {
-  getCategoriesByGameId,
-  getCategoriesByGameIdVariables
+  getCategoriesByKeyword,
+  getCategoriesByKeywordVariables,
+  getCategoryById,
+  getCategoryByIdVariables
 } from "src/types/api";
 import { Query } from "react-apollo";
-import { GET_CATEGORIES_BY_GAME_ID } from "src/sharedQueries";
+import { CATEGORIES_KEYWORD, CATEGORY } from "src/sharedQueries";
+import { Popover } from "antd";
+import EditorDefaults from "src/EditorDefaults";
 
 // import { Link } from "react-router-dom";
 // import HoverView from "src/Components/HoverView";
@@ -241,6 +301,25 @@ const cardSource = {
   }
 };
 
+interface IClapImageProps {
+  selected: boolean;
+}
+
+const ClapImage = styled<IClapImageProps, any>("img")`
+  width: 20px;
+  margin-left: 2px;
+  margin-right: 2px;
+  max-width: 100%;
+  max-height: 20em;
+  margin-bottom: -4px;
+  box-shadow: ${props => (props.selected ? "0 0 0 2px blue;" : "none")};
+`;
+
+const ClapImageText = styled.span`
+  font-weight: bolder;
+  color: ${props => props.color};
+`;
+
 const DragSourceArea = styled.div`
   background-color: rgba(0, 0, 0, 0.08);
   transition-property: opacity, background;
@@ -410,9 +489,14 @@ interface ITextContents {
   style: "alignLeft" | "alignCenter" | "alignRight" | "alignJustify";
 }
 
-class GetCategoriesByGameIdQuery extends Query<
-  getCategoriesByGameId,
-  getCategoriesByGameIdVariables
+class GetCategoriesByKeyword extends Query<
+  getCategoriesByKeyword,
+  getCategoriesByKeywordVariables
+> {}
+
+class GetCategoryById extends Query<
+  getCategoryById,
+  getCategoryByIdVariables
 > {}
 
 interface IProps {
@@ -436,7 +520,7 @@ interface IState {
   toolbarState: "follow" | "sticky" | "blind";
   isWriteMode: boolean;
   suggestions: any;
-  mentions: any;
+  keyword: string;
 }
 
 interface IDnDSourceProps {
@@ -466,7 +550,7 @@ class TextContent extends React.Component<IProps & IDnDSourceProps, IState> {
       toolbarState: "follow",
       isWriteMode: false,
       suggestions: [],
-      mentions: []
+      keyword: ""
     };
   }
 
@@ -544,8 +628,9 @@ class TextContent extends React.Component<IProps & IDnDSourceProps, IState> {
   };
 
   onSearchChange = ({ value }: any) => {
+    console.log(value);
     this.setState({
-      suggestions: defaultSuggestionsFilter(value, this.state.mentions)
+      keyword: value
     });
   };
 
@@ -559,7 +644,7 @@ class TextContent extends React.Component<IProps & IDnDSourceProps, IState> {
     this.props.callbackfromparent("mouseover", this.props.index);
   };
 
-  /* In case, Mouse Don Container */
+  /* In case, Mouse Down Container */
   public handleOnMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
     this.props.callbackfromparent("select", this.props.index);
@@ -585,7 +670,7 @@ class TextContent extends React.Component<IProps & IDnDSourceProps, IState> {
       connectDragSource,
       isDragging
     } = this.props;
-    const { toolbarState, isWriteMode } = this.state;
+    const { toolbarState, isWriteMode, keyword } = this.state;
     const hover: boolean = hoveredIndex === index;
     const active: boolean = selectedIndex === index;
     const textContentState = isWriteMode ? "WRITE" : active ? "ACTIVE" : null;
@@ -656,6 +741,7 @@ class TextContent extends React.Component<IProps & IDnDSourceProps, IState> {
             ref={this.setEditor}
             onFocus={(e: any) => {
               this.setState({ isWriteMode: true });
+              this.props.masterCallback("unselect");
               document.addEventListener("mousedown", this.handleClickOutside);
             }}
             plugins={plugins}
@@ -664,18 +750,21 @@ class TextContent extends React.Component<IProps & IDnDSourceProps, IState> {
             //   // this.setState({ isWriteMode: false });
             // }}
           />
-          <GetCategoriesByGameIdQuery
-            query={GET_CATEGORIES_BY_GAME_ID}
-            variables={{ gameId }}
+          <GetCategoriesByKeyword
+            query={CATEGORIES_KEYWORD}
+            variables={{ gameId, keyword }}
+            fetchPolicy={"cache-and-network"}
             onCompleted={data => {
-              if ("GetCategoriesByGameId" in data) {
+              if ("GetCategoriesByKeyword" in data) {
                 const {
-                  GetCategoriesByGameId: { categories }
+                  GetCategoriesByKeyword: { categories }
                 } = data;
                 if (categories !== null) {
+                  console.log(categories);
                   this.setState({
-                    mentions: categories.map((category, index) => {
+                    suggestions: categories.map((category, index) => {
                       return {
+                        id: category && category.id,
                         name: category && category.name,
                         avatar:
                           category &&
@@ -695,7 +784,7 @@ class TextContent extends React.Component<IProps & IDnDSourceProps, IState> {
               if (error) return `${error}`;
               return null;
             }}
-          </GetCategoriesByGameIdQuery>
+          </GetCategoriesByKeyword>
           <MentionSuggestions
             onSearchChange={this.onSearchChange}
             suggestions={this.state.suggestions}

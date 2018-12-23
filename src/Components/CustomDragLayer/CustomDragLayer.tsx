@@ -55,7 +55,6 @@ class CustomDragLayer extends React.Component<ICustomDragLayerProps, any> {
 
   public render() {
     const { isDragging, itemType, item } = this.props;
-    console.log(item);
     if (!isDragging) {
       return null;
     }

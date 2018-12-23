@@ -112,11 +112,25 @@ class Link extends React.Component<IProps, IState> {
         isLinkChangeWindowOpen: true
       });
       document.addEventListener("mousedown", this.handleClickOutside);
+      document.addEventListener("keydown", this.handleOnKeydown);
     } else {
       this.setState({
         isLinkChangeWindowOpen: false
       });
       document.removeEventListener("mousedown", this.handleClickOutside);
+      document.removeEventListener("keydown", this.handleOnKeydown);
+    }
+  };
+
+  public handleOnKeydown = (event: any) => {
+    console.log(event);
+    if (event.key === "Enter") {
+      this.props.handleOnChange(
+        this.state.targetLink,
+        this.props.index,
+        "link"
+      );
+      this.toggleLinkChangeWindow();
     }
   };
 

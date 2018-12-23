@@ -41,6 +41,7 @@ const WikiContainer = styled<IWikiContainerProps, any>("div")`
 `;
 
 interface IProps {
+  gameId: number;
   handleOnChange: any;
   selectedIndex: number | null;
   selectedContent: any;
@@ -66,7 +67,12 @@ class WikiWindow extends React.Component<IProps, IState> {
   };
 
   public render() {
-    const { handleOnChange, selectedIndex, selectedContent } = this.props;
+    const {
+      handleOnChange,
+      selectedIndex,
+      selectedContent,
+      gameId
+    } = this.props;
     const { isWikiWindowOpen } = this.state;
     return (
       <WikiWindowContainer isWikiWindowOpen={isWikiWindowOpen}>
@@ -75,6 +81,7 @@ class WikiWindow extends React.Component<IProps, IState> {
         </WikiWindowButton>
         <WikiContainer isWikiWindowOpen={isWikiWindowOpen}>
           <MiniWiki
+            gameId={gameId}
             handleOnChange={handleOnChange}
             selectedIndex={selectedIndex}
             selectedContent={selectedContent}

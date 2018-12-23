@@ -641,6 +641,7 @@ export interface getCategoriesByKeyword {
 }
 
 export interface getCategoriesByKeywordVariables {
+  gameId: number;
   keyword: string;
 }
 

@@ -124,7 +124,6 @@ class EditorSideBar extends Component<IProps, IState> {
   public render() {
     const { imageLibrary, hideEditorTool } = this.props;
     const { isEditorToolOpen, isLibraryOpen } = this.state;
-    console.log(hideEditorTool);
     return (
       <EditorSideBarContainer
         style={{ transform: hideEditorTool ? "translateX(-245px)" : undefined }}

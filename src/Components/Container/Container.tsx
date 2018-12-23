@@ -14,11 +14,11 @@ import {
 } from "react-dnd";
 import ItemTypes from "src/ItemTypes";
 import { findDOMNode } from "react-dom";
+import TableContent from "../ContentItems/TableContent";
 
 const cardTarget = {
   hover(props: IProps, monitor: DropTargetMonitor, component: Container) {
     const isJustOverThisOne = monitor.isOver({ shallow: true });
-    console.log(`hover`);
     if (isJustOverThisOne) {
       const dragIndex = monitor.getItem().index;
       const hoverIndex = props.index;
@@ -31,7 +31,6 @@ const cardTarget = {
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
-      console.log(hoverBoundingRect);
       const position =
         clientOffset!.y < hoverBoundingRect.y + hoverMiddleY ? "over" : "under";
       props.setTargetIndex(props.index, position);
@@ -75,8 +74,8 @@ const ContentContainer = styled<IContentContainerProps, any>("div")`
   margin: 0 auto;
   padding-left: ${props => (props.device === "PHONE" ? "20px" : null)};
   padding-right: ${props => (props.device === "PHONE" ? "20px" : null)};
-  cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
-    url(../img/se_cursor_drag_grab.png), auto;
+  /* cursor: url(https://ssl.pstatic.net/static.editor/static/dist/editor/1543468182439/img/se_cursor_drag_grab.cur),
+    url(../img/se_cursor_drag_grab.png), auto; */
 `;
 
 interface IProps {
@@ -91,7 +90,11 @@ interface IProps {
   handleOnChange: any;
   index: number;
   type: "Text" | "Image" | "Video" | "Table" | "Divider";
-  contents: ITextContents & IImageContents & IVideoContents & IDividerContents;
+  contents: ITextContents &
+    IImageContents &
+    IVideoContents &
+    IDividerContents &
+    ITableContents;
   // // For Content Render
   selectedIndex: number | null;
   hoveredIndex: number | null;
@@ -110,6 +113,7 @@ interface IProps {
   wikiRef: any;
   scrollWrapperRef: any;
   activeEditorRef: any;
+  handleTableData: any;
 }
 
 interface IDnDTargetProps {
@@ -154,6 +158,11 @@ interface IVideoContents {
 
 interface IDividerContents {
   style: "fullWidth" | "alignLeft" | "alignCenter" | "alignRight";
+}
+
+interface ITableContents {
+  style: "fullWidth" | "alignLeft" | "alignCenter" | "alignRight";
+  tableMatrix: any;
 }
 
 class Container extends React.Component<IProps & IDnDTargetProps, any> {
@@ -246,8 +255,25 @@ class Container extends React.Component<IProps & IDnDTargetProps, any> {
             scrollWrapperRef={this.props.scrollWrapperRef}
           />
         );
-      // case "Social":
-      //   return <SocialMediaContent />;
+      case "Table":
+        return (
+          <TableContent
+            index={this.props.index}
+            contents={this.props.contents}
+            masterCallback={this.props.masterCallback}
+            pushPresentBlockToTargetIndex={
+              this.props.pushPresentBlockToTargetIndex
+            }
+            pushNewBlockToTargetIndex={this.props.pushNewBlockToTargetIndex}
+            setTargetIndex={this.props.setTargetIndex}
+            selected={selected}
+            hoveredIndex={this.props.hoveredIndex}
+            selectedIndex={this.props.selectedIndex}
+            callbackfromparent={this.props.callbackfromparent}
+            scrollWrapperRef={this.props.scrollWrapperRef}
+            handleTableData={this.props.handleTableData}
+          />
+        );
       default:
         return null;
     }

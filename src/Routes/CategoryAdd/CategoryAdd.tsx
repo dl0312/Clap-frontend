@@ -34,6 +34,11 @@ class CategoriesByKeyword extends Query<
   getCategoriesByKeywordVariables
 > {}
 
+interface IProps {
+  history: any;
+  gameId: number;
+}
+
 interface IState {
   name: string;
   parentId: number | null;
@@ -41,7 +46,7 @@ interface IState {
   keyword: string;
 }
 
-class CategoryAdd extends React.Component<any, IState> {
+class CategoryAdd extends React.Component<IProps, IState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -90,6 +95,7 @@ class CategoryAdd extends React.Component<any, IState> {
   };
 
   render() {
+    const { gameId } = this.props;
     const { name, parentId, childrenIds, keyword } = this.state;
     console.log(this.state);
     return (
@@ -113,7 +119,7 @@ class CategoryAdd extends React.Component<any, IState> {
 
                 <CategoriesByKeyword
                   query={CATEGORIES_KEYWORD}
-                  variables={{ keyword }}
+                  variables={{ gameId, keyword }}
                 >
                   {({ loading, error, data }) => {
                     if (loading) {
