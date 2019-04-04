@@ -218,7 +218,7 @@ const columns = [
     width: 500,
     render: (post: any) => (
       <Link
-        to={`/post/read/${post.id}`}
+        to={`/game/${post.gameId}/post/read/${post.id}`}
         style={{
           textDecoration: "none"
         }}
@@ -401,6 +401,7 @@ class Board extends React.Component<IProps, IState> {
                           // style={{ backgroundColor: "white" }}
                           columns={columns}
                           dataSource={posts.map(post => {
+                            console.log(post);
                             return {
                               id: post!.id,
                               title: post,

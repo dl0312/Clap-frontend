@@ -624,6 +624,7 @@ class TextContent extends React.Component<IProps & IDnDSourceProps, IState> {
   }
 
   onChange = (editorState: any) => {
+    console.log(editorState);
     this.props.handleOnChange(editorState, this.props.index, "editorState");
   };
 

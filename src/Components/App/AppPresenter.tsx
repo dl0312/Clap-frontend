@@ -151,7 +151,7 @@ const AppPresenter: React.SFC<IProps> = ({ isLoggedIn, changeLocale }) => (
                 component={CategoryDetail}
               />
               <Route
-                path="/post/read/:postId"
+                path="/game/:gameId/post/read/:postId"
                 exact={true}
                 component={PostDetail}
               />

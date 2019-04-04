@@ -6,7 +6,6 @@ import theme from "../../theme";
 import { ThemeProvider } from "../../typed-components";
 import AppPresenter from "./AppPresenter";
 import { IS_LOGGED_IN } from "./AppQueries.local";
-import { LocaleProvider } from "antd";
 import moment from "moment";
 
 interface IProps {
@@ -40,17 +39,15 @@ class AppContainer extends React.Component<IProps, IState> {
     return (
       <React.Fragment>
         <ThemeProvider theme={theme}>
-          <LocaleProvider locale={locale}>
-            <AppPresenter
-              key={
-                locale
-                  ? locale.locale
-                  : "en" /* Have to refresh for production environment */
-              }
-              changeLocale={this.changeLocale}
-              isLoggedIn={data.auth.isLoggedIn}
-            />
-          </LocaleProvider>
+          <AppPresenter
+            key={
+              locale
+                ? locale.locale
+                : "en" /* Have to refresh for production environment */
+            }
+            changeLocale={this.changeLocale}
+            isLoggedIn={data.auth.isLoggedIn}
+          />
         </ThemeProvider>
         <ToastContainer
           draggable={true}

@@ -36,9 +36,7 @@ const authMiddleware = new ApolloLink((operation: Operation, forward: any) => {
 });
 
 const httpLink = new HttpLink({
-  uri: isDev
-    ? "http://localhost:4000/graphql"
-    : "https://clapserver.now.sh/graphql"
+  uri: "https://clapserver.now.sh/graphql"
 });
 
 // const wsLink = new WebSocketLink({

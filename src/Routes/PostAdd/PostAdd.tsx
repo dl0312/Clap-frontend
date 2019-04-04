@@ -10,7 +10,7 @@ import Loading from "src/Components/Loading";
 
 interface IProps {
   history: any;
-  match: { params: { gameId: number; postId: number } };
+  match: { params: { gameId: number } };
 }
 
 interface IState {

@@ -155,6 +155,7 @@ export const GET_POSTS_BY_GAME_ID = gql`
         title
         titleImg
         titleImgPos
+        gameId
         user {
           id
           nickName

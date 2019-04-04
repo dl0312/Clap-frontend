@@ -569,7 +569,9 @@ class PostDetail extends React.Component<IProps, IState> {
                           <ButtonsContainer>
                             <Link
                               to={{
-                                pathname: `/post/edit/${post.id}`,
+                                pathname: `/game/${post.gameId}/post/edit/${
+                                  post.id
+                                }`,
                                 state: {
                                   gameId
                                 }

@@ -243,6 +243,7 @@ class Navigation extends React.Component<IProps, IState> {
                                       return (
                                         game && (
                                           <Link
+                                            key={game.id}
                                             to={`/game/${game.id}`}
                                             style={{
                                               textDecoration: "none",
