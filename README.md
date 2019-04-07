@@ -1,9 +1,21 @@
-# clap-client
+# 👏 Clap
+<img src="https://res.cloudinary.com/da5maaaij/image/upload/v1554654470/responsive.gif"/>
+Client for the CLAP
 
-Client for the CLAP, react-dnd, ReactJS, TypeScript, slate-react, styled-components
+## 💻 Stack
+* react-dnd
+* React
+* TypeScript
+* draftJS
+* styled-components
 
-## Navigation Menus:
+## ✏ WYSIWYG Editor
+<img src="https://res.cloudinary.com/da5maaaij/image/upload/v1554654036/day6.gif"/>
+<img src="https://res.cloudinary.com/da5maaaij/image/upload/v1554654037/video.gif"/>
+Block style Drag & Drop Editor
 
+
+## 🗂 Navigation Menus:
 - [x] **Home**
   - [x] _Slide Image_
     - [x] CSS
