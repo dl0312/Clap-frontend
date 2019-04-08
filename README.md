@@ -1,4 +1,5 @@
 # 👏 Clap
+<img src="https://res.cloudinary.com/da5maaaij/image/upload/v1554703851/%EB%A6%BD%EB%B0%98%EC%9C%99%ED%81%B4.png"/>
 Client for the CLAP
 
 ## 💻 Stack
